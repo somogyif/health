@@ -273,24 +273,24 @@ function draw(d, src) {
   document.getElementById('dash').innerHTML = `
     <div class="sec"><div class="lbl">Today's snapshot</div>
     <div class="g4">
-      <div class="mt"><div class="ml">body_battery</div><div class="mv am">${d.recovery.battery}</div><div class="ms">started ${d.recovery.batteryStart} · −${d.recovery.batteryStart - d.recovery.battery} drained</div><span class="bge ba">low — rest tonight</span></div>
-      <div class="mt"><div class="ml">resting_hr</div><div class="mv">${d.recovery.rhr}<span style="font-size:14px"> bpm</span></div><div class="ms">7-day avg: ${d.recovery.rhrAvg} bpm</div><span class="bge ba">slightly elevated</span></div>
-      <div class="mt"><div class="ml">hrv_status</div><div class="mv tl" style="font-size:20px;padding-top:3px">${d.recovery.hrv}</div><div class="ms">weekly avg: ${d.recovery.hrvMs} ms</div><span class="bge bt">baseline 40–56 ms</span></div>
-      <div class="mt"><div class="ml">steps</div><div class="mv">${d.recovery.steps.toLocaleString()}</div><div class="ms">goal: 5,670</div><span class="bge bt">✓ goal met</span></div>
-      <div class="mt"><div class="ml">avg_stress</div><div class="mv am">${d.recovery.stress}</div><div class="ms">spike ~4pm today</div><span class="bge ba">medium-high</span></div>
-      <div class="mt"><div class="ml">active_kcal</div><div class="mv">${d.recovery.activeCalories}</div><div class="ms">total: ${d.recovery.calories.toLocaleString()} kcal</div><span class="bge bb">upper 2 session</span></div>
-      <div class="mt"><div class="ml">sleep_data</div><div class="mv rd" style="font-size:20px;padding-top:3px">Missing</div><div class="ms">watch not worn overnight</div><span class="bge br">fix this first</span></div>
-      <div class="mt"><div class="ml">sleep_need</div><div class="mv rd">${d.recovery.sleepNeed}<span style="font-size:16px">h</span></div><div class="ms">garmin: highly increased</div><span class="bge br">recovery deficit</span></div>
+      <div class="mt"><div class="ml">Body battery</div><div class="mv am">${d.recovery.battery}</div><div class="ms">started ${d.recovery.batteryStart} · −${d.recovery.batteryStart - d.recovery.battery} drained</div><span class="bge ba">low — rest tonight</span></div>
+      <div class="mt"><div class="ml">Resting HR</div><div class="mv">${d.recovery.rhr}<span style="font-size:14px"> bpm</span></div><div class="ms">7-day avg: ${d.recovery.rhrAvg} bpm</div><span class="bge ba">slightly elevated</span></div>
+      <div class="mt"><div class="ml">HRV status</div><div class="mv tl" style="font-size:20px;padding-top:3px">${d.recovery.hrv}</div><div class="ms">weekly avg: ${d.recovery.hrvMs} ms</div><span class="bge bt">baseline 40–56 ms</span></div>
+      <div class="mt"><div class="ml">Steps</div><div class="mv">${d.recovery.steps.toLocaleString()}</div><div class="ms">goal: 5,670</div><span class="bge bt">✓ goal met</span></div>
+      <div class="mt"><div class="ml">Avg stress</div><div class="mv am">${d.recovery.stress}</div><div class="ms">spike ~4pm today</div><span class="bge ba">medium-high</span></div>
+      <div class="mt"><div class="ml">Active kcal</div><div class="mv">${d.recovery.activeCalories}</div><div class="ms">total: ${d.recovery.calories.toLocaleString()} kcal</div><span class="bge bb">upper 2 session</span></div>
+      <div class="mt"><div class="ml">Sleep data</div><div class="mv rd" style="font-size:20px;padding-top:3px">Missing</div><div class="ms">watch not worn overnight</div><span class="bge br">fix this first</span></div>
+      <div class="mt"><div class="ml">Sleep need</div><div class="mv rd">${d.recovery.sleepNeed}<span style="font-size:16px">h</span></div><div class="ms">garmin: highly increased</div><span class="bge br">recovery deficit</span></div>
     </div></div>
 
     <div class="sec"><div class="lbl">Body composition — ${d.bodyComp.date}</div>
     <div class="g2">
       <div class="card">
         <div class="g4" style="margin-bottom:1rem">
-          <div class="mt"><div class="ml">weight</div><div class="mv">${d.bodyComp.weight}<span style="font-size:14px"> kg</span></div></div>
-          <div class="mt"><div class="ml">body_fat</div><div class="mv am">${d.bodyComp.fat}%</div><span class="bge ba">target 16–17%</span></div>
-          <div class="mt"><div class="ml">lean_mass</div><div class="mv tl">${d.bodyComp.lean}<span style="font-size:14px"> kg</span></div><span class="bge bt">protect this</span></div>
-          <div class="mt"><div class="ml">bmi</div><div class="mv">${d.bodyComp.bmi}</div><span class="bge bg2">normal</span></div>
+          <div class="mt"><div class="ml">Weight</div><div class="mv">${d.bodyComp.weight}<span style="font-size:14px"> kg</span></div></div>
+          <div class="mt"><div class="ml">Body fat</div><div class="mv am">${d.bodyComp.fat}%</div><span class="bge ba">target 16–17%</span></div>
+          <div class="mt"><div class="ml">Lean mass</div><div class="mv tl">${d.bodyComp.lean}<span style="font-size:14px"> kg</span></div><span class="bge bt">protect this</span></div>
+          <div class="mt"><div class="ml">BMI</div><div class="mv">${d.bodyComp.bmi}</div><span class="bge bg2">normal</span></div>
         </div>
         <div class="cw" style="height:100px"><canvas id="cc" role="img" aria-label="Body composition bar">Lean ${d.bodyComp.lean}kg vs Fat ${(d.bodyComp.weight - d.bodyComp.lean).toFixed(1)}kg</canvas></div>
         <div class="leg" style="margin-top:8px">
@@ -340,7 +340,7 @@ function draw(d, src) {
 
     <div class="sec"><div class="lbl">Muscle group coverage</div>
     <div class="mg">
-      ${d.muscles.map(m => `<div class="mtl"><div class="mn">${m.n.toLowerCase().replace('/', '_').replace(' ', '_')}</div><div class="mbb"><div class="mbf" style="width:${m.p}%;background:${m.p >= 85 ? '#2dd4a0' : '#f5a623'}"></div></div><div class="mst">${m.s}</div></div>`).join('')}
+      ${d.muscles.map(m => `<div class="mtl"><div class="mn">${m.n}</div><div class="mbb"><div class="mbf" style="width:${m.p}%;background:${m.p >= 85 ? '#2dd4a0' : '#f5a623'}"></div></div><div class="mst">${m.s}</div></div>`).join('')}
     </div></div>
 
     <div class="sec"><div class="lbl">Active recommendations</div>
