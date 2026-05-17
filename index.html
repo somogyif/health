@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feri — Health Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg:#0e0e0c; --surface:#161614; --surface2:#1e1e1b; --surface3:#262622;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --text:#f0ede4; --text2:#9e9b92; --text3:#5a5852;
+  --teal:#2dd4a0; --teal-dim:rgba(45,212,160,0.12);
+  --amber:#f5a623; --amber-dim:rgba(245,166,35,0.12);
+  --red:#ff5f5f; --red-dim:rgba(255,95,95,0.1);
+  --blue:#5b9cf6; --blue-dim:rgba(91,156,246,0.1);
+  --green:#6fcf97; --green-dim:rgba(111,207,151,0.1);
+  --r:14px; --rs:8px;
+  --body:'DM Sans',sans-serif; --serif:'Instrument Serif',serif; --mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.6;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.page{max-width:1000px;margin:0 auto;padding:2.5rem 1.5rem 5rem;position:relative;z-index:1}
+
+/* Setup screen */
+#setup{display:flex;align-items:center;justify-content:center;min-height:80vh}
+.setup-card{background:var(--surface);border:.5px solid var(--border2);border-radius:var(--r);padding:2.5rem;max-width:480px;width:100%}
+.setup-title{font-family:var(--serif);font-size:26px;font-style:italic;margin-bottom:6px}
+.setup-title span{color:var(--teal)}
+.setup-sub{font-size:12px;color:var(--text3);font-family:var(--mono);margin-bottom:2rem}
+.setup-label{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase}
+.setup-input{width:100%;background:var(--surface2);border:.5px solid var(--border2);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .2s;margin-bottom:1rem}
+.setup-input:focus{border-color:var(--teal)}
+.setup-btn{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:#0e0e0c;font-family:var(--mono);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .2s}
+.setup-btn:hover{opacity:.85}
+.setup-note{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:1rem;line-height:1.6}
+.setup-note a{color:var(--teal);text-decoration:none}
+
+/* Dashboard */
+#main{display:none}
+.header{margin-bottom:2.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.title{font-family:var(--serif);font-size:32px;font-weight:400;font-style:italic;letter-spacing:-0.5px;line-height:1.1}
+.title span{color:var(--teal)}
+.sub{font-size:12px;color:var(--text3);margin-top:6px;font-family:var(--mono)}
+.hbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rbtn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--surface2);border:.5px solid var(--border2);border-radius:20px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--mono);transition:all .2s;white-space:nowrap}
+.rbtn:hover{background:var(--surface3);color:var(--text)}
+.rbtn:disabled{opacity:.5;cursor:not-allowed}
+.rbtn.sm{font-size:11px;padding:6px 12px;color:var(--text3)}
+.spin{width:12px;height:12px;border:1.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sec{margin-bottom:2rem}
+.lbl{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.lbl::after{content:'';flex:1;height:.5px;background:var(--border)}
+.card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;animation:up .4s ease both}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.g2{grid-template-columns:1fr}}
+.mt{background:var(--surface2);border:.5px solid var(--border);border-radius:var(--rs);padding:14px 16px;transition:border-color .2s}
+.mt:hover{border-color:var(--border2)}
+.ml{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px}
+.mv{font-size:26px;font-weight:300;line-height:1;letter-spacing:-1px}
+.mv.tl{color:var(--teal)}.mv.am{color:var(--amber)}.mv.rd{color:var(--red)}
+.ms{font-size:11px;color:var(--text3);margin-top:5px}
+.bge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:6px;font-family:var(--mono)}
+.bt{background:var(--teal-dim);color:var(--teal)}
+.ba{background:var(--amber-dim);color:var(--amber)}
+.br{background:var(--red-dim);color:var(--red)}
+.bb{background:var(--blue-dim);color:var(--blue)}
+.bg2{background:var(--green-dim);color:var(--green)}
+.cw{position:relative;width:100%}
+.leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:11px;color:var(--text3);font-family:var(--mono)}
+.li{display:flex;align-items:center;gap:5px}
+.ld{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.gr{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--border)}
+.gr:last-child{border-bottom:none}
+.grl{font-size:12px;color:var(--text2);min-width:110px;font-family:var(--mono)}
+.gbw{flex:1}
+.gbb{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.gbf{height:100%;border-radius:2px}
+.gvs{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px;font-family:var(--mono)}
+.wr{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:start;padding:12px 0;border-bottom:.5px solid var(--border)}
+.wr:last-child{border-bottom:none}
+.wda{font-family:var(--mono);font-size:11px;color:var(--text3);padding-top:2px}
+.wn{font-weight:500;font-size:13px;margin-bottom:3px}
+.wdt{color:var(--text2);font-size:11px;font-family:var(--mono)}
+.hbr{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:10px;color:var(--text3);font-family:var(--mono)}
+.hbb{flex:1;height:3px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.hbf{height:100%;border-radius:2px}
+.rr{display:flex;gap:12px;padding:12px 0;border-bottom:.5px solid var(--border)}
+.rr:last-child{border-bottom:none}
+.rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.rt{font-size:13px;font-weight:500;margin-bottom:3px}
+.rb{font-size:12px;color:var(--text2);line-height:1.5}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.mtl{background:var(--surface2);border:.5px solid var(--border);border-radius:var(--rs);padding:12px}
+.mn{font-size:11px;font-family:var(--mono);margin-bottom:8px;color:var(--text2)}
+.mbb{height:3px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.mbf{height:100%;border-radius:2px}
+.mst{font-size:10px;color:var(--text3);margin-top:5px;font-family:var(--mono)}
+.errbox{background:var(--red-dim);border:.5px solid var(--red);border-radius:var(--r);padding:1rem 1.25rem;font-family:var(--mono);font-size:12px;color:var(--red);margin-bottom:1.5rem;line-height:1.7}
+.sp{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-family:var(--mono);margin-left:8px}
+hr{border:none;border-top:.5px solid var(--border);margin:1rem 0}
+.upd{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right;margin-top:2rem}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- SETUP SCREEN -->
+  <div id="setup">
+    <div class="setup-card">
+      <div class="setup-title">Health <span>Centre</span></div>
+      <div class="setup-sub">one-time setup — your token stays on this device only</div>
+
+      <div class="setup-label">Notion API token</div>
+      <input class="setup-input" id="tokenInput" type="password" placeholder="ntn_..." autocomplete="off" spellcheck="false">
+
+      <div class="setup-label">Notion page ID</div>
+      <input class="setup-input" id="pageInput" type="text" value="3632828bbe16816bb439fec25dabffe6" autocomplete="off" spellcheck="false">
+
+      <button class="setup-btn" onclick="saveAndLoad()">Connect to Notion →</button>
+
+      <div class="setup-note">
+        Your token is saved in your browser's local storage — it never leaves your device and is not in the source code.
+        To get your token: <a href="https://www.notion.so/profile/integrations" target="_blank">notion.so/profile/integrations</a> → New integration → copy the token.
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="main">
+    <div class="header">
+      <div>
+        <div class="title">Health <span>Centre</span></div>
+        <div class="sub" id="sub">loading...</div>
+      </div>
+      <div class="hbtns">
+        <button class="rbtn sm" onclick="resetToken()">⚙ change token</button>
+        <button class="rbtn" id="rbtn" onclick="go()">
+          <div class="spin" id="spin"></div>
+          <span id="rl">↻ refresh</span>
+        </button>
+      </div>
+    </div>
+    <div id="errbox" class="errbox" style="display:none"></div>
+    <div id="dash"></div>
+  </div>
+
+</div>
+<script>
+const PID = '3632828b-be16-816b-b439-fec25dabffe6';
+
+// ── TOKEN MANAGEMENT (localStorage only — never in code) ──────────────────
+function getToken(){ return localStorage.getItem('hc_notion_token') || ''; }
+function saveToken(t){ localStorage.setItem('hc_notion_token', t.trim()); }
+function resetToken(){ localStorage.removeItem('hc_notion_token'); location.reload(); }
+
+function saveAndLoad(){
+  const t = document.getElementById('tokenInput').value.trim();
+  const p = document.getElementById('pageInput').value.trim();
+  if(!t){ alert('Please paste your Notion token'); return; }
+  saveToken(t);
+  if(p) localStorage.setItem('hc_notion_page', p);
+  showDashboard();
+}
+
+function getPageId(){
+  return localStorage.getItem('hc_notion_page') || PID;
+}
+
+function showDashboard(){
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  go();
+}
+
+// On load: if token exists skip setup
+window.addEventListener('DOMContentLoaded', () => {
+  if(getToken()) showDashboard();
+});
+
+// ── BASELINE DATA ─────────────────────────────────────────────────────────
+const B = {
+  bodyComp:{ weight:83.3, fat:21, lean:65.8, bmi:23.1, date:'15 May 2026' },
+  recovery:{ battery:19, batteryStart:61, rhr:67, rhrAvg:64, hrv:'Balanced', hrvMs:42, stress:59, steps:8151, calories:2569, activeCalories:700, sleepNeed:9 },
+  bb:{
+    labels:['19 Apr','20 Apr','21 Apr','22 Apr','23 Apr','24 Apr','25 Apr','26 Apr','27 Apr','28 Apr','29 Apr','30 Apr','1 May','2 May','3 May','4 May','5 May','6 May','7 May','8 May','9 May','10 May','11 May','12 May','13 May','14 May','15 May','16 May','17 May'],
+    wake: [53,100,63,93,73,64,80,58,100,98,97,68,76,82,100,99,76,100,60,95,64,47,35,59,43,62,63,46,61],
+    drain:[27,14,15,12,8,7,12,25,25,15,18,10,5,16,29,31,17,7,13,13,5,5,5,5,5,5,6,18,23]
+  },
+  workouts:[
+    {date:'17 May',session:'Upper 2',dur:'42 min',hr:107,max:146,kcal:260,z1:61,z2:23,z3:2,r:'mod'},
+    {date:'5 May', session:'Lower 1',dur:'37 min',hr:112,max:142,kcal:225,z1:52,z2:39,z3:3,r:'mod'},
+    {date:'4 May', session:'Upper 1',dur:'23 min',hr:126,max:146,kcal:155,z1:5, z2:79,z3:16,r:'warn'},
+    {date:'3 May', session:'Lower 2',dur:'50 min',hr:110,max:153,kcal:321,z1:59,z2:27,z3:6,r:'good'},
+  ],
+  muscles:[
+    {n:'Chest',p:85,s:'well covered',x:false},{n:'Back',p:90,s:'excellent',x:false},
+    {n:'Shoulders',p:80,s:'rear delt added',x:true},{n:'Biceps',p:80,s:'good',x:false},
+    {n:'Triceps',p:75,s:'just added ✨',x:true},{n:'Quads',p:90,s:'excellent',x:false},
+    {n:'Hamstrings',p:85,s:'RDL + curl',x:false},{n:'Abs',p:70,s:'leg raise added',x:true},
+    {n:'Calves',p:85,s:'two variations',x:false},
+  ],
+  goals:[
+    {l:'body_fat',c:'21%',t:'16–17%',p:25,col:'#f5a623'},
+    {l:'lean_mass',c:'65.8 kg',t:'maintain',p:80,col:'#2dd4a0'},
+    {l:'training_freq',c:'~2×/week',t:'4×/week',p:50,col:'#5b9cf6'},
+    {l:'rest_time',c:'~30 sec',t:'90–120 sec',p:15,col:'#f5a623'},
+    {l:'zone2_cardio',c:'0 sessions',t:'2–3×/wk',p:0,col:'#ff5f5f'},
+    {l:'sleep',c:'no data',t:'7.5–8 hrs',p:5,col:'#ff5f5f'},
+  ],
+  recs:[
+    {lv:'red',  t:'Wear your watch to bed tonight',  b:"Garmin says sleep need is 'highly increased' at 9 hours. HRV and recovery scoring is completely blind without overnight data."},
+    {lv:'red',  t:'Rest 90 seconds between sets',    b:"Upper 1 Garmin data: 79% zone 2 — you're turning strength training into cardio. Set a rest timer on your Fenix 7X."},
+    {lv:'amber',t:'Get back to 4× per week',         b:'Garmin training status: "Recovery" with 0.1 acute:chronic ratio. Exams are done. No gaps longer than 3 days.'},
+    {lv:'amber',t:'2× zone 2 cardio on rest days',   b:'30–40 min at 130–145 bpm. Zero cardio detected in 4 weeks. ~700 kcal/week extra fat loss.'},
+    {lv:'amber',t:'Track protein — 160–170 g/day',   b:'No nutrition data. At 83 kg with a fat loss goal, critical to protect your 65.8 kg lean base.'},
+    {lv:'green',t:'Progressive overload is working', b:'RDL 36→44 kg. Lat Pulldown 59→68 kg. Arnold Press 28 kg 3×10. Hevy Trainer is doing its job.'},
+  ]
+};
+
+// ── NOTION FETCH ──────────────────────────────────────────────────────────
+function toText(blocks){
+  return (blocks||[]).map(b=>{
+    const c=b[b.type]; if(!c) return '';
+    if(c.rich_text) return c.rich_text.map(r=>r.plain_text||'').join('')+'\n';
+    if(c.cells) return c.cells.map(row=>row.map(r=>(r[0]&&r[0].plain_text)||'').join(' | ')).join('\n')+'\n';
+    return '';
+  }).join('');
+}
+
+function patch(text,d){
+  const t=(re,cb)=>{const m=text.match(re);if(m)cb(m)};
+  t(/Body weight\s*\|?\s*([\d.]+)\s*kg/i,    m=>d.bodyComp.weight=+m[1]);
+  t(/Body fat\s*\|?\s*(\d+)%/i,              m=>d.bodyComp.fat=+m[1]);
+  t(/Lean mass\s*\|?\s*([\d.]+)\s*kg/i,      m=>d.bodyComp.lean=+m[1]);
+  t(/BMI\s*\|?\s*([\d.]+)/i,                 m=>d.bodyComp.bmi=+m[1]);
+  t(/Body Battery\s*\|?\s*(\d+)\s*\/\s*100/i,m=>d.recovery.battery=+m[1]);
+  t(/Resting HR\s*\|?\s*(\d+)\s*bpm/i,       m=>d.recovery.rhr=+m[1]);
+  t(/7-day avg:\s*(\d+)\s*bpm/i,             m=>d.recovery.rhrAvg=+m[1]);
+  t(/Steps\s*\|?\s*([\d,]+)/i,               m=>d.recovery.steps=+(m[1].replace(/,/g,'')));
+  t(/Avg stress\s*\|?\s*(\d+)/i,             m=>d.recovery.stress=+m[1]);
+  t(/Active calories\s*\|?\s*(\d+)/i,        m=>d.recovery.activeCalories=+m[1]);
+  t(/Total:\s*([\d,]+)\s*kcal/i,             m=>d.recovery.calories=+(m[1].replace(/,/g,'')));
+}
+
+async function fetchNotion(){
+  const token = getToken();
+  const pageId = getPageId();
+  const url = `https://api.notion.com/v1/blocks/${pageId}/children?page_size=100`;
+  const hdrs = { 'Authorization':'Bearer '+token, 'Notion-Version':'2022-06-28' };
+  const proxies = [
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://proxy.cors.sh/${url}`,
+    `https://thingproxy.freeboard.io/fetch/${url}`,
+  ];
+  for(const p of proxies){
+    try{
+      const r = await fetch(p, {headers:hdrs, signal:AbortSignal.timeout(7000)});
+      if(r.ok){ const j=await r.json(); if(j.results) return j; }
+    }catch(e){ /* try next */ }
+  }
+  throw new Error('all proxies unavailable');
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+let CHS=[];
+function killCharts(){ CHS.forEach(c=>{try{c.destroy()}catch(e){}}); CHS=[]; }
+function mkChart(id,cfg){ const el=document.getElementById(id); if(!el)return; const c=new Chart(el,cfg); CHS.push(c); }
+
+const bdg=r=>r==='good'?'<span class="bge bt">best session ✓</span>':r==='warn'?'<span class="bge br">⚠ add rest time</span>':'<span class="bge ba">moderate</span>';
+const sc=s=>s.includes('Upper')?'var(--blue)':'var(--teal)';
+
+function draw(d,src){
+  killCharts();
+  const pill = src==='notion'
+    ? '<span class="sp bt">live · notion</span>'
+    : '<span class="sp ba">cached data</span>';
+  document.getElementById('sub').innerHTML = `synced ${d.ts||'17 May 2026'} ${pill}`;
+
+  document.getElementById('dash').innerHTML=`
+    <div class="sec"><div class="lbl">Today's snapshot</div>
+    <div class="g4">
+      <div class="mt"><div class="ml">body_battery</div><div class="mv am">${d.recovery.battery}</div><div class="ms">started ${d.recovery.batteryStart} · −${d.recovery.batteryStart-d.recovery.battery} drained</div><span class="bge ba">low — rest tonight</span></div>
+      <div class="mt"><div class="ml">resting_hr</div><div class="mv">${d.recovery.rhr}<span style="font-size:14px"> bpm</span></div><div class="ms">7-day avg: ${d.recovery.rhrAvg} bpm</div><span class="bge ba">slightly elevated</span></div>
+      <div class="mt"><div class="ml">hrv_status</div><div class="mv tl" style="font-size:20px;padding-top:3px">${d.recovery.hrv}</div><div class="ms">weekly avg: ${d.recovery.hrvMs} ms</div><span class="bge bt">baseline 40–56 ms</span></div>
+      <div class="mt"><div class="ml">steps</div><div class="mv">${d.recovery.steps.toLocaleString()}</div><div class="ms">goal: 5,670</div><span class="bge bt">✓ goal met</span></div>
+      <div class="mt"><div class="ml">avg_stress</div><div class="mv am">${d.recovery.stress}</div><div class="ms">spike ~4pm today</div><span class="bge ba">medium-high</span></div>
+      <div class="mt"><div class="ml">active_kcal</div><div class="mv">${d.recovery.activeCalories}</div><div class="ms">total: ${d.recovery.calories.toLocaleString()} kcal</div><span class="bge bb">upper 2 session</span></div>
+      <div class="mt"><div class="ml">sleep_data</div><div class="mv rd" style="font-size:20px;padding-top:3px">Missing</div><div class="ms">watch not worn overnight</div><span class="bge br">fix this first</span></div>
+      <div class="mt"><div class="ml">sleep_need</div><div class="mv rd">${d.recovery.sleepNeed}<span style="font-size:16px">h</span></div><div class="ms">garmin: highly increased</div><span class="bge br">recovery deficit</span></div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Body composition — ${d.bodyComp.date}</div>
+    <div class="g2">
+      <div class="card">
+        <div class="g4" style="margin-bottom:1rem">
+          <div class="mt"><div class="ml">weight</div><div class="mv">${d.bodyComp.weight}<span style="font-size:14px"> kg</span></div></div>
+          <div class="mt"><div class="ml">body_fat</div><div class="mv am">${d.bodyComp.fat}%</div><span class="bge ba">target 16–17%</span></div>
+          <div class="mt"><div class="ml">lean_mass</div><div class="mv tl">${d.bodyComp.lean}<span style="font-size:14px"> kg</span></div><span class="bge bt">protect this</span></div>
+          <div class="mt"><div class="ml">bmi</div><div class="mv">${d.bodyComp.bmi}</div><span class="bge bg2">normal</span></div>
+        </div>
+        <div class="cw" style="height:100px"><canvas id="cc" role="img" aria-label="Body composition">Lean ${d.bodyComp.lean}kg vs Fat ${(d.bodyComp.weight-d.bodyComp.lean).toFixed(1)}kg</canvas></div>
+        <div class="leg" style="margin-top:8px">
+          <div class="li"><div class="ld" style="background:#2dd4a0"></div>lean ${d.bodyComp.lean} kg (${Math.round(d.bodyComp.lean/d.bodyComp.weight*100)}%)</div>
+          <div class="li"><div class="ld" style="background:#f5a623"></div>fat ${(d.bodyComp.weight-d.bodyComp.lean).toFixed(1)} kg (${d.bodyComp.fat}%)</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:14px">goals_progress</div>
+        ${d.goals.map(g=>`<div class="gr"><div class="grl">${g.l}</div><div class="gbw"><div class="gbb"><div class="gbf" style="width:${g.p}%;background:${g.col}"></div></div><div class="gvs"><span>${g.c}</span><span>${g.t}</span></div></div></div>`).join('')}
+      </div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Recovery — 4-week body battery trend</div>
+    <div class="card">
+      <div class="cw" style="height:190px"><canvas id="bc" role="img" aria-label="Body battery trend">Wake declining from ~82 in late April to ~46 in mid-May.</canvas></div>
+      <div class="leg">
+        <div class="li"><div class="ld" style="background:#2dd4a0"></div>wake-up battery</div>
+        <div class="li"><div class="ld" style="background:#f5a623;border-radius:0;height:2px;width:14px"></div>points drained</div>
+      </div>
+      <hr>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;font-size:11px;font-family:var(--mono)">
+        <div><div style="color:var(--text3);margin-bottom:2px">late_apr_avg</div><div style="color:var(--teal)">~82 / 100</div></div>
+        <div><div style="color:var(--text3);margin-bottom:2px">mid_may_avg</div><div style="color:var(--amber)">~46 / 100</div></div>
+        <div><div style="color:var(--text3);margin-bottom:2px">trend</div><div style="color:var(--red)">↓ declining</div></div>
+        <div><div style="color:var(--text3);margin-bottom:2px">root_cause</div><div>exams + poor sleep</div></div>
+      </div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Workouts × Garmin HR data</div>
+    <div class="card">
+      ${d.workouts.map(w=>`
+        <div class="wr">
+          <div class="wda">${w.date}<br><span style="color:${sc(w.session)}">${w.session.toLowerCase()}</span></div>
+          <div>
+            <div class="wn">${w.session}</div>
+            <div class="wdt">${w.dur} · avg ${w.hr} bpm · max ${w.max} · ${w.kcal} kcal</div>
+            <div style="margin-top:5px">
+              <div class="hbr"><span style="min-width:32px">z1</span><div class="hbb"><div class="hbf" style="width:${w.z1}%;background:#2dd4a0"></div></div><span>${w.z1}%</span></div>
+              <div class="hbr"><span style="min-width:32px">z2</span><div class="hbb"><div class="hbf" style="width:${w.z2}%;background:#f5a623"></div></div><span>${w.z2}%</span></div>
+              ${w.z3>0?`<div class="hbr"><span style="min-width:32px">z3+</span><div class="hbb"><div class="hbf" style="width:${w.z3}%;background:#ff5f5f"></div></div><span>${w.z3}%</span></div>`:''}
+            </div>
+          </div>
+          ${bdg(w.r)}
+        </div>`).join('')}
+    </div></div>
+
+    <div class="sec"><div class="lbl">Muscle group coverage</div>
+    <div class="mg">
+      ${d.muscles.map(m=>`<div class="mtl"><div class="mn">${m.n.toLowerCase().replace('/','_').replace(' ','_')}</div><div class="mbb"><div class="mbf" style="width:${m.p}%;background:${m.p>=85?'#2dd4a0':'#f5a623'}"></div></div><div class="mst">${m.s}</div></div>`).join('')}
+    </div></div>
+
+    <div class="sec"><div class="lbl">Active recommendations</div>
+    <div class="card">
+      ${d.recs.map(r=>`<div class="rr"><div class="rdot" style="background:${r.lv==='red'?'var(--red)':r.lv==='amber'?'var(--amber)':'var(--teal)'}"></div><div><div class="rt">${r.t}</div><div class="rb">${r.b}</div></div></div>`).join('')}
+    </div></div>
+
+    <div class="upd">hevy pro · garmin fenix 7x · apple health · notion health centre</div>
+  `;
+
+  const gc='rgba(255,255,255,0.06)', tc='#5a5852';
+
+  mkChart('cc',{type:'bar',data:{labels:[''],datasets:[
+    {label:`Lean ${d.bodyComp.lean} kg`,data:[d.bodyComp.lean],backgroundColor:'#2dd4a0',borderWidth:0,borderRadius:4,borderSkipped:false},
+    {label:`Fat ${(d.bodyComp.weight-d.bodyComp.lean).toFixed(1)} kg`,data:[d.bodyComp.weight-d.bodyComp.lean],backgroundColor:'#f5a623',borderWidth:0,borderRadius:4,borderSkipped:false}
+  ]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label}}},
+    scales:{x:{stacked:true,max:90,ticks:{callback:v=>v+' kg',color:tc,font:{size:10}},grid:{color:gc}},y:{stacked:true,display:false}}
+  }});
+
+  mkChart('bc',{type:'line',data:{labels:d.bb.labels,datasets:[
+    {label:'Wake-up battery',data:d.bb.wake,borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.06)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#2dd4a0',tension:0.3,fill:true},
+    {label:'Points drained',data:d.bb.drain,borderColor:'#f5a623',backgroundColor:'transparent',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#f5a623',tension:0.3,borderDash:[4,3]}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},
+    scales:{x:{ticks:{color:tc,font:{size:10,family:'DM Mono'},maxRotation:45,autoSkip:true,maxTicksLimit:10},grid:{color:gc}},y:{min:0,max:105,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}
+  }});
+}
+
+// ── MAIN LOAD ─────────────────────────────────────────────────────────────
+async function go(){
+  const btn=document.getElementById('rbtn'), sp=document.getElementById('spin'), rl=document.getElementById('rl'), eb=document.getElementById('errbox');
+  btn.disabled=true; sp.style.display='block'; rl.textContent='fetching...'; eb.style.display='none';
+  document.getElementById('sub').textContent='fetching from notion...';
+
+  const d = JSON.parse(JSON.stringify(B));
+
+  try{
+    const json = await fetchNotion();
+    patch(toText(json.results), d);
+    d.ts = new Date().toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    draw(d,'notion');
+  }catch(e){
+    eb.innerHTML=`<strong>Could not connect to Notion</strong> — showing cached data.<br><span style="opacity:.7">Error: ${e.message}</span>`;
+    eb.style.display='block';
+    d.ts='17 May 2026 (cached)';
+    draw(d,'cached');
+  }
+
+  btn.disabled=false; sp.style.display='none'; rl.textContent='↻ refresh';
+}
+</script>
+</body>
+</html>
