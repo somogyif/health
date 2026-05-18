@@ -172,7 +172,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // ── BASELINE DATA (shown while loading or if Notion unreachable) ──────────
 const B = {
   bodyComp: { weight:83.3, fat:21, lean:65.8, bmi:23.1, date:'15 May 2026' },
-  recovery: { battery:19, batteryStart:61, rhr:67, rhrAvg:64, hrv:'Balanced', hrvMs:42, stress:59, steps:8151, calories:2569, activeCalories:700, sleepNeed:9 },
+  recovery: { battery:57, batteryStart:69, rhr:59, rhrAvg:62, hrv:'Balanced', hrvMs:42, hrvLastNight:44, stress:32, steps:946, calories:2200, activeCalories:103, sleepHours:8.4, sleepMissing:false },
   bb: {
     labels: ['19 Apr','20 Apr','21 Apr','22 Apr','23 Apr','24 Apr','25 Apr','26 Apr','27 Apr','28 Apr','29 Apr','30 Apr','1 May','2 May','3 May','4 May','5 May','6 May','7 May','8 May','9 May','10 May','11 May','12 May','13 May','14 May','15 May','16 May','17 May'],
     wake:  [53,100,63,93,73,64,80,58,100,98,97,68,76,82,100,99,76,100,60,95,64,47,35,59,43,62,63,46,61],
@@ -204,9 +204,9 @@ const B = {
     { l:'Sleep',         c:'no data',    t:'7.5–8 hrs',  p:5,  col:'#ff5f5f' },
   ],
   recs: [
-    { lv:'red',   t:'Wear your watch to bed tonight',  b:"Garmin says sleep need is 'highly increased' at 9 hours. HRV and recovery scoring is completely blind without overnight data." },
+    { lv:'green', t:'Keep wearing the watch to bed ✓', b:'8.4 hours logged last night. Resting HR dropped to 59 bpm. First overnight HRV at 44 ms — above weekly avg. This is making a real difference.' },
     { lv:'red',   t:'Rest 90 seconds between sets',    b:"Upper 1 Garmin data shows 79% zone 2 — you're turning strength training into cardio. Set a rest timer on your Fenix 7X." },
-    { lv:'amber', t:'Get back to 4× per week',         b:'Garmin training status: "Recovery" with 0.1 acute:chronic ratio. Exams are done. No gaps longer than 3 days.' },
+    { lv:'red',   t:'Get back to 4× per week',         b:'Garmin training status: "Recovery" with 0.1 acute:chronic ratio. Exams are done. No gaps longer than 3 days.' },
     { lv:'amber', t:'2× zone 2 cardio on rest days',   b:'30–40 min at 130–145 bpm. Zero cardio in 4 weeks. ~700 kcal/week extra fat loss with no impact on muscle recovery.' },
     { lv:'amber', t:'Track protein — 160–170 g/day',   b:'No nutrition data. At 83 kg with a fat loss goal, critical to protect your 65.8 kg lean base.' },
     { lv:'green', t:'Progressive overload is working', b:'RDL 36→44 kg. Lat Pulldown 59→68 kg. Arnold Press 28 kg 3×10. Hevy Trainer is doing its job.' },
@@ -252,6 +252,10 @@ function patch(text, d) {
   t(/Avg stress\s*\|?\s*(\d+)/i,              m => d.recovery.stress       = +m[1]);
   t(/Active calories\s*\|?\s*(\d+)/i,         m => d.recovery.activeCalories = +m[1]);
   t(/Total:\s*([\d,]+)\s*kcal/i,              m => d.recovery.calories     = +(m[1].replace(/,/g, '')));
+  t(/Sleep\s*\|?\s*([\d.]+)\s*hours?/i,       m => { d.recovery.sleepHours = +m[1]; d.recovery.sleepMissing = false; });
+  t(/HRV last night\s*\|?\s*(\d+)\s*ms/i,     m => d.recovery.hrvLastNight = +m[1]);
+  t(/Body Battery charged\s*\|?\s*(\d+)/i,    m => { d.recovery.batteryStart = +m[1]; });
+  t(/Body Battery current\s*\|?\s*(\d+)/i,    m => d.recovery.battery = +m[1]);
 }
 
 // ── CHARTS ────────────────────────────────────────────────────────────────
@@ -279,8 +283,8 @@ function draw(d, src) {
       <div class="mt"><div class="ml">Steps</div><div class="mv">${d.recovery.steps.toLocaleString()}</div><div class="ms">goal: 5,670</div><span class="bge bt">✓ goal met</span></div>
       <div class="mt"><div class="ml">Avg stress</div><div class="mv am">${d.recovery.stress}</div><div class="ms">spike ~4pm today</div><span class="bge ba">medium-high</span></div>
       <div class="mt"><div class="ml">Active kcal</div><div class="mv">${d.recovery.activeCalories}</div><div class="ms">total: ${d.recovery.calories.toLocaleString()} kcal</div><span class="bge bb">upper 2 session</span></div>
-      <div class="mt"><div class="ml">Sleep data</div><div class="mv rd" style="font-size:20px;padding-top:3px">Missing</div><div class="ms">watch not worn overnight</div><span class="bge br">fix this first</span></div>
-      <div class="mt"><div class="ml">Sleep need</div><div class="mv rd">${d.recovery.sleepNeed}<span style="font-size:16px">h</span></div><div class="ms">garmin: highly increased</div><span class="bge br">recovery deficit</span></div>
+      <div class="mt"><div class="ml">Sleep</div><div class="mv tl" style="font-size:20px;padding-top:3px">${d.recovery.sleepMissing ? 'Missing' : d.recovery.sleepHours + 'h'}</div><div class="ms">${d.recovery.sleepMissing ? 'watch not worn overnight' : 'watch worn to bed ✓'}</div><span class="${d.recovery.sleepMissing ? 'bge br' : 'bge bt'}">${d.recovery.sleepMissing ? 'fix this first' : 'great sleep'}</span></div>
+      <div class="mt"><div class="ml">HRV last night</div><div class="mv tl">${d.recovery.hrvLastNight}<span style="font-size:14px"> ms</span></div><div class="ms">weekly avg: ${d.recovery.hrvMs} ms</div><span class="bge bt">above baseline ✓</span></div>
     </div></div>
 
     <div class="sec"><div class="lbl">Body composition — ${d.bodyComp.date}</div>
