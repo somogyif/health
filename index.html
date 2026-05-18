@@ -411,7 +411,9 @@ async function go() {
 
   try {
     const json = await fetchNotion();
-    patch(toText(json.results), d);
+    const rawText = toText(json.results);
+    console.log('NOTION_TEXT:', rawText.slice(0, 3000));
+    patch(rawText, d);
     d.ts = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     draw(d, 'notion');
   } catch (e) {
