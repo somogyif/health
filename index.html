@@ -234,7 +234,12 @@ function toText(blocks) {
   return (blocks || []).map(b => {
     const c = b[b.type]; if (!c) return '';
     if (c.rich_text) return c.rich_text.map(r => r.plain_text || '').join('') + '\n';
-    if (c.cells) return c.cells.map(row => row.map(r => (r[0] && r[0].plain_text) || '').join(' | ')).join('\n') + '\n';
+    if (c.cells) {
+      return c.cells.map(row => row.map(r => {
+        if (Array.isArray(r)) return r.map(x => (x && x.plain_text) || '').join('');
+        return (r && r.plain_text) || '';
+      }).join(' | ')).join('\n') + '\n';
+    }
     return '';
   }).join('');
 }
