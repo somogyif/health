@@ -24,19 +24,6 @@
 body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.6;min-height:100vh}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .page{max-width:1000px;margin:0 auto;padding:2.5rem 1.5rem 5rem;position:relative;z-index:1}
-#setup{display:flex;align-items:center;justify-content:center;min-height:80vh}
-.setup-card{background:var(--surface);border:.5px solid var(--border2);border-radius:var(--r);padding:2.5rem;max-width:480px;width:100%}
-.setup-title{font-family:var(--serif);font-size:26px;font-style:italic;margin-bottom:6px}
-.setup-title span{color:var(--teal)}
-.setup-sub{font-size:12px;color:var(--text3);font-family:var(--mono);margin-bottom:2rem}
-.setup-label{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase}
-.setup-input{width:100%;background:var(--surface2);border:.5px solid var(--border2);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .2s;margin-bottom:1rem}
-.setup-input:focus{border-color:var(--teal)}
-.setup-btn{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:#0e0e0c;font-family:var(--mono);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .2s}
-.setup-btn:hover{opacity:.85}
-.setup-note{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:1rem;line-height:1.6}
-.setup-note a{color:var(--teal);text-decoration:none}
-#main{display:none}
 .header{margin-bottom:2.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .title{font-family:var(--serif);font-size:32px;font-weight:400;font-style:italic;letter-spacing:-0.5px;line-height:1.1}
 .title span{color:var(--teal)}
@@ -45,7 +32,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .rbtn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--surface2);border:.5px solid var(--border2);border-radius:20px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--mono);transition:all .2s;white-space:nowrap}
 .rbtn:hover{background:var(--surface3);color:var(--text)}
 .rbtn:disabled{opacity:.5;cursor:not-allowed}
-.rbtn.sm{font-size:11px;padding:6px 12px;color:var(--text3)}
 .spin{width:12px;height:12px;border:1.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 .sec{margin-bottom:2rem}
@@ -79,14 +65,12 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .gbb{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
 .gbf{height:100%;border-radius:2px}
 .gvs{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px;font-family:var(--mono)}
-.wr{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:start;padding:12px 0;border-bottom:.5px solid var(--border)}
+.wr{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:start;padding:12px 0;border-bottom:.5px solid var(--border)}
 .wr:last-child{border-bottom:none}
 .wda{font-family:var(--mono);font-size:11px;color:var(--text3);padding-top:2px}
 .wn{font-weight:500;font-size:13px;margin-bottom:3px}
 .wdt{color:var(--text2);font-size:11px;font-family:var(--mono)}
-.hbr{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:10px;color:var(--text3);font-family:var(--mono)}
-.hbb{flex:1;height:3px;background:var(--surface3);border-radius:2px;overflow:hidden}
-.hbf{height:100%;border-radius:2px}
+.ex-pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:12px;border:.5px solid var(--border2);color:var(--text3);font-family:var(--mono);margin:2px 2px 0 0}
 .rr{display:flex;gap:12px;padding:12px 0;border-bottom:.5px solid var(--border)}
 .rr:last-child{border-bottom:none}
 .rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
@@ -102,36 +86,47 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .sp{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-family:var(--mono);margin-left:8px}
 hr{border:none;border-top:.5px solid var(--border);margin:1rem 0}
 .upd{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right;margin-top:2rem}
+.setup-wrap{display:flex;align-items:center;justify-content:center;min-height:80vh}
+.setup-card{background:var(--surface);border:.5px solid var(--border2);border-radius:var(--r);padding:2.5rem;max-width:480px;width:100%}
+.setup-title{font-family:var(--serif);font-size:26px;font-style:italic;margin-bottom:6px}
+.setup-title span{color:var(--teal)}
+.setup-sub{font-size:12px;color:var(--text3);font-family:var(--mono);margin-bottom:2rem;line-height:1.7}
+.setup-label{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase}
+.setup-input{width:100%;background:var(--surface2);border:.5px solid var(--border2);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .2s;margin-bottom:1rem}
+.setup-input:focus{border-color:var(--teal)}
+.setup-btn{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:#0e0e0c;font-family:var(--mono);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .2s}
+.setup-btn:hover{opacity:.85}
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- SETUP SCREEN (shown only first time) -->
-  <div id="setup">
-    <div class="setup-card">
-      <div class="setup-title">Health <span>Centre</span></div>
-      <div class="setup-sub">one-time setup — your token stays on this device only</div>
-      <div class="setup-label">Notion API token</div>
-      <input class="setup-input" id="tokenInput" type="password" placeholder="ntn_..." autocomplete="off" spellcheck="false">
-      <button class="setup-btn" onclick="saveAndLoad()">Connect to Notion →</button>
-      <div class="setup-note">
-        Your token is saved in your browser only — it is never in the source code and never sent anywhere except directly to Notion via your personal proxy.<br><br>
-        To get your token: <a href="https://www.notion.so/profile/integrations" target="_blank">notion.so/profile/integrations</a>
+  <!-- SETUP (first time only — enter GitHub token) -->
+  <div id="setup" style="display:none">
+    <div class="setup-wrap">
+      <div class="setup-card">
+        <div class="setup-title">Health <span>Centre</span></div>
+        <div class="setup-sub">
+          One-time setup. You need a GitHub personal access token so the dashboard can read your <code>data.json</code> file.<br><br>
+          Get one at <strong>github.com/settings/tokens</strong> → Fine-grained → repo <code>somogyif/health</code> → Contents: Read-only.
+        </div>
+        <div class="setup-label">GitHub token</div>
+        <input class="setup-input" id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
+        <button class="setup-btn" onclick="saveToken()">Save & load dashboard →</button>
       </div>
     </div>
   </div>
 
   <!-- DASHBOARD -->
-  <div id="main">
+  <div id="main" style="display:none">
     <div class="header">
       <div>
         <div class="title">Health <span>Centre</span></div>
         <div class="sub" id="sub">loading...</div>
       </div>
       <div class="hbtns">
-        <button class="rbtn sm" onclick="resetToken()">⚙ change token</button>
-        <button class="rbtn" id="rbtn" onclick="go()">
+        <button class="rbtn" style="font-size:11px;padding:6px 12px;color:var(--text3)" onclick="clearToken()">⚙ reset</button>
+        <button class="rbtn" id="rbtn" onclick="load()">
           <div class="spin" id="spin"></div>
           <span id="rl">↻ refresh</span>
         </button>
@@ -144,288 +139,204 @@ hr{border:none;border-top:.5px solid var(--border);margin:1rem 0}
 </div>
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const WORKER  = 'https://notion-proxy.sf-somi.workers.dev';
-const PAGE_ID = '3632828b-be16-816b-b439-fec25dabffe6';
+const REPO  = 'somogyif/health';
+const FILE  = 'data.json';
 
-// ── TOKEN (localStorage only — never in source) ───────────────────────────
-const getToken  = () => localStorage.getItem('hc_token') || '';
-const saveToken = t  => localStorage.setItem('hc_token', t.trim());
-const resetToken= () => { localStorage.removeItem('hc_token'); location.reload(); };
+// ── TOKEN ─────────────────────────────────────────────────────────────────
+const getToken   = () => localStorage.getItem('gh_token') || '';
+const saveToken  = () => {
+  const t = document.getElementById('ghToken').value.trim();
+  if (!t) { alert('Please enter your GitHub token'); return; }
+  localStorage.setItem('gh_token', t);
+  showMain();
+};
+const clearToken = () => { localStorage.removeItem('gh_token'); location.reload(); };
 
-function saveAndLoad() {
-  const t = document.getElementById('tokenInput').value.trim();
-  if (!t) { alert('Please paste your Notion token'); return; }
-  saveToken(t);
-  showDash();
-}
-
-function showDash() {
-  document.getElementById('setup').style.display = 'none';
-  document.getElementById('main').style.display  = 'block';
-  go();
-}
-
+// ── INIT ──────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  if (getToken()) showDash();
+  if (getToken()) showMain();
+  else document.getElementById('setup').style.display = 'block';
 });
 
-// ── BASELINE DATA (shown while loading or if Notion unreachable) ──────────
-const B = {
-  bodyComp: { weight:83.3, fat:21, lean:65.8, bmi:23.1, date:'15 May 2026' },
-  recovery: { battery:35, batteryStart:52, rhr:64, rhrAvg:63, hrv:'Balanced', hrvMs:42, hrvLastNight:42, stress:28, steps:952, calories:1358, activeCalories:369, sleepHours:7.6, sleepMissing:false },
-  bb: {
-    labels: ['19 Apr','20 Apr','21 Apr','22 Apr','23 Apr','24 Apr','25 Apr','26 Apr','27 Apr','28 Apr','29 Apr','30 Apr','1 May','2 May','3 May','4 May','5 May','6 May','7 May','8 May','9 May','10 May','11 May','12 May','13 May','14 May','15 May','16 May','17 May'],
-    wake:  [53,100,63,93,73,64,80,58,100,98,97,68,76,82,100,99,76,100,60,95,64,47,35,59,43,62,63,46,61],
-    drain: [27,14,15,12,8,7,12,25,25,15,18,10,5,16,29,31,17,7,13,13,5,5,5,5,5,5,6,18,23]
-  },
-  workouts: [
-    { date:'17 May', session:'Upper 2', dur:'42 min', hr:107, max:146, kcal:260, z1:61, z2:23, z3:2,  r:'mod'  },
-    { date:'5 May',  session:'Lower 1', dur:'37 min', hr:112, max:142, kcal:225, z1:52, z2:39, z3:3,  r:'mod'  },
-    { date:'4 May',  session:'Upper 1', dur:'23 min', hr:126, max:146, kcal:155, z1:5,  z2:79, z3:16, r:'warn' },
-    { date:'3 May',  session:'Lower 2', dur:'50 min', hr:110, max:153, kcal:321, z1:59, z2:27, z3:6,  r:'good' },
-  ],
-  muscles: [
-    { n:'Chest',      p:85, s:'well covered'   },
-    { n:'Back',       p:90, s:'excellent'       },
-    { n:'Shoulders',  p:80, s:'rear delt added' },
-    { n:'Biceps',     p:80, s:'good'            },
-    { n:'Triceps',    p:75, s:'just added ✨'   },
-    { n:'Quads',      p:90, s:'excellent'       },
-    { n:'Hamstrings', p:85, s:'RDL + curl'      },
-    { n:'Abs',        p:70, s:'leg raise added' },
-    { n:'Calves',     p:85, s:'two variations'  },
-  ],
-  goals: [
-    { l:'Body fat',      c:'21%',        t:'16–17%',    p:25, col:'#f5a623' },
-    { l:'Lean mass',     c:'65.8 kg',    t:'maintain',  p:80, col:'#2dd4a0' },
-    { l:'Training freq', c:'~2×/week',   t:'4×/week',   p:50, col:'#5b9cf6' },
-    { l:'Rest time',     c:'~30 sec',    t:'90–120 sec',p:15, col:'#f5a623' },
-    { l:'Zone 2 cardio',  c:'0 sessions', t:'2–3×/wk',   p:0,  col:'#ff5f5f' },
-    { l:'Sleep',         c:'no data',    t:'7.5–8 hrs',  p:5,  col:'#ff5f5f' },
-  ],
-  recs: [
-    { lv:'green', t:'Keep wearing the watch to bed ✓', b:'8.4 hours logged last night. Resting HR dropped to 59 bpm. First overnight HRV at 44 ms — above weekly avg. This is making a real difference.' },
-    { lv:'red',   t:'Rest 90 seconds between sets',    b:"Upper 1 Garmin data shows 79% zone 2 — you're turning strength training into cardio. Set a rest timer on your Fenix 7X." },
-    { lv:'red',   t:'Get back to 4× per week',         b:'Garmin training status: "Recovery" with 0.1 acute:chronic ratio. Exams are done. No gaps longer than 3 days.' },
-    { lv:'amber', t:'2× zone 2 cardio on rest days',   b:'30–40 min at 130–145 bpm. Zero cardio in 4 weeks. ~700 kcal/week extra fat loss with no impact on muscle recovery.' },
-    { lv:'amber', t:'Track protein — 160–170 g/day',   b:'No nutrition data. At 83 kg with a fat loss goal, critical to protect your 65.8 kg lean base.' },
-    { lv:'green', t:'Progressive overload is working', b:'RDL 36→44 kg. Lat Pulldown 59→68 kg. Arnold Press 28 kg 3×10. Hevy Trainer is doing its job.' },
-  ]
-};
+function showMain() {
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('main').style.display  = 'block';
+  load();
+}
 
-// ── NOTION FETCH via Cloudflare Worker ────────────────────────────────────
-async function fetchNotion() {
-  const url = `${WORKER}/${PAGE_ID}/children?page_size=100`;
+// ── FETCH data.json from GitHub ───────────────────────────────────────────
+async function fetchData() {
+  const url = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
   const res = await fetch(url, {
     headers: {
       'Authorization': 'Bearer ' + getToken(),
-      'Notion-Version': '2022-06-28',
+      'Accept': 'application/vnd.github.raw+json',
     },
     signal: AbortSignal.timeout(10000)
   });
-  if (!res.ok) throw new Error(`Worker returned ${res.status}`);
-  const json = await res.json();
-  if (!json.results) throw new Error('Unexpected response from Worker');
-  return json;
-}
-
-// ── PARSE NOTION BLOCKS ───────────────────────────────────────────────────
-function toText(blocks) {
-  return (blocks || []).map(b => {
-    const c = b[b.type]; if (!c) return '';
-    if (c.rich_text) return c.rich_text.map(r => r.plain_text || '').join('') + '\n';
-    if (c.cells) {
-      return c.cells.map(row => row.map(r => {
-        if (Array.isArray(r)) return r.map(x => (x && x.plain_text) || '').join('');
-        return (r && r.plain_text) || '';
-      }).join(' | ')).join('\n') + '\n';
-    }
-    return '';
-  }).join('');
-}
-
-function patch(text, d) {
-  const t = (re, cb) => { const m = text.match(re); if (m) cb(m); };
-  t(/Body weight\s*\|?\s*([\d.]+)\s*kg/i,     m => d.bodyComp.weight       = +m[1]);
-  t(/Body fat\s*\|?\s*(\d+)%/i,               m => d.bodyComp.fat          = +m[1]);
-  t(/Lean mass\s*\|?\s*([\d.]+)\s*kg/i,        m => d.bodyComp.lean         = +m[1]);
-  t(/BMI\s*\|?\s*([\d.]+)/i,                  m => d.bodyComp.bmi          = +m[1]);
-  t(/Body Battery\s*\|?\s*(\d+)\s*\/\s*100/i, m => d.recovery.battery      = +m[1]);
-  t(/Resting HR\s*\|?\s*(\d+)\s*bpm/i,        m => d.recovery.rhr          = +m[1]);
-  t(/7-day avg:\s*(\d+)\s*bpm/i,              m => d.recovery.rhrAvg       = +m[1]);
-  t(/Steps\s*\|?\s*([\d,]+)/i,                m => d.recovery.steps        = +(m[1].replace(/,/g, '')));
-  t(/Avg stress\s*\|?\s*(\d+)/i,              m => d.recovery.stress       = +m[1]);
-  t(/Active calories\s*\|?\s*(\d+)/i,         m => d.recovery.activeCalories = +m[1]);
-  t(/Total:\s*([\d,]+)\s*kcal/i,              m => d.recovery.calories     = +(m[1].replace(/,/g, '')));
-  t(/Sleep\s*\|?\s*([\d.]+)\s*hours?/i,       m => { d.recovery.sleepHours = +m[1]; d.recovery.sleepMissing = false; });
-  t(/HRV last night\s*\|?\s*(\d+)\s*ms/i,     m => d.recovery.hrvLastNight = +m[1]);
-  t(/Body Battery charged\s*\|?\s*(\d+)/i,    m => { d.recovery.batteryStart = +m[1]; });
-  t(/Body Battery current\s*\|?\s*(\d+)/i,    m => d.recovery.battery = +m[1]);
+  if (!res.ok) throw new Error(`GitHub returned ${res.status}`);
+  return res.json();
 }
 
 // ── CHARTS ────────────────────────────────────────────────────────────────
 let CHS = [];
 function killCharts() { CHS.forEach(c => { try { c.destroy(); } catch(e) {} }); CHS = []; }
-function mkChart(id, cfg) { const el = document.getElementById(id); if (!el) return; const c = new Chart(el, cfg); CHS.push(c); }
+function mkChart(id, cfg) { const el = document.getElementById(id); if (!el) return; CHS.push(new Chart(el, cfg)); }
 
 // ── RENDER ────────────────────────────────────────────────────────────────
-const bdg = r => r === 'good' ? '<span class="bge bt">best session ✓</span>' : r === 'warn' ? '<span class="bge br">⚠ add rest time</span>' : '<span class="bge ba">moderate</span>';
-const sc  = s => s.includes('Upper') ? 'var(--blue)' : 'var(--teal)';
+function fmt(v, unit='') { return v != null ? `${v}${unit}` : '—'; }
+const sc = s => (s||'').includes('Upper') ? 'var(--blue)' : 'var(--teal)';
 
-function draw(d, src) {
+function render(d) {
   killCharts();
-  const pill = src === 'notion'
-    ? '<span class="sp bt">live · notion</span>'
-    : '<span class="sp ba">cached data</span>';
-  document.getElementById('sub').innerHTML = `synced ${d.ts || '17 May 2026'} ${pill}`;
+  const g   = d.garmin || {};
+  const bc  = d.body_comp || {};
+  const wks = d.workouts || [];
+  const goals = d.goals || [];
+  const recs  = d.recs  || [];
+  const bbt   = d.bb_trend || { labels:[], wake:[], drain:[] };
+
+  const syncedAt = d.synced_at ? new Date(d.synced_at).toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
+  const pill = `<span class="sp bt">auto-synced · ${syncedAt}</span>`;
+  document.getElementById('sub').innerHTML = `data.json on github ${pill}`;
+
+  const bbCurrent  = g.bb_current  ?? '—';
+  const bbCharged  = g.bb_charged  ?? '—';
+  const bbDrained  = g.bb_drained  ?? '—';
+  const sleepOk    = g.sleep_hours >= 7.5;
+  const sleepLabel = g.sleep_missing ? 'Missing' : `${g.sleep_hours}h`;
+  const sleepClass = g.sleep_missing ? 'rd' : 'tl';
+  const sleepBadge = g.sleep_missing ? '<span class="bge br">fix this first</span>' : '<span class="bge bt">great sleep</span>';
+  const sleepSub   = g.sleep_missing ? 'watch not worn overnight' : 'watch worn to bed ✓';
 
   document.getElementById('dash').innerHTML = `
-    <div class="sec"><div class="lbl">Today's snapshot</div>
+    <div class="sec"><div class="lbl">Today's snapshot — ${g.date || '—'}</div>
     <div class="g4">
-      <div class="mt"><div class="ml">Body battery</div><div class="mv am">${d.recovery.battery}</div><div class="ms">started ${d.recovery.batteryStart} · −${d.recovery.batteryStart - d.recovery.battery} drained</div><span class="bge ba">low — rest tonight</span></div>
-      <div class="mt"><div class="ml">Resting HR</div><div class="mv">${d.recovery.rhr}<span style="font-size:14px"> bpm</span></div><div class="ms">7-day avg: ${d.recovery.rhrAvg} bpm</div><span class="bge ba">slightly elevated</span></div>
-      <div class="mt"><div class="ml">HRV status</div><div class="mv tl" style="font-size:20px;padding-top:3px">${d.recovery.hrv}</div><div class="ms">weekly avg: ${d.recovery.hrvMs} ms</div><span class="bge bt">baseline 40–56 ms</span></div>
-      <div class="mt"><div class="ml">Steps</div><div class="mv">${d.recovery.steps.toLocaleString()}</div><div class="ms">goal: 5,670</div><span class="bge bt">✓ goal met</span></div>
-      <div class="mt"><div class="ml">Avg stress</div><div class="mv am">${d.recovery.stress}</div><div class="ms">spike ~4pm today</div><span class="bge ba">medium-high</span></div>
-      <div class="mt"><div class="ml">Active kcal</div><div class="mv">${d.recovery.activeCalories}</div><div class="ms">total: ${d.recovery.calories.toLocaleString()} kcal</div><span class="bge bb">upper 2 session</span></div>
-      <div class="mt"><div class="ml">Sleep</div><div class="mv tl" style="font-size:20px;padding-top:3px">${d.recovery.sleepMissing ? 'Missing' : d.recovery.sleepHours + 'h'}</div><div class="ms">${d.recovery.sleepMissing ? 'watch not worn overnight' : 'watch worn to bed ✓'}</div><span class="${d.recovery.sleepMissing ? 'bge br' : 'bge bt'}">${d.recovery.sleepMissing ? 'fix this first' : 'great sleep'}</span></div>
-      <div class="mt"><div class="ml">HRV last night</div><div class="mv tl">${d.recovery.hrvLastNight}<span style="font-size:14px"> ms</span></div><div class="ms">weekly avg: ${d.recovery.hrvMs} ms</div><span class="bge bt">above baseline ✓</span></div>
+      <div class="mt"><div class="ml">Body battery</div><div class="mv am">${bbCurrent}</div><div class="ms">charged ${bbCharged} · −${bbDrained} drained</div><span class="bge ba">check tonight</span></div>
+      <div class="mt"><div class="ml">Resting HR</div><div class="mv">${fmt(g.resting_hr,' bpm')}</div><div class="ms">7-day avg: ${fmt(g.rhr_avg,' bpm')}</div><span class="bge ba">monitor</span></div>
+      <div class="mt"><div class="ml">HRV status</div><div class="mv tl" style="font-size:20px;padding-top:3px">${g.hrv_status||'—'}</div><div class="ms">weekly avg: ${fmt(g.hrv_weekly,' ms')}</div><span class="bge bt">baseline 40–56 ms</span></div>
+      <div class="mt"><div class="ml">Steps</div><div class="mv">${g.steps != null ? g.steps.toLocaleString() : '—'}</div><div class="ms">goal: 5,670</div>${g.steps >= 5670 ? '<span class="bge bt">✓ goal met</span>' : '<span class="bge ba">in progress</span>'}</div>
+      <div class="mt"><div class="ml">Avg stress</div><div class="mv ${g.avg_stress > 50 ? 'am' : 'tl'}">${fmt(g.avg_stress)}</div><div class="ms">&nbsp;</div><span class="bge ${g.avg_stress > 50 ? 'ba' : 'bt'}">${g.avg_stress > 50 ? 'medium-high' : 'low — good'}</span></div>
+      <div class="mt"><div class="ml">Active kcal</div><div class="mv">${fmt(g.active_kcal)}</div><div class="ms">total: ${fmt(g.total_kcal)} kcal</div><span class="bge bb">today's activity</span></div>
+      <div class="mt"><div class="ml">Sleep</div><div class="mv ${sleepClass}" style="font-size:20px;padding-top:3px">${sleepLabel}</div><div class="ms">${sleepSub}</div>${sleepBadge}</div>
+      <div class="mt"><div class="ml">HRV last night</div><div class="mv tl">${fmt(g.hrv_last_night,' ms')}</div><div class="ms">weekly avg: ${fmt(g.hrv_weekly,' ms')}</div><span class="bge bt">above baseline ✓</span></div>
     </div></div>
 
-    <div class="sec"><div class="lbl">Body composition — ${d.bodyComp.date}</div>
+    <div class="sec"><div class="lbl">Body composition — ${bc.date||'—'}</div>
     <div class="g2">
       <div class="card">
         <div class="g4" style="margin-bottom:1rem">
-          <div class="mt"><div class="ml">Weight</div><div class="mv">${d.bodyComp.weight}<span style="font-size:14px"> kg</span></div></div>
-          <div class="mt"><div class="ml">Body fat</div><div class="mv am">${d.bodyComp.fat}%</div><span class="bge ba">target 16–17%</span></div>
-          <div class="mt"><div class="ml">Lean mass</div><div class="mv tl">${d.bodyComp.lean}<span style="font-size:14px"> kg</span></div><span class="bge bt">protect this</span></div>
-          <div class="mt"><div class="ml">BMI</div><div class="mv">${d.bodyComp.bmi}</div><span class="bge bg2">normal</span></div>
+          <div class="mt"><div class="ml">Weight</div><div class="mv">${fmt(bc.weight,' kg')}</div></div>
+          <div class="mt"><div class="ml">Body fat</div><div class="mv am">${fmt(bc.fat_pct,'%')}</div><span class="bge ba">target 16–17%</span></div>
+          <div class="mt"><div class="ml">Lean mass</div><div class="mv tl">${fmt(bc.lean_kg,' kg')}</div><span class="bge bt">protect this</span></div>
+          <div class="mt"><div class="ml">BMI</div><div class="mv">${fmt(bc.bmi)}</div><span class="bge bg2">normal</span></div>
         </div>
-        <div class="cw" style="height:100px"><canvas id="cc" role="img" aria-label="Body composition bar">Lean ${d.bodyComp.lean}kg vs Fat ${(d.bodyComp.weight - d.bodyComp.lean).toFixed(1)}kg</canvas></div>
+        <div class="cw" style="height:100px"><canvas id="cc" role="img" aria-label="Body composition"></canvas></div>
         <div class="leg" style="margin-top:8px">
-          <div class="li"><div class="ld" style="background:#2dd4a0"></div>lean ${d.bodyComp.lean} kg (${Math.round(d.bodyComp.lean / d.bodyComp.weight * 100)}%)</div>
-          <div class="li"><div class="ld" style="background:#f5a623"></div>fat ${(d.bodyComp.weight - d.bodyComp.lean).toFixed(1)} kg (${d.bodyComp.fat}%)</div>
+          <div class="li"><div class="ld" style="background:#2dd4a0"></div>lean ${bc.lean_kg} kg (${bc.weight ? Math.round(bc.lean_kg/bc.weight*100) : '?'}%)</div>
+          <div class="li"><div class="ld" style="background:#f5a623"></div>fat ${bc.weight && bc.lean_kg ? (bc.weight-bc.lean_kg).toFixed(1) : '?'} kg (${bc.fat_pct}%)</div>
         </div>
       </div>
       <div class="card">
-        <div class="lbl" style="margin-bottom:14px">goals_progress</div>
-        ${d.goals.map(g => `<div class="gr"><div class="grl">${g.l}</div><div class="gbw"><div class="gbb"><div class="gbf" style="width:${g.p}%;background:${g.col}"></div></div><div class="gvs"><span>${g.c}</span><span>${g.t}</span></div></div></div>`).join('')}
+        <div class="lbl" style="margin-bottom:14px">Goals progress</div>
+        ${goals.map(g => `<div class="gr"><div class="grl">${g.label}</div><div class="gbw"><div class="gbb"><div class="gbf" style="width:${g.pct}%;background:${g.color}"></div></div><div class="gvs"><span>${g.current}</span><span>${g.target}</span></div></div></div>`).join('')}
       </div>
     </div></div>
 
-    <div class="sec"><div class="lbl">Recovery — 4-week body battery trend</div>
+    <div class="sec"><div class="lbl">Recovery — body battery trend</div>
     <div class="card">
-      <div class="cw" style="height:190px"><canvas id="bc" role="img" aria-label="Body battery trend">Wake declining from ~82 in late April to ~46 in mid-May.</canvas></div>
+      <div class="cw" style="height:190px"><canvas id="bc2" role="img" aria-label="Body battery trend"></canvas></div>
       <div class="leg">
         <div class="li"><div class="ld" style="background:#2dd4a0"></div>wake-up battery</div>
         <div class="li"><div class="ld" style="background:#f5a623;border-radius:0;height:2px;width:14px"></div>points drained</div>
       </div>
-      <hr>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;font-size:11px;font-family:var(--mono)">
-        <div><div style="color:var(--text3);margin-bottom:2px">late_apr_avg</div><div style="color:var(--teal)">~82 / 100</div></div>
-        <div><div style="color:var(--text3);margin-bottom:2px">mid_may_avg</div><div style="color:var(--amber)">~46 / 100</div></div>
-        <div><div style="color:var(--text3);margin-bottom:2px">trend</div><div style="color:var(--red)">↓ declining</div></div>
-        <div><div style="color:var(--text3);margin-bottom:2px">root_cause</div><div>exams + poor sleep</div></div>
-      </div>
     </div></div>
 
-    <div class="sec"><div class="lbl">Workouts × Garmin HR data</div>
+    <div class="sec"><div class="lbl">Recent workouts</div>
     <div class="card">
-      ${d.workouts.map(w => `
-        <div class="wr">
-          <div class="wda">${w.date}<br><span style="color:${sc(w.session)}">${w.session.toLowerCase()}</span></div>
-          <div>
-            <div class="wn">${w.session}</div>
-            <div class="wdt">${w.dur} · avg ${w.hr} bpm · max ${w.max} · ${w.kcal} kcal</div>
-            <div style="margin-top:5px">
-              <div class="hbr"><span style="min-width:32px">z1</span><div class="hbb"><div class="hbf" style="width:${w.z1}%;background:#2dd4a0"></div></div><span>${w.z1}%</span></div>
-              <div class="hbr"><span style="min-width:32px">z2</span><div class="hbb"><div class="hbf" style="width:${w.z2}%;background:#f5a623"></div></div><span>${w.z2}%</span></div>
-              ${w.z3 > 0 ? `<div class="hbr"><span style="min-width:32px">z3+</span><div class="hbb"><div class="hbf" style="width:${w.z3}%;background:#ff5f5f"></div></div><span>${w.z3}%</span></div>` : ''}
+      ${wks.length === 0 ? '<div style="color:var(--text3);font-family:var(--mono);font-size:12px">No workouts found</div>' :
+        wks.map(w => `
+          <div class="wr">
+            <div class="wda">${w.date}<br><span style="color:${sc(w.title)}">${(w.title||'').toLowerCase()}</span></div>
+            <div>
+              <div class="wn">${w.title||'—'} <span style="font-size:11px;color:var(--text3);font-weight:300">${w.duration||''}</span></div>
+              <div style="margin-top:4px">${(w.exercises||[]).map(e => `<span class="ex-pill">${e.name} ${e.weight}kg×${e.reps}</span>`).join('')}</div>
             </div>
-          </div>
-          ${bdg(w.r)}
+          </div>`).join('')}
+    </div></div>
+
+    <div class="sec"><div class="lbl">Active recommendations</div>
+    <div class="card">
+      ${recs.map(r => `
+        <div class="rr">
+          <div class="rdot" style="background:${r.level==='red'?'var(--red)':r.level==='amber'?'var(--amber)':'var(--teal)'}"></div>
+          <div><div class="rt">${r.title}</div><div class="rb">${r.body}</div></div>
         </div>`).join('')}
     </div></div>
 
     <div class="sec"><div class="lbl">Muscle group coverage</div>
     <div class="mg">
-      ${d.muscles.map(m => `<div class="mtl"><div class="mn">${m.n}</div><div class="mbb"><div class="mbf" style="width:${m.p}%;background:${m.p >= 85 ? '#2dd4a0' : '#f5a623'}"></div></div><div class="mst">${m.s}</div></div>`).join('')}
+      ${[
+        {n:'Chest',p:85,s:'well covered'},{n:'Back',p:90,s:'excellent'},
+        {n:'Shoulders',p:80,s:'rear delt added'},{n:'Biceps',p:80,s:'good'},
+        {n:'Triceps',p:75,s:'just added ✨'},{n:'Quads',p:90,s:'excellent'},
+        {n:'Hamstrings',p:85,s:'RDL + curl'},{n:'Abs',p:70,s:'leg raise added'},
+        {n:'Calves',p:85,s:'two variations'}
+      ].map(m=>`<div class="mtl"><div class="mn">${m.n}</div><div class="mbb"><div class="mbf" style="width:${m.p}%;background:${m.p>=85?'#2dd4a0':'#f5a623'}"></div></div><div class="mst">${m.s}</div></div>`).join('')}
     </div></div>
 
-    <div class="sec"><div class="lbl">Active recommendations</div>
-    <div class="card">
-      ${d.recs.map(r => `
-        <div class="rr">
-          <div class="rdot" style="background:${r.lv === 'red' ? 'var(--red)' : r.lv === 'amber' ? 'var(--amber)' : 'var(--teal)'}"></div>
-          <div><div class="rt">${r.t}</div><div class="rb">${r.b}</div></div>
-        </div>`).join('')}
-    </div></div>
-
-    <div class="upd">hevy pro · garmin fenix 7x · apple health · notion health centre</div>
+    <div class="upd">auto-synced daily · hevy pro · garmin fenix 7x · apple health</div>
   `;
 
+  // Charts
   const gc = 'rgba(255,255,255,0.06)', tc = '#5a5852';
 
-  mkChart('cc', {
-    type: 'bar',
-    data: { labels: [''], datasets: [
-      { label: `Lean ${d.bodyComp.lean} kg`, data: [d.bodyComp.lean], backgroundColor: '#2dd4a0', borderWidth: 0, borderRadius: 4, borderSkipped: false },
-      { label: `Fat ${(d.bodyComp.weight - d.bodyComp.lean).toFixed(1)} kg`, data: [d.bodyComp.weight - d.bodyComp.lean], backgroundColor: '#f5a623', borderWidth: 0, borderRadius: 4, borderSkipped: false }
-    ]},
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.dataset.label } } },
-      scales: { x: { stacked: true, max: 90, ticks: { callback: v => v + ' kg', color: tc, font: { size: 10 } }, grid: { color: gc } }, y: { stacked: true, display: false } }
-    }
-  });
-
-  mkChart('bc', {
-    type: 'line',
-    data: { labels: d.bb.labels, datasets: [
-      { label: 'Wake-up battery', data: d.bb.wake,  borderColor: '#2dd4a0', backgroundColor: 'rgba(45,212,160,0.06)', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#2dd4a0', tension: 0.3, fill: true },
-      { label: 'Points drained',  data: d.bb.drain, borderColor: '#f5a623', backgroundColor: 'transparent',           borderWidth: 1.5, pointRadius: 2, pointBackgroundColor: '#f5a623', tension: 0.3, borderDash: [4, 3] }
-    ]},
-    options: { responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.dataset.label + ': ' + Math.round(c.parsed.y) } } },
-      scales: {
-        x: { ticks: { color: tc, font: { size: 10, family: 'DM Mono' }, maxRotation: 45, autoSkip: true, maxTicksLimit: 10 }, grid: { color: gc } },
-        y: { min: 0, max: 105, ticks: { color: tc, font: { size: 10 } }, grid: { color: gc } }
+  if (bc.weight && bc.lean_kg) {
+    mkChart('cc', {
+      type:'bar', data:{labels:[''],datasets:[
+        {label:`Lean ${bc.lean_kg} kg`,data:[bc.lean_kg],backgroundColor:'#2dd4a0',borderWidth:0,borderRadius:4,borderSkipped:false},
+        {label:`Fat ${(bc.weight-bc.lean_kg).toFixed(1)} kg`,data:[bc.weight-bc.lean_kg],backgroundColor:'#f5a623',borderWidth:0,borderRadius:4,borderSkipped:false}
+      ]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label}}},
+        scales:{x:{stacked:true,max:90,ticks:{callback:v=>v+' kg',color:tc,font:{size:10}},grid:{color:gc}},y:{stacked:true,display:false}}
       }
-    }
-  });
-}
-
-// ── MAIN ──────────────────────────────────────────────────────────────────
-async function go() {
-  const btn = document.getElementById('rbtn');
-  const sp  = document.getElementById('spin');
-  const rl  = document.getElementById('rl');
-  const eb  = document.getElementById('errbox');
-
-  btn.disabled = true;
-  sp.style.display = 'block';
-  rl.textContent = 'fetching...';
-  eb.style.display = 'none';
-  document.getElementById('sub').textContent = 'fetching from notion...';
-
-  const d = JSON.parse(JSON.stringify(B));
-
-  try {
-    const json = await fetchNotion();
-    const rawText = toText(json.results);
-    console.log('NOTION_TEXT:', rawText.slice(0, 3000));
-    patch(rawText, d);
-    d.ts = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-    draw(d, 'notion');
-  } catch (e) {
-    eb.innerHTML = `<strong>Could not connect to Notion</strong> — showing cached data.<br><span style="opacity:.7">Error: ${e.message}</span>`;
-    eb.style.display = 'block';
-    d.ts = '17 May 2026 (cached)';
-    draw(d, 'cached');
+    });
   }
 
-  btn.disabled = false;
-  sp.style.display = 'none';
-  rl.textContent = '↻ refresh';
+  if (bbt.labels.length) {
+    mkChart('bc2', {
+      type:'line', data:{labels:bbt.labels,datasets:[
+        {label:'Wake-up battery',data:bbt.wake,borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.06)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#2dd4a0',tension:0.3,fill:true},
+        {label:'Points drained',data:bbt.drain,borderColor:'#f5a623',backgroundColor:'transparent',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#f5a623',tension:0.3,borderDash:[4,3]}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},
+        scales:{
+          x:{ticks:{color:tc,font:{size:10,family:'DM Mono'},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},
+          y:{min:0,max:105,ticks:{color:tc,font:{size:10}},grid:{color:gc}}
+        }
+      }
+    });
+  }
+}
+
+// ── MAIN LOAD ─────────────────────────────────────────────────────────────
+async function load() {
+  const btn=document.getElementById('rbtn'), sp=document.getElementById('spin'), rl=document.getElementById('rl'), eb=document.getElementById('errbox');
+  btn.disabled=true; sp.style.display='block'; rl.textContent='fetching...'; eb.style.display='none';
+  document.getElementById('sub').textContent = 'fetching from github...';
+
+  try {
+    const data = await fetchData();
+    render(data);
+  } catch(e) {
+    eb.innerHTML = `<strong>Could not load data.json from GitHub</strong><br><span style="opacity:.7">${e.message}</span><br><br>Make sure the sync script has run at least once and <code>data.json</code> exists in your repo.`;
+    eb.style.display='block';
+    document.getElementById('sub').textContent = 'could not load data';
+  }
+
+  btn.disabled=false; sp.style.display='none'; rl.textContent='↻ refresh';
 }
 </script>
 </body>
