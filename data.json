@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-05-19T10:57:51.338571",
+  "synced_at": "2026-05-19T11:05:42.023159",
   "garmin": {
     "date": "2026-05-19",
     "resting_hr": 64,
     "hrv_weekly": 42,
     "hrv_last_night": 42,
     "hrv_status": "Balanced",
-    "sleep_hours": 8.4,
+    "sleep_hours": 7.6,
     "sleep_missing": false,
     "bb_charged": 52,
     "bb_drained": 17,
@@ -266,7 +266,7 @@
     },
     {
       "label": "Sleep",
-      "current": "8.4h",
+      "current": "7.6h",
       "target": "7.5\u20138 hrs",
       "pct": 90,
       "color": "#2dd4a0"
