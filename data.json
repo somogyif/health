@@ -1,0 +1,403 @@
+{
+  "synced_at": "2026-05-19T10:57:51.338571",
+  "garmin": {
+    "date": "2026-05-19",
+    "resting_hr": 64,
+    "hrv_weekly": 42,
+    "hrv_last_night": 42,
+    "hrv_status": "Balanced",
+    "sleep_hours": 8.4,
+    "sleep_missing": false,
+    "bb_charged": 52,
+    "bb_drained": 17,
+    "bb_current": 35,
+    "steps": 952,
+    "active_kcal": 369.0,
+    "total_kcal": 1358.0,
+    "avg_stress": 29
+  },
+  "workouts": [
+    {
+      "date": "",
+      "title": "Upper 2",
+      "duration": null,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Barbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Bent Over Row (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Arnold Press (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Seated Palms Up Wrist Curl",
+          "sets": 3,
+          "weight": 0,
+          "reps": 15
+        }
+      ]
+    },
+    {
+      "date": "",
+      "title": "Lower 1",
+      "duration": null,
+      "exercises": [
+        {
+          "name": "Squat (Smith Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 8
+        },
+        {
+          "name": "Leg Press (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Romanian Deadlift (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Seated Calf Raise",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Crunch (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        }
+      ]
+    },
+    {
+      "date": "",
+      "title": "Upper 1",
+      "duration": null,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Chest Press (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Chest Fly (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        }
+      ]
+    },
+    {
+      "date": "",
+      "title": "Lower 2",
+      "duration": null,
+      "exercises": [
+        {
+          "name": "Lunge (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 8
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 15
+        },
+        {
+          "name": "Goblet Squat",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Seated Leg Curl (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Calf Press (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 15
+        },
+        {
+          "name": "Crunch (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        }
+      ]
+    },
+    {
+      "date": "",
+      "title": "Upper 2",
+      "duration": null,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Dumbbell Row",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Arnold Press (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 8
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 10
+        },
+        {
+          "name": "Seated Palms Up Wrist Curl",
+          "sets": 3,
+          "weight": 0,
+          "reps": 15
+        }
+      ]
+    }
+  ],
+  "body_comp": {
+    "weight": 83.3,
+    "fat_pct": 21,
+    "lean_kg": 65.8,
+    "bmi": 23.1,
+    "date": "2026-05-19"
+  },
+  "goals": [
+    {
+      "label": "Body fat",
+      "current": "21%",
+      "target": "16\u201317%",
+      "pct": 25,
+      "color": "#f5a623"
+    },
+    {
+      "label": "Lean mass",
+      "current": "65.8 kg",
+      "target": "maintain",
+      "pct": 80,
+      "color": "#2dd4a0"
+    },
+    {
+      "label": "Training freq",
+      "current": "~2\u00d7/week",
+      "target": "4\u00d7/week",
+      "pct": 50,
+      "color": "#5b9cf6"
+    },
+    {
+      "label": "Rest time",
+      "current": "~30 sec",
+      "target": "90\u2013120 sec",
+      "pct": 15,
+      "color": "#f5a623"
+    },
+    {
+      "label": "Zone 2 cardio",
+      "current": "0 sessions",
+      "target": "2\u20133\u00d7/wk",
+      "pct": 0,
+      "color": "#ff5f5f"
+    },
+    {
+      "label": "Sleep",
+      "current": "8.4h",
+      "target": "7.5\u20138 hrs",
+      "pct": 90,
+      "color": "#2dd4a0"
+    }
+  ],
+  "recs": [
+    {
+      "level": "red",
+      "title": "Rest 90 seconds between sets",
+      "body": "Upper 1 Garmin data shows 79% zone 2 \u2014 set a rest timer on your Fenix 7X."
+    },
+    {
+      "level": "red",
+      "title": "Get back to 4\u00d7 per week",
+      "body": "No gaps longer than 3 days between sessions."
+    },
+    {
+      "level": "amber",
+      "title": "2\u00d7 zone 2 cardio on rest days",
+      "body": "30\u201340 min at 130\u2013145 bpm. ~700 kcal/week extra fat loss."
+    },
+    {
+      "level": "amber",
+      "title": "Track protein \u2014 160\u2013170 g/day",
+      "body": "Critical to protect lean mass during fat loss."
+    },
+    {
+      "level": "green",
+      "title": "Progressive overload is working",
+      "body": "RDL 36\u219244 kg, Lat Pulldown 59\u219268 kg, Arnold Press 28 kg 3\u00d710."
+    }
+  ],
+  "bb_trend": {
+    "labels": [
+      "19 Apr",
+      "20 Apr",
+      "21 Apr",
+      "22 Apr",
+      "23 Apr",
+      "24 Apr",
+      "25 Apr",
+      "26 Apr",
+      "27 Apr",
+      "28 Apr",
+      "29 Apr",
+      "30 Apr",
+      "1 May",
+      "2 May",
+      "3 May",
+      "4 May",
+      "5 May",
+      "6 May",
+      "7 May",
+      "8 May",
+      "9 May",
+      "10 May",
+      "11 May",
+      "12 May",
+      "13 May",
+      "14 May",
+      "15 May",
+      "16 May",
+      "17 May",
+      "18 May",
+      "19 May"
+    ],
+    "wake": [
+      53,
+      100,
+      63,
+      93,
+      73,
+      64,
+      80,
+      58,
+      100,
+      98,
+      97,
+      68,
+      76,
+      82,
+      100,
+      99,
+      76,
+      100,
+      60,
+      95,
+      64,
+      47,
+      35,
+      59,
+      43,
+      62,
+      63,
+      46,
+      61,
+      69,
+      52
+    ],
+    "drain": [
+      27,
+      14,
+      15,
+      12,
+      8,
+      7,
+      12,
+      25,
+      25,
+      15,
+      18,
+      10,
+      5,
+      16,
+      29,
+      31,
+      17,
+      7,
+      13,
+      13,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      6,
+      18,
+      23,
+      12,
+      17
+    ]
+  }
+}
