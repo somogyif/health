@@ -174,6 +174,24 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 
 .err{background:var(--red-d);border:.5px solid var(--red);border-radius:var(--r);padding:.875rem 1.25rem;font-family:var(--m);font-size:12px;color:var(--red);margin-bottom:1.5rem;line-height:1.7}
 .upd{font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;padding-top:2rem;border-top:.5px solid var(--border)}
+.pf-hero{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:1.5rem;margin-bottom:10px;display:flex;gap:1.5rem;align-items:flex-start}
+.pf-hero-num{font-size:72px;font-weight:300;letter-spacing:-4px;line-height:1;color:var(--text3);flex-shrink:0;width:90px}
+.pf-hero-name{font-size:18px;font-weight:500;color:var(--text);margin-bottom:2px}
+.pf-hero-ins{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;letter-spacing:.04em}
+.pf-hero-why{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px}
+.pf-notes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.pf-note{font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border2);color:var(--text2);font-family:var(--mono)}
+.pf-how{font-size:11px;color:var(--text3);font-family:var(--mono);padding-top:12px;border-top:.5px solid var(--border)}
+.pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.pf-card{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem;border:1.5px solid transparent;cursor:pointer;transition:border-color .15s}
+.pf-card.pf-active{background:var(--s1);border-color:var(--border2)}
+.pf-card-num{font-size:28px;font-weight:300;letter-spacing:-1.5px;line-height:1;margin-bottom:3px}
+.pf-card-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.pf-card-mood{font-size:10px;color:var(--text3);margin-bottom:8px}
+.pf-badges{display:flex;gap:5px;flex-wrap:wrap}
+.pf-score{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
+.pf-pick{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono);background:var(--teal-d);color:var(--teal)}
+@media(max-width:560px){.pf-hero{flex-direction:column;gap:1rem}.pf-hero-num{font-size:52px}}
 </style>
 </head>
 <body>
@@ -512,64 +530,105 @@ function render(d){
     `;
   }
 
-  // Perfume recommendation
+  // ── PERFUME RECOMMENDATION ─────────────────────────────────────────────
   const pf = d.perfume || {};
   const pfEl = document.getElementById('perfumeBody');
-  if (pfEl && pf.morning) {
-    const pm = pf.morning;
-    const pe = pf.evening;
-    let html = '<div class="perf-wrap">';
 
-    // Morning pick
-    html += `
-      <div class="perf-card">
-        <span class="perf-badge" style="background:var(--teal-d);color:var(--teal)">morning</span>
-        <div class="perf-num">${pm.number}</div>
-        <div class="perf-name">${pm.name}</div>
-        <div class="perf-inspired">${pm.inspired}</div>
-        <div class="perf-mood">${pm.mood}</div>
-        <div class="perf-reason">${pm.reason}</div>
-        <div class="perf-how">${pm.how}</div>
+  const ALL_PERFS = [
+    {num:'300',name:'Silver Mountain Water',inspired:'Creed Silver Mountain Water',mood:'Clean & energised',notes:['Bergamot','Black currant','Green tea','Ozonic','Sandalwood','Musk'],how:'2–3 sprays · neck + wrists · perfect for mornings · best spring/summer'},
+    {num:'197',name:'Sauvage',inspired:'Dior Sauvage',mood:'Fresh & assertive',notes:['Bergamot','Pepper','Lavender','Ambroxan','Cedarwood'],how:'3–4 sprays · neck, wrists, jacket · works any time, any occasion'},
+    {num:'200',name:'Aventus',inspired:'Creed Aventus',mood:'Bold & ambitious',notes:['Pineapple','Birch','Jasmine','Oakmoss','Ambergris'],how:'3–4 sprays · neck + wrists · spring/summer/autumn · day or evening'},
+    {num:'421',name:'Santal 33',inspired:'Le Labo Santal 33',mood:'Grounded & confident',notes:['Cardamom','Sandalwood','Cedar','Leather','Papyrus'],how:'2 sprays · chest · lasts 6–8h · autumn/winter/spring evenings'},
+    {num:'341',name:'Oud Wood',inspired:'Tom Ford Oud Wood',mood:'Deep & magnetic',notes:['Oud','Sandalwood','Vetiver','Cardamom','Vanilla'],how:'1–2 sprays only · wrists or chest · autumn/winter · evening only'},
+  ];
+
+  if (pfEl) {
+    const pm = pf.morning || {};
+    const pe = pf.evening;
+    const pickedNum = pm.number || '197';
+    const postGymNum = pe && pe.number ? pe.number : null;
+
+    // Score each perfume: picked morning = 10, post-gym = secondary, rest ranked by similarity
+    const scoreMap = {'300':7,'197':7,'200':5,'421':4,'341':1};
+    if (pickedNum) scoreMap[pickedNum] = 10;
+    if (postGymNum) scoreMap[postGymNum] = 8;
+
+    const ranked = [...ALL_PERFS].sort((a,b) => (scoreMap[b.num]||0) - (scoreMap[a.num]||0));
+    const hero = ranked[0];
+    const heroData = pickedNum === hero.num ? pm : {};
+
+    let html = `
+      <div class="pf-hero">
+        <div class="pf-hero-num" style="color:${pickedNum===hero.num?'var(--teal)':'var(--text3)'}">${hero.num}</div>
+        <div style="flex:1;min-width:0">
+          <div class="pf-hero-name">${hero.name}</div>
+          <div class="pf-hero-ins">${hero.inspired}</div>
+          <div class="pf-hero-why">${heroData.reason || hero.mood}</div>
+          <div class="pf-notes">${hero.notes.map(n=>`<span class="pf-note">${n}</span>`).join('')}</div>
+          <div class="pf-how">${hero.how}</div>
+        </div>
       </div>`;
 
-    // Evening pick (only if gym reset)
-    if (pe && pe.number) {
+    // Evening / post-gym card if applicable
+    if (postGymNum && postGymNum !== pickedNum) {
+      const evHero = ALL_PERFS.find(p=>p.num===postGymNum)||{};
       html += `
-        <div class="perf-card">
-          <span class="perf-badge" style="background:var(--amber-d);color:var(--amber)">post-gym</span>
-          <div class="perf-num">${pe.number}</div>
-          <div class="perf-name">${pe.name}</div>
-          <div class="perf-inspired">${pe.inspired}</div>
-          <div class="perf-mood">${pe.mood}</div>
-          <div class="perf-reason">${pe.reason}</div>
-          <div class="perf-how">${pe.how}</div>
-        </div>`;
-    } else {
-      // Show commute info in second card
-      const cm = (d.commute || [])[0];
-      if (cm) {
-        html += `
-          <div class="perf-card">
-            <span class="perf-badge" style="background:var(--blue-d);color:var(--blue)">commute</span>
-            <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px">${cm.event}</div>
-            <div style="font-size:11px;color:var(--text3);font-family:var(--m);margin-bottom:10px">${cm.time} · ${cm.location || 'see calendar'}</div>
-            <div style="margin-bottom:8px">
-              <div class="perf-label">Getting there</div>
-              <div style="font-size:13px;color:var(--text2)">${cm.outbound_label}</div>
-              <div style="font-size:11px;color:var(--text3);font-style:italic">${cm.outbound_reason}</div>
-            </div>
-            <div style="padding-top:8px;border-top:.5px solid var(--border)">
-              <div class="perf-label">Getting back</div>
-              <div style="font-size:13px;color:var(--text2)">${cm.return_label}</div>
-              <div style="font-size:11px;color:var(--text3);font-style:italic">${cm.return_reason}</div>
-            </div>
-          </div>`;
-      }
+      <div class="pf-hero" style="border-color:var(--amber-dim);margin-bottom:10px">
+        <div class="pf-hero-num" style="color:var(--amber)">${evHero.num||''}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">post-gym · after shower</div>
+          <div class="pf-hero-name">${evHero.name||''}</div>
+          <div class="pf-hero-ins">${evHero.inspired||''}</div>
+          <div class="pf-hero-why">${pe.reason||''}</div>
+          <div class="pf-how">${pe.how||''}</div>
+        </div>
+      </div>`;
     }
 
+    html += `<div class="pf-grid">`;
+    ranked.forEach((p,i) => {
+      const score = scoreMap[p.num] || 1;
+      const isPick = p.num === pickedNum;
+      const isPostGym = p.num === postGymNum;
+      const scoreColor = score >= 9 ? 'var(--teal)' : score >= 6 ? 'var(--amber)' : 'var(--text3)';
+      html += `
+        <div class="pf-card ${isPick?'pf-active':''}" onclick="pfSelect('${p.num}')">
+          <div class="pf-card-num" style="color:${scoreColor}">${p.num}</div>
+          <div class="pf-card-name">${p.name}</div>
+          <div class="pf-card-mood">${p.mood}</div>
+          <div class="pf-badges">
+            <span class="pf-score" style="background:${score>=9?'var(--teal-d)':score>=6?'var(--amber-d)':'var(--s3)'};color:${scoreColor}">${score}/10</span>
+            ${isPick?'<span class="pf-pick">today's pick</span>':''}
+            ${isPostGym?'<span class="pf-score" style="background:var(--amber-d);color:var(--amber)">post-gym</span>':''}
+          </div>
+        </div>`;
+    });
     html += '</div>';
     pfEl.innerHTML = html;
+
+    window._pfData = {ranked, scoreMap, pickedNum, pf};
   }
+
+  window.pfSelect = function(num) {
+    if (!window._pfData) return;
+    const {ranked, scoreMap, pickedNum, pf} = window._pfData;
+    const p = ranked.find(x=>x.num===num);
+    if (!p) return;
+    const isPick = num === pickedNum;
+    const heroEl = document.querySelector('.pf-hero');
+    if (!heroEl) return;
+    const score = scoreMap[num] || 1;
+    heroEl.querySelector('.pf-hero-num').textContent = p.num;
+    heroEl.querySelector('.pf-hero-num').style.color = isPick ? 'var(--teal)' : 'var(--text3)';
+    heroEl.querySelector('.pf-hero-name').textContent = p.name;
+    heroEl.querySelector('.pf-hero-ins').textContent = p.inspired;
+    heroEl.querySelector('.pf-hero-why').textContent = isPick && pf.morning ? pf.morning.reason : p.mood;
+    heroEl.querySelector('.pf-how').textContent = p.how;
+    heroEl.querySelector('.pf-notes').innerHTML = p.notes.map(n=>`<span class="pf-note">${n}</span>`).join('');
+    document.querySelectorAll('.pf-card').forEach(c => {
+      c.classList.toggle('pf-active', c.getAttribute('onclick').includes(num));
+    });
+  };
 
   // ── TRAINING TAB ───────────────────────────────────────────────────────
   document.getElementById('tab-training').innerHTML=`
