@@ -573,7 +573,7 @@ function render(d){
     if (postGymNum && postGymNum !== pickedNum) {
       const evHero = ALL_PERFS.find(p=>p.num===postGymNum)||{};
       html += `
-      <div class="pf-hero" style="border-color:var(--amber-dim);margin-bottom:10px">
+      <div class="pf-hero" style="border-color:var(--amber-d);margin-bottom:10px">
         <div class="pf-hero-num" style="color:var(--amber)">${evHero.num||''}</div>
         <div style="flex:1;min-width:0">
           <div style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">post-gym · after shower</div>
@@ -598,7 +598,7 @@ function render(d){
           <div class="pf-card-mood">${p.mood}</div>
           <div class="pf-badges">
             <span class="pf-score" style="background:${score>=9?'var(--teal-d)':score>=6?'var(--amber-d)':'var(--s3)'};color:${scoreColor}">${score}/10</span>
-            ${isPick?'<span class="pf-pick">today's pick</span>':''}
+            ${isPick?'<span class="pf-pick">today&#39;s pick</span>':''}
             ${isPostGym?'<span class="pf-score" style="background:var(--amber-d);color:var(--amber)">post-gym</span>':''}
           </div>
         </div>`;
