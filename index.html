@@ -305,6 +305,43 @@ function render(d){
   const wks=d.workouts||[];
 
   const synced=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+
+  // Render calendar events
+  const calEvents = d.calendar || [];
+  const calLoad = d.calendar_load_today || 0;
+  function renderCalendar(events, readScore) {
+    if (!events || events.length === 0) return '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events found. Run sync script to load calendar.</div>';
+
+    // Group by date
+    const groups = {};
+    events.forEach(e => {
+      const key = e.start_date || e.start?.slice(0,10) || 'Unknown';
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(e);
+    });
+
+    // Load coaching based on readiness + calendar load
+    let loadNote = '';
+    if (calLoad >= 7) loadNote = `<div class="load-pill" style="background:var(--red-d);color:var(--red)">⚡ Heavy day ahead — ${calLoad}/10 load · recovery is ${readScore < 65 ? 'already low' : 'ok but monitor'}</div>`;
+    else if (calLoad >= 4) loadNote = `<div class="load-pill" style="background:var(--amber-d);color:var(--amber)">📅 Moderate day — ${calLoad}/10 load · keep an eye on energy</div>`;
+    else if (calLoad > 0) loadNote = `<div class="load-pill" style="background:var(--teal-d);color:var(--teal)">✓ Light day — ${calLoad}/10 load · good time to train</div>`;
+
+    const html = Object.entries(groups).map(([date, evs]) => `
+      <div class="cal-day">
+        <div class="cal-day-header">${date}</div>
+        ${evs.map(e => `
+          <div class="cal-event">
+            <div class="cal-dot" style="background:${e.color}"></div>
+            <div class="cal-time">${e.all_day ? 'all day' : (e.start_time || '—')}</div>
+            <div>
+              <div class="cal-title">${e.emoji} ${e.title}</div>
+              <div class="cal-cal">${e.calendar}</div>
+            </div>
+          </div>`).join('')}
+      </div>`).join('');
+
+    return loadNote + html;
+  }
   document.getElementById('sub').textContent=synced;
 
   const rs=g.readiness_score||51;
@@ -319,6 +356,7 @@ function render(d){
 
   // ── TODAY TAB ──────────────────────────────────────────────────────────
   document.getElementById('tab-today').innerHTML=`
+    <div id="weatherStrip" style="display:flex;align-items:center;gap:12px;padding:.6rem 0;border-bottom:.5px solid var(--border);margin-bottom:1.5rem;font-family:var(--m);font-size:11px;color:var(--text3);flex-wrap:wrap"></div>
     <div class="hero">
       <div class="hero-score-row">
         <div>
@@ -394,6 +432,18 @@ function render(d){
     </div>
 
     <div class="sec">
+      <div class="sec-head"><div class="sec-title">Next 7 days</div><div class="sec-line"></div></div>
+      <div class="card" id="calCard">
+        <div id="calBody" style="font-family:var(--m);font-size:12px;color:var(--text3)">No calendar data — run sync script to load events.</div>
+      </div>
+    </div>
+
+    <div class="sec" id="perfumeSection">
+      <div class="sec-head"><div class="sec-title">Scent for the day</div><div class="sec-line"></div></div>
+      <div id="perfumeBody"><div style="font-family:var(--m);font-size:12px;color:var(--text3)">Loading...</div></div>
+    </div>
+
+    <div class="sec">
       <div class="sec-head"><div class="sec-title">Recommendations</div><div class="sec-line"></div></div>
       <div class="card">
         ${recs.map(r=>`
@@ -406,6 +456,87 @@ function render(d){
 
     <div class="upd">synced ${synced} · garmin fenix 7x · hevy pro · apple health</div>
   `;
+
+  // Inject calendar into already-rendered Today tab
+  const calBodyEl = document.getElementById('calBody');
+  if (calBodyEl) calBodyEl.innerHTML = renderCalendar(calEvents, rs);
+
+  // Weather strip
+  const wx = d.weather || {};
+  const wxEl = document.getElementById('weatherStrip');
+  if (wxEl && wx.condition) {
+    const bikeIcon = wx.good_for_bike ? '🚲' : '🌧';
+    const rainTxt  = wx.is_heavy_rain ? 'Heavy rain — public transport' : (wx.is_raining ? 'Rain — no biking outbound' : 'No rain — biking ok');
+    wxEl.innerHTML = `
+      <span style="color:var(--text2)">${bikeIcon}</span>
+      <span style="color:var(--text2)">${wx.condition}</span>
+      <span>·</span>
+      <span>${wx.temp_max != null ? wx.temp_max + '°C max' : '—'}</span>
+      <span>·</span>
+      <span>${wx.precipitation != null ? wx.precipitation + 'mm' : '—'} rain</span>
+      <span>·</span>
+      <span style="color:${wx.good_for_bike ? 'var(--teal)' : 'var(--amber)'}">${rainTxt}</span>
+    `;
+  }
+
+  // Perfume recommendation
+  const pf = d.perfume || {};
+  const pfEl = document.getElementById('perfumeBody');
+  if (pfEl && pf.morning) {
+    const pm = pf.morning;
+    const pe = pf.evening;
+    let html = '<div class="perf-wrap">';
+
+    // Morning pick
+    html += `
+      <div class="perf-card">
+        <span class="perf-badge" style="background:var(--teal-d);color:var(--teal)">morning</span>
+        <div class="perf-num">${pm.number}</div>
+        <div class="perf-name">${pm.name}</div>
+        <div class="perf-inspired">${pm.inspired}</div>
+        <div class="perf-mood">${pm.mood}</div>
+        <div class="perf-reason">${pm.reason}</div>
+        <div class="perf-how">${pm.how}</div>
+      </div>`;
+
+    // Evening pick (only if gym reset)
+    if (pe && pe.number) {
+      html += `
+        <div class="perf-card">
+          <span class="perf-badge" style="background:var(--amber-d);color:var(--amber)">post-gym</span>
+          <div class="perf-num">${pe.number}</div>
+          <div class="perf-name">${pe.name}</div>
+          <div class="perf-inspired">${pe.inspired}</div>
+          <div class="perf-mood">${pe.mood}</div>
+          <div class="perf-reason">${pe.reason}</div>
+          <div class="perf-how">${pe.how}</div>
+        </div>`;
+    } else {
+      // Show commute info in second card
+      const cm = (d.commute || [])[0];
+      if (cm) {
+        html += `
+          <div class="perf-card">
+            <span class="perf-badge" style="background:var(--blue-d);color:var(--blue)">commute</span>
+            <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px">${cm.event}</div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--m);margin-bottom:10px">${cm.time} · ${cm.location || 'see calendar'}</div>
+            <div style="margin-bottom:8px">
+              <div class="perf-label">Getting there</div>
+              <div style="font-size:13px;color:var(--text2)">${cm.outbound_label}</div>
+              <div style="font-size:11px;color:var(--text3);font-style:italic">${cm.outbound_reason}</div>
+            </div>
+            <div style="padding-top:8px;border-top:.5px solid var(--border)">
+              <div class="perf-label">Getting back</div>
+              <div style="font-size:13px;color:var(--text2)">${cm.return_label}</div>
+              <div style="font-size:11px;color:var(--text3);font-style:italic">${cm.return_reason}</div>
+            </div>
+          </div>`;
+      }
+    }
+
+    html += '</div>';
+    pfEl.innerHTML = html;
+  }
 
   // ── TRAINING TAB ───────────────────────────────────────────────────────
   document.getElementById('tab-training').innerHTML=`
