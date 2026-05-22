@@ -5,155 +5,322 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feri — Health Centre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root {
-  --bg:#0e0e0c; --surface:#161614; --surface2:#1e1e1b; --surface3:#262622;
-  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
-  --text:#f0ede4; --text2:#9e9b92; --text3:#5a5852;
-  --teal:#2dd4a0; --teal-dim:rgba(45,212,160,0.12);
-  --amber:#f5a623; --amber-dim:rgba(245,166,35,0.12);
-  --red:#ff5f5f; --red-dim:rgba(255,95,95,0.1);
-  --blue:#5b9cf6; --blue-dim:rgba(91,156,246,0.1);
-  --green:#6fcf97; --green-dim:rgba(111,207,151,0.1);
-  --r:14px; --rs:8px;
-  --body:'DM Sans',sans-serif; --serif:'Instrument Serif',serif; --mono:'DM Mono',monospace;
+  --bg: #080807;
+  --surface: #111110;
+  --surface2: #191917;
+  --surface3: #222220;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f2efe6;
+  --text2: #8a8880;
+  --text3: #4a4845;
+  --teal: #2dd4a0;
+  --teal-dim: rgba(45,212,160,0.1);
+  --amber: #f5a623;
+  --amber-dim: rgba(245,166,35,0.1);
+  --red: #ff5555;
+  --red-dim: rgba(255,85,85,0.08);
+  --blue: #5b9cf6;
+  --blue-dim: rgba(91,156,246,0.1);
+  --r: 16px;
+  --rs: 10px;
+  --syne: 'Syne', sans-serif;
+  --body: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.6;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-.page{max-width:1000px;margin:0 auto;padding:2.5rem 1.5rem 5rem;position:relative;z-index:1}
-.header{margin-bottom:2.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.title{font-family:var(--serif);font-size:32px;font-weight:400;font-style:italic;letter-spacing:-0.5px;line-height:1.1}
-.title span{color:var(--teal)}
-.sub{font-size:12px;color:var(--text3);margin-top:6px;font-family:var(--mono)}
-.hbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.rbtn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--surface2);border:.5px solid var(--border2);border-radius:20px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--mono);transition:all .2s;white-space:nowrap}
-.rbtn:hover{background:var(--surface3);color:var(--text)}
-.rbtn:disabled{opacity:.5;cursor:not-allowed}
-.spin{width:12px;height:12px;border:1.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;display:none}
-@keyframes spin{to{transform:rotate(360deg)}}
-.sec{margin-bottom:2rem}
-.lbl{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.lbl::after{content:'';flex:1;height:.5px;background:var(--border)}
-.card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;animation:up .4s ease both}
-@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:640px){.g2,.g3{grid-template-columns:1fr}}
-.mt{background:var(--surface2);border:.5px solid var(--border);border-radius:var(--rs);padding:14px 16px;transition:border-color .2s}
-.mt:hover{border-color:var(--border2)}
-.ml{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px}
-.mv{font-size:26px;font-weight:300;line-height:1;letter-spacing:-1px}
-.mv.tl{color:var(--teal)}.mv.am{color:var(--amber)}.mv.rd{color:var(--red)}
-.ms{font-size:11px;color:var(--text3);margin-top:5px}
-.bge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:6px;font-family:var(--mono)}
-.bt{background:var(--teal-dim);color:var(--teal)}
-.ba{background:var(--amber-dim);color:var(--amber)}
-.br{background:var(--red-dim);color:var(--red)}
-.bb{background:var(--blue-dim);color:var(--blue)}
-.bg2{background:var(--green-dim);color:var(--green)}
-.cw{position:relative;width:100%}
-.leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:11px;color:var(--text3);font-family:var(--mono)}
-.li{display:flex;align-items:center;gap:5px}
-.ld{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-.gr{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--border)}
-.gr:last-child{border-bottom:none}
-.grl{font-size:12px;color:var(--text2);min-width:110px;font-family:var(--mono)}
-.gbw{flex:1}
-.gbb{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
-.gbf{height:100%;border-radius:2px}
-.gvs{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px;font-family:var(--mono)}
-.wr{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:start;padding:12px 0;border-bottom:.5px solid var(--border)}
-.wr:last-child{border-bottom:none}
-.wda{font-family:var(--mono);font-size:11px;color:var(--text3);padding-top:2px}
-.wn{font-weight:500;font-size:13px;margin-bottom:3px}
-.wdt{color:var(--text2);font-size:11px;font-family:var(--mono)}
-.hbr{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:10px;color:var(--text3);font-family:var(--mono)}
-.hbb{flex:1;height:3px;background:var(--surface3);border-radius:2px;overflow:hidden}
-.hbf{height:100%;border-radius:2px}
-.rr{display:flex;gap:12px;padding:12px 0;border-bottom:.5px solid var(--border)}
-.rr:last-child{border-bottom:none}
-.rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.rt{font-size:13px;font-weight:500;margin-bottom:3px}
-.rb{font-size:12px;color:var(--text2);line-height:1.5}
-.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
-.mtl{background:var(--surface2);border:.5px solid var(--border);border-radius:var(--rs);padding:12px}
-.mn{font-size:11px;font-family:var(--mono);margin-bottom:8px;color:var(--text2)}
-.mbb{height:3px;background:var(--surface3);border-radius:2px;overflow:hidden}
-.mbf{height:100%;border-radius:2px}
-.mst{font-size:10px;color:var(--text3);margin-top:5px;font-family:var(--mono)}
-.errbox{background:var(--red-dim);border:.5px solid var(--red);border-radius:var(--r);padding:1rem 1.25rem;font-family:var(--mono);font-size:12px;color:var(--red);margin-bottom:1.5rem;line-height:1.7}
-.sp{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-family:var(--mono);margin-left:8px}
-hr{border:none;border-top:.5px solid var(--border);margin:1rem 0}
-.upd{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right;margin-top:2rem}
-.setup-wrap{display:flex;align-items:center;justify-content:center;min-height:80vh}
-.setup-card{background:var(--surface);border:.5px solid var(--border2);border-radius:var(--r);padding:2.5rem;max-width:480px;width:100%}
-.setup-title{font-family:var(--serif);font-size:26px;font-style:italic;margin-bottom:6px}
-.setup-title span{color:var(--teal)}
-.setup-sub{font-size:12px;color:var(--text3);font-family:var(--mono);margin-bottom:2rem;line-height:1.7}
-.setup-label{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase}
-.setup-input{width:100%;background:var(--surface2);border:.5px solid var(--border2);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .2s;margin-bottom:1rem}
-.setup-input:focus{border-color:var(--teal)}
-.setup-btn{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:#0e0e0c;font-family:var(--mono);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .2s}
-.setup-btn:hover{opacity:.85}
-.score-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:.5px solid var(--border)}
-.score-row:last-child{border-bottom:none}
-.streak-box{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface2);border:.5px solid var(--border);border-radius:var(--rs);padding:16px 10px;text-align:center}
-.streak-num{font-size:36px;font-weight:300;line-height:1;letter-spacing:-2px}
-.streak-label{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:4px;line-height:1.4}
-.dot-row{display:flex;gap:4px;justify-content:center;margin-top:8px}
-.dot{width:7px;height:7px;border-radius:50%}
-.dot-on{background:var(--teal)}
-.dot-off{background:var(--border2)}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem 5rem; }
+
+/* ── TOP NAV ── */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0 2rem;
+  border-bottom: .5px solid var(--border);
+  margin-bottom: 0;
+}
+.nav-logo { font-family: var(--syne); font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+.nav-logo span { color: var(--teal); }
+.nav-meta { font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 12px; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.rbtn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; background: transparent;
+  border: .5px solid var(--border2); border-radius: 20px;
+  font-size: 11px; color: var(--text2); cursor: pointer;
+  font-family: var(--mono); transition: all .2s;
+}
+.rbtn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+.rbtn:disabled { opacity: .4; cursor: not-allowed; }
+.spin { width: 10px; height: 10px; border: 1.5px solid var(--border2); border-top-color: var(--teal); border-radius: 50%; animation: spin .7s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── HERO ── */
+.hero {
+  padding: 3rem 0 2.5rem;
+  border-bottom: .5px solid var(--border);
+  margin-bottom: 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: end;
+}
+.hero-verdict {
+  font-family: var(--syne);
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+  margin-bottom: .75rem;
+}
+.hero-verdict .accent { color: var(--teal); }
+.hero-verdict.amber .accent { color: var(--amber); }
+.hero-verdict.red .accent { color: var(--red); }
+.hero-sub {
+  font-size: 15px;
+  color: var(--text2);
+  max-width: 500px;
+  line-height: 1.6;
+}
+.hero-score {
+  text-align: right;
+  flex-shrink: 0;
+}
+.hero-score-num {
+  font-family: var(--syne);
+  font-size: 80px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -4px;
+}
+.hero-score-num.teal { color: var(--teal); }
+.hero-score-num.amber { color: var(--amber); }
+.hero-score-num.red { color: var(--red); }
+.hero-score-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ── KEY METRICS ROW ── */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: .5px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+}
+.metric-cell {
+  background: var(--surface);
+  padding: 1.25rem 1.5rem;
+  transition: background .15s;
+}
+.metric-cell:hover { background: var(--surface2); }
+.metric-cell-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.metric-cell-value {
+  font-family: var(--syne);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.metric-cell-sub {
+  font-size: 11px;
+  color: var(--text2);
+}
+.mc-teal { color: var(--teal); }
+.mc-amber { color: var(--amber); }
+.mc-red { color: var(--red); }
+.mc-white { color: var(--text); }
+
+/* ── SECTION ── */
+.zone { margin-bottom: 3rem; }
+.zone-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+}
+.zone-label {
+  font-family: var(--syne);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.zone-line { flex: 1; height: .5px; background: var(--border); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: .5px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.5rem;
+}
+.card-sm { padding: 1.25rem; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.g4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+@media(max-width:600px) { .g2,.g3,.g4{grid-template-columns:1fr} .metrics-row{grid-template-columns:1fr 1fr} .hero{grid-template-columns:1fr} .hero-score{text-align:left} }
+
+/* ── MINI METRIC ── */
+.mm { background: var(--surface2); border-radius: var(--rs); padding: 1rem 1.25rem; }
+.mm-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+.mm-value { font-family: var(--syne); font-size: 22px; font-weight: 700; line-height: 1; letter-spacing: -.5px; margin-bottom: 4px; }
+.mm-sub { font-size: 11px; color: var(--text2); }
+.tag { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 6px; }
+.tag-t { background: var(--teal-dim); color: var(--teal); }
+.tag-a { background: var(--amber-dim); color: var(--amber); }
+.tag-r { background: var(--red-dim); color: var(--red); }
+.tag-b { background: var(--blue-dim); color: var(--blue); }
+
+/* ── READINESS WEEK ── */
+.rw-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-top: 1.25rem; }
+.rw-cell { text-align: center; padding: 10px 4px; background: var(--surface2); border-radius: var(--rs); }
+.rw-score { font-family: var(--syne); font-size: 20px; font-weight: 700; letter-spacing: -1px; }
+.rw-date { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
+
+/* ── STREAKS ── */
+.streak-card { background: var(--surface); border: .5px solid var(--border); border-radius: var(--r); padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-start; gap: .75rem; }
+.streak-num { font-family: var(--syne); font-size: 52px; font-weight: 800; letter-spacing: -3px; line-height: 1; }
+.streak-label { font-size: 13px; color: var(--text2); line-height: 1.4; }
+.dot-row { display: flex; gap: 5px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot-on { background: var(--teal); }
+.dot-off { background: var(--surface3); }
+.streak-note { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+
+/* ── WORKOUT QUALITY ── */
+.wq-row { display: grid; grid-template-columns: 60px 1fr 56px; gap: 12px; align-items: center; padding: 12px 0; border-bottom: .5px solid var(--border); }
+.wq-row:last-child { border-bottom: none; }
+.wq-date { font-family: var(--mono); font-size: 10px; color: var(--text3); line-height: 1.4; }
+.wq-name { font-family: var(--syne); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.wq-detail { font-family: var(--mono); font-size: 10px; color: var(--text2); }
+.wq-note { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.wq-score { text-align: center; }
+.wq-score-num { font-family: var(--syne); font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+.wq-score-label { font-family: var(--mono); font-size: 9px; color: var(--text3); }
+.bar-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--text3); }
+.bar-bg { flex: 1; height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; }
+
+/* ── RECS ── */
+.rec { display: flex; gap: 12px; padding: 14px 0; border-bottom: .5px solid var(--border); }
+.rec:last-child { border-bottom: none; }
+.rec-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+.rec-title { font-family: var(--syne); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.rec-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+/* ── BIO AGE ── */
+.bio-age-big { font-family: var(--syne); font-size: 72px; font-weight: 800; letter-spacing: -4px; line-height: 1; color: var(--teal); }
+.bio-age-line { font-size: 13px; color: var(--text2); margin-top: 6px; }
+.age-bar { position: relative; height: 6px; background: var(--surface3); border-radius: 3px; overflow: visible; margin: 1rem 0 1.5rem; }
+.age-bar-fill { position: absolute; inset: 0; border-radius: 3px; background: linear-gradient(90deg, var(--teal), var(--amber), var(--red)); }
+.age-marker { position: absolute; top: -7px; height: 20px; border-radius: 2px; }
+.age-driver { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: .5px solid var(--border); }
+.age-driver:last-child { border-bottom: none; }
+.age-driver-bar { height: 3px; border-radius: 2px; margin-top: 4px; }
+
+/* ── CHARTS ── */
+.cw { position: relative; width: 100%; }
+
+/* ── MUSCLE GRID ── */
+.muscle-tile { background: var(--surface2); border-radius: var(--rs); padding: 12px; }
+.muscle-name { font-family: var(--mono); font-size: 10px; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
+.muscle-bar { height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+.muscle-bar-fill { height: 100%; border-radius: 2px; }
+.muscle-status { font-size: 10px; color: var(--text3); }
+
+/* ── SETUP ── */
+#setup { display: none; min-height: 100vh; align-items: center; justify-content: center; }
+.setup-card { background: var(--surface); border: .5px solid var(--border2); border-radius: var(--r); padding: 2.5rem; max-width: 440px; width: 100%; }
+.setup-title { font-family: var(--syne); font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+.setup-title span { color: var(--teal); }
+.setup-sub { font-size: 12px; color: var(--text2); margin-bottom: 2rem; line-height: 1.7; font-family: var(--mono); }
+.setup-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.setup-input { width: 100%; background: var(--surface2); border: .5px solid var(--border2); border-radius: var(--rs); padding: 10px 14px; color: var(--text); font-family: var(--mono); font-size: 13px; outline: none; margin-bottom: 1rem; }
+.setup-input:focus { border-color: var(--teal); }
+.setup-btn { width: 100%; padding: 11px; background: var(--teal); border: none; border-radius: var(--rs); color: #080807; font-family: var(--syne); font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: -.3px; }
+.setup-btn:hover { opacity: .9; }
+
+hr.divider { border: none; border-top: .5px solid var(--border); margin: 1.25rem 0; }
+.upd { font-family: var(--mono); font-size: 10px; color: var(--text3); text-align: right; margin-top: 2rem; padding-top: 1.5rem; border-top: .5px solid var(--border); }
+.err { background: var(--red-dim); border: .5px solid var(--red); border-radius: var(--r); padding: 1rem 1.25rem; font-family: var(--mono); font-size: 12px; color: var(--red); margin-bottom: 1.5rem; line-height: 1.7; }
 </style>
 </head>
 <body>
-<div class="page">
-
-  <div id="setup" style="display:none">
-    <div class="setup-wrap">
-      <div class="setup-card">
-        <div class="setup-title">Health <span>Centre</span></div>
-        <div class="setup-sub">One-time setup. Enter your GitHub read-only token to load live data from data.json.<br><br>Get one at <strong>github.com/settings/tokens?type=beta</strong> → repo somogyif/health → Contents: Read-only.</div>
-        <div class="setup-label">GitHub token</div>
-        <input class="setup-input" id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
-        <button class="setup-btn" onclick="saveToken()">Connect →</button>
-      </div>
-    </div>
+<div id="setup">
+  <div class="setup-card">
+    <div class="setup-title">Health <span>Centre</span></div>
+    <div class="setup-sub">Enter your GitHub read-only token to connect.<br>github.com/settings/tokens?type=beta → somogyif/health → Contents: Read-only</div>
+    <div class="setup-label">GitHub token</div>
+    <input class="setup-input" id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off">
+    <button class="setup-btn" onclick="saveToken()">Connect →</button>
   </div>
-
-  <div id="main" style="display:none">
-    <div class="header">
-      <div>
-        <div class="title">Health <span>Centre</span></div>
-        <div class="sub" id="sub">loading...</div>
-      </div>
-      <div class="hbtns">
-        <button class="rbtn" style="font-size:11px;padding:6px 12px;color:var(--text3)" onclick="clearToken()">⚙ reset</button>
-        <button class="rbtn" id="rbtn" onclick="load()">
-          <div class="spin" id="spin"></div>
-          <span id="rl">↻ refresh</span>
-        </button>
-      </div>
-    </div>
-    <div id="errbox" class="errbox" style="display:none"></div>
-    <div id="dash"></div>
-  </div>
-
 </div>
+
+<div id="main" style="display:none">
+<div class="page">
+  <nav class="nav">
+    <div class="nav-logo">Health <span>Centre</span></div>
+    <div class="nav-meta">
+      <div class="live-dot"></div>
+      <span id="sub">loading...</span>
+      <button class="rbtn" onclick="clearToken()" style="padding:4px 10px;font-size:10px;color:var(--text3)">⚙</button>
+      <button class="rbtn" id="rbtn" onclick="load()">
+        <div class="spin" id="spin"></div>
+        <span id="rl">↻ refresh</span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="errbox" class="err" style="display:none"></div>
+  <div id="dash"></div>
+</div>
+</div>
+
 <script>
-const REPO = 'somogyif/health';
-const FILE = 'data.json';
+const REPO='somogyif/health', FILE='data.json';
+const getToken=()=>localStorage.getItem('gh_token')||'';
+const saveToken=()=>{const t=document.getElementById('ghToken').value.trim();if(!t){alert('Enter your GitHub token');return;}localStorage.setItem('gh_token',t);showMain();};
+const clearToken=()=>{localStorage.removeItem('gh_token');location.reload();};
 
-const getToken   = () => localStorage.getItem('gh_token') || '';
-const saveToken  = () => { const t=document.getElementById('ghToken').value.trim(); if(!t){alert('Please enter your GitHub token');return;} localStorage.setItem('gh_token',t); showMain(); };
-const clearToken = () => { localStorage.removeItem('gh_token'); location.reload(); };
-
-window.addEventListener('DOMContentLoaded', () => {
-  if(getToken()) showMain(); else document.getElementById('setup').style.display='block';
+window.addEventListener('DOMContentLoaded',()=>{
+  if(getToken()) showMain();
+  else { document.getElementById('setup').style.display='flex'; }
 });
 
 function showMain(){
@@ -163,338 +330,356 @@ function showMain(){
 }
 
 async function fetchData(){
-  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
     headers:{'Authorization':'Bearer '+getToken(),'Accept':'application/vnd.github.raw+json'},
     signal:AbortSignal.timeout(10000)
   });
-  if(!res.ok) throw new Error(`GitHub returned ${res.status}`);
+  if(!res.ok) throw new Error(`GitHub ${res.status}`);
   return res.json();
 }
 
 let CHS=[];
-function killCharts(){ CHS.forEach(c=>{try{c.destroy()}catch(e){}}); CHS=[]; }
-function mkChart(id,cfg){ const el=document.getElementById(id); if(!el)return; CHS.push(new Chart(el,cfg)); }
+function killCharts(){CHS.forEach(c=>{try{c.destroy()}catch(e){}});CHS=[];}
+function mkChart(id,cfg){const el=document.getElementById(id);if(!el)return;CHS.push(new Chart(el,cfg));}
 
-function fmt(v,u=''){ return v!=null?`${v}${u}`:'—'; }
-const sc = s=>(s||'').includes('Upper')?'var(--blue)':'var(--teal)';
-const gc='rgba(255,255,255,0.06)', tc='#5a5852';
-
-function readinessColor(s){ return s>=85?'var(--teal)':s>=70?'var(--amber)':'var(--red)'; }
-function scoreColor(s){ return s>=75?'var(--teal)':s>=55?'var(--amber)':'var(--red)'; }
-function verdictBadge(v){ return v==='good'?'<span class="bge bt">good</span>':v==='warn'?'<span class="bge br">fix rest</span>':'<span class="bge ba">ok</span>'; }
+const gc='rgba(255,255,255,0.05)', tc='#4a4845';
+const scoreColor=s=>s>=85?'var(--teal)':s>=65?'var(--amber)':'var(--red)';
+const verdictClass=s=>s>=85?'':'amber '+(s>=65?'':'red ');
+const fmt=(v,u='')=>v!=null?`${v}${u}`:'—';
 
 function render(d){
   killCharts();
-  const g    = d.garmin||{};
-  const bc   = d.body_comp||{};
-  const wks  = d.workouts||[];
-  const wq   = d.workouts_quality||[];
-  const goals= d.goals||[];
-  const recs = d.recs||[];
-  const bbt  = d.bb_trend||{labels:[],wake:[],drain:[]};
-  const rw   = d.readiness_week||[];
-  const sw   = d.stress_week||{labels:[],stress:[],bb_charged:[]};
-  const ss   = d.sleep_scores||{labels:[],scores:[]};
-  const tl   = d.training_load||{};
-  const str  = d.streaks||{};
+  const g=d.garmin||{}, bc=d.body_comp||{}, goals=d.goals||[], recs=d.recs||[];
+  const bbt=d.bb_trend||{labels:[],wake:[],drain:[]};
+  const rw=d.readiness_week||[];
+  const sw=d.stress_week||{labels:[],stress:[],bb_charged:[]};
+  const ss=d.sleep_scores||{labels:[],scores:[]};
+  const tl=d.training_load||{};
+  const str=d.streaks||{};
+  const wq=d.workouts_quality||[];
+  const wks=d.workouts||[];
 
-  const syncedAt = d.synced_at ? new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
-  document.getElementById('sub').innerHTML = `data.json on github <span class="sp bt">auto-synced · ${syncedAt}</span>`;
+  const syncedAt=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+  document.getElementById('sub').innerHTML=`synced ${syncedAt}`;
 
-  const sleepOk    = (g.sleep_hours||0)>=7.5;
-  const sleepLabel = g.sleep_missing?'Missing':`${g.sleep_hours}h`;
-  const sleepBadge = g.sleep_missing?'<span class="bge br">fix this first</span>':'<span class="bge bt">great sleep</span>';
-  const sleepSub   = g.sleep_missing?'watch not worn overnight':'watch worn to bed ✓';
+  const readScore=g.readiness_score||51;
+  const readLevel=g.readiness_level||'MODERATE';
+  const bioAge=g.fitness_age?g.fitness_age.toFixed(1):'25.8';
+  const chronoAge=g.chrono_age||29;
+  const achieveAge=g.achievable_age?g.achievable_age.toFixed(1):'21.1';
+  const ageDiff=(chronoAge-parseFloat(bioAge)).toFixed(1);
+  const vigorousDays=g.vigorous_days!=null?parseFloat(g.vigorous_days).toFixed(1):'0.1';
+  const vigorousPct=Math.min(100,Math.round(parseFloat(vigorousDays)/(g.vigorous_target||3)*100));
 
-  // Biological age
-  const bioAge     = g.fitness_age ? g.fitness_age.toFixed(1) : '25.8';
-  const chronoAge  = g.chrono_age||29;
-  const achieveAge = g.achievable_age ? g.achievable_age.toFixed(1) : '21.1';
-  const ageDiff    = (chronoAge-parseFloat(bioAge)).toFixed(1);
-  const vigorousDays = g.vigorous_days!=null ? g.vigorous_days.toFixed(1) : '0.1';
-  const vigorousPct  = Math.min(100,Math.round((parseFloat(vigorousDays))/(g.vigorous_target||3)*100));
+  const sleepLabel=g.sleep_missing?'—':`${g.sleep_hours}h`;
+  const sleepOk=(g.sleep_hours||0)>=7.5;
 
-  // Recovery readiness
-  const readScore = g.readiness_score||51;
-  const readLevel = g.readiness_level||'MODERATE';
-  const readSleepScore = g.readiness_sleep_score||57;
-  const readHrvPct = g.readiness_hrv_pct||83;
-  const readStressPct = g.readiness_stress_pct||32;
+  // Daily verdict
+  const verdicts={
+    PRIME:  {text:'Prime condition', sub:'Your body is fully charged. Push hard today.', cls:''},
+    HIGH:   {text:'Well recovered',  sub:'Recovery is solid. Good day to train.', cls:''},
+    MODERATE:{text:'Moderate recovery',sub:'Train if needed, but prioritise sleep tonight.', cls:'amber '},
+    LOW:    {text:'Focus on rest',   sub:'Low readiness today. Light movement only.', cls:'red '},
+  };
+  const v=verdicts[readLevel]||verdicts.MODERATE;
+  const heroScoreClass=readScore>=85?'teal':readScore>=65?'amber':'red';
 
-  document.getElementById('dash').innerHTML = `
+  document.getElementById('dash').innerHTML=`
 
-    <div class="sec"><div class="lbl">Today's snapshot — ${g.date||'—'}</div>
-    <div class="g4">
-      <div class="mt"><div class="ml">Body battery</div><div class="mv am">${fmt(g.bb_current)}</div><div class="ms">charged ${fmt(g.bb_charged)} · −${fmt(g.bb_drained)} drained</div><span class="bge ba">check tonight</span></div>
-      <div class="mt"><div class="ml">Resting HR</div><div class="mv">${fmt(g.resting_hr,' bpm')}</div><div class="ms">7-day avg: ${fmt(g.rhr_avg,' bpm')}</div><span class="bge ba">monitor</span></div>
-      <div class="mt"><div class="ml">HRV status</div><div class="mv tl" style="font-size:20px;padding-top:3px">${g.hrv_status||'—'}</div><div class="ms">weekly avg: ${fmt(g.hrv_weekly,' ms')}</div><span class="bge bt">baseline 40–56 ms</span></div>
-      <div class="mt"><div class="ml">Steps</div><div class="mv">${g.steps!=null?g.steps.toLocaleString():'—'}</div><div class="ms">goal: 5,670</div>${(g.steps||0)>=5670?'<span class="bge bt">✓ goal met</span>':'<span class="bge ba">in progress</span>'}</div>
-      <div class="mt"><div class="ml">Avg stress</div><div class="mv ${(g.avg_stress||0)>50?'am':'tl'}">${fmt(g.avg_stress)}</div><div class="ms">&nbsp;</div><span class="bge ${(g.avg_stress||0)>50?'ba':'bt'}">${(g.avg_stress||0)>50?'medium-high':'low — good'}</span></div>
-      <div class="mt"><div class="ml">Active kcal</div><div class="mv">${fmt(g.active_kcal)}</div><div class="ms">total: ${fmt(g.total_kcal)} kcal</div><span class="bge bb">today's activity</span></div>
-      <div class="mt"><div class="ml">Sleep</div><div class="mv tl" style="font-size:20px;padding-top:3px">${sleepLabel}</div><div class="ms">${sleepSub}</div>${sleepBadge}</div>
-      <div class="mt"><div class="ml">HRV last night</div><div class="mv tl">${fmt(g.hrv_last_night,' ms')}</div><div class="ms">weekly avg: ${fmt(g.hrv_weekly,' ms')}</div><span class="bge bt">above baseline ✓</span></div>
-    </div></div>
-
-    <div class="sec"><div class="lbl">Recovery score — garmin training readiness</div>
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem">
-        <div style="position:relative;width:110px;height:110px;flex-shrink:0">
-          <canvas id="recoveryRing" width="110" height="110" role="img" aria-label="Recovery score donut chart">${readScore}/100</canvas>
-        </div>
-        <div style="flex:1;min-width:180px">
-          <div style="font-size:14px;font-weight:500;margin-bottom:2px">${readLevel==='PRIME'?'Prime — ready for action':readLevel==='HIGH'?'High — well recovered':readLevel==='LOW'?'Low — take it easy':'Moderate — focus on energy'}</div>
-          <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:12px">garmin training readiness</div>
-          <div class="score-row"><span style="color:var(--text2)">Sleep score</span><span style="font-family:var(--mono);font-size:11px;color:${readSleepScore>=80?'var(--teal)':readSleepScore>=65?'var(--amber)':'var(--red)'}">${readSleepScore} / 100</span></div>
-          <div class="score-row"><span style="color:var(--text2)">HRV factor</span><span style="font-family:var(--mono);font-size:11px;color:${readHrvPct>=75?'var(--teal)':'var(--amber)'}">${readHrvPct}%</span></div>
-          <div class="score-row"><span style="color:var(--text2)">Recovery time</span><span style="font-family:var(--mono);font-size:11px;color:var(--teal)">98% ✓</span></div>
-          <div class="score-row"><span style="color:var(--text2)">Stress history</span><span style="font-family:var(--mono);font-size:11px;color:${readStressPct>=60?'var(--teal)':readStressPct>=40?'var(--amber)':'var(--red)'}">${readStressPct}%</span></div>
-          <div class="score-row"><span style="color:var(--text2)">Training load</span><span style="font-family:var(--mono);font-size:11px;color:var(--teal)">100% ✓</span></div>
-        </div>
+  <div class="hero">
+    <div>
+      <div class="hero-verdict ${v.cls}">
+        <span class="accent">${v.text.split(' ')[0]}</span> ${v.text.split(' ').slice(1).join(' ')}
       </div>
-      <hr>
-      <div class="lbl" style="margin-bottom:10px;margin-top:.75rem">readiness this week</div>
-      <div style="display:grid;grid-template-columns:repeat(${rw.length||6},1fr);gap:6px">
-        ${rw.map(r=>`<div style="text-align:center"><div style="font-size:18px;font-weight:500;color:${readinessColor(r.score)}">${r.score}</div><div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:2px;line-height:1.3">${r.date.split(' ')[0]}<br>${r.date.split(' ')[1]}</div></div>`).join('')}
-      </div>
-    </div></div>
+      <div class="hero-sub">${v.sub} Readiness driven by ${readScore>=75?'good HRV and recovery time':'sleep quality today — score ' + (g.readiness_sleep_score||57) + '/100'}.</div>
+    </div>
+    <div class="hero-score">
+      <div class="hero-score-num ${heroScoreClass}">${readScore}</div>
+      <div class="hero-score-label">readiness / 100</div>
+    </div>
+  </div>
 
-    <div class="sec"><div class="lbl">Streak tracker</div>
-    <div class="g3">
-      <div class="streak-box">
-        <div class="streak-num" style="color:var(--teal)">${str.watch_nights||5}</div>
-        <div class="streak-label">nights watch<br>worn to bed</div>
-        <div class="dot-row">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(str.watch_nights||5))?'dot-on':'dot-off'}"></div>`).join('')}</div>
-        <div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:6px">started 18 may · keep going</div>
-      </div>
-      <div class="streak-box">
-        <div class="streak-num" style="color:var(--red)">${str.training_weeks_4x||0}</div>
-        <div class="streak-label">weeks hitting<br>4× training</div>
-        <div class="dot-row">${[0,1,2,3].map(i=>`<div class="dot ${i<(str.training_weeks_4x||0)?'dot-on':'dot-off'}"></div>`).join('')}</div>
-        <div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:6px">avg ~2×/wk past month</div>
-      </div>
-      <div class="streak-box">
-        <div class="streak-num" style="color:${(str.days_since_session||5)>3?'var(--red)':'var(--amber)'}">${str.days_since_session||5}</div>
-        <div class="streak-label">days since<br>last session</div>
-        <div class="dot-row">${[0,1,2,3,4].map(i=>`<div class="dot ${i===0?'dot-on':'dot-off'}"></div>`).join('')}</div>
-        <div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:6px">last: upper 2 · 17 may ⚠</div>
-      </div>
-    </div></div>
+  <div class="metrics-row">
+    <div class="metric-cell">
+      <div class="metric-cell-label">Sleep</div>
+      <div class="metric-cell-value ${sleepOk?'mc-teal':'mc-amber'}">${sleepLabel}</div>
+      <div class="metric-cell-sub">${g.sleep_missing?'watch not worn':'watch worn to bed ✓'}</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Body battery</div>
+      <div class="metric-cell-value ${(g.bb_current||0)>=50?'mc-teal':'mc-amber'}">${fmt(g.bb_current)}</div>
+      <div class="metric-cell-sub">charged ${fmt(g.bb_charged)} · −${fmt(g.bb_drained)} drained</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Resting HR</div>
+      <div class="metric-cell-value mc-white">${fmt(g.resting_hr)}<span style="font-size:14px;font-weight:400;color:var(--text2)"> bpm</span></div>
+      <div class="metric-cell-sub">HRV ${fmt(g.hrv_weekly,' ms')} · ${g.hrv_status||'Balanced'}</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Steps today</div>
+      <div class="metric-cell-value ${(g.steps||0)>=5670?'mc-teal':'mc-white'}">${g.steps!=null?g.steps.toLocaleString():'—'}</div>
+      <div class="metric-cell-sub">goal 5,670 · ${(g.steps||0)>=5670?'✓ done':'in progress'}</div>
+    </div>
+  </div>
 
-    <div class="sec"><div class="lbl">Training load — acute vs chronic</div>
-    <div class="card">
-      <div class="g4" style="margin-bottom:1rem">
-        <div class="mt"><div class="ml">Acute load (7d)</div><div class="mv rd">${tl.acute||10}</div><div class="ms">vs chronic: ${tl.chronic||137}</div><span class="bge br">undertrained</span></div>
-        <div class="mt"><div class="ml">Chronic load (28d)</div><div class="mv am">${tl.chronic||137}</div><div class="ms">target: ${tl.aerobic_low_min||97}–${tl.aerobic_low_max||261}</div><span class="bge ba">within range</span></div>
-        <div class="mt"><div class="ml">Aerobic low</div><div class="mv tl">${tl.aerobic_low||101}</div><div class="ms">target: ${tl.aerobic_low_min||97}–${tl.aerobic_low_max||261}</div><span class="bge bt">✓ on target</span></div>
-        <div class="mt"><div class="ml">Aerobic high</div><div class="mv rd">${tl.aerobic_high||0}</div><div class="ms">target: ${tl.aerobic_high_min||203}–${tl.aerobic_high_max||368}</div><span class="bge br">critical shortage</span></div>
-      </div>
-      <div style="font-size:12px;color:var(--text2);line-height:1.6;padding-top:.75rem;border-top:.5px solid var(--border)">
-        Status: <strong style="color:var(--amber)">Recovery</strong> — aerobic high-intensity load is at zero. HYROX on Saturday directly fixes this. Acute:chronic ratio of ${tl.acute&&tl.chronic?(tl.acute/tl.chronic).toFixed(2):'0.07'} — body has minimal recent stimulus.
-      </div>
-    </div></div>
-
-    <div class="sec"><div class="lbl">Sleep consistency</div>
-    <div class="card">
-      <div class="g2" style="margin-bottom:1rem">
-        <div class="mt"><div class="ml">Sleep score avg</div><div class="mv am">${ss.scores&&ss.scores.length?Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length):'74'}</div><div class="ms">range: ${ss.scores&&ss.scores.length?Math.min(...ss.scores):'57'}–${ss.scores&&ss.scores.length?Math.max(...ss.scores):'91'} this week</div><span class="bge ba">variable</span></div>
-        <div class="mt"><div class="ml">Consistency score</div><div class="mv am">68%</div><div class="ms">variation: ±14 pts</div><span class="bge ba">needs work</span></div>
-      </div>
-      <div class="cw" style="height:150px">
-        <canvas id="sleepChart" role="img" aria-label="Sleep scores by night this week">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+ss.scores[i]).join(', ')}</canvas>
-      </div>
-      <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:8px">best: 18 may (91) · worst: 22 may (57) · trend: declining ↓ · fix: consistent bedtime</div>
-    </div></div>
-
-    <div class="sec"><div class="lbl">Workout quality — last 4 sessions</div>
-    <div class="card">
-      ${wq.map(w=>`
-        <div class="wr">
-          <div class="wda">${w.date}<br><span style="color:${sc(w.name)}">${w.name.toLowerCase()}</span></div>
-          <div>
-            <div style="font-size:11px;font-family:var(--mono);color:var(--text2);margin-bottom:3px">${w.dur}min · avg ${w.hr}bpm · ${w.kcal}kcal</div>
-            <div style="font-size:11px;color:var(--text3)">${w.note}</div>
-            <div class="hbr" style="margin-top:5px"><span style="min-width:28px">z2</span><div class="hbb"><div class="hbf" style="width:${w.z2}%;background:var(--amber)"></div></div><span>${w.z2}%</span></div>
-            ${w.z3>0?`<div class="hbr"><span style="min-width:28px">z3+</span><div class="hbb"><div class="hbf" style="width:${w.z3}%;background:var(--red)"></div></div><span>${w.z3}%</span></div>`:''}
-          </div>
-          <div style="text-align:center;min-width:50px">
-            <div style="font-size:22px;font-weight:300;color:${scoreColor(w.score)}">${w.score}</div>
-            <div style="font-size:9px;color:var(--text3);font-family:var(--mono)">quality</div>
-            ${verdictBadge(w.verdict)}
-          </div>
-        </div>`).join('')}
-      <div style="font-size:10px;color:var(--text3);font-family:var(--mono);padding-top:10px;border-top:.5px solid var(--border);margin-top:2px">score = duration + load + zone distribution + rest compliance · 100 = perfect session</div>
-    </div></div>
-
-    <div class="sec"><div class="lbl">Stress vs recovery balance</div>
-    <div class="card">
-      <div class="cw" style="height:190px">
-        <canvas id="stressChart" role="img" aria-label="Stress vs recovery balance chart">Avg stress ranged 24–51, body battery charge ranged 43–69 where available.</canvas>
-      </div>
-      <div class="leg" style="margin-top:8px">
-        <div class="li"><div class="ld" style="background:var(--red);border-radius:0;height:2px;width:14px"></div>avg stress</div>
-        <div class="li"><div class="ld" style="background:var(--teal);border-radius:0;height:2px;width:14px;border-top:2px dashed var(--teal)"></div>battery charged overnight</div>
-      </div>
-      <div style="font-size:12px;color:var(--text2);line-height:1.6;padding-top:.75rem;border-top:.5px solid var(--border);margin-top:.75rem">
-        Best night (18 May): stress 37, charged 69. Today stress is low (24) but recovery is weak (43) — sleep quality is the bottleneck, not daytime stress.
-      </div>
-    </div></div>
-
-    <div class="sec"><div class="lbl">Biological age</div>
-    <div class="g2">
+  <div class="zone">
+    <div class="zone-header"><div class="zone-label">Recovery & readiness</div><div class="zone-line"></div></div>
+    <div class="g2" style="margin-bottom:12px">
       <div class="card">
-        <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1rem;flex-wrap:wrap">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem">
           <div>
-            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">garmin fitness age</div>
-            <div style="font-size:48px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--teal)">${bioAge}<span style="font-size:16px;color:var(--text3);font-weight:300"> yrs</span></div>
-            <div style="font-size:12px;color:var(--text2);margin-top:6px">actual: ${chronoAge} · <span style="color:var(--teal)">${ageDiff}yrs younger</span></div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Readiness factors</div>
+            <div style="font-family:var(--syne);font-size:15px;font-weight:600">${readLevel==='PRIME'?'Ready for action':readLevel==='HIGH'?'Well recovered':readLevel==='LOW'?'Take it easy':'Focus on energy'}</div>
           </div>
-          <div style="flex:1;min-width:140px">
-            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:6px">age range (20–40)</div>
-            <div style="position:relative;height:6px;background:var(--surface3);border-radius:3px;overflow:visible;margin-bottom:16px">
-              <div style="position:absolute;inset:0;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--amber),var(--red))"></div>
-              <div style="position:absolute;top:-5px;height:16px;width:2px;background:var(--teal);border-radius:1px;left:5%"></div>
-              <div style="position:absolute;top:-7px;height:20px;width:3px;background:#fff;border-radius:2px;left:29%"></div>
-              <div style="position:absolute;top:-4px;height:14px;width:2px;background:var(--amber);border-radius:1px;left:45%"></div>
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:10px;font-family:var(--mono);color:var(--text3)">
-              <span><span style="color:#fff">●</span> current ${bioAge}</span>
-              <span><span style="color:var(--amber)">●</span> actual ${chronoAge}</span>
-              <span><span style="color:var(--teal)">●</span> achievable ${achieveAge}</span>
-            </div>
+          <div style="position:relative;width:80px;height:80px;flex-shrink:0">
+            <canvas id="recoveryRing" width="80" height="80" role="img" aria-label="Readiness score">${readScore}/100</canvas>
           </div>
         </div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.6">Your body is functioning <strong style="color:var(--teal)">${ageDiff} years younger</strong> than your calendar age. With consistent training you could reach <strong style="color:var(--teal)">${achieveAge}</strong>.</div>
-      </div>
-      <div class="card">
-        <div class="lbl" style="margin-bottom:12px">age drivers</div>
         ${[
-          {l:'Resting HR',v:`${g.resting_hr||64} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
-          {l:'HRV',v:`${g.hrv_weekly||42} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
-          {l:'Vigorous activity',v:`${vigorousDays}d/wk`,c:(parseFloat(vigorousDays)<1?'var(--red)':'var(--amber)'),w:vigorousPct,note:'target 3d/wk — #1 lever'},
-          {l:'BMI',v:`${bc.bmi||23.1}`,c:'var(--teal)',w:72,note:'normal range ✓'},
-          {l:'Body fat',v:`${bc.fat_pct||21}%`,c:'var(--amber)',w:40,note:'target 16–17%'},
+          {l:'Sleep score',v:`${g.readiness_sleep_score||57}/100`,c:(g.readiness_sleep_score||57)>=80?'var(--teal)':(g.readiness_sleep_score||57)>=65?'var(--amber)':'var(--red)',w:(g.readiness_sleep_score||57)},
+          {l:'HRV factor',v:`${g.readiness_hrv_pct||83}%`,c:(g.readiness_hrv_pct||83)>=75?'var(--teal)':'var(--amber)',w:(g.readiness_hrv_pct||83)},
+          {l:'Stress history',v:`${g.readiness_stress_pct||32}%`,c:(g.readiness_stress_pct||32)>=60?'var(--teal)':(g.readiness_stress_pct||32)>=40?'var(--amber)':'var(--red)',w:(g.readiness_stress_pct||32)},
+          {l:'Recovery time',v:'98%',c:'var(--teal)',w:98},
         ].map(r=>`
           <div style="margin-bottom:10px">
             <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">${r.l}</span><span style="font-family:var(--mono);font-size:11px;color:${r.c}">${r.v}</span></div>
-            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:${r.w}%;height:100%;background:${r.c};border-radius:2px"></div></div>
-            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px">${r.note}</div>
+            <div style="height:2px;background:var(--surface3);border-radius:1px;overflow:hidden"><div style="width:${r.w}%;height:100%;background:${r.c};border-radius:1px"></div></div>
           </div>`).join('')}
       </div>
-    </div></div>
-
-    <div class="sec"><div class="lbl">Body composition — ${bc.date||'—'}</div>
-    <div class="g2">
       <div class="card">
-        <div class="g4" style="margin-bottom:1rem">
-          <div class="mt"><div class="ml">Weight</div><div class="mv">${fmt(bc.weight,' kg')}</div></div>
-          <div class="mt"><div class="ml">Body fat</div><div class="mv am">${fmt(bc.fat_pct,'%')}</div><span class="bge ba">target 16–17%</span></div>
-          <div class="mt"><div class="ml">Lean mass</div><div class="mv tl">${fmt(bc.lean_kg,' kg')}</div><span class="bge bt">protect this</span></div>
-          <div class="mt"><div class="ml">BMI</div><div class="mv">${fmt(bc.bmi)}</div><span class="bge bg2">normal</span></div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Readiness this week</div>
+        <div class="rw-grid">
+          ${rw.map(r=>`<div class="rw-cell"><div class="rw-score" style="color:${scoreColor(r.score)}">${r.score}</div><div class="rw-date">${r.date.split(' ')[0]}<br>${r.date.split(' ')[1]}</div></div>`).join('')}
         </div>
-        <div class="cw" style="height:90px"><canvas id="compChart" role="img" aria-label="Body composition bar">Lean ${bc.lean_kg}kg vs Fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg</canvas></div>
-        <div class="leg" style="margin-top:8px">
-          <div class="li"><div class="ld" style="background:var(--teal)"></div>lean ${bc.lean_kg} kg (${bc.weight?Math.round(bc.lean_kg/bc.weight*100):'?'}%)</div>
-          <div class="li"><div class="ld" style="background:var(--amber)"></div>fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'} kg (${bc.fat_pct}%)</div>
+        <hr class="divider">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Stress vs recovery</div>
+        <div class="cw" style="height:120px">
+          <canvas id="stressChart" role="img" aria-label="Stress vs body battery chart">Stress and recovery balance over the past week.</canvas>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--text3)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--red);display:inline-block"></span>stress</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>battery charged</span>
         </div>
       </div>
+    </div>
+    <div class="g3">
+      <div class="streak-card">
+        <div class="streak-num" style="color:var(--teal)">${str.watch_nights||5}</div>
+        <div class="streak-label">nights watch worn to bed</div>
+        <div class="dot-row">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(str.watch_nights||5))?'dot-on':'dot-off'}"></div>`).join('')}</div>
+        <div class="streak-note">started 18 may · keep going</div>
+      </div>
+      <div class="streak-card">
+        <div class="streak-num" style="color:var(--red)">${str.training_weeks_4x||0}</div>
+        <div class="streak-label">weeks hitting 4× training</div>
+        <div class="dot-row">${[0,1,2,3].map(i=>`<div class="dot ${i<(str.training_weeks_4x||0)?'dot-on':'dot-off'}"></div>`).join('')}</div>
+        <div class="streak-note">avg ~2×/wk past month</div>
+      </div>
+      <div class="streak-card">
+        <div class="streak-num" style="color:${(str.days_since_session||5)>3?'var(--red)':'var(--amber)'}">${str.days_since_session||5}</div>
+        <div class="streak-label">days since last session</div>
+        <div class="dot-row">${[0,1,2,3,4].map(i=>`<div class="dot ${i===0?'dot-on':'dot-off'}"></div>`).join('')}</div>
+        <div class="streak-note">last: upper 2 · 17 may</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="zone">
+    <div class="zone-header"><div class="zone-label">Training</div><div class="zone-line"></div></div>
+    <div class="g2" style="margin-bottom:12px">
       <div class="card">
-        <div class="lbl" style="margin-bottom:14px">Goals progress</div>
-        ${goals.map(g2=>`<div class="gr"><div class="grl">${g2.label}</div><div class="gbw"><div class="gbb"><div class="gbf" style="width:${g2.pct}%;background:${g2.color}"></div></div><div class="gvs"><span>${g2.current}</span><span>${g2.target}</span></div></div></div>`).join('')}
-      </div>
-    </div></div>
-
-    <div class="sec"><div class="lbl">Recovery — body battery trend</div>
-    <div class="card">
-      <div class="cw" style="height:180px"><canvas id="bbChart" role="img" aria-label="Body battery trend">Wake-up battery trend over past weeks.</canvas></div>
-      <div class="leg">
-        <div class="li"><div class="ld" style="background:var(--teal)"></div>wake-up battery</div>
-        <div class="li"><div class="ld" style="background:var(--amber);border-radius:0;height:2px;width:14px"></div>points drained</div>
-      </div>
-    </div></div>
-
-    <div class="sec"><div class="lbl">Recent workouts</div>
-    <div class="card">
-      ${wks.length===0?'<div style="color:var(--text3);font-family:var(--mono);font-size:12px">No workouts found</div>':
-        wks.map(w=>`
-          <div class="wr">
-            <div class="wda">${w.date}<br><span style="color:${sc(w.title)}">${(w.title||'').toLowerCase()}</span></div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Workout quality — last 4 sessions</div>
+        ${wq.map(w=>`
+          <div class="wq-row">
+            <div class="wq-date">${w.date.split(' ')[0]}<br><span style="font-size:9px">${w.date.split(' ')[1]}</span><br><span style="color:${w.name.includes('Upper')?'var(--blue)':'var(--teal)'}">${w.name.split(' ')[0].toLowerCase()}</span></div>
             <div>
-              <div class="wn">${w.title||'—'} <span style="font-size:11px;color:var(--text3);font-weight:300">${w.duration||''}</span></div>
-              <div style="margin-top:4px">${(w.exercises||[]).map(e=>`<span style="display:inline-block;font-size:10px;padding:1px 7px;border-radius:12px;border:.5px solid var(--border2);color:var(--text3);font-family:var(--mono);margin:2px 2px 0 0">${e.name} ${e.weight}kg×${e.reps}</span>`).join('')}</div>
+              <div class="wq-name">${w.name}</div>
+              <div class="wq-detail">${w.dur}min · avg ${w.hr}bpm · ${w.kcal}kcal</div>
+              <div class="wq-note">${w.note}</div>
+              <div class="bar-row"><span style="min-width:20px">z2</span><div class="bar-bg"><div class="bar-fill" style="width:${w.z2}%;background:var(--amber)"></div></div><span>${w.z2}%</span></div>
+              ${w.z3>0?`<div class="bar-row"><span style="min-width:20px">z3+</span><div class="bar-bg"><div class="bar-fill" style="width:${w.z3}%;background:var(--red)"></div></div><span>${w.z3}%</span></div>`:''}
+            </div>
+            <div class="wq-score">
+              <div class="wq-score-num" style="color:${scoreColor(w.score)}">${w.score}</div>
+              <div class="wq-score-label">quality</div>
             </div>
           </div>`).join('')}
-    </div></div>
-
-    <div class="sec"><div class="lbl">Active recommendations</div>
-    <div class="card">
+      </div>
+      <div class="card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Training load</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem">
+          ${[
+            {l:'Acute (7d)',v:tl.acute||10,c:'var(--red)',note:'vs chronic 137'},
+            {l:'Chronic (28d)',v:tl.chronic||137,c:'var(--amber)',note:'target 110–206'},
+            {l:'Aerobic low',v:tl.aerobic_low||101,c:'var(--teal)',note:'✓ on target'},
+            {l:'Aerobic high',v:tl.aerobic_high||0,c:'var(--red)',note:'critical shortage'},
+          ].map(m=>`
+            <div class="mm">
+              <div class="mm-label">${m.l}</div>
+              <div class="mm-value" style="color:${m.c}">${m.v}</div>
+              <div class="mm-sub">${m.note}</div>
+            </div>`).join('')}
+        </div>
+        <hr class="divider">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Sleep scores this week</div>
+        <div class="cw" style="height:110px">
+          <canvas id="sleepChart" role="img" aria-label="Sleep scores by night">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+ss.scores[i]).join(', ')}</canvas>
+        </div>
+      </div>
+    </div>
+    <div class="card card-sm">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Active recommendations</div>
       ${recs.map(r=>`
-        <div class="rr">
-          <div class="rdot" style="background:${r.level==='red'?'var(--red)':r.level==='amber'?'var(--amber)':'var(--teal)'}"></div>
-          <div><div class="rt">${r.title}</div><div class="rb">${r.body}</div></div>
+        <div class="rec">
+          <div class="rec-dot" style="background:${r.level==='red'?'var(--red)':r.level==='amber'?'var(--amber)':'var(--teal)'}"></div>
+          <div><div class="rec-title">${r.title}</div><div class="rec-body">${r.body}</div></div>
         </div>`).join('')}
-    </div></div>
+    </div>
+  </div>
 
-    <div class="sec"><div class="lbl">Muscle group coverage</div>
-    <div class="mg">
-      ${[
-        {n:'Chest',p:85,s:'well covered'},{n:'Back',p:90,s:'excellent'},
-        {n:'Shoulders',p:80,s:'rear delt added'},{n:'Biceps',p:80,s:'good'},
-        {n:'Triceps',p:75,s:'just added ✨'},{n:'Quads',p:90,s:'excellent'},
-        {n:'Hamstrings',p:85,s:'RDL + curl'},{n:'Abs',p:70,s:'leg raise added'},
-        {n:'Calves',p:85,s:'two variations'}
-      ].map(m=>`<div class="mtl"><div class="mn">${m.n}</div><div class="mbb"><div class="mbf" style="width:${m.p}%;background:${m.p>=85?'var(--teal)':'var(--amber)'}"></div></div><div class="mst">${m.s}</div></div>`).join('')}
-    </div></div>
+  <div class="zone">
+    <div class="zone-header"><div class="zone-label">Body & trends</div><div class="zone-line"></div></div>
+    <div class="g2" style="margin-bottom:12px">
+      <div class="card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Biological age</div>
+        <div style="display:flex;align-items:flex-end;gap:1rem;margin-bottom:.75rem">
+          <div class="bio-age-big">${bioAge}</div>
+          <div style="padding-bottom:8px">
+            <div style="font-size:12px;color:var(--text2)">fitness age</div>
+            <div style="font-family:var(--syne);font-size:13px;font-weight:600;color:var(--teal)">+${ageDiff}yrs younger than ${chronoAge}</div>
+          </div>
+        </div>
+        <div class="age-bar">
+          <div class="age-bar-fill"></div>
+          <div class="age-marker" style="left:5%;width:2px;height:16px;top:-5px;background:var(--teal)"></div>
+          <div class="age-marker" style="left:29%;width:3px;height:20px;top:-7px;background:#fff;box-shadow:0 0 4px rgba(255,255,255,.4)"></div>
+          <div class="age-marker" style="left:45%;width:2px;height:14px;top:-4px;background:var(--amber)"></div>
+        </div>
+        <div style="display:flex;gap:12px;font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:1.25rem">
+          <span><span style="color:#fff">●</span> now ${bioAge}</span>
+          <span><span style="color:var(--amber)">●</span> actual ${chronoAge}</span>
+          <span><span style="color:var(--teal)">●</span> possible ${achieveAge}</span>
+        </div>
+        ${[
+          {l:'Resting HR',v:`${g.resting_hr||65} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
+          {l:'HRV',v:`${g.hrv_weekly||41} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
+          {l:'Vigorous activity',v:`${vigorousDays}d/wk`,c:parseFloat(vigorousDays)<1?'var(--red)':'var(--amber)',w:vigorousPct,note:'target 3d/wk'},
+          {l:'Body fat',v:`${bc.fat_pct||21}%`,c:'var(--amber)',w:40,note:'target 16–17%'},
+        ].map(r=>`
+          <div class="age-driver">
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">${r.l}</span><span style="font-family:var(--mono);font-size:11px;color:${r.c}">${r.v}</span></div>
+              <div class="age-driver-bar" style="width:${r.w}%;background:${r.c}"></div>
+              <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px">${r.note}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Body composition</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem">
+          <div class="mm"><div class="mm-label">Weight</div><div class="mm-value mc-white">${fmt(bc.weight,' kg')}</div></div>
+          <div class="mm"><div class="mm-label">Body fat</div><div class="mm-value mc-amber">${fmt(bc.fat_pct,'%')}</div><div class="mm-sub">target 16–17%</div></div>
+          <div class="mm"><div class="mm-label">Lean mass</div><div class="mm-value mc-teal">${fmt(bc.lean_kg,' kg')}</div><div class="mm-sub">protect this</div></div>
+          <div class="mm"><div class="mm-label">BMI</div><div class="mm-value mc-white">${fmt(bc.bmi)}</div><div class="mm-sub">normal range</div></div>
+        </div>
+        <div class="cw" style="height:80px;margin-bottom:.75rem">
+          <canvas id="compChart" role="img" aria-label="Body composition">Lean ${bc.lean_kg}kg vs Fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg</canvas>
+        </div>
+        <div style="display:flex;gap:14px;font-family:var(--mono);font-size:10px;color:var(--text3)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--teal);border-radius:2px;display:inline-block"></span>lean ${bc.lean_kg}kg (${bc.weight?Math.round(bc.lean_kg/bc.weight*100):'?'}%)</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--amber);border-radius:2px;display:inline-block"></span>fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg (${bc.fat_pct}%)</span>
+        </div>
+        <hr class="divider">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Goals progress</div>
+        ${goals.slice(0,4).map(g2=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border)">
+            <div style="font-size:12px;color:var(--text2);min-width:100px;font-family:var(--mono)">${g2.label}</div>
+            <div style="flex:1">
+              <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:${g2.pct}%;height:100%;background:${g2.color};border-radius:2px"></div></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);min-width:70px;text-align:right">${g2.current} → ${g2.target}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="card card-sm">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Body battery trend — 6 weeks</div>
+      <div class="cw" style="height:160px">
+        <canvas id="bbChart" role="img" aria-label="Body battery trend">Wake-up battery and daily drain over past weeks.</canvas>
+      </div>
+      <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--text3)">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>wake-up battery</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--amber);display:inline-block;border-top:2px dashed var(--amber)"></span>drained</span>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="zone-header" style="margin-bottom:.75rem"><div class="zone-label">Muscle coverage</div><div class="zone-line"></div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px">
+        ${[
+          {n:'Chest',p:85,s:'well covered'},{n:'Back',p:90,s:'excellent'},
+          {n:'Shoulders',p:80,s:'rear delt ✨'},{n:'Biceps',p:80,s:'good'},
+          {n:'Triceps',p:75,s:'added ✨'},{n:'Quads',p:90,s:'excellent'},
+          {n:'Hamstrings',p:85,s:'RDL + curl'},{n:'Abs',p:70,s:'leg raise ✨'},
+          {n:'Calves',p:85,s:'two variations'}
+        ].map(m=>`
+          <div class="muscle-tile">
+            <div class="muscle-name">${m.n}</div>
+            <div class="muscle-bar"><div class="muscle-bar-fill" style="width:${m.p}%;background:${m.p>=85?'var(--teal)':'var(--amber)'}"></div></div>
+            <div class="muscle-status">${m.s}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
 
-    <div class="upd">auto-synced daily · hevy pro · garmin fenix 7x · apple health · ${syncedAt}</div>
+  <div class="upd">auto-synced daily · garmin fenix 7x · hevy pro · apple health · ${syncedAt}</div>
   `;
 
   // Recovery ring
-  mkChart('recoveryRing', {
+  mkChart('recoveryRing',{
     type:'doughnut',
-    data:{datasets:[{data:[readScore,100-readScore],backgroundColor:[readScore>=85?'#2dd4a0':readScore>=70?'#f5a623':'#ff5f5f','rgba(128,128,128,0.12)'],borderWidth:0,circumference:270,rotation:225}]},
-    options:{responsive:false,cutout:'78%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
+    data:{datasets:[{data:[readScore,100-readScore],backgroundColor:[readScore>=85?'#2dd4a0':readScore>=65?'#f5a623':'#ff5555','rgba(255,255,255,0.05)'],borderWidth:0,circumference:270,rotation:225}]},
+    options:{responsive:false,cutout:'80%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
     plugins:[{id:'ct',afterDraw(chart){
       const{ctx,chartArea:{left,top,width,height}}=chart;
-      ctx.save(); ctx.textAlign='center'; ctx.textBaseline='middle';
-      const cx=left+width/2, cy=top+height/2;
-      ctx.font='500 24px -apple-system,sans-serif';
-      ctx.fillStyle=readScore>=85?'#2dd4a0':readScore>=70?'#f5a623':'#ff5f5f';
-      ctx.fillText(readScore,cx,cy-7);
-      ctx.font='10px -apple-system,sans-serif'; ctx.fillStyle=tc;
-      ctx.fillText('/100',cx,cy+10); ctx.restore();
+      ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+      const cx=left+width/2,cy=top+height/2;
+      ctx.font='700 22px Syne,sans-serif';
+      ctx.fillStyle=readScore>=85?'#2dd4a0':readScore>=65?'#f5a623':'#ff5555';
+      ctx.fillText(readScore,cx,cy-6);
+      ctx.font='10px DM Mono,monospace';ctx.fillStyle='#4a4845';
+      ctx.fillText('/100',cx,cy+9);ctx.restore();
     }}]
   });
 
-  // Sleep scores
-  if(ss.labels&&ss.labels.length){
-    mkChart('sleepChart',{
-      type:'bar',
-      data:{labels:ss.labels,datasets:[{label:'Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'#2dd4a0':s>=65?'#f5a623':'#ff5f5f'),borderRadius:4,borderWidth:0}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:10}},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}
-    });
-  }
-
-  // Stress vs recovery
+  // Stress chart
   if(sw.labels&&sw.labels.length){
     mkChart('stressChart',{
       type:'line',
       data:{labels:sw.labels,datasets:[
-        {label:'Avg stress',data:sw.stress,borderColor:'#ff5f5f',backgroundColor:'rgba(255,95,95,0.06)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#ff5f5f',tension:0.3,fill:true},
-        {label:'BB charged overnight',data:sw.bb_charged,borderColor:'#2dd4a0',backgroundColor:'transparent',borderWidth:2,pointRadius:4,pointBackgroundColor:'#2dd4a0',tension:0.3,borderDash:[5,3],fill:false}
+        {label:'Avg stress',data:sw.stress,borderColor:'#ff5555',backgroundColor:'rgba(255,85,85,0.05)',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#ff5555',tension:0.4,fill:true},
+        {label:'BB charged',data:sw.bb_charged,borderColor:'#2dd4a0',backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'#2dd4a0',tension:0.4,borderDash:[4,3]}
       ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:10},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
   }
 
-  // Body comp
+  // Sleep chart
+  if(ss.labels&&ss.labels.length){
+    mkChart('sleepChart',{
+      type:'bar',
+      data:{labels:ss.labels,datasets:[{label:'Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'#2dd4a0':s>=65?'#f5a623':'#ff5555'),borderRadius:4,borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
+    });
+  }
+
+  // Body comp chart
   if(bc.weight&&bc.lean_kg){
     mkChart('compChart',{
       type:'bar',
       data:{labels:[''],datasets:[
-        {label:`Lean ${bc.lean_kg}kg`,data:[bc.lean_kg],backgroundColor:'#2dd4a0',borderWidth:0,borderRadius:4,borderSkipped:false},
-        {label:`Fat ${(bc.weight-bc.lean_kg).toFixed(1)}kg`,data:[bc.weight-bc.lean_kg],backgroundColor:'#f5a623',borderWidth:0,borderRadius:4,borderSkipped:false}
+        {label:`Lean`,data:[bc.lean_kg],backgroundColor:'#2dd4a0',borderWidth:0,borderRadius:4,borderSkipped:false},
+        {label:`Fat`,data:[bc.weight-bc.lean_kg],backgroundColor:'#f5a623',borderWidth:0,borderRadius:4,borderSkipped:false}
       ]},
-      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,max:90,ticks:{callback:v=>v+' kg',color:tc,font:{size:10}},grid:{color:gc}},y:{stacked:true,display:false}}}
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,max:90,ticks:{callback:v=>v+' kg',color:tc,font:{size:9}},grid:{color:gc}},y:{stacked:true,display:false}}}
     });
   }
 
@@ -503,27 +688,27 @@ function render(d){
     mkChart('bbChart',{
       type:'line',
       data:{labels:bbt.labels,datasets:[
-        {label:'Wake-up battery',data:bbt.wake,borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.06)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#2dd4a0',tension:0.3,fill:true},
+        {label:'Wake-up battery',data:bbt.wake,borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.05)',borderWidth:2,pointRadius:2,pointBackgroundColor:'#2dd4a0',tension:0.3,fill:true},
         {label:'Points drained',data:bbt.drain,borderColor:'#f5a623',backgroundColor:'transparent',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#f5a623',tension:0.3,borderDash:[4,3]}
       ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},scales:{x:{ticks:{color:tc,font:{size:10,family:'DM Mono'},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},y:{min:0,max:105,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},y:{min:0,max:105,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
   }
 }
 
 async function load(){
   const btn=document.getElementById('rbtn'),sp=document.getElementById('spin'),rl=document.getElementById('rl'),eb=document.getElementById('errbox');
-  btn.disabled=true; sp.style.display='block'; rl.textContent='fetching...'; eb.style.display='none';
-  document.getElementById('sub').textContent='fetching from github...';
+  btn.disabled=true;sp.style.display='block';rl.textContent='syncing...';eb.style.display='none';
+  document.getElementById('sub').textContent='fetching...';
   try{
     const data=await fetchData();
     render(data);
   }catch(e){
-    eb.innerHTML=`<strong>Could not load data.json</strong><br><span style="opacity:.7">${e.message}</span>`;
+    eb.innerHTML=`<strong>Could not load data.json from GitHub</strong> — ${e.message}`;
     eb.style.display='block';
-    document.getElementById('sub').textContent='could not load data';
+    document.getElementById('sub').textContent='error';
   }
-  btn.disabled=false; sp.style.display='none'; rl.textContent='↻ refresh';
+  btn.disabled=false;sp.style.display='none';rl.textContent='↻ refresh';
 }
 </script>
 </body>
