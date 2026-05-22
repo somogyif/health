@@ -5,328 +5,243 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feri — Health Centre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root {
-  --bg: #080807;
-  --surface: #111110;
-  --surface2: #191917;
-  --surface3: #222220;
-  --border: rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.12);
-  --text: #f2efe6;
-  --text2: #8a8880;
-  --text3: #4a4845;
-  --teal: #2dd4a0;
-  --teal-dim: rgba(45,212,160,0.1);
-  --amber: #f5a623;
-  --amber-dim: rgba(245,166,35,0.1);
-  --red: #ff5555;
-  --red-dim: rgba(255,85,85,0.08);
-  --blue: #5b9cf6;
-  --blue-dim: rgba(91,156,246,0.1);
-  --r: 16px;
-  --rs: 10px;
-  --syne: 'Bebas Neue', sans-serif;
-  --body: 'Plus Jakarta Sans', sans-serif;
-  --mono: 'DM Mono', monospace;
+  --bg:       #0c0c0b;
+  --s1:       #141413;
+  --s2:       #1c1c1a;
+  --s3:       #242422;
+  --border:   rgba(255,255,255,0.06);
+  --border2:  rgba(255,255,255,0.11);
+  --text:     #eeebe2;
+  --text2:    #7a7874;
+  --text3:    #3e3d3b;
+  --teal:     #34c99a;
+  --teal-d:   rgba(52,201,154,0.1);
+  --amber:    #e8993a;
+  --amber-d:  rgba(232,153,58,0.1);
+  --red:      #e05252;
+  --red-d:    rgba(224,82,82,0.08);
+  --blue:     #5b9cf6;
+  --blue-d:   rgba(91,156,246,0.1);
+  --r:        14px;
+  --rs:       9px;
+  --f:        'Plus Jakarta Sans', sans-serif;
+  --m:        'DM Mono', monospace;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--body);
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
-
-.page { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem 5rem; }
-
-/* ── TOP NAV ── */
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem 0 2rem;
-  border-bottom: .5px solid var(--border);
-  margin-bottom: 0;
-}
-.nav-logo { font-family: var(--syne); font-size: 22px; font-weight: 400; letter-spacing: 2px; }
-.nav-logo span { color: var(--teal); }
-.nav-meta { font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 12px; }
-.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
-.rbtn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 14px; background: transparent;
-  border: .5px solid var(--border2); border-radius: 20px;
-  font-size: 11px; color: var(--text2); cursor: pointer;
-  font-family: var(--mono); transition: all .2s;
-}
-.rbtn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
-.rbtn:disabled { opacity: .4; cursor: not-allowed; }
-.spin { width: 10px; height: 10px; border: 1.5px solid var(--border2); border-top-color: var(--teal); border-radius: 50%; animation: spin .7s linear infinite; display: none; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── HERO ── */
-.hero {
-  padding: 3rem 0 2.5rem;
-  border-bottom: .5px solid var(--border);
-  margin-bottom: 2.5rem;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 2rem;
-  align-items: end;
-}
-.hero-verdict {
-  font-family: var(--syne);
-  font-size: clamp(48px, 7vw, 80px);
-  font-weight: 400;
-  line-height: .95;
-  letter-spacing: 2px;
-  margin-bottom: .75rem;
-}
-.hero-verdict .accent { color: var(--teal); }
-.hero-verdict.amber .accent { color: var(--amber); }
-.hero-verdict.red .accent { color: var(--red); }
-.hero-sub {
-  font-size: 15px;
-  color: var(--text2);
-  max-width: 500px;
-  line-height: 1.6;
-}
-.hero-score {
-  text-align: right;
-  flex-shrink: 0;
-}
-.hero-score-num {
-  font-family: var(--syne);
-  font-size: 96px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 4px;
-}
-.hero-score-num.teal { color: var(--teal); }
-.hero-score-num.amber { color: var(--amber); }
-.hero-score-num.red { color: var(--red); }
-.hero-score-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text3);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-top: 4px;
-}
-
-/* ── KEY METRICS ROW ── */
-.metrics-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: .5px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-  margin-bottom: 2.5rem;
-}
-.metric-cell {
-  background: var(--surface);
-  padding: 1.25rem 1.5rem;
-  transition: background .15s;
-}
-.metric-cell:hover { background: var(--surface2); }
-.metric-cell-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text3);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.metric-cell-value {
-  font-family: var(--syne);
-  font-size: 32px;
-  font-weight: 400;
-  letter-spacing: 1px;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.metric-cell-sub {
-  font-size: 11px;
-  color: var(--text2);
-}
-.mc-teal { color: var(--teal); }
-.mc-amber { color: var(--amber); }
-.mc-red { color: var(--red); }
-.mc-white { color: var(--text); }
-
-/* ── SECTION ── */
-.zone { margin-bottom: 3rem; }
-.zone-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 1.25rem;
-}
-.zone-label {
-  font-family: var(--syne);
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: .25em;
-  text-transform: uppercase;
-  color: var(--text3);
-}
-.zone-line { flex: 1; height: .5px; background: var(--border); }
-
-/* ── CARDS ── */
-.card {
-  background: var(--surface);
-  border: .5px solid var(--border);
-  border-radius: var(--r);
-  padding: 1.5rem;
-}
-.card-sm { padding: 1.25rem; }
-.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.g4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-@media(max-width:600px) { .g2,.g3,.g4{grid-template-columns:1fr} .metrics-row{grid-template-columns:1fr 1fr} .hero{grid-template-columns:1fr} .hero-score{text-align:left} }
-
-/* ── MINI METRIC ── */
-.mm { background: var(--surface2); border-radius: var(--rs); padding: 1rem 1.25rem; }
-.mm-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
-.mm-value { font-family: var(--syne); font-size: 26px; font-weight: 400; line-height: 1; letter-spacing: 1px; margin-bottom: 4px; }
-.mm-sub { font-size: 11px; color: var(--text2); }
-.tag { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 6px; }
-.tag-t { background: var(--teal-dim); color: var(--teal); }
-.tag-a { background: var(--amber-dim); color: var(--amber); }
-.tag-r { background: var(--red-dim); color: var(--red); }
-.tag-b { background: var(--blue-dim); color: var(--blue); }
-
-/* ── READINESS WEEK ── */
-.rw-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-top: 1.25rem; }
-.rw-cell { text-align: center; padding: 10px 4px; background: var(--surface2); border-radius: var(--rs); }
-.rw-score { font-family: var(--syne); font-size: 24px; font-weight: 400; letter-spacing: 1px; }
-.rw-date { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
-
-/* ── STREAKS ── */
-.streak-card { background: var(--surface); border: .5px solid var(--border); border-radius: var(--r); padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-start; gap: .75rem; }
-.streak-num { font-family: var(--syne); font-size: 60px; font-weight: 400; letter-spacing: 2px; line-height: 1; }
-.streak-label { font-size: 13px; color: var(--text2); line-height: 1.4; }
-.dot-row { display: flex; gap: 5px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; }
-.dot-on { background: var(--teal); }
-.dot-off { background: var(--surface3); }
-.streak-note { font-family: var(--mono); font-size: 10px; color: var(--text3); }
-
-/* ── WORKOUT QUALITY ── */
-.wq-row { display: grid; grid-template-columns: 60px 1fr 56px; gap: 12px; align-items: center; padding: 12px 0; border-bottom: .5px solid var(--border); }
-.wq-row:last-child { border-bottom: none; }
-.wq-date { font-family: var(--mono); font-size: 10px; color: var(--text3); line-height: 1.4; }
-.wq-name { font-family: var(--body); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-.wq-detail { font-family: var(--mono); font-size: 10px; color: var(--text2); }
-.wq-note { font-size: 11px; color: var(--text3); margin-top: 3px; }
-.wq-score { text-align: center; }
-.wq-score-num { font-family: var(--syne); font-size: 32px; font-weight: 400; letter-spacing: 1px; line-height: 1; }
-.wq-score-label { font-family: var(--mono); font-size: 9px; color: var(--text3); }
-.bar-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--text3); }
-.bar-bg { flex: 1; height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 2px; }
-
-/* ── RECS ── */
-.rec { display: flex; gap: 12px; padding: 14px 0; border-bottom: .5px solid var(--border); }
-.rec:last-child { border-bottom: none; }
-.rec-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
-.rec-title { font-family: var(--body); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-.rec-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
-
-/* ── BIO AGE ── */
-.bio-age-big { font-family: var(--syne); font-size: 80px; font-weight: 400; letter-spacing: 4px; line-height: 1; color: var(--teal); }
-.bio-age-line { font-size: 13px; color: var(--text2); margin-top: 6px; }
-.age-bar { position: relative; height: 6px; background: var(--surface3); border-radius: 3px; overflow: visible; margin: 1rem 0 1.5rem; }
-.age-bar-fill { position: absolute; inset: 0; border-radius: 3px; background: linear-gradient(90deg, var(--teal), var(--amber), var(--red)); }
-.age-marker { position: absolute; top: -7px; height: 20px; border-radius: 2px; }
-.age-driver { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: .5px solid var(--border); }
-.age-driver:last-child { border-bottom: none; }
-.age-driver-bar { height: 3px; border-radius: 2px; margin-top: 4px; }
-
-/* ── CHARTS ── */
-.cw { position: relative; width: 100%; }
-
-/* ── MUSCLE GRID ── */
-.muscle-tile { background: var(--surface2); border-radius: var(--rs); padding: 12px; }
-.muscle-name { font-family: var(--mono); font-size: 10px; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
-.muscle-bar { height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
-.muscle-bar-fill { height: 100%; border-radius: 2px; }
-.muscle-status { font-size: 10px; color: var(--text3); }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;line-height:1.6;min-height:100vh}
 
 /* ── SETUP ── */
-#setup { display: none; min-height: 100vh; align-items: center; justify-content: center; }
-.setup-card { background: var(--surface); border: .5px solid var(--border2); border-radius: var(--r); padding: 2.5rem; max-width: 440px; width: 100%; }
-.setup-title { font-family: var(--syne); font-size: 28px; font-weight: 400; letter-spacing: 2px; margin-bottom: 6px; }
-.setup-title span { color: var(--teal); }
-.setup-sub { font-size: 12px; color: var(--text2); margin-bottom: 2rem; line-height: 1.7; font-family: var(--mono); }
-.setup-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
-.setup-input { width: 100%; background: var(--surface2); border: .5px solid var(--border2); border-radius: var(--rs); padding: 10px 14px; color: var(--text); font-family: var(--mono); font-size: 13px; outline: none; margin-bottom: 1rem; }
-.setup-input:focus { border-color: var(--teal); }
-.setup-btn { width: 100%; padding: 11px; background: var(--teal); border: none; border-radius: var(--rs); color: #080807; font-family: var(--syne); font-size: 16px; font-weight: 400; cursor: pointer; letter-spacing: 2px; }
-.setup-btn:hover { opacity: .9; }
+#setup{display:none;min-height:100vh;align-items:center;justify-content:center;padding:2rem}
+.sc{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:2.5rem;max-width:420px;width:100%}
+.sc h2{font-size:20px;font-weight:600;margin-bottom:4px}
+.sc h2 span{color:var(--teal)}
+.sc p{font-size:13px;color:var(--text2);margin-bottom:2rem;line-height:1.6;font-family:var(--m)}
+.sc label{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:6px}
+.sc input{width:100%;background:var(--s2);border:.5px solid var(--border2);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:var(--m);font-size:13px;outline:none;margin-bottom:1rem}
+.sc input:focus{border-color:var(--teal)}
+.sc button{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:#0c0c0b;font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer}
 
-hr.divider { border: none; border-top: .5px solid var(--border); margin: 1.25rem 0; }
-.upd { font-family: var(--mono); font-size: 10px; color: var(--text3); text-align: right; margin-top: 2rem; padding-top: 1.5rem; border-top: .5px solid var(--border); }
-.err { background: var(--red-dim); border: .5px solid var(--red); border-radius: var(--r); padding: 1rem 1.25rem; font-family: var(--mono); font-size: 12px; color: var(--red); margin-bottom: 1.5rem; line-height: 1.7; }
+/* ── APP SHELL ── */
+#app{display:none;max-width:960px;margin:0 auto;padding:0 1.25rem 5rem}
+
+/* ── TOP NAV ── */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0 0}
+.logo{font-size:15px;font-weight:600;letter-spacing:-.2px}
+.logo span{color:var(--teal)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.sync-info{font-family:var(--m);font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:pulse 2.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.btn-sm{display:flex;align-items:center;gap:5px;padding:5px 12px;background:transparent;border:.5px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text2);cursor:pointer;font-family:var(--m);transition:all .15s}
+.btn-sm:hover{background:var(--s2);color:var(--text);border-color:var(--border2)}
+.btn-sm:disabled{opacity:.4;cursor:not-allowed}
+.spin{width:10px;height:10px;border:1.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:2px;padding:.75rem 0;border-bottom:.5px solid var(--border);margin-bottom:2rem}
+.tab{padding:7px 18px;border-radius:20px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;background:transparent;border:none;transition:all .15s;font-family:var(--f)}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--s2);color:var(--text);border:.5px solid var(--border2)}
+
+/* ── HERO ── */
+.hero{padding:2rem 0 1.75rem;border-bottom:.5px solid var(--border);margin-bottom:1.75rem}
+.hero-score-row{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:.75rem}
+.hero-score{font-size:72px;font-weight:300;line-height:1;letter-spacing:-3px}
+.hero-label{font-size:22px;font-weight:600;margin-bottom:4px}
+.hero-coaching{font-size:15px;color:var(--text2);max-width:520px;line-height:1.6;font-weight:300;font-style:italic}
+.hero-ring{flex-shrink:0;position:relative;width:88px;height:88px}
+
+/* ── PILLAR GRID ── */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:2rem}
+@media(max-width:600px){.pillars{grid-template-columns:1fr 1fr}}
+.pillar{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;cursor:pointer;transition:border-color .15s}
+.pillar:hover{border-color:var(--border2)}
+.pillar-label{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem}
+.pillar-value{font-size:28px;font-weight:300;letter-spacing:-1px;line-height:1;margin-bottom:4px}
+.pillar-sub{font-size:12px;color:var(--text2);margin-bottom:.75rem}
+.pillar-coaching{font-size:12px;color:var(--text2);font-style:italic;line-height:1.5;padding-top:.75rem;border-top:.5px solid var(--border)}
+
+/* ── SECTION ── */
+.sec{margin-bottom:2rem}
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.sec-title{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.sec-line{flex:1;height:.5px;background:var(--border)}
+
+/* ── CARD ── */
+.card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+
+/* ── MINI METRIC ── */
+.mm{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem}
+.mm-l{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.mm-v{font-size:22px;font-weight:300;letter-spacing:-.5px;line-height:1;margin-bottom:3px}
+.mm-s{font-size:11px;color:var(--text2)}
+.tag{display:inline-block;font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px}
+.tt{background:var(--teal-d);color:var(--teal)}
+.ta{background:var(--amber-d);color:var(--amber)}
+.tr{background:var(--red-d);color:var(--red)}
+.tb{background:var(--blue-d);color:var(--blue)}
+
+/* ── STREAK ── */
+.streak{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.streak-n{font-size:44px;font-weight:300;letter-spacing:-2px;line-height:1;margin-bottom:4px}
+.streak-l{font-size:13px;color:var(--text2);margin-bottom:.75rem}
+.dots{display:flex;gap:4px;margin-bottom:.5rem}
+.dot{width:7px;height:7px;border-radius:50%}
+.don{background:var(--teal)}
+.dof{background:var(--s3)}
+.streak-note{font-family:var(--m);font-size:10px;color:var(--text3)}
+
+/* ── FACTOR ROW ── */
+.frow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid var(--border);font-size:13px}
+.frow:last-child{border-bottom:none}
+.fl{color:var(--text2)}
+.fv{font-family:var(--m);font-size:12px}
+.fbar{margin-top:3px;height:2px;border-radius:1px}
+
+/* ── WQ ROW ── */
+.wqr{display:grid;grid-template-columns:52px 1fr 48px;gap:10px;align-items:center;padding:10px 0;border-bottom:.5px solid var(--border)}
+.wqr:last-child{border-bottom:none}
+.wqd{font-family:var(--m);font-size:10px;color:var(--text3);line-height:1.5}
+.wqn{font-size:13px;font-weight:500;margin-bottom:2px}
+.wqdet{font-family:var(--m);font-size:10px;color:var(--text2)}
+.wqnote{font-size:11px;color:var(--text3);margin-top:2px;font-style:italic}
+.hbar{display:flex;align-items:center;gap:5px;margin-top:3px;font-family:var(--m);font-size:9px;color:var(--text3)}
+.hbg{flex:1;height:2px;background:var(--s3);border-radius:1px;overflow:hidden}
+.hbf{height:100%;border-radius:1px}
+.wqs{text-align:center}
+.wqsn{font-size:26px;font-weight:300;letter-spacing:-1px;line-height:1}
+.wqsl{font-family:var(--m);font-size:9px;color:var(--text3)}
+
+/* ── REC ── */
+.rec{display:flex;gap:10px;padding:12px 0;border-bottom:.5px solid var(--border)}
+.rec:last-child{border-bottom:none}
+.recdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:8px}
+.rect{font-size:13px;font-weight:500;margin-bottom:2px}
+.recb{font-size:12px;color:var(--text2);line-height:1.5}
+
+/* ── READINESS WEEK ── */
+.rw{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.rwc{text-align:center;background:var(--s2);border-radius:var(--rs);padding:10px 4px}
+.rws{font-size:20px;font-weight:300;letter-spacing:-1px}
+.rwd{font-family:var(--m);font-size:9px;color:var(--text3);margin-top:3px;line-height:1.4}
+
+/* ── AGE BAR ── */
+.agebar{position:relative;height:5px;background:var(--s3);border-radius:3px;overflow:visible;margin:1rem 0 1.5rem}
+.agebar-fill{position:absolute;inset:0;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--amber),var(--red))}
+.agemark{position:absolute;border-radius:1px}
+
+/* ── MUSCLE GRID ── */
+.mtile{background:var(--s2);border-radius:var(--rs);padding:10px}
+.mname{font-family:var(--m);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.mbar{height:2px;background:var(--s3);border-radius:1px;overflow:hidden;margin-bottom:4px}
+.mbarf{height:100%;border-radius:1px}
+.mstat{font-size:10px;color:var(--text3)}
+
+/* ── CHART WRAPPER ── */
+.cw{position:relative;width:100%}
+
+/* ── DIVIDER ── */
+hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
+
+.err{background:var(--red-d);border:.5px solid var(--red);border-radius:var(--r);padding:.875rem 1.25rem;font-family:var(--m);font-size:12px;color:var(--red);margin-bottom:1.5rem;line-height:1.7}
+.upd{font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;padding-top:2rem;border-top:.5px solid var(--border)}
 </style>
 </head>
 <body>
+
+<!-- SETUP -->
 <div id="setup">
-  <div class="setup-card">
-    <div class="setup-title">Health <span>Centre</span></div>
-    <div class="setup-sub">Enter your GitHub read-only token to connect.<br>github.com/settings/tokens?type=beta → somogyif/health → Contents: Read-only</div>
-    <div class="setup-label">GitHub token</div>
-    <input class="setup-input" id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off">
-    <button class="setup-btn" onclick="saveToken()">Connect →</button>
+  <div class="sc">
+    <h2>Health <span>Centre</span></h2>
+    <p>Enter your GitHub read-only token to connect.<br>github.com/settings/tokens?type=beta → somogyif/health → Contents: Read-only</p>
+    <label>GitHub token</label>
+    <input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off">
+    <button onclick="saveToken()">Connect →</button>
   </div>
 </div>
 
-<div id="main" style="display:none">
-<div class="page">
-  <nav class="nav">
-    <div class="nav-logo">Health <span>Centre</span></div>
-    <div class="nav-meta">
-      <div class="live-dot"></div>
-      <span id="sub">loading...</span>
-      <button class="rbtn" onclick="clearToken()" style="padding:4px 10px;font-size:10px;color:var(--text3)">⚙</button>
-      <button class="rbtn" id="rbtn" onclick="load()">
+<!-- APP -->
+<div id="app">
+  <div class="topnav">
+    <div class="logo">Health <span>Centre</span></div>
+    <div class="nav-right">
+      <div class="sync-info">
+        <div class="live-dot"></div>
+        <span id="sub">loading</span>
+      </div>
+      <button class="btn-sm" onclick="clearToken()" title="Reset token">⚙</button>
+      <button class="btn-sm" id="rbtn" onclick="load()">
         <div class="spin" id="spin"></div>
-        <span id="rl">↻ refresh</span>
+        <span id="rl">↻ sync</span>
       </button>
     </div>
-  </nav>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('today',this)">Today</button>
+    <button class="tab" onclick="showTab('training',this)">Training</button>
+    <button class="tab" onclick="showTab('trends',this)">Trends</button>
+  </div>
 
   <div id="errbox" class="err" style="display:none"></div>
-  <div id="dash"></div>
-</div>
+
+  <div id="tab-today"></div>
+  <div id="tab-training" style="display:none"></div>
+  <div id="tab-trends" style="display:none"></div>
 </div>
 
 <script>
 const REPO='somogyif/health', FILE='data.json';
 const getToken=()=>localStorage.getItem('gh_token')||'';
-const saveToken=()=>{const t=document.getElementById('ghToken').value.trim();if(!t){alert('Enter your GitHub token');return;}localStorage.setItem('gh_token',t);showMain();};
+const saveToken=()=>{const t=document.getElementById('ghToken').value.trim();if(!t){alert('Enter your GitHub token');return;}localStorage.setItem('gh_token',t);boot();};
 const clearToken=()=>{localStorage.removeItem('gh_token');location.reload();};
 
 window.addEventListener('DOMContentLoaded',()=>{
-  if(getToken()) showMain();
-  else { document.getElementById('setup').style.display='flex'; }
+  if(getToken()){document.getElementById('app').style.display='block';load();}
+  else{document.getElementById('setup').style.display='flex';}
 });
 
-function showMain(){
+function boot(){
   document.getElementById('setup').style.display='none';
-  document.getElementById('main').style.display='block';
+  document.getElementById('app').style.display='block';
   load();
+}
+
+function showTab(id,el){
+  ['today','training','trends'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===id?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
 }
 
 async function fetchData(){
@@ -340,12 +255,42 @@ async function fetchData(){
 
 let CHS=[];
 function killCharts(){CHS.forEach(c=>{try{c.destroy()}catch(e){}});CHS=[];}
-function mkChart(id,cfg){const el=document.getElementById(id);if(!el)return;CHS.push(new Chart(el,cfg));}
-
-const gc='rgba(255,255,255,0.05)', tc='#4a4845';
-const scoreColor=s=>s>=85?'var(--teal)':s>=65?'var(--amber)':'var(--red)';
-const verdictClass=s=>s>=85?'':'amber '+(s>=65?'':'red ');
+function mkChart(id,cfg){const el=document.getElementById(id);if(!el)return;const c=new Chart(el,cfg);CHS.push(c);}
+const gc='rgba(255,255,255,0.04)', tc='#3e3d3b';
+const scol=s=>s>=85?'var(--teal)':s>=65?'var(--amber)':'var(--red)';
 const fmt=(v,u='')=>v!=null?`${v}${u}`:'—';
+
+// Coaching copy
+function coachingVerdict(score,level){
+  if(score>=90) return {label:'Prime condition',coaching:'All systems are go. Your body is fully charged — this is a great day to push hard.',color:'var(--teal)'};
+  if(score>=75) return {label:'Well recovered',coaching:'Good recovery overnight. A solid training session is in order.',color:'var(--teal)'};
+  if(score>=60) return {label:'Moderate readiness',coaching:'Train if you need to, but keep intensity moderate. Prioritise an early night.',color:'var(--amber)'};
+  return {label:'Focus on energy',coaching:'Recovery is low today. Light movement, good food, and sleep will serve you better than a hard session.',color:'var(--red)'};
+}
+
+function sleepCoaching(h,score){
+  if(!h) return 'No sleep data — make sure your watch is on tonight.';
+  if(h>=8) return 'Excellent sleep. Your body had plenty of time to repair and consolidate.';
+  if(h>=7.5) return 'Good sleep duration. You\'re giving your body what it needs.';
+  if(h>=6.5) return 'Slightly short — aim for 7.5h+ tonight to clear your sleep debt.';
+  return 'Sleep was below target. Prioritise an earlier bedtime tonight.';
+}
+
+function hrCoaching(rhr,avg){
+  if(!rhr) return '—';
+  const diff=rhr-(avg||rhr);
+  if(diff<=-3) return 'Notably lower than your average — a great recovery signal.';
+  if(diff<=1) return 'Tracking close to your normal baseline. Recovery is on track.';
+  return 'Slightly elevated — expected after a hard effort or poor sleep.';
+}
+
+function trainingCoaching(acwr){
+  if(acwr===undefined||acwr===null) return '—';
+  if(acwr<0.05) return 'Training load is very low. Your body is ready for more stimulus.';
+  if(acwr<0.15) return 'Acute load is below your chronic baseline — a good time to build.';
+  if(acwr<0.3) return 'Load is in a productive range. Keep the current frequency.';
+  return 'Load is high. Prioritise recovery before adding more volume.';
+}
 
 function render(d){
   killCharts();
@@ -359,339 +304,371 @@ function render(d){
   const wq=d.workouts_quality||[];
   const wks=d.workouts||[];
 
-  const syncedAt=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
-  document.getElementById('sub').innerHTML=`synced ${syncedAt}`;
+  const synced=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+  document.getElementById('sub').textContent=synced;
 
-  const readScore=g.readiness_score||51;
-  const readLevel=g.readiness_level||'MODERATE';
+  const rs=g.readiness_score||51;
+  const rv=coachingVerdict(rs,g.readiness_level||'MODERATE');
   const bioAge=g.fitness_age?g.fitness_age.toFixed(1):'25.8';
   const chronoAge=g.chrono_age||29;
   const achieveAge=g.achievable_age?g.achievable_age.toFixed(1):'21.1';
   const ageDiff=(chronoAge-parseFloat(bioAge)).toFixed(1);
-  const vigorousDays=g.vigorous_days!=null?parseFloat(g.vigorous_days).toFixed(1):'0.1';
-  const vigorousPct=Math.min(100,Math.round(parseFloat(vigorousDays)/(g.vigorous_target||3)*100));
+  const vd=g.vigorous_days!=null?parseFloat(g.vigorous_days):0.1;
+  const vt=g.vigorous_target||3;
+  const acwr=tl.acute&&tl.chronic?tl.acute/tl.chronic:null;
 
-  const sleepLabel=g.sleep_missing?'—':`${g.sleep_hours}h`;
-  const sleepOk=(g.sleep_hours||0)>=7.5;
-
-  // Daily verdict
-  const verdicts={
-    PRIME:  {text:'Prime condition', sub:'Your body is fully charged. Push hard today.', cls:''},
-    HIGH:   {text:'Well recovered',  sub:'Recovery is solid. Good day to train.', cls:''},
-    MODERATE:{text:'Moderate recovery',sub:'Train if needed, but prioritise sleep tonight.', cls:'amber '},
-    LOW:    {text:'Focus on rest',   sub:'Low readiness today. Light movement only.', cls:'red '},
-  };
-  const v=verdicts[readLevel]||verdicts.MODERATE;
-  const heroScoreClass=readScore>=85?'teal':readScore>=65?'amber':'red';
-
-  document.getElementById('dash').innerHTML=`
-
-  <div class="hero">
-    <div>
-      <div class="hero-verdict ${v.cls}">
-        <span class="accent">${v.text.split(' ')[0]}</span> ${v.text.split(' ').slice(1).join(' ')}
+  // ── TODAY TAB ──────────────────────────────────────────────────────────
+  document.getElementById('tab-today').innerHTML=`
+    <div class="hero">
+      <div class="hero-score-row">
+        <div>
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem">Today · ${g.date||'—'}</div>
+          <div class="hero-label" style="color:${rv.color}">${rv.label}</div>
+          <div class="hero-coaching">${rv.coaching}</div>
+        </div>
+        <div class="hero-ring">
+          <canvas id="heroRing" width="88" height="88" role="img" aria-label="Readiness ${rs}/100">${rs}/100</canvas>
+        </div>
       </div>
-      <div class="hero-sub">${v.sub} Readiness driven by ${readScore>=75?'good HRV and recovery time':'sleep quality today — score ' + (g.readiness_sleep_score||57) + '/100'}.</div>
     </div>
-    <div class="hero-score">
-      <div class="hero-score-num ${heroScoreClass}">${readScore}</div>
-      <div class="hero-score-label">readiness / 100</div>
-    </div>
-  </div>
 
-  <div class="metrics-row">
-    <div class="metric-cell">
-      <div class="metric-cell-label">Sleep</div>
-      <div class="metric-cell-value ${sleepOk?'mc-teal':'mc-amber'}">${sleepLabel}</div>
-      <div class="metric-cell-sub">${g.sleep_missing?'watch not worn':'watch worn to bed ✓'}</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-label">Sleep</div>
+        <div class="pillar-value" style="color:${(g.sleep_hours||0)>=7.5?'var(--teal)':'var(--amber)'}">${g.sleep_missing?'—':fmt(g.sleep_hours,'h')}</div>
+        <div class="pillar-sub">${g.sleep_missing?'watch not worn':'watch worn to bed ✓'}</div>
+        <div class="pillar-coaching">${sleepCoaching(g.sleep_hours,g.readiness_sleep_score)}</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-label">Body battery</div>
+        <div class="pillar-value" style="color:${(g.bb_current||0)>=50?'var(--teal)':'var(--amber)'}">${fmt(g.bb_current)}</div>
+        <div class="pillar-sub">charged ${fmt(g.bb_charged)} · −${fmt(g.bb_drained)} drained</div>
+        <div class="pillar-coaching">${(g.bb_current||0)>=60?'Good energy reserves for the day ahead.':((g.bb_current||0)>=35?'Moderate energy. Avoid stacking stress today.':'Low battery. Rest and recovery are the priority.')}</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-label">Resting HR</div>
+        <div class="pillar-value" style="color:var(--text)">${fmt(g.resting_hr,' bpm')}</div>
+        <div class="pillar-sub">7-day avg · HRV ${fmt(g.hrv_weekly,' ms')}</div>
+        <div class="pillar-coaching">${hrCoaching(g.resting_hr,g.rhr_avg)}</div>
+      </div>
     </div>
-    <div class="metric-cell">
-      <div class="metric-cell-label">Body battery</div>
-      <div class="metric-cell-value ${(g.bb_current||0)>=50?'mc-teal':'mc-amber'}">${fmt(g.bb_current)}</div>
-      <div class="metric-cell-sub">charged ${fmt(g.bb_charged)} · −${fmt(g.bb_drained)} drained</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-cell-label">Resting HR</div>
-      <div class="metric-cell-value mc-white">${fmt(g.resting_hr)}<span style="font-size:14px;font-weight:400;color:var(--text2)"> bpm</span></div>
-      <div class="metric-cell-sub">HRV ${fmt(g.hrv_weekly,' ms')} · ${g.hrv_status||'Balanced'}</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-cell-label">Steps today</div>
-      <div class="metric-cell-value ${(g.steps||0)>=5670?'mc-teal':'mc-white'}">${g.steps!=null?g.steps.toLocaleString():'—'}</div>
-      <div class="metric-cell-sub">goal 5,670 · ${(g.steps||0)>=5670?'✓ done':'in progress'}</div>
-    </div>
-  </div>
 
-  <div class="zone">
-    <div class="zone-header"><div class="zone-label">Recovery & readiness</div><div class="zone-line"></div></div>
-    <div class="g2" style="margin-bottom:12px">
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Recovery factors</div><div class="sec-line"></div></div>
       <div class="card">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:start;margin-bottom:1.25rem">
           <div>
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Readiness factors</div>
-            <div style="font-family:var(--syne);font-size:15px;font-weight:600">${readLevel==='PRIME'?'Ready for action':readLevel==='HIGH'?'Well recovered':readLevel==='LOW'?'Take it easy':'Focus on energy'}</div>
+            ${[
+              {l:'Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score||57),w:g.readiness_sleep_score||57},
+              {l:'HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:(g.readiness_hrv_pct||83)>=75?'var(--teal)':'var(--amber)',w:g.readiness_hrv_pct||83},
+              {l:'Stress history',v:fmt(g.readiness_stress_pct,'%'),c:scol(g.readiness_stress_pct||32),w:g.readiness_stress_pct||32},
+              {l:'Recovery time',v:'98%',c:'var(--teal)',w:98},
+            ].map(r=>`
+              <div class="frow" style="flex-direction:column;align-items:flex-start">
+                <div style="display:flex;justify-content:space-between;width:100%"><span class="fl">${r.l}</span><span class="fv" style="color:${r.c}">${r.v}</span></div>
+                <div class="fbar" style="width:${r.w}%;background:${r.c};margin-top:5px;height:2px;border-radius:1px"></div>
+              </div>`).join('')}
           </div>
-          <div style="position:relative;width:80px;height:80px;flex-shrink:0">
-            <canvas id="recoveryRing" width="80" height="80" role="img" aria-label="Readiness score">${readScore}/100</canvas>
+          <div style="text-align:right">
+            <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">readiness</div>
+            <div style="font-size:48px;font-weight:300;letter-spacing:-3px;color:${rv.color};line-height:1">${rs}</div>
+            <div style="font-family:var(--m);font-size:10px;color:var(--text3)">/100</div>
           </div>
         </div>
-        ${[
-          {l:'Sleep score',v:`${g.readiness_sleep_score||57}/100`,c:(g.readiness_sleep_score||57)>=80?'var(--teal)':(g.readiness_sleep_score||57)>=65?'var(--amber)':'var(--red)',w:(g.readiness_sleep_score||57)},
-          {l:'HRV factor',v:`${g.readiness_hrv_pct||83}%`,c:(g.readiness_hrv_pct||83)>=75?'var(--teal)':'var(--amber)',w:(g.readiness_hrv_pct||83)},
-          {l:'Stress history',v:`${g.readiness_stress_pct||32}%`,c:(g.readiness_stress_pct||32)>=60?'var(--teal)':(g.readiness_stress_pct||32)>=40?'var(--amber)':'var(--red)',w:(g.readiness_stress_pct||32)},
-          {l:'Recovery time',v:'98%',c:'var(--teal)',w:98},
-        ].map(r=>`
-          <div style="margin-bottom:10px">
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">${r.l}</span><span style="font-family:var(--mono);font-size:11px;color:${r.c}">${r.v}</span></div>
-            <div style="height:2px;background:var(--surface3);border-radius:1px;overflow:hidden"><div style="width:${r.w}%;height:100%;background:${r.c};border-radius:1px"></div></div>
+        <hr>
+        <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.875rem">This week</div>
+        <div class="rw">
+          ${rw.map(r=>`<div class="rwc"><div class="rws" style="color:${scol(r.score)}">${r.score}</div><div class="rwd">${r.date.split(' ')[0]}<br>${r.date.split(' ')[1]}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Today's numbers</div><div class="sec-line"></div></div>
+      <div class="g4">
+        <div class="mm"><div class="mm-l">Steps</div><div class="mm-v" style="color:${(g.steps||0)>=5670?'var(--teal)':'var(--text)'}">${g.steps!=null?g.steps.toLocaleString():'—'}</div><div class="mm-s">goal: 5,670</div>${(g.steps||0)>=5670?'<span class="tag tt">✓ done</span>':'<span class="tag ta">in progress</span>'}</div>
+        <div class="mm"><div class="mm-l">Avg stress</div><div class="mm-v" style="color:${(g.avg_stress||0)>50?'var(--amber)':'var(--teal)'}">${fmt(g.avg_stress)}</div><div class="mm-s">${(g.avg_stress||0)>50?'moderate-high':'low — good'}</div></div>
+        <div class="mm"><div class="mm-l">Active kcal</div><div class="mm-v">${fmt(g.active_kcal)}</div><div class="mm-s">total ${fmt(g.total_kcal)} kcal</div></div>
+        <div class="mm"><div class="mm-l">HRV last night</div><div class="mm-v" style="color:var(--teal)">${fmt(g.hrv_last_night,' ms')}</div><div class="mm-s">weekly ${fmt(g.hrv_weekly,' ms')}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Recommendations</div><div class="sec-line"></div></div>
+      <div class="card">
+        ${recs.map(r=>`
+          <div class="rec">
+            <div class="recdot" style="background:${r.level==='red'?'var(--red)':r.level==='amber'?'var(--amber)':'var(--teal)'}"></div>
+            <div><div class="rect">${r.title}</div><div class="recb">${r.body}</div></div>
           </div>`).join('')}
       </div>
-      <div class="card">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Readiness this week</div>
-        <div class="rw-grid">
-          ${rw.map(r=>`<div class="rw-cell"><div class="rw-score" style="color:${scoreColor(r.score)}">${r.score}</div><div class="rw-date">${r.date.split(' ')[0]}<br>${r.date.split(' ')[1]}</div></div>`).join('')}
-        </div>
-        <hr class="divider">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Stress vs recovery</div>
-        <div class="cw" style="height:120px">
-          <canvas id="stressChart" role="img" aria-label="Stress vs body battery chart">Stress and recovery balance over the past week.</canvas>
-        </div>
-        <div style="display:flex;gap:12px;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--text3)">
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--red);display:inline-block"></span>stress</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>battery charged</span>
-        </div>
-      </div>
     </div>
-    <div class="g3">
-      <div class="streak-card">
-        <div class="streak-num" style="color:var(--teal)">${str.watch_nights||5}</div>
-        <div class="streak-label">nights watch worn to bed</div>
-        <div class="dot-row">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(str.watch_nights||5))?'dot-on':'dot-off'}"></div>`).join('')}</div>
-        <div class="streak-note">started 18 may · keep going</div>
-      </div>
-      <div class="streak-card">
-        <div class="streak-num" style="color:var(--red)">${str.training_weeks_4x||0}</div>
-        <div class="streak-label">weeks hitting 4× training</div>
-        <div class="dot-row">${[0,1,2,3].map(i=>`<div class="dot ${i<(str.training_weeks_4x||0)?'dot-on':'dot-off'}"></div>`).join('')}</div>
-        <div class="streak-note">avg ~2×/wk past month</div>
-      </div>
-      <div class="streak-card">
-        <div class="streak-num" style="color:${(str.days_since_session||5)>3?'var(--red)':'var(--amber)'}">${str.days_since_session||5}</div>
-        <div class="streak-label">days since last session</div>
-        <div class="dot-row">${[0,1,2,3,4].map(i=>`<div class="dot ${i===0?'dot-on':'dot-off'}"></div>`).join('')}</div>
-        <div class="streak-note">last: upper 2 · 17 may</div>
-      </div>
-    </div>
-  </div>
 
-  <div class="zone">
-    <div class="zone-header"><div class="zone-label">Training</div><div class="zone-line"></div></div>
-    <div class="g2" style="margin-bottom:12px">
+    <div class="upd">synced ${synced} · garmin fenix 7x · hevy pro · apple health</div>
+  `;
+
+  // ── TRAINING TAB ───────────────────────────────────────────────────────
+  document.getElementById('tab-training').innerHTML=`
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Streaks</div><div class="sec-line"></div></div>
+      <div class="g3">
+        <div class="streak">
+          <div class="streak-n" style="color:var(--teal)">${str.watch_nights||5}</div>
+          <div class="streak-l">Nights watch worn to bed</div>
+          <div class="dots">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(str.watch_nights||5))?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">Started 18 May · keep it going</div>
+        </div>
+        <div class="streak">
+          <div class="streak-n" style="color:${(str.training_weeks_4x||0)>0?'var(--teal)':'var(--red)'}">${str.training_weeks_4x||0}</div>
+          <div class="streak-l">Weeks hitting 4× training</div>
+          <div class="dots">${[0,1,2,3].map(i=>`<div class="dot ${i<(str.training_weeks_4x||0)?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">Avg ~2×/wk past month</div>
+        </div>
+        <div class="streak">
+          <div class="streak-n" style="color:${(str.days_since_session||5)>3?'var(--red)':'var(--amber)'}">${str.days_since_session||5}</div>
+          <div class="streak-l">Days since last session</div>
+          <div class="dots">${[0,1,2,3,4].map(i=>`<div class="dot ${i===0?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">Last: Upper 2 · 17 May</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Training load</div><div class="sec-line"></div></div>
       <div class="card">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Workout quality — last 4 sessions</div>
+        <div class="g4" style="margin-bottom:1.25rem">
+          <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:var(--red)">${tl.acute||10}</div><div class="mm-s">recent stimulus</div><span class="tag tr">very low</span></div>
+          <div class="mm"><div class="mm-l">Chronic (28d)</div><div class="mm-v" style="color:var(--amber)">${tl.chronic||137}</div><div class="mm-s">baseline fitness</div><span class="tag ta">healthy</span></div>
+          <div class="mm"><div class="mm-l">Aerobic low</div><div class="mm-v" style="color:var(--teal)">${tl.aerobic_low||101}</div><div class="mm-s">target 97–261</div><span class="tag tt">✓ on target</span></div>
+          <div class="mm"><div class="mm-l">Aerobic high</div><div class="mm-v" style="color:var(--red)">${tl.aerobic_high||0}</div><div class="mm-s">target 203–368</div><span class="tag tr">shortage</span></div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);font-style:italic;padding-top:1rem;border-top:.5px solid var(--border);line-height:1.6">${trainingCoaching(acwr)} Your aerobic high-intensity load is at zero — HYROX on Saturday will directly address this.</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Workout quality</div><div class="sec-line"></div></div>
+      <div class="card">
         ${wq.map(w=>`
-          <div class="wq-row">
-            <div class="wq-date">${w.date.split(' ')[0]}<br><span style="font-size:9px">${w.date.split(' ')[1]}</span><br><span style="color:${w.name.includes('Upper')?'var(--blue)':'var(--teal)'}">${w.name.split(' ')[0].toLowerCase()}</span></div>
+          <div class="wqr">
+            <div class="wqd">${w.date.split(' ')[0]}<br><span style="font-size:9px">${w.date.split(' ')[1]||''}</span><br><span style="color:${w.name.includes('Upper')?'var(--blue)':'var(--teal)';}">${(w.name||'').split(' ')[0].toLowerCase()}</span></div>
             <div>
-              <div class="wq-name">${w.name}</div>
-              <div class="wq-detail">${w.dur}min · avg ${w.hr}bpm · ${w.kcal}kcal</div>
-              <div class="wq-note">${w.note}</div>
-              <div class="bar-row"><span style="min-width:20px">z2</span><div class="bar-bg"><div class="bar-fill" style="width:${w.z2}%;background:var(--amber)"></div></div><span>${w.z2}%</span></div>
-              ${w.z3>0?`<div class="bar-row"><span style="min-width:20px">z3+</span><div class="bar-bg"><div class="bar-fill" style="width:${w.z3}%;background:var(--red)"></div></div><span>${w.z3}%</span></div>`:''}
+              <div class="wqn">${w.name||'—'}</div>
+              <div class="wqdet">${w.dur}min · avg ${w.hr}bpm · ${w.kcal}kcal</div>
+              <div class="wqnote">${w.note||''}</div>
+              <div class="hbar"><span style="min-width:18px">z2</span><div class="hbg"><div class="hbf" style="width:${w.z2||0}%;background:var(--amber)"></div></div><span>${w.z2||0}%</span></div>
+              ${(w.z3||0)>0?`<div class="hbar"><span style="min-width:18px">z3+</span><div class="hbg"><div class="hbf" style="width:${w.z3}%;background:var(--red)"></div></div><span>${w.z3}%</span></div>`:''}
             </div>
-            <div class="wq-score">
-              <div class="wq-score-num" style="color:${scoreColor(w.score)}">${w.score}</div>
-              <div class="wq-score-label">quality</div>
+            <div class="wqs">
+              <div class="wqsn" style="color:${scol(w.score||50)}">${w.score||'—'}</div>
+              <div class="wqsl">quality</div>
             </div>
           </div>`).join('')}
-      </div>
-      <div class="card">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Training load</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem">
-          ${[
-            {l:'Acute (7d)',v:tl.acute||10,c:'var(--red)',note:'vs chronic 137'},
-            {l:'Chronic (28d)',v:tl.chronic||137,c:'var(--amber)',note:'target 110–206'},
-            {l:'Aerobic low',v:tl.aerobic_low||101,c:'var(--teal)',note:'✓ on target'},
-            {l:'Aerobic high',v:tl.aerobic_high||0,c:'var(--red)',note:'critical shortage'},
-          ].map(m=>`
-            <div class="mm">
-              <div class="mm-label">${m.l}</div>
-              <div class="mm-value" style="color:${m.c}">${m.v}</div>
-              <div class="mm-sub">${m.note}</div>
-            </div>`).join('')}
-        </div>
-        <hr class="divider">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Sleep scores this week</div>
-        <div class="cw" style="height:110px">
-          <canvas id="sleepChart" role="img" aria-label="Sleep scores by night">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+ss.scores[i]).join(', ')}</canvas>
-        </div>
+        <div style="font-family:var(--m);font-size:10px;color:var(--text3);padding-top:10px;border-top:.5px solid var(--border);margin-top:2px">Score = duration + zone distribution + rest compliance · max 100</div>
       </div>
     </div>
-    <div class="card card-sm">
-      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Active recommendations</div>
-      ${recs.map(r=>`
-        <div class="rec">
-          <div class="rec-dot" style="background:${r.level==='red'?'var(--red)':r.level==='amber'?'var(--amber)':'var(--teal)'}"></div>
-          <div><div class="rec-title">${r.title}</div><div class="rec-body">${r.body}</div></div>
-        </div>`).join('')}
-    </div>
-  </div>
 
-  <div class="zone">
-    <div class="zone-header"><div class="zone-label">Body & trends</div><div class="zone-line"></div></div>
-    <div class="g2" style="margin-bottom:12px">
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Recent sessions</div><div class="sec-line"></div></div>
       <div class="card">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Biological age</div>
-        <div style="display:flex;align-items:flex-end;gap:1rem;margin-bottom:.75rem">
-          <div class="bio-age-big">${bioAge}</div>
-          <div style="padding-bottom:8px">
-            <div style="font-size:12px;color:var(--text2)">fitness age</div>
-            <div style="font-family:var(--syne);font-size:13px;font-weight:600;color:var(--teal)">+${ageDiff}yrs younger than ${chronoAge}</div>
-          </div>
-        </div>
-        <div class="age-bar">
-          <div class="age-bar-fill"></div>
-          <div class="age-marker" style="left:5%;width:2px;height:16px;top:-5px;background:var(--teal)"></div>
-          <div class="age-marker" style="left:29%;width:3px;height:20px;top:-7px;background:#fff;box-shadow:0 0 4px rgba(255,255,255,.4)"></div>
-          <div class="age-marker" style="left:45%;width:2px;height:14px;top:-4px;background:var(--amber)"></div>
-        </div>
-        <div style="display:flex;gap:12px;font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:1.25rem">
-          <span><span style="color:#fff">●</span> now ${bioAge}</span>
-          <span><span style="color:var(--amber)">●</span> actual ${chronoAge}</span>
-          <span><span style="color:var(--teal)">●</span> possible ${achieveAge}</span>
-        </div>
-        ${[
-          {l:'Resting HR',v:`${g.resting_hr||65} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
-          {l:'HRV',v:`${g.hrv_weekly||41} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
-          {l:'Vigorous activity',v:`${vigorousDays}d/wk`,c:parseFloat(vigorousDays)<1?'var(--red)':'var(--amber)',w:vigorousPct,note:'target 3d/wk'},
-          {l:'Body fat',v:`${bc.fat_pct||21}%`,c:'var(--amber)',w:40,note:'target 16–17%'},
-        ].map(r=>`
-          <div class="age-driver">
-            <div style="flex:1">
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">${r.l}</span><span style="font-family:var(--mono);font-size:11px;color:${r.c}">${r.v}</span></div>
-              <div class="age-driver-bar" style="width:${r.w}%;background:${r.c}"></div>
-              <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px">${r.note}</div>
-            </div>
-          </div>`).join('')}
-      </div>
-      <div class="card">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">Body composition</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem">
-          <div class="mm"><div class="mm-label">Weight</div><div class="mm-value mc-white">${fmt(bc.weight,' kg')}</div></div>
-          <div class="mm"><div class="mm-label">Body fat</div><div class="mm-value mc-amber">${fmt(bc.fat_pct,'%')}</div><div class="mm-sub">target 16–17%</div></div>
-          <div class="mm"><div class="mm-label">Lean mass</div><div class="mm-value mc-teal">${fmt(bc.lean_kg,' kg')}</div><div class="mm-sub">protect this</div></div>
-          <div class="mm"><div class="mm-label">BMI</div><div class="mm-value mc-white">${fmt(bc.bmi)}</div><div class="mm-sub">normal range</div></div>
-        </div>
-        <div class="cw" style="height:80px;margin-bottom:.75rem">
-          <canvas id="compChart" role="img" aria-label="Body composition">Lean ${bc.lean_kg}kg vs Fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg</canvas>
-        </div>
-        <div style="display:flex;gap:14px;font-family:var(--mono);font-size:10px;color:var(--text3)">
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--teal);border-radius:2px;display:inline-block"></span>lean ${bc.lean_kg}kg (${bc.weight?Math.round(bc.lean_kg/bc.weight*100):'?'}%)</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--amber);border-radius:2px;display:inline-block"></span>fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg (${bc.fat_pct}%)</span>
-        </div>
-        <hr class="divider">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Goals progress</div>
-        ${goals.slice(0,4).map(g2=>`
-          <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid var(--border)">
-            <div style="font-size:12px;color:var(--text2);min-width:100px;font-family:var(--mono)">${g2.label}</div>
-            <div style="flex:1">
-              <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:${g2.pct}%;height:100%;background:${g2.color};border-radius:2px"></div></div>
-            </div>
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);min-width:70px;text-align:right">${g2.current} → ${g2.target}</div>
-          </div>`).join('')}
+        ${wks.length===0?'<div style="color:var(--text3);font-family:var(--m);font-size:12px">No sessions found in data.json</div>':
+          wks.map(w=>`
+            <div class="wqr">
+              <div class="wqd">${(w.date||'').split('T')[0]?.slice(5)||w.date||'—'}<br><span style="color:${(w.title||'').includes('Upper')?'var(--blue)':'var(--teal)'}">${(w.title||'').toLowerCase()}</span></div>
+              <div>
+                <div class="wqn">${w.title||'—'}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">${(w.exercises||[]).slice(0,4).map(e=>`<span style="font-family:var(--m);font-size:9px;padding:2px 7px;border-radius:10px;border:.5px solid var(--border2);color:var(--text3)">${e.name||''} ${e.weight||0}kg</span>`).join('')}</div>
+              </div>
+              <div></div>
+            </div>`).join('')}
       </div>
     </div>
-    <div class="card card-sm">
-      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem">Body battery trend — 6 weeks</div>
-      <div class="cw" style="height:160px">
-        <canvas id="bbChart" role="img" aria-label="Body battery trend">Wake-up battery and daily drain over past weeks.</canvas>
-      </div>
-      <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--text3)">
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>wake-up battery</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--amber);display:inline-block;border-top:2px dashed var(--amber)"></span>drained</span>
-      </div>
-    </div>
-    <div style="margin-top:12px">
-      <div class="zone-header" style="margin-bottom:.75rem"><div class="zone-label">Muscle coverage</div><div class="zone-line"></div></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px">
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Muscle coverage</div><div class="sec-line"></div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px">
         ${[
-          {n:'Chest',p:85,s:'well covered'},{n:'Back',p:90,s:'excellent'},
+          {n:'Chest',p:85,s:'covered'},{n:'Back',p:90,s:'excellent'},
           {n:'Shoulders',p:80,s:'rear delt ✨'},{n:'Biceps',p:80,s:'good'},
           {n:'Triceps',p:75,s:'added ✨'},{n:'Quads',p:90,s:'excellent'},
           {n:'Hamstrings',p:85,s:'RDL + curl'},{n:'Abs',p:70,s:'leg raise ✨'},
           {n:'Calves',p:85,s:'two variations'}
         ].map(m=>`
-          <div class="muscle-tile">
-            <div class="muscle-name">${m.n}</div>
-            <div class="muscle-bar"><div class="muscle-bar-fill" style="width:${m.p}%;background:${m.p>=85?'var(--teal)':'var(--amber)'}"></div></div>
-            <div class="muscle-status">${m.s}</div>
+          <div class="mtile">
+            <div class="mname">${m.n}</div>
+            <div class="mbar"><div class="mbarf" style="width:${m.p}%;background:${m.p>=85?'var(--teal)':'var(--amber)'}"></div></div>
+            <div class="mstat">${m.s}</div>
           </div>`).join('')}
       </div>
     </div>
-  </div>
 
-  <div class="upd">auto-synced daily · garmin fenix 7x · hevy pro · apple health · ${syncedAt}</div>
+    <div class="upd">synced ${synced} · hevy pro · garmin fenix 7x</div>
   `;
 
-  // Recovery ring
-  mkChart('recoveryRing',{
+  // ── TRENDS TAB ─────────────────────────────────────────────────────────
+  document.getElementById('tab-trends').innerHTML=`
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Biological age</div><div class="sec-line"></div></div>
+      <div class="g2">
+        <div class="card">
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">Garmin fitness age</div>
+          <div style="display:flex;align-items:flex-end;gap:1rem;margin-bottom:.5rem">
+            <div style="font-size:56px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--teal)">${bioAge}</div>
+            <div style="padding-bottom:8px;font-size:13px;color:var(--text2)">yrs · <span style="color:var(--teal);font-weight:500">${ageDiff} younger</span> than ${chronoAge}</div>
+          </div>
+          <div style="font-size:13px;color:var(--text2);font-style:italic;margin-bottom:1rem;line-height:1.5">With consistent vigorous training, Garmin estimates you could reach <strong style="color:var(--teal);font-style:normal">${achieveAge}</strong> fitness age.</div>
+          <div class="agebar">
+            <div class="agebar-fill"></div>
+            <div class="agemark" style="left:5%;width:2px;height:14px;top:-4px;background:var(--teal)"></div>
+            <div class="agemark" style="left:29%;width:3px;height:18px;top:-6px;background:#fff;box-shadow:0 0 4px rgba(255,255,255,.3)"></div>
+            <div class="agemark" style="left:45%;width:2px;height:12px;top:-3px;background:var(--amber)"></div>
+          </div>
+          <div style="display:flex;gap:14px;font-family:var(--m);font-size:10px;color:var(--text3)">
+            <span><span style="color:#fff">●</span> now ${bioAge}</span>
+            <span><span style="color:var(--amber)">●</span> actual ${chronoAge}</span>
+            <span><span style="color:var(--teal)">●</span> possible ${achieveAge}</span>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">Age drivers</div>
+          ${[
+            {l:'Resting HR',v:`${g.resting_hr||65} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
+            {l:'HRV',v:`${g.hrv_weekly||41} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
+            {l:'Vigorous activity',v:`${vd.toFixed(1)}d/wk`,c:vd<1?'var(--red)':'var(--amber)',w:Math.min(100,Math.round(vd/vt*100)),note:`target ${vt}d/wk — biggest lever`},
+            {l:'Body fat',v:`${bc.fat_pct||21}%`,c:'var(--amber)',w:40,note:'target 16–17%'},
+            {l:'BMI',v:`${bc.bmi||23.1}`,c:'var(--teal)',w:72,note:'normal range ✓'},
+          ].map(r=>`
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">${r.l}</span><span style="font-family:var(--m);font-size:11px;color:${r.c}">${r.v}</span></div>
+              <div style="height:2px;background:var(--s3);border-radius:1px;overflow:hidden"><div style="width:${r.w}%;height:100%;background:${r.c};border-radius:1px"></div></div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--m);margin-top:3px">${r.note}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Body composition</div><div class="sec-line"></div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="g2" style="margin-bottom:1.25rem">
+            <div class="mm"><div class="mm-l">Weight</div><div class="mm-v">${fmt(bc.weight,' kg')}</div></div>
+            <div class="mm"><div class="mm-l">Body fat</div><div class="mm-v" style="color:var(--amber)">${fmt(bc.fat_pct,'%')}</div><div class="mm-s">target 16–17%</div></div>
+            <div class="mm"><div class="mm-l">Lean mass</div><div class="mm-v" style="color:var(--teal)">${fmt(bc.lean_kg,' kg')}</div><div class="mm-s">protect this</div></div>
+            <div class="mm"><div class="mm-l">BMI</div><div class="mm-v">${fmt(bc.bmi)}</div><div class="mm-s">normal</div></div>
+          </div>
+          <div class="cw" style="height:70px"><canvas id="compChart" role="img" aria-label="Body composition">Lean ${bc.lean_kg}kg vs Fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg</canvas></div>
+          <div style="display:flex;gap:12px;margin-top:8px;font-family:var(--m);font-size:10px;color:var(--text3)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--teal);border-radius:2px;display:inline-block"></span>lean ${bc.lean_kg}kg (${bc.weight?Math.round(bc.lean_kg/bc.weight*100):'?'}%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--amber);border-radius:2px;display:inline-block"></span>fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg (${bc.fat_pct}%)</span>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">Goals progress</div>
+          ${goals.map(g2=>`
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">${g2.label}</span><span style="font-family:var(--m);font-size:10px;color:var(--text3)">${g2.current} → ${g2.target}</span></div>
+              <div style="height:3px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="width:${g2.pct}%;height:100%;background:${g2.color};border-radius:2px"></div></div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Sleep this week</div><div class="sec-line"></div></div>
+      <div class="card">
+        <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Avg score</div><div class="mm-v" style="color:var(--amber)">${ss.scores&&ss.scores.length?Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length):'74'}</div><div class="mm-s">this week</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Best night</div><div class="mm-v" style="color:var(--teal)">${ss.scores&&ss.scores.length?Math.max(...ss.scores):'91'}</div><div class="mm-s">18 May</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Trend</div><div class="mm-v" style="color:var(--red)">↓</div><div class="mm-s">declining this week</div></div>
+        </div>
+        <div class="cw" style="height:140px"><canvas id="sleepChart" role="img" aria-label="Sleep scores by night">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+(ss.scores||[])[i]).join(', ')}</canvas></div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">Sleep score declined from 91 (18 May) to 57 (22 May) over the week. A consistent bedtime will stabilise this — aim for the same 30-minute window each night.</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Body battery — 6 weeks</div><div class="sec-line"></div></div>
+      <div class="card">
+        <div class="cw" style="height:160px"><canvas id="bbChart" role="img" aria-label="Body battery trend">Wake-up battery and daily drain over 6 weeks.</canvas></div>
+        <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--m);font-size:10px;color:var(--text3)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>wake-up battery</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--amber);display:inline-block"></span>points drained</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">Late April your battery was regularly hitting 93–100 overnight. The decline in May coincided with your exam period. Recovery is beginning — 3 nights of good sleep data now showing.</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Stress vs recovery</div><div class="sec-line"></div></div>
+      <div class="card">
+        <div class="cw" style="height:160px"><canvas id="stressChart" role="img" aria-label="Stress vs body battery chart">Stress and recovery balance over the past week.</canvas></div>
+        <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--m);font-size:10px;color:var(--text3)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--red);display:inline-block"></span>avg stress</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>battery charged overnight</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">Your best night was 18 May — stress 37, battery charged 69. Today stress is low (24) but recovery is still moderate (43). Sleep quality is the bottleneck, not daytime stress.</div>
+      </div>
+    </div>
+
+    <div class="upd">synced ${synced} · garmin fenix 7x · hevy pro · apple health</div>
+  `;
+
+  // ── CHARTS ─────────────────────────────────────────────────────────────
+  mkChart('heroRing',{
     type:'doughnut',
-    data:{datasets:[{data:[readScore,100-readScore],backgroundColor:[readScore>=85?'#2dd4a0':readScore>=65?'#f5a623':'#ff5555','rgba(255,255,255,0.05)'],borderWidth:0,circumference:270,rotation:225}]},
-    options:{responsive:false,cutout:'80%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
+    data:{datasets:[{data:[rs,100-rs],backgroundColor:[rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252','rgba(255,255,255,0.04)'],borderWidth:0,circumference:270,rotation:225}]},
+    options:{responsive:false,cutout:'82%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
     plugins:[{id:'ct',afterDraw(chart){
       const{ctx,chartArea:{left,top,width,height}}=chart;
       ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
       const cx=left+width/2,cy=top+height/2;
-      ctx.font='700 22px Syne,sans-serif';
-      ctx.fillStyle=readScore>=85?'#2dd4a0':readScore>=65?'#f5a623':'#ff5555';
-      ctx.fillText(readScore,cx,cy-6);
-      ctx.font='10px DM Mono,monospace';ctx.fillStyle='#4a4845';
-      ctx.fillText('/100',cx,cy+9);ctx.restore();
+      ctx.font='300 26px Plus Jakarta Sans,sans-serif';
+      ctx.fillStyle=rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252';
+      ctx.fillText(rs,cx,cy-5);
+      ctx.font='10px DM Mono,monospace';ctx.fillStyle='#3e3d3b';
+      ctx.fillText('/100',cx,cy+11);ctx.restore();
     }}]
   });
 
-  // Stress chart
-  if(sw.labels&&sw.labels.length){
-    mkChart('stressChart',{
-      type:'line',
-      data:{labels:sw.labels,datasets:[
-        {label:'Avg stress',data:sw.stress,borderColor:'#ff5555',backgroundColor:'rgba(255,85,85,0.05)',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#ff5555',tension:0.4,fill:true},
-        {label:'BB charged',data:sw.bb_charged,borderColor:'#2dd4a0',backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'#2dd4a0',tension:0.4,borderDash:[4,3]}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
-    });
-  }
-
-  // Sleep chart
-  if(ss.labels&&ss.labels.length){
-    mkChart('sleepChart',{
-      type:'bar',
-      data:{labels:ss.labels,datasets:[{label:'Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'#2dd4a0':s>=65?'#f5a623':'#ff5555'),borderRadius:4,borderWidth:0}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
-    });
-  }
-
-  // Body comp chart
   if(bc.weight&&bc.lean_kg){
     mkChart('compChart',{
       type:'bar',
       data:{labels:[''],datasets:[
-        {label:`Lean`,data:[bc.lean_kg],backgroundColor:'#2dd4a0',borderWidth:0,borderRadius:4,borderSkipped:false},
-        {label:`Fat`,data:[bc.weight-bc.lean_kg],backgroundColor:'#f5a623',borderWidth:0,borderRadius:4,borderSkipped:false}
+        {label:'Lean',data:[bc.lean_kg],backgroundColor:'#34c99a',borderWidth:0,borderRadius:3,borderSkipped:false},
+        {label:'Fat',data:[bc.weight-bc.lean_kg],backgroundColor:'#e8993a',borderWidth:0,borderRadius:3,borderSkipped:false}
       ]},
       options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,max:90,ticks:{callback:v=>v+' kg',color:tc,font:{size:9}},grid:{color:gc}},y:{stacked:true,display:false}}}
     });
   }
 
-  // Body battery trend
+  if(ss.labels&&ss.labels.length){
+    mkChart('sleepChart',{
+      type:'bar',
+      data:{labels:ss.labels,datasets:[{label:'Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'rgba(52,201,154,0.7)':s>=65?'rgba(232,153,58,0.7)':'rgba(224,82,82,0.7)'),borderRadius:4,borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
+    });
+  }
+
   if(bbt.labels&&bbt.labels.length){
     mkChart('bbChart',{
       type:'line',
       data:{labels:bbt.labels,datasets:[
-        {label:'Wake-up battery',data:bbt.wake,borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.05)',borderWidth:2,pointRadius:2,pointBackgroundColor:'#2dd4a0',tension:0.3,fill:true},
-        {label:'Points drained',data:bbt.drain,borderColor:'#f5a623',backgroundColor:'transparent',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#f5a623',tension:0.3,borderDash:[4,3]}
+        {label:'Wake-up battery',data:bbt.wake,borderColor:'#34c99a',backgroundColor:'rgba(52,201,154,0.04)',borderWidth:1.5,pointRadius:0,tension:0.4,fill:true},
+        {label:'Points drained',data:bbt.drain,borderColor:'#e8993a',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:0.4,borderDash:[4,3]}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},y:{min:0,max:105,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
+    });
+  }
+
+  if(sw.labels&&sw.labels.length){
+    mkChart('stressChart',{
+      type:'line',
+      data:{labels:sw.labels,datasets:[
+        {label:'Avg stress',data:sw.stress,borderColor:'rgba(224,82,82,0.8)',backgroundColor:'rgba(224,82,82,0.04)',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(224,82,82,0.8)',tension:0.4,fill:true},
+        {label:'BB charged',data:sw.bb_charged,borderColor:'rgba(52,201,154,0.8)',backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(52,201,154,0.8)',tension:0.4,borderDash:[4,3]}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
   }
 }
@@ -699,16 +676,16 @@ function render(d){
 async function load(){
   const btn=document.getElementById('rbtn'),sp=document.getElementById('spin'),rl=document.getElementById('rl'),eb=document.getElementById('errbox');
   btn.disabled=true;sp.style.display='block';rl.textContent='syncing...';eb.style.display='none';
-  document.getElementById('sub').textContent='fetching...';
+  document.getElementById('sub').textContent='syncing...';
   try{
     const data=await fetchData();
     render(data);
   }catch(e){
-    eb.innerHTML=`<strong>Could not load data.json from GitHub</strong> — ${e.message}`;
+    eb.innerHTML=`<strong>Could not load data.json</strong> — ${e.message}`;
     eb.style.display='block';
     document.getElementById('sub').textContent='error';
   }
-  btn.disabled=false;sp.style.display='none';rl.textContent='↻ refresh';
+  btn.disabled=false;sp.style.display='none';rl.textContent='↻ sync';
 }
 </script>
 </body>
