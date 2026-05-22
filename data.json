@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-22T11:17:01.268687",
+  "synced_at": "2026-05-22T11:47:45.797263",
   "garmin": {
     "date": "2026-05-22",
     "resting_hr": 65,
@@ -9,11 +9,11 @@
     "sleep_hours": 6.3,
     "sleep_missing": false,
     "bb_charged": 43,
-    "bb_drained": 5,
-    "bb_current": 38,
-    "steps": 48,
+    "bb_drained": 6,
+    "bb_current": 37,
+    "steps": 75,
     "active_kcal": 1.0,
-    "total_kcal": 968.0,
+    "total_kcal": 1057.0,
     "avg_stress": 24
   },
   "workouts": [
