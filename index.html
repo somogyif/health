@@ -451,7 +451,7 @@ function render(d){
       <div class="card">
         ${wq.map(w=>`
           <div class="wqr">
-            <div class="wqd">${w.date.split(' ')[0]}<br><span style="font-size:9px">${w.date.split(' ')[1]||''}</span><br><span style="color:${w.name.includes('Upper')?'var(--blue)':'var(--teal)';}">${(w.name||'').split(' ')[0].toLowerCase()}</span></div>
+            <div class="wqd">${w.date.split(' ')[0]}<br><span style="font-size:9px">${w.date.split(' ')[1]||''}</span><br><span style="color:${w.name.includes('Upper')?'var(--blue)':'var(--teal)'}">${(w.name||'').split(' ')[0].toLowerCase()}</span></div>
             <div>
               <div class="wqn">${w.name||'—'}</div>
               <div class="wqdet">${w.dur}min · avg ${w.hr}bpm · ${w.kcal}kcal</div>
