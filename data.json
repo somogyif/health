@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-22T12:12:05.134732",
+  "synced_at": "2026-05-22T12:15:12.218017",
   "garmin": {
     "date": "2026-05-22",
     "resting_hr": 65,
@@ -14,7 +14,20 @@
     "steps": 75,
     "active_kcal": 1.0,
     "total_kcal": 1057.0,
-    "avg_stress": 24
+    "avg_stress": 24,
+    "fitness_age": null,
+    "achievable_age": null,
+    "chrono_age": 29,
+    "vigorous_days": null,
+    "vigorous_target": 3,
+    "readiness_score": 51,
+    "readiness_level": "MODERATE",
+    "readiness_sleep_score": 57,
+    "readiness_hrv_pct": 83,
+    "readiness_stress_pct": 32,
+    "acute_load": null,
+    "chronic_load": null,
+    "training_status": null
   },
   "workouts": [
     {
@@ -304,6 +317,153 @@
       "body": "RDL 36\u219244 kg, Lat Pulldown 64\u219268 kg, Arnold Press 28 kg 3\u00d710."
     }
   ],
+  "readiness_week": [
+    {
+      "date": "17 May",
+      "score": 83,
+      "level": "HIGH"
+    },
+    {
+      "date": "18 May",
+      "score": 97,
+      "level": "PRIME"
+    },
+    {
+      "date": "19 May",
+      "score": 91,
+      "level": "HIGH"
+    },
+    {
+      "date": "20 May",
+      "score": 79,
+      "level": "HIGH"
+    },
+    {
+      "date": "21 May",
+      "score": 74,
+      "level": "MOD"
+    },
+    {
+      "date": "22 May",
+      "score": 51,
+      "level": "MOD"
+    }
+  ],
+  "stress_week": {
+    "labels": [
+      "15 May",
+      "16 May",
+      "17 May",
+      "18 May",
+      "19 May",
+      "20 May",
+      "21 May",
+      "22 May"
+    ],
+    "stress": [
+      41,
+      37,
+      51,
+      37,
+      43,
+      45,
+      42,
+      24
+    ],
+    "bb_charged": [
+      null,
+      null,
+      null,
+      69,
+      52,
+      null,
+      43,
+      43
+    ]
+  },
+  "workouts_quality": [
+    {
+      "date": "17 May",
+      "name": "Upper 2",
+      "dur": 42,
+      "hr": 107,
+      "z2": 23,
+      "z3": 2,
+      "kcal": 260,
+      "score": 72,
+      "verdict": "good",
+      "note": "Moderate HR, rear delt fly first time"
+    },
+    {
+      "date": "5 May",
+      "name": "Lower 1",
+      "dur": 37,
+      "hr": 112,
+      "z2": 39,
+      "z3": 3,
+      "kcal": 225,
+      "score": 65,
+      "verdict": "mod",
+      "note": "Good effort, RDL 44kg"
+    },
+    {
+      "date": "4 May",
+      "name": "Upper 1",
+      "dur": 23,
+      "hr": 126,
+      "z2": 79,
+      "z3": 16,
+      "kcal": 155,
+      "score": 31,
+      "verdict": "warn",
+      "note": "79% zone 2 \u2014 no rest between sets"
+    },
+    {
+      "date": "3 May",
+      "name": "Lower 2",
+      "dur": 50,
+      "hr": 110,
+      "z2": 27,
+      "z3": 6,
+      "kcal": 321,
+      "score": 82,
+      "verdict": "good",
+      "note": "Best session \u2014 full duration, high kcal"
+    }
+  ],
+  "sleep_scores": {
+    "labels": [
+      "18 May",
+      "19 May",
+      "20 May",
+      "21 May",
+      "22 May"
+    ],
+    "scores": [
+      91,
+      81,
+      76,
+      69,
+      57
+    ]
+  },
+  "training_load": {
+    "acute": 10,
+    "chronic": 137,
+    "aerobic_low": 101,
+    "aerobic_low_min": 97,
+    "aerobic_low_max": 261,
+    "aerobic_high": 0,
+    "aerobic_high_min": 203,
+    "aerobic_high_max": 368,
+    "status": "RECOVERY",
+    "feedback": "AEROBIC_HIGH_SHORTAGE"
+  },
+  "streaks": {
+    "watch_nights": 5,
+    "training_weeks_4x": 0,
+    "days_since_session": 5
+  },
   "bb_trend": {
     "labels": [
       "19 Apr",
