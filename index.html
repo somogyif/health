@@ -41,7 +41,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:640px){.g2{grid-template-columns:1fr}}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:640px){.g2,.g3{grid-template-columns:1fr}}
 .mt{background:var(--surface2);border:.5px solid var(--border);border-radius:var(--rs);padding:14px 16px;transition:border-color .2s}
 .mt:hover{border-color:var(--border2)}
 .ml{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px}
@@ -65,12 +66,14 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .gbb{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
 .gbf{height:100%;border-radius:2px}
 .gvs{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px;font-family:var(--mono)}
-.wr{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:start;padding:12px 0;border-bottom:.5px solid var(--border)}
+.wr{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:start;padding:12px 0;border-bottom:.5px solid var(--border)}
 .wr:last-child{border-bottom:none}
 .wda{font-family:var(--mono);font-size:11px;color:var(--text3);padding-top:2px}
 .wn{font-weight:500;font-size:13px;margin-bottom:3px}
 .wdt{color:var(--text2);font-size:11px;font-family:var(--mono)}
-.ex-pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:12px;border:.5px solid var(--border2);color:var(--text3);font-family:var(--mono);margin:2px 2px 0 0}
+.hbr{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:10px;color:var(--text3);font-family:var(--mono)}
+.hbb{flex:1;height:3px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.hbf{height:100%;border-radius:2px}
 .rr{display:flex;gap:12px;padding:12px 0;border-bottom:.5px solid var(--border)}
 .rr:last-child{border-bottom:none}
 .rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
@@ -96,28 +99,32 @@ hr{border:none;border-top:.5px solid var(--border);margin:1rem 0}
 .setup-input:focus{border-color:var(--teal)}
 .setup-btn{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:#0e0e0c;font-family:var(--mono);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .2s}
 .setup-btn:hover{opacity:.85}
+.score-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:.5px solid var(--border)}
+.score-row:last-child{border-bottom:none}
+.streak-box{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface2);border:.5px solid var(--border);border-radius:var(--rs);padding:16px 10px;text-align:center}
+.streak-num{font-size:36px;font-weight:300;line-height:1;letter-spacing:-2px}
+.streak-label{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:4px;line-height:1.4}
+.dot-row{display:flex;gap:4px;justify-content:center;margin-top:8px}
+.dot{width:7px;height:7px;border-radius:50%}
+.dot-on{background:var(--teal)}
+.dot-off{background:var(--border2)}
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- SETUP (first time only — enter GitHub token) -->
   <div id="setup" style="display:none">
     <div class="setup-wrap">
       <div class="setup-card">
         <div class="setup-title">Health <span>Centre</span></div>
-        <div class="setup-sub">
-          One-time setup. You need a GitHub personal access token so the dashboard can read your <code>data.json</code> file.<br><br>
-          Get one at <strong>github.com/settings/tokens</strong> → Fine-grained → repo <code>somogyif/health</code> → Contents: Read-only.
-        </div>
+        <div class="setup-sub">One-time setup. Enter your GitHub read-only token to load live data from data.json.<br><br>Get one at <strong>github.com/settings/tokens?type=beta</strong> → repo somogyif/health → Contents: Read-only.</div>
         <div class="setup-label">GitHub token</div>
         <input class="setup-input" id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
-        <button class="setup-btn" onclick="saveToken()">Save & load dashboard →</button>
+        <button class="setup-btn" onclick="saveToken()">Connect →</button>
       </div>
     </div>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="main" style="display:none">
     <div class="header">
       <div>
@@ -138,168 +145,240 @@ hr{border:none;border-top:.5px solid var(--border);margin:1rem 0}
 
 </div>
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────────────
-const REPO  = 'somogyif/health';
-const FILE  = 'data.json';
+const REPO = 'somogyif/health';
+const FILE = 'data.json';
 
-// ── TOKEN ─────────────────────────────────────────────────────────────────
 const getToken   = () => localStorage.getItem('gh_token') || '';
-const saveToken  = () => {
-  const t = document.getElementById('ghToken').value.trim();
-  if (!t) { alert('Please enter your GitHub token'); return; }
-  localStorage.setItem('gh_token', t);
-  showMain();
-};
+const saveToken  = () => { const t=document.getElementById('ghToken').value.trim(); if(!t){alert('Please enter your GitHub token');return;} localStorage.setItem('gh_token',t); showMain(); };
 const clearToken = () => { localStorage.removeItem('gh_token'); location.reload(); };
 
-// ── INIT ──────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  if (getToken()) showMain();
-  else document.getElementById('setup').style.display = 'block';
+  if(getToken()) showMain(); else document.getElementById('setup').style.display='block';
 });
 
-function showMain() {
-  document.getElementById('setup').style.display = 'none';
-  document.getElementById('main').style.display  = 'block';
+function showMain(){
+  document.getElementById('setup').style.display='none';
+  document.getElementById('main').style.display='block';
   load();
 }
 
-// ── FETCH data.json from GitHub ───────────────────────────────────────────
-async function fetchData() {
-  const url = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
-  const res = await fetch(url, {
-    headers: {
-      'Authorization': 'Bearer ' + getToken(),
-      'Accept': 'application/vnd.github.raw+json',
-    },
-    signal: AbortSignal.timeout(10000)
+async function fetchData(){
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
+    headers:{'Authorization':'Bearer '+getToken(),'Accept':'application/vnd.github.raw+json'},
+    signal:AbortSignal.timeout(10000)
   });
-  if (!res.ok) throw new Error(`GitHub returned ${res.status}`);
+  if(!res.ok) throw new Error(`GitHub returned ${res.status}`);
   return res.json();
 }
 
-// ── CHARTS ────────────────────────────────────────────────────────────────
-let CHS = [];
-function killCharts() { CHS.forEach(c => { try { c.destroy(); } catch(e) {} }); CHS = []; }
-function mkChart(id, cfg) { const el = document.getElementById(id); if (!el) return; CHS.push(new Chart(el, cfg)); }
+let CHS=[];
+function killCharts(){ CHS.forEach(c=>{try{c.destroy()}catch(e){}}); CHS=[]; }
+function mkChart(id,cfg){ const el=document.getElementById(id); if(!el)return; CHS.push(new Chart(el,cfg)); }
 
-// ── RENDER ────────────────────────────────────────────────────────────────
-function fmt(v, unit='') { return v != null ? `${v}${unit}` : '—'; }
-const sc = s => (s||'').includes('Upper') ? 'var(--blue)' : 'var(--teal)';
+function fmt(v,u=''){ return v!=null?`${v}${u}`:'—'; }
+const sc = s=>(s||'').includes('Upper')?'var(--blue)':'var(--teal)';
+const gc='rgba(255,255,255,0.06)', tc='#5a5852';
 
-function render(d) {
+function readinessColor(s){ return s>=85?'var(--teal)':s>=70?'var(--amber)':'var(--red)'; }
+function scoreColor(s){ return s>=75?'var(--teal)':s>=55?'var(--amber)':'var(--red)'; }
+function verdictBadge(v){ return v==='good'?'<span class="bge bt">good</span>':v==='warn'?'<span class="bge br">fix rest</span>':'<span class="bge ba">ok</span>'; }
+
+function render(d){
   killCharts();
-  const g   = d.garmin || {};
+  const g    = d.garmin||{};
+  const bc   = d.body_comp||{};
+  const wks  = d.workouts||[];
+  const wq   = d.workouts_quality||[];
+  const goals= d.goals||[];
+  const recs = d.recs||[];
+  const bbt  = d.bb_trend||{labels:[],wake:[],drain:[]};
+  const rw   = d.readiness_week||[];
+  const sw   = d.stress_week||{labels:[],stress:[],bb_charged:[]};
+  const ss   = d.sleep_scores||{labels:[],scores:[]};
+  const tl   = d.training_load||{};
+  const str  = d.streaks||{};
 
-  // Biological age calculations
+  const syncedAt = d.synced_at ? new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+  document.getElementById('sub').innerHTML = `data.json on github <span class="sp bt">auto-synced · ${syncedAt}</span>`;
+
+  const sleepOk    = (g.sleep_hours||0)>=7.5;
+  const sleepLabel = g.sleep_missing?'Missing':`${g.sleep_hours}h`;
+  const sleepBadge = g.sleep_missing?'<span class="bge br">fix this first</span>':'<span class="bge bt">great sleep</span>';
+  const sleepSub   = g.sleep_missing?'watch not worn overnight':'watch worn to bed ✓';
+
+  // Biological age
   const bioAge     = g.fitness_age ? g.fitness_age.toFixed(1) : '25.8';
-  const chronoAge  = g.chrono_age || 29;
+  const chronoAge  = g.chrono_age||29;
   const achieveAge = g.achievable_age ? g.achievable_age.toFixed(1) : '21.1';
-  const ageDiff    = (chronoAge - parseFloat(bioAge)).toFixed(1);
-  const vigorousDays = g.vigorous_days != null ? g.vigorous_days.toFixed(1) : '0.1';
-  const vigorousPct  = Math.min(100, Math.round((g.vigorous_days || 0.1) / (g.vigorous_target || 3) * 100));
-  const rhr        = g.resting_hr || 64;
-  const hrv        = g.hrv_weekly || 42;
-  const bmi        = d.body_comp?.bmi || 23.1;
+  const ageDiff    = (chronoAge-parseFloat(bioAge)).toFixed(1);
+  const vigorousDays = g.vigorous_days!=null ? g.vigorous_days.toFixed(1) : '0.1';
+  const vigorousPct  = Math.min(100,Math.round((parseFloat(vigorousDays))/(g.vigorous_target||3)*100));
 
-  // Age bar positioning (range 20-40 = 100%)
-  const ageToPos = age => Math.max(0, Math.min(98, ((parseFloat(age) - 20) / 20) * 100));
-  const currentPct = ageToPos(bioAge);
-  const chronoPct  = ageToPos(chronoAge);
-  const achievePct = ageToPos(achieveAge);
-  const bc  = d.body_comp || {};
-  const wks = d.workouts || [];
-  const goals = d.goals || [];
-  const recs  = d.recs  || [];
-  const bbt   = d.bb_trend || { labels:[], wake:[], drain:[] };
-
-  const syncedAt = d.synced_at ? new Date(d.synced_at).toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
-  const pill = `<span class="sp bt">auto-synced · ${syncedAt}</span>`;
-  document.getElementById('sub').innerHTML = `data.json on github ${pill}`;
-
-  const bbCurrent  = g.bb_current  ?? '—';
-  const bbCharged  = g.bb_charged  ?? '—';
-  const bbDrained  = g.bb_drained  ?? '—';
-  const sleepOk    = g.sleep_hours >= 7.5;
-  const sleepLabel = g.sleep_missing ? 'Missing' : `${g.sleep_hours}h`;
-  const sleepClass = g.sleep_missing ? 'rd' : 'tl';
-  const sleepBadge = g.sleep_missing ? '<span class="bge br">fix this first</span>' : '<span class="bge bt">great sleep</span>';
-  const sleepSub   = g.sleep_missing ? 'watch not worn overnight' : 'watch worn to bed ✓';
+  // Recovery readiness
+  const readScore = g.readiness_score||51;
+  const readLevel = g.readiness_level||'MODERATE';
+  const readSleepScore = g.readiness_sleep_score||57;
+  const readHrvPct = g.readiness_hrv_pct||83;
+  const readStressPct = g.readiness_stress_pct||32;
 
   document.getElementById('dash').innerHTML = `
-    <div class="sec"><div class="lbl">Today's snapshot — ${g.date || '—'}</div>
+
+    <div class="sec"><div class="lbl">Today's snapshot — ${g.date||'—'}</div>
     <div class="g4">
-      <div class="mt"><div class="ml">Body battery</div><div class="mv am">${bbCurrent}</div><div class="ms">charged ${bbCharged} · −${bbDrained} drained</div><span class="bge ba">check tonight</span></div>
+      <div class="mt"><div class="ml">Body battery</div><div class="mv am">${fmt(g.bb_current)}</div><div class="ms">charged ${fmt(g.bb_charged)} · −${fmt(g.bb_drained)} drained</div><span class="bge ba">check tonight</span></div>
       <div class="mt"><div class="ml">Resting HR</div><div class="mv">${fmt(g.resting_hr,' bpm')}</div><div class="ms">7-day avg: ${fmt(g.rhr_avg,' bpm')}</div><span class="bge ba">monitor</span></div>
       <div class="mt"><div class="ml">HRV status</div><div class="mv tl" style="font-size:20px;padding-top:3px">${g.hrv_status||'—'}</div><div class="ms">weekly avg: ${fmt(g.hrv_weekly,' ms')}</div><span class="bge bt">baseline 40–56 ms</span></div>
-      <div class="mt"><div class="ml">Steps</div><div class="mv">${g.steps != null ? g.steps.toLocaleString() : '—'}</div><div class="ms">goal: 5,670</div>${g.steps >= 5670 ? '<span class="bge bt">✓ goal met</span>' : '<span class="bge ba">in progress</span>'}</div>
-      <div class="mt"><div class="ml">Avg stress</div><div class="mv ${g.avg_stress > 50 ? 'am' : 'tl'}">${fmt(g.avg_stress)}</div><div class="ms">&nbsp;</div><span class="bge ${g.avg_stress > 50 ? 'ba' : 'bt'}">${g.avg_stress > 50 ? 'medium-high' : 'low — good'}</span></div>
+      <div class="mt"><div class="ml">Steps</div><div class="mv">${g.steps!=null?g.steps.toLocaleString():'—'}</div><div class="ms">goal: 5,670</div>${(g.steps||0)>=5670?'<span class="bge bt">✓ goal met</span>':'<span class="bge ba">in progress</span>'}</div>
+      <div class="mt"><div class="ml">Avg stress</div><div class="mv ${(g.avg_stress||0)>50?'am':'tl'}">${fmt(g.avg_stress)}</div><div class="ms">&nbsp;</div><span class="bge ${(g.avg_stress||0)>50?'ba':'bt'}">${(g.avg_stress||0)>50?'medium-high':'low — good'}</span></div>
       <div class="mt"><div class="ml">Active kcal</div><div class="mv">${fmt(g.active_kcal)}</div><div class="ms">total: ${fmt(g.total_kcal)} kcal</div><span class="bge bb">today's activity</span></div>
-      <div class="mt"><div class="ml">Sleep</div><div class="mv ${sleepClass}" style="font-size:20px;padding-top:3px">${sleepLabel}</div><div class="ms">${sleepSub}</div>${sleepBadge}</div>
+      <div class="mt"><div class="ml">Sleep</div><div class="mv tl" style="font-size:20px;padding-top:3px">${sleepLabel}</div><div class="ms">${sleepSub}</div>${sleepBadge}</div>
       <div class="mt"><div class="ml">HRV last night</div><div class="mv tl">${fmt(g.hrv_last_night,' ms')}</div><div class="ms">weekly avg: ${fmt(g.hrv_weekly,' ms')}</div><span class="bge bt">above baseline ✓</span></div>
     </div></div>
 
-
-    <div class="sec" id="bio-age-tile"><div class="lbl">Biological age</div>
-    <div class="g2">
-      <div class="card">
-        <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.25rem;flex-wrap:wrap">
-          <div>
-            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">garmin fitness age</div>
-            <div style="font-size:52px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--teal)"><span id="bio-age-value">25.8</span><span style="font-size:18px;color:var(--text3);font-weight:300"> yrs</span></div>
-            <div style="font-size:12px;color:var(--text2);margin-top:6px">chronological age: <span id="bio-chrono">29</span> · saving <span id="bio-age-diff" style="color:var(--teal)">3.2</span> years</div>
-          </div>
-          <div style="flex:1;min-width:160px">
-            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px">age range</div>
-            <div style="position:relative;height:8px;background:var(--surface3);border-radius:4px;overflow:visible;margin-bottom:8px">
-              <div style="position:absolute;left:0;top:0;height:100%;border-radius:4px;background:linear-gradient(90deg,#2dd4a0,#f5a623,#ff5f5f);width:100%"></div>
-              <div id="bio-achieve-marker" style="position:absolute;top:-4px;height:16px;width:2px;background:#2dd4a0;border-radius:1px;left:5%"></div>
-              <div id="bio-current-marker" style="position:absolute;top:-6px;height:20px;width:3px;background:white;border-radius:2px;box-shadow:0 0 6px rgba(255,255,255,0.5);left:29%"></div>
-              <div id="bio-chrono-marker" style="position:absolute;top:-3px;height:14px;width:2px;background:var(--amber);border-radius:1px;left:45%"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);font-family:var(--mono)">
-              <span>20</span><span>25</span><span>30</span><span>35</span><span>40</span>
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:11px;font-family:var(--mono)">
-              <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:white;border-radius:50%;display:inline-block"></span>current <span id="bio-current-label">25.8</span></span>
-              <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--amber);border-radius:50%;display:inline-block"></span>actual <span id="bio-chrono-label">29</span></span>
-              <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--teal);border-radius:50%;display:inline-block"></span>achievable <span id="bio-achieve">21.1</span></span>
-            </div>
-          </div>
+    <div class="sec"><div class="lbl">Recovery score — garmin training readiness</div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem">
+        <div style="position:relative;width:110px;height:110px;flex-shrink:0">
+          <canvas id="recoveryRing" width="110" height="110" role="img" aria-label="Recovery score donut chart">${readScore}/100</canvas>
         </div>
-        <div id="bio-summary" style="font-size:12px;color:var(--text2);line-height:1.6">
-          Your body is functioning <strong style="color:var(--teal)">3.2 years younger</strong> than your calendar age. With consistent training and sleep, you could reach <strong style="color:var(--teal)">21.1</strong>.
+        <div style="flex:1;min-width:180px">
+          <div style="font-size:14px;font-weight:500;margin-bottom:2px">${readLevel==='PRIME'?'Prime — ready for action':readLevel==='HIGH'?'High — well recovered':readLevel==='LOW'?'Low — take it easy':'Moderate — focus on energy'}</div>
+          <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:12px">garmin training readiness</div>
+          <div class="score-row"><span style="color:var(--text2)">Sleep score</span><span style="font-family:var(--mono);font-size:11px;color:${readSleepScore>=80?'var(--teal)':readSleepScore>=65?'var(--amber)':'var(--red)'}">${readSleepScore} / 100</span></div>
+          <div class="score-row"><span style="color:var(--text2)">HRV factor</span><span style="font-family:var(--mono);font-size:11px;color:${readHrvPct>=75?'var(--teal)':'var(--amber)'}">${readHrvPct}%</span></div>
+          <div class="score-row"><span style="color:var(--text2)">Recovery time</span><span style="font-family:var(--mono);font-size:11px;color:var(--teal)">98% ✓</span></div>
+          <div class="score-row"><span style="color:var(--text2)">Stress history</span><span style="font-family:var(--mono);font-size:11px;color:${readStressPct>=60?'var(--teal)':readStressPct>=40?'var(--amber)':'var(--red)'}">${readStressPct}%</span></div>
+          <div class="score-row"><span style="color:var(--text2)">Training load</span><span style="font-family:var(--mono);font-size:11px;color:var(--teal)">100% ✓</span></div>
         </div>
       </div>
+      <hr>
+      <div class="lbl" style="margin-bottom:10px;margin-top:.75rem">readiness this week</div>
+      <div style="display:grid;grid-template-columns:repeat(${rw.length||6},1fr);gap:6px">
+        ${rw.map(r=>`<div style="text-align:center"><div style="font-size:18px;font-weight:500;color:${readinessColor(r.score)}">${r.score}</div><div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:2px;line-height:1.3">${r.date.split(' ')[0]}<br>${r.date.split(' ')[1]}</div></div>`).join('')}
+      </div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Streak tracker</div>
+    <div class="g3">
+      <div class="streak-box">
+        <div class="streak-num" style="color:var(--teal)">${str.watch_nights||5}</div>
+        <div class="streak-label">nights watch<br>worn to bed</div>
+        <div class="dot-row">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(str.watch_nights||5))?'dot-on':'dot-off'}"></div>`).join('')}</div>
+        <div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:6px">started 18 may · keep going</div>
+      </div>
+      <div class="streak-box">
+        <div class="streak-num" style="color:var(--red)">${str.training_weeks_4x||0}</div>
+        <div class="streak-label">weeks hitting<br>4× training</div>
+        <div class="dot-row">${[0,1,2,3].map(i=>`<div class="dot ${i<(str.training_weeks_4x||0)?'dot-on':'dot-off'}"></div>`).join('')}</div>
+        <div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:6px">avg ~2×/wk past month</div>
+      </div>
+      <div class="streak-box">
+        <div class="streak-num" style="color:${(str.days_since_session||5)>3?'var(--red)':'var(--amber)'}">${str.days_since_session||5}</div>
+        <div class="streak-label">days since<br>last session</div>
+        <div class="dot-row">${[0,1,2,3,4].map(i=>`<div class="dot ${i===0?'dot-on':'dot-off'}"></div>`).join('')}</div>
+        <div style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:6px">last: upper 2 · 17 may ⚠</div>
+      </div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Training load — acute vs chronic</div>
+    <div class="card">
+      <div class="g4" style="margin-bottom:1rem">
+        <div class="mt"><div class="ml">Acute load (7d)</div><div class="mv rd">${tl.acute||10}</div><div class="ms">vs chronic: ${tl.chronic||137}</div><span class="bge br">undertrained</span></div>
+        <div class="mt"><div class="ml">Chronic load (28d)</div><div class="mv am">${tl.chronic||137}</div><div class="ms">target: ${tl.aerobic_low_min||97}–${tl.aerobic_low_max||261}</div><span class="bge ba">within range</span></div>
+        <div class="mt"><div class="ml">Aerobic low</div><div class="mv tl">${tl.aerobic_low||101}</div><div class="ms">target: ${tl.aerobic_low_min||97}–${tl.aerobic_low_max||261}</div><span class="bge bt">✓ on target</span></div>
+        <div class="mt"><div class="ml">Aerobic high</div><div class="mv rd">${tl.aerobic_high||0}</div><div class="ms">target: ${tl.aerobic_high_min||203}–${tl.aerobic_high_max||368}</div><span class="bge br">critical shortage</span></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;padding-top:.75rem;border-top:.5px solid var(--border)">
+        Status: <strong style="color:var(--amber)">Recovery</strong> — aerobic high-intensity load is at zero. HYROX on Saturday directly fixes this. Acute:chronic ratio of ${tl.acute&&tl.chronic?(tl.acute/tl.chronic).toFixed(2):'0.07'} — body has minimal recent stimulus.
+      </div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Sleep consistency</div>
+    <div class="card">
+      <div class="g2" style="margin-bottom:1rem">
+        <div class="mt"><div class="ml">Sleep score avg</div><div class="mv am">${ss.scores&&ss.scores.length?Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length):'74'}</div><div class="ms">range: ${ss.scores&&ss.scores.length?Math.min(...ss.scores):'57'}–${ss.scores&&ss.scores.length?Math.max(...ss.scores):'91'} this week</div><span class="bge ba">variable</span></div>
+        <div class="mt"><div class="ml">Consistency score</div><div class="mv am">68%</div><div class="ms">variation: ±14 pts</div><span class="bge ba">needs work</span></div>
+      </div>
+      <div class="cw" style="height:150px">
+        <canvas id="sleepChart" role="img" aria-label="Sleep scores by night this week">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+ss.scores[i]).join(', ')}</canvas>
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:8px">best: 18 may (91) · worst: 22 may (57) · trend: declining ↓ · fix: consistent bedtime</div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Workout quality — last 4 sessions</div>
+    <div class="card">
+      ${wq.map(w=>`
+        <div class="wr">
+          <div class="wda">${w.date}<br><span style="color:${sc(w.name)}">${w.name.toLowerCase()}</span></div>
+          <div>
+            <div style="font-size:11px;font-family:var(--mono);color:var(--text2);margin-bottom:3px">${w.dur}min · avg ${w.hr}bpm · ${w.kcal}kcal</div>
+            <div style="font-size:11px;color:var(--text3)">${w.note}</div>
+            <div class="hbr" style="margin-top:5px"><span style="min-width:28px">z2</span><div class="hbb"><div class="hbf" style="width:${w.z2}%;background:var(--amber)"></div></div><span>${w.z2}%</span></div>
+            ${w.z3>0?`<div class="hbr"><span style="min-width:28px">z3+</span><div class="hbb"><div class="hbf" style="width:${w.z3}%;background:var(--red)"></div></div><span>${w.z3}%</span></div>`:''}
+          </div>
+          <div style="text-align:center;min-width:50px">
+            <div style="font-size:22px;font-weight:300;color:${scoreColor(w.score)}">${w.score}</div>
+            <div style="font-size:9px;color:var(--text3);font-family:var(--mono)">quality</div>
+            ${verdictBadge(w.verdict)}
+          </div>
+        </div>`).join('')}
+      <div style="font-size:10px;color:var(--text3);font-family:var(--mono);padding-top:10px;border-top:.5px solid var(--border);margin-top:2px">score = duration + load + zone distribution + rest compliance · 100 = perfect session</div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Stress vs recovery balance</div>
+    <div class="card">
+      <div class="cw" style="height:190px">
+        <canvas id="stressChart" role="img" aria-label="Stress vs recovery balance chart">Avg stress ranged 24–51, body battery charge ranged 43–69 where available.</canvas>
+      </div>
+      <div class="leg" style="margin-top:8px">
+        <div class="li"><div class="ld" style="background:var(--red);border-radius:0;height:2px;width:14px"></div>avg stress</div>
+        <div class="li"><div class="ld" style="background:var(--teal);border-radius:0;height:2px;width:14px;border-top:2px dashed var(--teal)"></div>battery charged overnight</div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;padding-top:.75rem;border-top:.5px solid var(--border);margin-top:.75rem">
+        Best night (18 May): stress 37, charged 69. Today stress is low (24) but recovery is weak (43) — sleep quality is the bottleneck, not daytime stress.
+      </div>
+    </div></div>
+
+    <div class="sec"><div class="lbl">Biological age</div>
+    <div class="g2">
       <div class="card">
-        <div class="lbl" style="margin-bottom:14px">What's driving your age</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1rem;flex-wrap:wrap">
           <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">Resting HR</span><span id="bio-rhr" style="color:var(--teal);font-family:var(--mono)">64 bpm ✓</span></div>
-            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:80%;height:100%;background:#2dd4a0;border-radius:2px"></div></div>
-            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">healthy range for age ✓</div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">garmin fitness age</div>
+            <div style="font-size:48px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--teal)">${bioAge}<span style="font-size:16px;color:var(--text3);font-weight:300"> yrs</span></div>
+            <div style="font-size:12px;color:var(--text2);margin-top:6px">actual: ${chronoAge} · <span style="color:var(--teal)">${ageDiff}yrs younger</span></div>
           </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">HRV</span><span id="bio-hrv" style="color:var(--teal);font-family:var(--mono)">42 ms ✓</span></div>
-            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:65%;height:100%;background:#2dd4a0;border-radius:2px"></div></div>
-            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">balanced range ✓</div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">Vigorous activity</span><span id="bio-vigorous" style="color:var(--amber);font-family:var(--mono)">0.1d/wk ⚠</span></div>
-            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div id="bio-vigorous-bar" style="width:3%;height:100%;background:#f5a623;border-radius:2px"></div></div>
-            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">target 3 days/week → #1 improvement lever</div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">BMI</span><span id="bio-bmi" style="color:var(--teal);font-family:var(--mono)">23.1 ✓</span></div>
-            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:72%;height:100%;background:#2dd4a0;border-radius:2px"></div></div>
-            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">normal range · target 20.9 for optimal</div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">Body fat</span><span style="color:var(--amber);font-family:var(--mono)">21% ⚠</span></div>
-            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:40%;height:100%;background:#f5a623;border-radius:2px"></div></div>
-            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">target 16–17% → further age reduction possible</div>
+          <div style="flex:1;min-width:140px">
+            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:6px">age range (20–40)</div>
+            <div style="position:relative;height:6px;background:var(--surface3);border-radius:3px;overflow:visible;margin-bottom:16px">
+              <div style="position:absolute;inset:0;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--amber),var(--red))"></div>
+              <div style="position:absolute;top:-5px;height:16px;width:2px;background:var(--teal);border-radius:1px;left:5%"></div>
+              <div style="position:absolute;top:-7px;height:20px;width:3px;background:#fff;border-radius:2px;left:29%"></div>
+              <div style="position:absolute;top:-4px;height:14px;width:2px;background:var(--amber);border-radius:1px;left:45%"></div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:10px;font-family:var(--mono);color:var(--text3)">
+              <span><span style="color:#fff">●</span> current ${bioAge}</span>
+              <span><span style="color:var(--amber)">●</span> actual ${chronoAge}</span>
+              <span><span style="color:var(--teal)">●</span> achievable ${achieveAge}</span>
+            </div>
           </div>
         </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">Your body is functioning <strong style="color:var(--teal)">${ageDiff} years younger</strong> than your calendar age. With consistent training you could reach <strong style="color:var(--teal)">${achieveAge}</strong>.</div>
+      </div>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:12px">age drivers</div>
+        ${[
+          {l:'Resting HR',v:`${g.resting_hr||64} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
+          {l:'HRV',v:`${g.hrv_weekly||42} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
+          {l:'Vigorous activity',v:`${vigorousDays}d/wk`,c:(parseFloat(vigorousDays)<1?'var(--red)':'var(--amber)'),w:vigorousPct,note:'target 3d/wk — #1 lever'},
+          {l:'BMI',v:`${bc.bmi||23.1}`,c:'var(--teal)',w:72,note:'normal range ✓'},
+          {l:'Body fat',v:`${bc.fat_pct||21}%`,c:'var(--amber)',w:40,note:'target 16–17%'},
+        ].map(r=>`
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">${r.l}</span><span style="font-family:var(--mono);font-size:11px;color:${r.c}">${r.v}</span></div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:${r.w}%;height:100%;background:${r.c};border-radius:2px"></div></div>
+            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px">${r.note}</div>
+          </div>`).join('')}
       </div>
     </div></div>
 
@@ -312,43 +391,43 @@ function render(d) {
           <div class="mt"><div class="ml">Lean mass</div><div class="mv tl">${fmt(bc.lean_kg,' kg')}</div><span class="bge bt">protect this</span></div>
           <div class="mt"><div class="ml">BMI</div><div class="mv">${fmt(bc.bmi)}</div><span class="bge bg2">normal</span></div>
         </div>
-        <div class="cw" style="height:100px"><canvas id="cc" role="img" aria-label="Body composition"></canvas></div>
+        <div class="cw" style="height:90px"><canvas id="compChart" role="img" aria-label="Body composition bar">Lean ${bc.lean_kg}kg vs Fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg</canvas></div>
         <div class="leg" style="margin-top:8px">
-          <div class="li"><div class="ld" style="background:#2dd4a0"></div>lean ${bc.lean_kg} kg (${bc.weight ? Math.round(bc.lean_kg/bc.weight*100) : '?'}%)</div>
-          <div class="li"><div class="ld" style="background:#f5a623"></div>fat ${bc.weight && bc.lean_kg ? (bc.weight-bc.lean_kg).toFixed(1) : '?'} kg (${bc.fat_pct}%)</div>
+          <div class="li"><div class="ld" style="background:var(--teal)"></div>lean ${bc.lean_kg} kg (${bc.weight?Math.round(bc.lean_kg/bc.weight*100):'?'}%)</div>
+          <div class="li"><div class="ld" style="background:var(--amber)"></div>fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'} kg (${bc.fat_pct}%)</div>
         </div>
       </div>
       <div class="card">
         <div class="lbl" style="margin-bottom:14px">Goals progress</div>
-        ${goals.map(g => `<div class="gr"><div class="grl">${g.label}</div><div class="gbw"><div class="gbb"><div class="gbf" style="width:${g.pct}%;background:${g.color}"></div></div><div class="gvs"><span>${g.current}</span><span>${g.target}</span></div></div></div>`).join('')}
+        ${goals.map(g2=>`<div class="gr"><div class="grl">${g2.label}</div><div class="gbw"><div class="gbb"><div class="gbf" style="width:${g2.pct}%;background:${g2.color}"></div></div><div class="gvs"><span>${g2.current}</span><span>${g2.target}</span></div></div></div>`).join('')}
       </div>
     </div></div>
 
     <div class="sec"><div class="lbl">Recovery — body battery trend</div>
     <div class="card">
-      <div class="cw" style="height:190px"><canvas id="bc2" role="img" aria-label="Body battery trend"></canvas></div>
+      <div class="cw" style="height:180px"><canvas id="bbChart" role="img" aria-label="Body battery trend">Wake-up battery trend over past weeks.</canvas></div>
       <div class="leg">
-        <div class="li"><div class="ld" style="background:#2dd4a0"></div>wake-up battery</div>
-        <div class="li"><div class="ld" style="background:#f5a623;border-radius:0;height:2px;width:14px"></div>points drained</div>
+        <div class="li"><div class="ld" style="background:var(--teal)"></div>wake-up battery</div>
+        <div class="li"><div class="ld" style="background:var(--amber);border-radius:0;height:2px;width:14px"></div>points drained</div>
       </div>
     </div></div>
 
     <div class="sec"><div class="lbl">Recent workouts</div>
     <div class="card">
-      ${wks.length === 0 ? '<div style="color:var(--text3);font-family:var(--mono);font-size:12px">No workouts found</div>' :
-        wks.map(w => `
+      ${wks.length===0?'<div style="color:var(--text3);font-family:var(--mono);font-size:12px">No workouts found</div>':
+        wks.map(w=>`
           <div class="wr">
             <div class="wda">${w.date}<br><span style="color:${sc(w.title)}">${(w.title||'').toLowerCase()}</span></div>
             <div>
               <div class="wn">${w.title||'—'} <span style="font-size:11px;color:var(--text3);font-weight:300">${w.duration||''}</span></div>
-              <div style="margin-top:4px">${(w.exercises||[]).map(e => `<span class="ex-pill">${e.name} ${e.weight}kg×${e.reps}</span>`).join('')}</div>
+              <div style="margin-top:4px">${(w.exercises||[]).map(e=>`<span style="display:inline-block;font-size:10px;padding:1px 7px;border-radius:12px;border:.5px solid var(--border2);color:var(--text3);font-family:var(--mono);margin:2px 2px 0 0">${e.name} ${e.weight}kg×${e.reps}</span>`).join('')}</div>
             </div>
           </div>`).join('')}
     </div></div>
 
     <div class="sec"><div class="lbl">Active recommendations</div>
     <div class="card">
-      ${recs.map(r => `
+      ${recs.map(r=>`
         <div class="rr">
           <div class="rdot" style="background:${r.level==='red'?'var(--red)':r.level==='amber'?'var(--amber)':'var(--teal)'}"></div>
           <div><div class="rt">${r.title}</div><div class="rb">${r.body}</div></div>
@@ -363,83 +442,87 @@ function render(d) {
         {n:'Triceps',p:75,s:'just added ✨'},{n:'Quads',p:90,s:'excellent'},
         {n:'Hamstrings',p:85,s:'RDL + curl'},{n:'Abs',p:70,s:'leg raise added'},
         {n:'Calves',p:85,s:'two variations'}
-      ].map(m=>`<div class="mtl"><div class="mn">${m.n}</div><div class="mbb"><div class="mbf" style="width:${m.p}%;background:${m.p>=85?'#2dd4a0':'#f5a623'}"></div></div><div class="mst">${m.s}</div></div>`).join('')}
+      ].map(m=>`<div class="mtl"><div class="mn">${m.n}</div><div class="mbb"><div class="mbf" style="width:${m.p}%;background:${m.p>=85?'var(--teal)':'var(--amber)'}"></div></div><div class="mst">${m.s}</div></div>`).join('')}
     </div></div>
 
-    <div class="upd">auto-synced daily · hevy pro · garmin fenix 7x · apple health</div>
+    <div class="upd">auto-synced daily · hevy pro · garmin fenix 7x · apple health · ${syncedAt}</div>
   `;
 
-  // Inject biological age values into the pre-rendered section
-  const bioDiv = document.getElementById('bio-age-tile');
-  if (bioDiv) {
-    bioDiv.querySelector('#bio-age-value').textContent = bioAge;
-    bioDiv.querySelector('#bio-age-diff').textContent = ageDiff;
-    bioDiv.querySelector('#bio-achieve').textContent = achieveAge;
-    bioDiv.querySelector('#bio-chrono').textContent = chronoAge;
-    bioDiv.querySelector('#bio-rhr').textContent = rhr + ' bpm ✓';
-    bioDiv.querySelector('#bio-hrv').textContent = hrv + ' ms ✓';
-    bioDiv.querySelector('#bio-vigorous').textContent = vigorousDays + 'd/wk';
-    bioDiv.querySelector('#bio-bmi').textContent = bmi;
-    bioDiv.querySelector('#bio-current-marker').style.left = currentPct + '%';
-    bioDiv.querySelector('#bio-chrono-marker').style.left = chronoPct + '%';
-    bioDiv.querySelector('#bio-achieve-marker').style.left = achievePct + '%';
-    bioDiv.querySelector('#bio-vigorous-bar').style.width = vigorousPct + '%';
-    bioDiv.querySelector('#bio-summary').innerHTML = 
-      'Your body is functioning <strong style="color:var(--teal)">' + ageDiff + ' years younger</strong> than your calendar age. With consistent training and sleep, you could reach <strong style="color:var(--teal)">' + achieveAge + '</strong>.';
-    const currentLabel = bioDiv.querySelector('#bio-current-label');
-    const chronoLabel  = bioDiv.querySelector('#bio-chrono-label');
-    if (currentLabel) currentLabel.textContent = bioAge;
-    if (chronoLabel)  chronoLabel.textContent  = chronoAge;
-  }
+  // Recovery ring
+  mkChart('recoveryRing', {
+    type:'doughnut',
+    data:{datasets:[{data:[readScore,100-readScore],backgroundColor:[readScore>=85?'#2dd4a0':readScore>=70?'#f5a623':'#ff5f5f','rgba(128,128,128,0.12)'],borderWidth:0,circumference:270,rotation:225}]},
+    options:{responsive:false,cutout:'78%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
+    plugins:[{id:'ct',afterDraw(chart){
+      const{ctx,chartArea:{left,top,width,height}}=chart;
+      ctx.save(); ctx.textAlign='center'; ctx.textBaseline='middle';
+      const cx=left+width/2, cy=top+height/2;
+      ctx.font='500 24px -apple-system,sans-serif';
+      ctx.fillStyle=readScore>=85?'#2dd4a0':readScore>=70?'#f5a623':'#ff5f5f';
+      ctx.fillText(readScore,cx,cy-7);
+      ctx.font='10px -apple-system,sans-serif'; ctx.fillStyle=tc;
+      ctx.fillText('/100',cx,cy+10); ctx.restore();
+    }}]
+  });
 
-  // Charts
-  const gc = 'rgba(255,255,255,0.06)', tc = '#5a5852';
-
-  if (bc.weight && bc.lean_kg) {
-    mkChart('cc', {
-      type:'bar', data:{labels:[''],datasets:[
-        {label:`Lean ${bc.lean_kg} kg`,data:[bc.lean_kg],backgroundColor:'#2dd4a0',borderWidth:0,borderRadius:4,borderSkipped:false},
-        {label:`Fat ${(bc.weight-bc.lean_kg).toFixed(1)} kg`,data:[bc.weight-bc.lean_kg],backgroundColor:'#f5a623',borderWidth:0,borderRadius:4,borderSkipped:false}
-      ]},
-      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label}}},
-        scales:{x:{stacked:true,max:90,ticks:{callback:v=>v+' kg',color:tc,font:{size:10}},grid:{color:gc}},y:{stacked:true,display:false}}
-      }
+  // Sleep scores
+  if(ss.labels&&ss.labels.length){
+    mkChart('sleepChart',{
+      type:'bar',
+      data:{labels:ss.labels,datasets:[{label:'Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'#2dd4a0':s>=65?'#f5a623':'#ff5f5f'),borderRadius:4,borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:10}},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}
     });
   }
 
-  if (bbt.labels.length) {
-    mkChart('bc2', {
-      type:'line', data:{labels:bbt.labels,datasets:[
+  // Stress vs recovery
+  if(sw.labels&&sw.labels.length){
+    mkChart('stressChart',{
+      type:'line',
+      data:{labels:sw.labels,datasets:[
+        {label:'Avg stress',data:sw.stress,borderColor:'#ff5f5f',backgroundColor:'rgba(255,95,95,0.06)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#ff5f5f',tension:0.3,fill:true},
+        {label:'BB charged overnight',data:sw.bb_charged,borderColor:'#2dd4a0',backgroundColor:'transparent',borderWidth:2,pointRadius:4,pointBackgroundColor:'#2dd4a0',tension:0.3,borderDash:[5,3],fill:false}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:10},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}
+    });
+  }
+
+  // Body comp
+  if(bc.weight&&bc.lean_kg){
+    mkChart('compChart',{
+      type:'bar',
+      data:{labels:[''],datasets:[
+        {label:`Lean ${bc.lean_kg}kg`,data:[bc.lean_kg],backgroundColor:'#2dd4a0',borderWidth:0,borderRadius:4,borderSkipped:false},
+        {label:`Fat ${(bc.weight-bc.lean_kg).toFixed(1)}kg`,data:[bc.weight-bc.lean_kg],backgroundColor:'#f5a623',borderWidth:0,borderRadius:4,borderSkipped:false}
+      ]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,max:90,ticks:{callback:v=>v+' kg',color:tc,font:{size:10}},grid:{color:gc}},y:{stacked:true,display:false}}}
+    });
+  }
+
+  // Body battery trend
+  if(bbt.labels&&bbt.labels.length){
+    mkChart('bbChart',{
+      type:'line',
+      data:{labels:bbt.labels,datasets:[
         {label:'Wake-up battery',data:bbt.wake,borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.06)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#2dd4a0',tension:0.3,fill:true},
         {label:'Points drained',data:bbt.drain,borderColor:'#f5a623',backgroundColor:'transparent',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#f5a623',tension:0.3,borderDash:[4,3]}
       ]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},
-        scales:{
-          x:{ticks:{color:tc,font:{size:10,family:'DM Mono'},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},
-          y:{min:0,max:105,ticks:{color:tc,font:{size:10}},grid:{color:gc}}
-        }
-      }
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},scales:{x:{ticks:{color:tc,font:{size:10,family:'DM Mono'},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},y:{min:0,max:105,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}
     });
   }
 }
 
-// ── MAIN LOAD ─────────────────────────────────────────────────────────────
-async function load() {
-  const btn=document.getElementById('rbtn'), sp=document.getElementById('spin'), rl=document.getElementById('rl'), eb=document.getElementById('errbox');
+async function load(){
+  const btn=document.getElementById('rbtn'),sp=document.getElementById('spin'),rl=document.getElementById('rl'),eb=document.getElementById('errbox');
   btn.disabled=true; sp.style.display='block'; rl.textContent='fetching...'; eb.style.display='none';
-  document.getElementById('sub').textContent = 'fetching from github...';
-
-  try {
-    const data = await fetchData();
+  document.getElementById('sub').textContent='fetching from github...';
+  try{
+    const data=await fetchData();
     render(data);
-  } catch(e) {
-    eb.innerHTML = `<strong>Could not load data.json from GitHub</strong><br><span style="opacity:.7">${e.message}</span><br><br>Make sure the sync script has run at least once and <code>data.json</code> exists in your repo.`;
+  }catch(e){
+    eb.innerHTML=`<strong>Could not load data.json</strong><br><span style="opacity:.7">${e.message}</span>`;
     eb.style.display='block';
-    document.getElementById('sub').textContent = 'could not load data';
+    document.getElementById('sub').textContent='could not load data';
   }
-
   btn.disabled=false; sp.style.display='none'; rl.textContent='↻ refresh';
 }
 </script>
