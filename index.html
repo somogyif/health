@@ -174,8 +174,10 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 
 .err{background:var(--red-d);border:.5px solid var(--red);border-radius:var(--r);padding:.875rem 1.25rem;font-family:var(--m);font-size:12px;color:var(--red);margin-bottom:1.5rem;line-height:1.7}
 .upd{font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;padding-top:2rem;border-top:.5px solid var(--border)}
-.pf-hero{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:1.5rem;margin-bottom:10px;display:flex;gap:1.5rem;align-items:flex-start}
-.pf-hero-num{font-size:72px;font-weight:300;letter-spacing:-4px;line-height:1;color:var(--text3);flex-shrink:0;width:90px}
+.pf-hero{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:1.5rem;margin-bottom:10px}
+.pf-hero-top{display:flex;align-items:flex-end;gap:1rem;margin-bottom:1rem;border-bottom:.5px solid var(--border);padding-bottom:1rem}
+.pf-hero-num{font-size:64px;font-weight:300;letter-spacing:-3px;line-height:1;flex-shrink:0}
+.pf-hero-meta{}
 .pf-hero-name{font-size:18px;font-weight:500;color:var(--text);margin-bottom:2px}
 .pf-hero-ins{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;letter-spacing:.04em}
 .pf-hero-why{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px}
@@ -423,19 +425,19 @@ function render(d){
 
     <div class="pillars">
       <div class="pillar">
-        <div class="pillar-label">Sleep</div>
+        <div class="pillar-label">😴 Sleep</div>
         <div class="pillar-value" style="color:${(g.sleep_hours||0)>=7.5?'var(--teal)':'var(--amber)'}">${g.sleep_missing?'—':fmt(g.sleep_hours,'h')}</div>
         <div class="pillar-sub">${g.sleep_missing?'watch not worn':'watch worn to bed ✓'}</div>
         <div class="pillar-coaching">${sleepCoaching(g.sleep_hours,g.readiness_sleep_score)}</div>
       </div>
       <div class="pillar">
-        <div class="pillar-label">Body battery</div>
+        <div class="pillar-label">🔋 Body battery</div>
         <div class="pillar-value" style="color:${(g.bb_current||0)>=50?'var(--teal)':'var(--amber)'}">${fmt(g.bb_current)}</div>
         <div class="pillar-sub">charged ${fmt(g.bb_charged)} · −${fmt(g.bb_drained)} drained</div>
         <div class="pillar-coaching">${(g.bb_current||0)>=60?'Good energy reserves for the day ahead.':((g.bb_current||0)>=35?'Moderate energy. Avoid stacking stress today.':'Low battery. Rest and recovery are the priority.')}</div>
       </div>
       <div class="pillar">
-        <div class="pillar-label">Resting HR</div>
+        <div class="pillar-label">❤️ Resting HR</div>
         <div class="pillar-value" style="color:var(--text)">${fmt(g.resting_hr,' bpm')}</div>
         <div class="pillar-sub">7-day avg · HRV ${fmt(g.hrv_weekly,' ms')}</div>
         <div class="pillar-coaching">${hrCoaching(g.resting_hr,g.rhr_avg)}</div>
@@ -448,10 +450,10 @@ function render(d){
         <div style="display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:start;margin-bottom:1.25rem">
           <div>
             ${[
-              {l:'Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score||57),w:g.readiness_sleep_score||57},
-              {l:'HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:(g.readiness_hrv_pct||83)>=75?'var(--teal)':'var(--amber)',w:g.readiness_hrv_pct||83},
-              {l:'Stress history',v:fmt(g.readiness_stress_pct,'%'),c:scol(g.readiness_stress_pct||32),w:g.readiness_stress_pct||32},
-              {l:'Recovery time',v:'98%',c:'var(--teal)',w:98},
+              {l:'😴 Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score||57),w:g.readiness_sleep_score||57},
+              {l:'💓 HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:(g.readiness_hrv_pct||83)>=75?'var(--teal)':'var(--amber)',w:g.readiness_hrv_pct||83},
+              {l:'🧠 Stress history',v:fmt(g.readiness_stress_pct,'%'),c:scol(g.readiness_stress_pct||32),w:g.readiness_stress_pct||32},
+              {l:'⏱ Recovery time',v:'98%',c:'var(--teal)',w:98},
             ].map(r=>`
               <div class="frow" style="flex-direction:column;align-items:flex-start">
                 <div style="display:flex;justify-content:space-between;width:100%"><span class="fl">${r.l}</span><span class="fv" style="color:${r.c}">${r.v}</span></div>
@@ -473,29 +475,29 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Today's numbers</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">📊 Today's numbers</div><div class="sec-line"></div></div>
       <div class="g4">
-        <div class="mm"><div class="mm-l">Steps</div><div class="mm-v" style="color:${(g.steps||0)>=5670?'var(--teal)':'var(--text)'}">${g.steps!=null?g.steps.toLocaleString():'—'}</div><div class="mm-s">goal: 5,670</div>${(g.steps||0)>=5670?'<span class="tag tt">✓ done</span>':'<span class="tag ta">in progress</span>'}</div>
-        <div class="mm"><div class="mm-l">Avg stress</div><div class="mm-v" style="color:${(g.avg_stress||0)>50?'var(--amber)':'var(--teal)'}">${fmt(g.avg_stress)}</div><div class="mm-s">${(g.avg_stress||0)>50?'moderate-high':'low — good'}</div></div>
-        <div class="mm"><div class="mm-l">Active kcal</div><div class="mm-v">${fmt(g.active_kcal)}</div><div class="mm-s">total ${fmt(g.total_kcal)} kcal</div></div>
-        <div class="mm"><div class="mm-l">HRV last night</div><div class="mm-v" style="color:var(--teal)">${fmt(g.hrv_last_night,' ms')}</div><div class="mm-s">weekly ${fmt(g.hrv_weekly,' ms')}</div></div>
+        <div class="mm"><div class="mm-l">👣 Steps</div><div class="mm-v" style="color:${(g.steps||0)>=5670?'var(--teal)':'var(--text)'}">${g.steps!=null?g.steps.toLocaleString():'—'}</div><div class="mm-s">goal: 5,670</div>${(g.steps||0)>=5670?'<span class="tag tt">✓ done</span>':'<span class="tag ta">in progress</span>'}</div>
+        <div class="mm"><div class="mm-l">🧠 Avg stress</div><div class="mm-v" style="color:${(g.avg_stress||0)>50?'var(--amber)':'var(--teal)'}">${fmt(g.avg_stress)}</div><div class="mm-s">${(g.avg_stress||0)>50?'moderate-high':'low — good'}</div></div>
+        <div class="mm"><div class="mm-l">🔥 Active kcal</div><div class="mm-v">${fmt(g.active_kcal)}</div><div class="mm-s">total ${fmt(g.total_kcal)} kcal</div></div>
+        <div class="mm"><div class="mm-l">💓 HRV last night</div><div class="mm-v" style="color:var(--teal)">${fmt(g.hrv_last_night,' ms')}</div><div class="mm-s">weekly ${fmt(g.hrv_weekly,' ms')}</div></div>
       </div>
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Next 7 days</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">🗓 Next 7 days</div><div class="sec-line"></div></div>
       <div class="card" id="calCard">
         <div id="calBody" style="font-family:var(--m);font-size:12px;color:var(--text3)">No calendar data — run sync script to load events.</div>
       </div>
     </div>
 
     <div class="sec" id="perfumeSection">
-      <div class="sec-head"><div class="sec-title">Scent for the day</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">🌿 Scent for the day</div><div class="sec-line"></div></div>
       <div id="perfumeBody"><div style="font-family:var(--m);font-size:12px;color:var(--text3)">Loading...</div></div>
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Recommendations</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">💡 Recommendations</div><div class="sec-line"></div></div>
       <div class="card">
         ${recs.map(r=>`
           <div class="rec">
@@ -557,16 +559,20 @@ function render(d){
     const hero = ranked[0];
     const heroData = pickedNum === hero.num ? pm : {};
 
+    const accentColor = pickedNum===hero.num?'var(--teal)':'var(--text3)';
     let html = `
       <div class="pf-hero">
-        <div class="pf-hero-num" style="color:${pickedNum===hero.num?'var(--teal)':'var(--text3)'}">${hero.num}</div>
-        <div style="flex:1;min-width:0">
-          <div class="pf-hero-name">${hero.name}</div>
-          <div class="pf-hero-ins">${hero.inspired}</div>
-          <div class="pf-hero-why">${heroData.reason || hero.mood}</div>
-          <div class="pf-notes">${hero.notes.map(n=>`<span class="pf-note">${n}</span>`).join('')}</div>
-          <div class="pf-how">${hero.how}</div>
+        <div class="pf-hero-top">
+          <div class="pf-hero-num" style="color:${accentColor}">${hero.num}</div>
+          <div class="pf-hero-meta">
+            <div class="pf-hero-name">${hero.name}</div>
+            <div class="pf-hero-ins">${hero.inspired}</div>
+            <div style="display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);margin-top:4px">${hero.mood}</div>
+          </div>
         </div>
+        <div class="pf-hero-why">${heroData.reason || hero.mood}</div>
+        <div class="pf-notes">${hero.notes.map(n=>`<span class="pf-note">${n}</span>`).join('')}</div>
+        <div class="pf-how">💧 ${hero.how}</div>
       </div>`;
 
     // Evening / post-gym card if applicable
@@ -615,25 +621,31 @@ function render(d){
     const p = ranked.find(x=>x.num===num);
     if (!p) return;
     const isPick = num === pickedNum;
+    const ac = isPick ? 'var(--teal)' : 'var(--text3)';
+    const reason = isPick && pf.morning ? pf.morning.reason : p.mood;
     const heroEl = document.querySelector('.pf-hero');
     if (!heroEl) return;
-    const score = scoreMap[num] || 1;
-    heroEl.querySelector('.pf-hero-num').textContent = p.num;
-    heroEl.querySelector('.pf-hero-num').style.color = isPick ? 'var(--teal)' : 'var(--text3)';
-    heroEl.querySelector('.pf-hero-name').textContent = p.name;
-    heroEl.querySelector('.pf-hero-ins').textContent = p.inspired;
-    heroEl.querySelector('.pf-hero-why').textContent = isPick && pf.morning ? pf.morning.reason : p.mood;
-    heroEl.querySelector('.pf-how').textContent = p.how;
-    heroEl.querySelector('.pf-notes').innerHTML = p.notes.map(n=>`<span class="pf-note">${n}</span>`).join('');
+    heroEl.innerHTML = `
+      <div class="pf-hero-top">
+        <div class="pf-hero-num" style="color:${ac}">${p.num}</div>
+        <div class="pf-hero-meta">
+          <div class="pf-hero-name">${p.name}</div>
+          <div class="pf-hero-ins">${p.inspired}</div>
+          <div style="display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);margin-top:4px">${p.mood}</div>
+        </div>
+      </div>
+      <div class="pf-hero-why">${reason}</div>
+      <div class="pf-notes">${p.notes.map(n=>`<span class="pf-note">${n}</span>`).join('')}</div>
+      <div class="pf-how">💧 ${p.how}</div>`;
     document.querySelectorAll('.pf-card').forEach(c => {
-      c.classList.toggle('pf-active', c.getAttribute('onclick').includes(num));
+      c.classList.toggle('pf-active', c.getAttribute('onclick').includes(`'${num}'`));
     });
   };
 
   // ── TRAINING TAB ───────────────────────────────────────────────────────
   document.getElementById('tab-training').innerHTML=`
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Streaks</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">🔥 Streaks</div><div class="sec-line"></div></div>
       <div class="g3">
         <div class="streak">
           <div class="streak-n" style="color:var(--teal)">${str.watch_nights||5}</div>
@@ -657,7 +669,7 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Training load</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">⚡ Training load</div><div class="sec-line"></div></div>
       <div class="card">
         <div class="g4" style="margin-bottom:1.25rem">
           <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:var(--red)">${tl.acute||10}</div><div class="mm-s">recent stimulus</div><span class="tag tr">very low</span></div>
@@ -670,7 +682,7 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Workout quality</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">🏋 Workout quality</div><div class="sec-line"></div></div>
       <div class="card">
         ${wq.map(w=>`
           <div class="wqr">
@@ -692,7 +704,7 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Recent sessions</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">📋 Recent sessions</div><div class="sec-line"></div></div>
       <div class="card">
         ${wks.length===0?'<div style="color:var(--text3);font-family:var(--m);font-size:12px">No sessions found in data.json</div>':
           wks.map(w=>`
@@ -708,7 +720,7 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Muscle coverage</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">💪 Muscle coverage</div><div class="sec-line"></div></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px">
         ${[
           {n:'Chest',p:85,s:'covered'},{n:'Back',p:90,s:'excellent'},
@@ -731,7 +743,7 @@ function render(d){
   // ── TRENDS TAB ─────────────────────────────────────────────────────────
   document.getElementById('tab-trends').innerHTML=`
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Biological age</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">🧬 Biological age</div><div class="sec-line"></div></div>
       <div class="g2">
         <div class="card">
           <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">Garmin fitness age</div>
@@ -753,7 +765,7 @@ function render(d){
           </div>
         </div>
         <div class="card">
-          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">Age drivers</div>
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">🔬 Age drivers</div>
           ${[
             {l:'Resting HR',v:`${g.resting_hr||65} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
             {l:'HRV',v:`${g.hrv_weekly||41} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
@@ -771,7 +783,7 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Body composition</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">⚖️ Body composition</div><div class="sec-line"></div></div>
       <div class="g2">
         <div class="card">
           <div class="g2" style="margin-bottom:1.25rem">
@@ -787,7 +799,7 @@ function render(d){
           </div>
         </div>
         <div class="card">
-          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">Goals progress</div>
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">🎯 Goals progress</div>
           ${goals.map(g2=>`
             <div style="margin-bottom:12px">
               <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">${g2.label}</span><span style="font-family:var(--m);font-size:10px;color:var(--text3)">${g2.current} → ${g2.target}</span></div>
@@ -798,7 +810,7 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Sleep this week</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">😴 Sleep this week</div><div class="sec-line"></div></div>
       <div class="card">
         <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
           <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Avg score</div><div class="mm-v" style="color:var(--amber)">${ss.scores&&ss.scores.length?Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length):'74'}</div><div class="mm-s">this week</div></div>
@@ -811,7 +823,7 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Body battery — 6 weeks</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">🔋 Body battery — 6 weeks</div><div class="sec-line"></div></div>
       <div class="card">
         <div class="cw" style="height:160px"><canvas id="bbChart" role="img" aria-label="Body battery trend">Wake-up battery and daily drain over 6 weeks.</canvas></div>
         <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--m);font-size:10px;color:var(--text3)">
@@ -823,7 +835,7 @@ function render(d){
     </div>
 
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Stress vs recovery</div><div class="sec-line"></div></div>
+      <div class="sec-head"><div class="sec-title">📈 Stress vs recovery</div><div class="sec-line"></div></div>
       <div class="card">
         <div class="cw" style="height:160px"><canvas id="stressChart" role="img" aria-label="Stress vs body battery chart">Stress and recovery balance over the past week.</canvas></div>
         <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--m);font-size:10px;color:var(--text3)">
@@ -868,7 +880,7 @@ function render(d){
   if(ss.labels&&ss.labels.length){
     mkChart('sleepChart',{
       type:'bar',
-      data:{labels:ss.labels,datasets:[{label:'Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'rgba(52,201,154,0.7)':s>=65?'rgba(232,153,58,0.7)':'rgba(224,82,82,0.7)'),borderRadius:4,borderWidth:0}]},
+      data:{labels:ss.labels,datasets:[{label:'😴 Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'rgba(52,201,154,0.7)':s>=65?'rgba(232,153,58,0.7)':'rgba(224,82,82,0.7)'),borderRadius:4,borderWidth:0}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
   }
