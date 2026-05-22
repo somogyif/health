@@ -190,6 +190,23 @@ const sc = s => (s||'').includes('Upper') ? 'var(--blue)' : 'var(--teal)';
 function render(d) {
   killCharts();
   const g   = d.garmin || {};
+
+  // Biological age calculations
+  const bioAge     = g.fitness_age ? g.fitness_age.toFixed(1) : '25.8';
+  const chronoAge  = g.chrono_age || 29;
+  const achieveAge = g.achievable_age ? g.achievable_age.toFixed(1) : '21.1';
+  const ageDiff    = (chronoAge - parseFloat(bioAge)).toFixed(1);
+  const vigorousDays = g.vigorous_days != null ? g.vigorous_days.toFixed(1) : '0.1';
+  const vigorousPct  = Math.min(100, Math.round((g.vigorous_days || 0.1) / (g.vigorous_target || 3) * 100));
+  const rhr        = g.resting_hr || 64;
+  const hrv        = g.hrv_weekly || 42;
+  const bmi        = d.body_comp?.bmi || 23.1;
+
+  // Age bar positioning (range 20-40 = 100%)
+  const ageToPos = age => Math.max(0, Math.min(98, ((parseFloat(age) - 20) / 20) * 100));
+  const currentPct = ageToPos(bioAge);
+  const chronoPct  = ageToPos(chronoAge);
+  const achievePct = ageToPos(achieveAge);
   const bc  = d.body_comp || {};
   const wks = d.workouts || [];
   const goals = d.goals || [];
@@ -220,6 +237,70 @@ function render(d) {
       <div class="mt"><div class="ml">Active kcal</div><div class="mv">${fmt(g.active_kcal)}</div><div class="ms">total: ${fmt(g.total_kcal)} kcal</div><span class="bge bb">today's activity</span></div>
       <div class="mt"><div class="ml">Sleep</div><div class="mv ${sleepClass}" style="font-size:20px;padding-top:3px">${sleepLabel}</div><div class="ms">${sleepSub}</div>${sleepBadge}</div>
       <div class="mt"><div class="ml">HRV last night</div><div class="mv tl">${fmt(g.hrv_last_night,' ms')}</div><div class="ms">weekly avg: ${fmt(g.hrv_weekly,' ms')}</div><span class="bge bt">above baseline ✓</span></div>
+    </div></div>
+
+
+    <div class="sec" id="bio-age-tile"><div class="lbl">Biological age</div>
+    <div class="g2">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.25rem;flex-wrap:wrap">
+          <div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">garmin fitness age</div>
+            <div style="font-size:52px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--teal)"><span id="bio-age-value">25.8</span><span style="font-size:18px;color:var(--text3);font-weight:300"> yrs</span></div>
+            <div style="font-size:12px;color:var(--text2);margin-top:6px">chronological age: <span id="bio-chrono">29</span> · saving <span id="bio-age-diff" style="color:var(--teal)">3.2</span> years</div>
+          </div>
+          <div style="flex:1;min-width:160px">
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px">age range</div>
+            <div style="position:relative;height:8px;background:var(--surface3);border-radius:4px;overflow:visible;margin-bottom:8px">
+              <div style="position:absolute;left:0;top:0;height:100%;border-radius:4px;background:linear-gradient(90deg,#2dd4a0,#f5a623,#ff5f5f);width:100%"></div>
+              <div id="bio-achieve-marker" style="position:absolute;top:-4px;height:16px;width:2px;background:#2dd4a0;border-radius:1px;left:5%"></div>
+              <div id="bio-current-marker" style="position:absolute;top:-6px;height:20px;width:3px;background:white;border-radius:2px;box-shadow:0 0 6px rgba(255,255,255,0.5);left:29%"></div>
+              <div id="bio-chrono-marker" style="position:absolute;top:-3px;height:14px;width:2px;background:var(--amber);border-radius:1px;left:45%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);font-family:var(--mono)">
+              <span>20</span><span>25</span><span>30</span><span>35</span><span>40</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:11px;font-family:var(--mono)">
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:white;border-radius:50%;display:inline-block"></span>current <span id="bio-current-label">25.8</span></span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--amber);border-radius:50%;display:inline-block"></span>actual <span id="bio-chrono-label">29</span></span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--teal);border-radius:50%;display:inline-block"></span>achievable <span id="bio-achieve">21.1</span></span>
+            </div>
+          </div>
+        </div>
+        <div id="bio-summary" style="font-size:12px;color:var(--text2);line-height:1.6">
+          Your body is functioning <strong style="color:var(--teal)">3.2 years younger</strong> than your calendar age. With consistent training and sleep, you could reach <strong style="color:var(--teal)">21.1</strong>.
+        </div>
+      </div>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:14px">What's driving your age</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">Resting HR</span><span id="bio-rhr" style="color:var(--teal);font-family:var(--mono)">64 bpm ✓</span></div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:80%;height:100%;background:#2dd4a0;border-radius:2px"></div></div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">healthy range for age ✓</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">HRV</span><span id="bio-hrv" style="color:var(--teal);font-family:var(--mono)">42 ms ✓</span></div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:65%;height:100%;background:#2dd4a0;border-radius:2px"></div></div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">balanced range ✓</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">Vigorous activity</span><span id="bio-vigorous" style="color:var(--amber);font-family:var(--mono)">0.1d/wk ⚠</span></div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div id="bio-vigorous-bar" style="width:3%;height:100%;background:#f5a623;border-radius:2px"></div></div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">target 3 days/week → #1 improvement lever</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">BMI</span><span id="bio-bmi" style="color:var(--teal);font-family:var(--mono)">23.1 ✓</span></div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:72%;height:100%;background:#2dd4a0;border-radius:2px"></div></div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">normal range · target 20.9 for optimal</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">Body fat</span><span style="color:var(--amber);font-family:var(--mono)">21% ⚠</span></div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="width:40%;height:100%;background:#f5a623;border-radius:2px"></div></div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)">target 16–17% → further age reduction possible</div>
+          </div>
+        </div>
+      </div>
     </div></div>
 
     <div class="sec"><div class="lbl">Body composition — ${bc.date||'—'}</div>
@@ -287,6 +368,29 @@ function render(d) {
 
     <div class="upd">auto-synced daily · hevy pro · garmin fenix 7x · apple health</div>
   `;
+
+  // Inject biological age values into the pre-rendered section
+  const bioDiv = document.getElementById('bio-age-tile');
+  if (bioDiv) {
+    bioDiv.querySelector('#bio-age-value').textContent = bioAge;
+    bioDiv.querySelector('#bio-age-diff').textContent = ageDiff;
+    bioDiv.querySelector('#bio-achieve').textContent = achieveAge;
+    bioDiv.querySelector('#bio-chrono').textContent = chronoAge;
+    bioDiv.querySelector('#bio-rhr').textContent = rhr + ' bpm ✓';
+    bioDiv.querySelector('#bio-hrv').textContent = hrv + ' ms ✓';
+    bioDiv.querySelector('#bio-vigorous').textContent = vigorousDays + 'd/wk';
+    bioDiv.querySelector('#bio-bmi').textContent = bmi;
+    bioDiv.querySelector('#bio-current-marker').style.left = currentPct + '%';
+    bioDiv.querySelector('#bio-chrono-marker').style.left = chronoPct + '%';
+    bioDiv.querySelector('#bio-achieve-marker').style.left = achievePct + '%';
+    bioDiv.querySelector('#bio-vigorous-bar').style.width = vigorousPct + '%';
+    bioDiv.querySelector('#bio-summary').innerHTML = 
+      'Your body is functioning <strong style="color:var(--teal)">' + ageDiff + ' years younger</strong> than your calendar age. With consistent training and sleep, you could reach <strong style="color:var(--teal)">' + achieveAge + '</strong>.';
+    const currentLabel = bioDiv.querySelector('#bio-current-label');
+    const chronoLabel  = bioDiv.querySelector('#bio-chrono-label');
+    if (currentLabel) currentLabel.textContent = bioAge;
+    if (chronoLabel)  chronoLabel.textContent  = chronoAge;
+  }
 
   // Charts
   const gc = 'rgba(255,255,255,0.06)', tc = '#5a5852';
