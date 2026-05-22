@@ -1,20 +1,20 @@
 {
-  "synced_at": "2026-05-19T11:05:42.023159",
+  "synced_at": "2026-05-22T11:17:01.268687",
   "garmin": {
-    "date": "2026-05-19",
-    "resting_hr": 64,
-    "hrv_weekly": 42,
-    "hrv_last_night": 42,
+    "date": "2026-05-22",
+    "resting_hr": 65,
+    "hrv_weekly": 41,
+    "hrv_last_night": 41,
     "hrv_status": "Balanced",
-    "sleep_hours": 7.6,
+    "sleep_hours": 6.3,
     "sleep_missing": false,
-    "bb_charged": 52,
-    "bb_drained": 17,
-    "bb_current": 35,
-    "steps": 952,
-    "active_kcal": 369.0,
-    "total_kcal": 1358.0,
-    "avg_stress": 29
+    "bb_charged": 43,
+    "bb_drained": 5,
+    "bb_current": 38,
+    "steps": 48,
+    "active_kcal": 1.0,
+    "total_kcal": 968.0,
+    "avg_stress": 24
   },
   "workouts": [
     {
@@ -226,7 +226,7 @@
     "fat_pct": 21,
     "lean_kg": 65.8,
     "bmi": 23.1,
-    "date": "2026-05-19"
+    "date": "2026-05-22"
   },
   "goals": [
     {
@@ -266,22 +266,27 @@
     },
     {
       "label": "Sleep",
-      "current": "7.6h",
+      "current": "6.3h",
       "target": "7.5\u20138 hrs",
-      "pct": 90,
-      "color": "#2dd4a0"
+      "pct": 60,
+      "color": "#f5a623"
     }
   ],
   "recs": [
     {
       "level": "red",
       "title": "Rest 90 seconds between sets",
-      "body": "Upper 1 Garmin data shows 79% zone 2 \u2014 set a rest timer on your Fenix 7X."
+      "body": "Upper 1 Garmin data: 79% zone 2. Set rest timer on Fenix 7X."
     },
     {
       "level": "red",
       "title": "Get back to 4\u00d7 per week",
       "body": "No gaps longer than 3 days between sessions."
+    },
+    {
+      "level": "amber",
+      "title": "HYROX this Saturday",
+      "body": "Hybrid Culture, Amager Strand. Last session 18 Apr: avg HR 150, 615 kcal."
     },
     {
       "level": "amber",
@@ -296,7 +301,7 @@
     {
       "level": "green",
       "title": "Progressive overload is working",
-      "body": "RDL 36\u219244 kg, Lat Pulldown 59\u219268 kg, Arnold Press 28 kg 3\u00d710."
+      "body": "RDL 36\u219244 kg, Lat Pulldown 64\u219268 kg, Arnold Press 28 kg 3\u00d710."
     }
   ],
   "bb_trend": {
@@ -331,7 +336,10 @@
       "16 May",
       "17 May",
       "18 May",
-      "19 May"
+      "19 May",
+      "20 May",
+      "21 May",
+      "22 May"
     ],
     "wake": [
       53,
@@ -364,7 +372,10 @@
       46,
       61,
       69,
-      52
+      52,
+      null,
+      null,
+      null
     ],
     "drain": [
       27,
@@ -397,7 +408,10 @@
       18,
       23,
       12,
-      17
+      17,
+      null,
+      null,
+      null
     ]
   }
 }
