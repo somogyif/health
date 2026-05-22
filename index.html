@@ -10,14 +10,14 @@
 <style>
 :root {
   --bg:       #0c0c0b;
-  --s1:       #141413;
-  --s2:       #1c1c1a;
-  --s3:       #242422;
-  --border:   rgba(255,255,255,0.06);
-  --border2:  rgba(255,255,255,0.11);
-  --text:     #eeebe2;
-  --text2:    #7a7874;
-  --text3:    #3e3d3b;
+  --s1:       #1a1a18;
+  --s2:       #272724;
+  --s3:       #313130;
+  --border:   rgba(255,255,255,0.1);
+  --border2:  rgba(255,255,255,0.2);
+  --text:     #f5f2ea;
+  --text2:    #b8b4ac;
+  --text3:    #7a7874;
   --teal:     #34c99a;
   --teal-d:   rgba(52,201,154,0.1);
   --amber:    #e8993a;
@@ -84,7 +84,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 .pillar-label{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem}
 .pillar-value{font-size:28px;font-weight:300;letter-spacing:-1px;line-height:1;margin-bottom:4px}
 .pillar-sub{font-size:12px;color:var(--text2);margin-bottom:.75rem}
-.pillar-coaching{font-size:12px;color:var(--text2);font-style:italic;line-height:1.5;padding-top:.75rem;border-top:.5px solid var(--border)}
+.pillar-coaching{font-size:12px;color:var(--text);opacity:0.75;font-style:italic;line-height:1.5;padding-top:.75rem;border-top:.5px solid var(--border)}
 
 /* ── SECTION ── */
 .sec{margin-bottom:2rem}
@@ -103,7 +103,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 .mm{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem}
 .mm-l{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
 .mm-v{font-size:22px;font-weight:300;letter-spacing:-.5px;line-height:1;margin-bottom:3px}
-.mm-s{font-size:11px;color:var(--text2)}
+.mm-s{font-size:11px;color:var(--text3)}
 .tag{display:inline-block;font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px}
 .tt{background:var(--teal-d);color:var(--teal)}
 .ta{background:var(--amber-d);color:var(--amber)}
@@ -309,38 +309,71 @@ function render(d){
   // Render calendar events
   const calEvents = d.calendar || [];
   const calLoad = d.calendar_load_today || 0;
-  function renderCalendar(events, readScore) {
-    if (!events || events.length === 0) return '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events found. Run sync script to load calendar.</div>';
 
-    // Group by date
+  // Category colours (no emoji — was causing "undefined")
+  const CAT_COLORS = {
+    work: 'var(--amber)', study: 'var(--blue)', deadline: 'var(--red)',
+    gym: 'var(--teal)', wellness: 'var(--teal)', meeting: 'var(--blue)',
+    social: '#a78bfa', personal: 'var(--text3)', other: 'var(--text3)'
+  };
+  const CAT_LABELS = {
+    work: 'work', study: 'study', deadline: 'deadline', gym: 'gym',
+    wellness: 'wellness', meeting: 'meeting', social: 'social',
+    personal: 'personal', other: 'other'
+  };
+
+  function renderCalendar(events, readScore) {
+    if (!events || events.length === 0) return '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events — run sync to load calendar.</div>';
+
+    // Show only today and next 3 days
+    const today = new Date();
+    const cutoff = new Date(today); cutoff.setDate(today.getDate() + 3);
+    const todayStr = today.toLocaleDateString('en-GB', {day:'numeric', month:'short'}).replace(',','');
+
+    // Group by start_date, filter to near future only
     const groups = {};
     events.forEach(e => {
-      const key = e.start_date || e.start?.slice(0,10) || 'Unknown';
+      if (!e.start_date) return;
+      const key = e.start_date;
+      // Try to parse the date to filter
+      try {
+        const parts = e.start.split('T')[0].split('-');
+        const d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+        if (d > cutoff) return; // skip far future
+      } catch(err) {}
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
 
-    // Load coaching based on readiness + calendar load
-    let loadNote = '';
-    if (calLoad >= 7) loadNote = `<div class="load-pill" style="background:var(--red-d);color:var(--red)">⚡ Heavy day ahead — ${calLoad}/10 load · recovery is ${readScore < 65 ? 'already low' : 'ok but monitor'}</div>`;
-    else if (calLoad >= 4) loadNote = `<div class="load-pill" style="background:var(--amber-d);color:var(--amber)">📅 Moderate day — ${calLoad}/10 load · keep an eye on energy</div>`;
-    else if (calLoad > 0) loadNote = `<div class="load-pill" style="background:var(--teal-d);color:var(--teal)">✓ Light day — ${calLoad}/10 load · good time to train</div>`;
+    // Load pill
+    let loadPill = '';
+    if (calLoad >= 7) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--red-d);color:var(--red);margin-bottom:1rem">Heavy day — ${calLoad}/10 load</div>`;
+    else if (calLoad >= 4) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--amber-d);color:var(--amber);margin-bottom:1rem">Moderate day — ${calLoad}/10 load</div>`;
+    else if (calLoad > 0) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--teal-d);color:var(--teal);margin-bottom:1rem">Light day — ${calLoad}/10 load · good time to train</div>`;
 
-    const html = Object.entries(groups).map(([date, evs]) => `
-      <div class="cal-day">
-        <div class="cal-day-header">${date}</div>
-        ${evs.map(e => `
-          <div class="cal-event">
-            <div class="cal-dot" style="background:${e.color}"></div>
-            <div class="cal-time">${e.all_day ? 'all day' : (e.start_time || '—')}</div>
-            <div>
-              <div class="cal-title">${e.emoji} ${e.title}</div>
-              <div class="cal-cal">${e.calendar}</div>
+    const entries = Object.entries(groups);
+    if (entries.length === 0) return loadPill + '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events in the next 3 days.</div>';
+
+    const html = entries.map(([date, evs]) => `
+      <div style="margin-bottom:1.25rem">
+        <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:8px">${date}${date===todayStr?' <span style="color:var(--teal)">· today</span>':''}<span style="flex:1;height:.5px;background:var(--border);display:inline-block"></span></div>
+        ${evs.filter(e => !e.all_day || evs.filter(x=>!x.all_day).length===0).map(e => {
+          const col = CAT_COLORS[e.category] || 'var(--text3)';
+          const timeStr = e.all_day ? 'all day' : (e.start_time || '—');
+          const title = (e.title || '').replace(/\[pending\]/gi,'').trim();
+          return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+            <div style="width:5px;height:5px;border-radius:50%;background:${col};flex-shrink:0;margin-top:7px"></div>
+            <div style="font-family:var(--m);font-size:11px;color:var(--text3);min-width:44px;padding-top:1px">${timeStr}</div>
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.4">${title}</div>
+              <div style="font-family:var(--m);font-size:10px;color:var(--text3);margin-top:2px">${e.calendar||''}</div>
             </div>
-          </div>`).join('')}
+            <div style="font-family:var(--m);font-size:9px;padding:2px 7px;border-radius:20px;background:var(--s3);color:${col};flex-shrink:0">${CAT_LABELS[e.category]||'other'}</div>
+          </div>`;
+        }).join('')}
       </div>`).join('');
 
-    return loadNote + html;
+    return loadPill + html;
   }
   document.getElementById('sub').textContent=synced;
 
