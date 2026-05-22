@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feri — Health Centre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root {
@@ -28,8 +28,8 @@
   --blue-dim: rgba(91,156,246,0.1);
   --r: 16px;
   --rs: 10px;
-  --syne: 'Syne', sans-serif;
-  --body: 'DM Sans', sans-serif;
+  --syne: 'Bebas Neue', sans-serif;
+  --body: 'Plus Jakarta Sans', sans-serif;
   --mono: 'DM Mono', monospace;
 }
 
@@ -56,7 +56,7 @@ body {
   border-bottom: .5px solid var(--border);
   margin-bottom: 0;
 }
-.nav-logo { font-family: var(--syne); font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+.nav-logo { font-family: var(--syne); font-size: 22px; font-weight: 400; letter-spacing: 2px; }
 .nav-logo span { color: var(--teal); }
 .nav-meta { font-family: var(--mono); font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 12px; }
 .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
@@ -85,10 +85,10 @@ body {
 }
 .hero-verdict {
   font-family: var(--syne);
-  font-size: clamp(36px, 6vw, 64px);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -2px;
+  font-size: clamp(48px, 7vw, 80px);
+  font-weight: 400;
+  line-height: .95;
+  letter-spacing: 2px;
   margin-bottom: .75rem;
 }
 .hero-verdict .accent { color: var(--teal); }
@@ -106,10 +106,10 @@ body {
 }
 .hero-score-num {
   font-family: var(--syne);
-  font-size: 80px;
-  font-weight: 800;
+  font-size: 96px;
+  font-weight: 400;
   line-height: 1;
-  letter-spacing: -4px;
+  letter-spacing: 4px;
 }
 .hero-score-num.teal { color: var(--teal); }
 .hero-score-num.amber { color: var(--amber); }
@@ -150,9 +150,9 @@ body {
 }
 .metric-cell-value {
   font-family: var(--syne);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -1px;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: 1px;
   line-height: 1;
   margin-bottom: 4px;
 }
@@ -175,9 +175,9 @@ body {
 }
 .zone-label {
   font-family: var(--syne);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .15em;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: .25em;
   text-transform: uppercase;
   color: var(--text3);
 }
@@ -199,7 +199,7 @@ body {
 /* ── MINI METRIC ── */
 .mm { background: var(--surface2); border-radius: var(--rs); padding: 1rem 1.25rem; }
 .mm-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
-.mm-value { font-family: var(--syne); font-size: 22px; font-weight: 700; line-height: 1; letter-spacing: -.5px; margin-bottom: 4px; }
+.mm-value { font-family: var(--syne); font-size: 26px; font-weight: 400; line-height: 1; letter-spacing: 1px; margin-bottom: 4px; }
 .mm-sub { font-size: 11px; color: var(--text2); }
 .tag { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 6px; }
 .tag-t { background: var(--teal-dim); color: var(--teal); }
@@ -210,12 +210,12 @@ body {
 /* ── READINESS WEEK ── */
 .rw-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 8px; margin-top: 1.25rem; }
 .rw-cell { text-align: center; padding: 10px 4px; background: var(--surface2); border-radius: var(--rs); }
-.rw-score { font-family: var(--syne); font-size: 20px; font-weight: 700; letter-spacing: -1px; }
+.rw-score { font-family: var(--syne); font-size: 24px; font-weight: 400; letter-spacing: 1px; }
 .rw-date { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
 
 /* ── STREAKS ── */
 .streak-card { background: var(--surface); border: .5px solid var(--border); border-radius: var(--r); padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-start; gap: .75rem; }
-.streak-num { font-family: var(--syne); font-size: 52px; font-weight: 800; letter-spacing: -3px; line-height: 1; }
+.streak-num { font-family: var(--syne); font-size: 60px; font-weight: 400; letter-spacing: 2px; line-height: 1; }
 .streak-label { font-size: 13px; color: var(--text2); line-height: 1.4; }
 .dot-row { display: flex; gap: 5px; }
 .dot { width: 8px; height: 8px; border-radius: 50%; }
@@ -227,11 +227,11 @@ body {
 .wq-row { display: grid; grid-template-columns: 60px 1fr 56px; gap: 12px; align-items: center; padding: 12px 0; border-bottom: .5px solid var(--border); }
 .wq-row:last-child { border-bottom: none; }
 .wq-date { font-family: var(--mono); font-size: 10px; color: var(--text3); line-height: 1.4; }
-.wq-name { font-family: var(--syne); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.wq-name { font-family: var(--body); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
 .wq-detail { font-family: var(--mono); font-size: 10px; color: var(--text2); }
 .wq-note { font-size: 11px; color: var(--text3); margin-top: 3px; }
 .wq-score { text-align: center; }
-.wq-score-num { font-family: var(--syne); font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+.wq-score-num { font-family: var(--syne); font-size: 32px; font-weight: 400; letter-spacing: 1px; line-height: 1; }
 .wq-score-label { font-family: var(--mono); font-size: 9px; color: var(--text3); }
 .bar-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--text3); }
 .bar-bg { flex: 1; height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
@@ -241,11 +241,11 @@ body {
 .rec { display: flex; gap: 12px; padding: 14px 0; border-bottom: .5px solid var(--border); }
 .rec:last-child { border-bottom: none; }
 .rec-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
-.rec-title { font-family: var(--syne); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.rec-title { font-family: var(--body); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
 .rec-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
 
 /* ── BIO AGE ── */
-.bio-age-big { font-family: var(--syne); font-size: 72px; font-weight: 800; letter-spacing: -4px; line-height: 1; color: var(--teal); }
+.bio-age-big { font-family: var(--syne); font-size: 80px; font-weight: 400; letter-spacing: 4px; line-height: 1; color: var(--teal); }
 .bio-age-line { font-size: 13px; color: var(--text2); margin-top: 6px; }
 .age-bar { position: relative; height: 6px; background: var(--surface3); border-radius: 3px; overflow: visible; margin: 1rem 0 1.5rem; }
 .age-bar-fill { position: absolute; inset: 0; border-radius: 3px; background: linear-gradient(90deg, var(--teal), var(--amber), var(--red)); }
@@ -267,13 +267,13 @@ body {
 /* ── SETUP ── */
 #setup { display: none; min-height: 100vh; align-items: center; justify-content: center; }
 .setup-card { background: var(--surface); border: .5px solid var(--border2); border-radius: var(--r); padding: 2.5rem; max-width: 440px; width: 100%; }
-.setup-title { font-family: var(--syne); font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+.setup-title { font-family: var(--syne); font-size: 28px; font-weight: 400; letter-spacing: 2px; margin-bottom: 6px; }
 .setup-title span { color: var(--teal); }
 .setup-sub { font-size: 12px; color: var(--text2); margin-bottom: 2rem; line-height: 1.7; font-family: var(--mono); }
 .setup-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
 .setup-input { width: 100%; background: var(--surface2); border: .5px solid var(--border2); border-radius: var(--rs); padding: 10px 14px; color: var(--text); font-family: var(--mono); font-size: 13px; outline: none; margin-bottom: 1rem; }
 .setup-input:focus { border-color: var(--teal); }
-.setup-btn { width: 100%; padding: 11px; background: var(--teal); border: none; border-radius: var(--rs); color: #080807; font-family: var(--syne); font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: -.3px; }
+.setup-btn { width: 100%; padding: 11px; background: var(--teal); border: none; border-radius: var(--rs); color: #080807; font-family: var(--syne); font-size: 16px; font-weight: 400; cursor: pointer; letter-spacing: 2px; }
 .setup-btn:hover { opacity: .9; }
 
 hr.divider { border: none; border-top: .5px solid var(--border); margin: 1.25rem 0; }
