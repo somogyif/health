@@ -406,7 +406,7 @@ function render(d){
   const ageDiff=(chronoAge-parseFloat(bioAge)).toFixed(1);
   const vd=g.vigorous_days!=null?parseFloat(g.vigorous_days):0.1;
   const vt=g.vigorous_target||3;
-  const acwr=tl.acute&&tl.chronic?tl.acute/tl.chronic:null;
+  const acwr=(d.training_load||{}).acute&&(d.training_load||{}).chronic?(d.training_load||{}).acute/(d.training_load||{}).chronic:null;
 
   // ── TODAY TAB ──────────────────────────────────────────────────────────
   document.getElementById('tab-today').innerHTML=`
@@ -452,7 +452,7 @@ function render(d){
           <div>
             ${[
               {l:'😴 Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score??0),w:g.readiness_sleep_score??0},
-              {l:'💓 HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:((g.readiness_hrv_pct??0)>=75?'var(--teal)':'var(--amber)',w:g.readiness_hrv_pct??0},
+              {l:'💓 HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:((g.readiness_hrv_pct??0)>=75?'var(--teal)':'var(--amber)'),w:g.readiness_hrv_pct??0},
               {l:'🧠 Stress history',v:fmt(g.readiness_stress_pct,'%'),c:scol(g.readiness_stress_pct||32),w:g.readiness_stress_pct||32},
               {l:'⏱ Recovery time',v:'98%',c:'var(--teal)',w:98},
             ].map(r=>`
@@ -644,18 +644,16 @@ function render(d){
   };
 
   // ── TRAINING TAB ───────────────────────────────────────────────────────
-  const str = d.streaks || {};
-  const tl  = d.training_load || {};
-  const wqs = d.workouts_quality || [];
-  const wks = d.workouts || [];
+  // streaks, tl, wqs, wks — use d.* directly (already in scope)
+  const streaks = d.streaks || {};
 
   // Helper: level colour
   const tlCol = v => v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
   const tlTag = v => v >= 70 ? 'good' : v >= 40 ? 'moderate' : 'very low';
 
   // Training load feedback — no hardcoded HYROX
-  const tlStatus = tl.status || 'RECOVERY';
-  const tlFeedback = tl.feedback || '';
+  const tlStatus = (d.training_load||{}).status || 'RECOVERY';
+  const tlFeedback = (d.training_load||{}).feedback || '';
   let tlMsg = '';
   if (tlStatus === 'BUILDING') tlMsg = 'Acute load is above your chronic baseline — good momentum, manage recovery.';
   else if (tlStatus === 'MAINTAINING') tlMsg = 'Load is balanced. Keep the frequency consistent.';
@@ -663,12 +661,12 @@ function render(d){
   if (tlFeedback === 'AEROBIC_HIGH_SHORTAGE') tlMsg += ' Your aerobic high-intensity load is at zero — add a high-intensity session this week.';
 
   // Days since session label
-  const daysSince = str.days_since_session ?? 0;
-  const lastLabel = str.last_session_label || '—';
+  const daysSince = streaks.days_since_session ?? 0;
+  const lastLabel = streaks.last_session_label || '—';
   const daysSinceCol = daysSince > 4 ? 'var(--red)' : daysSince > 2 ? 'var(--amber)' : 'var(--teal)';
 
   // Workout quality cards
-  const wqHTML = wqs.length ? wqs.map(wq => {
+  const wqHTML = (d.workouts_quality||[]).length ? (d.workouts_quality||[]).map(wq => {
     const scoreCol = wq.score >= 70 ? 'var(--teal)' : wq.score >= 45 ? 'var(--amber)' : 'var(--red)';
     const type = wq.type || (wq.name||'').toLowerCase().includes('upper') ? 'upper' : 'lower';
     const typeCol = type === 'upper' ? 'var(--blue)' : 'var(--teal)';
@@ -694,7 +692,7 @@ function render(d){
   }).join('') : '<div style="color:var(--text3);font-size:12px;padding:1rem">No sessions yet — run sync after training</div>';
 
   // Recent sessions
-  const sessionHTML = wks.slice(0,5).map(w => {
+  const sessionHTML = (d.workouts||[]).slice(0,5).map(w => {
     const exTags = (w.exercises||[]).slice(0,4).map(e =>
       `<span class="ex-tag">${e.name} ${e.weight > 0 ? e.weight+'kg' : ''}</span>`
     ).join('');
@@ -726,15 +724,15 @@ function render(d){
       <div class="sec-head"><div class="sec-title">🔥 Streaks</div><div class="sec-line"></div></div>
       <div class="g3">
         <div class="streak">
-          <div class="streak-n" style="color:var(--teal)">${str.watch_nights||0}</div>
+          <div class="streak-n" style="color:var(--teal)">${streaks.watch_nights||0}</div>
           <div class="streak-l">Nights watch worn to bed</div>
-          <div class="dots">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(str.watch_nights||0))?'don':'dof'}"></div>`).join('')}</div>
-          <div class="streak-note">${str.watch_nights > 0 ? 'Keep it going' : 'Wear watch to bed tonight'}</div>
+          <div class="dots">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(streaks.watch_nights||0))?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">${streaks.watch_nights > 0 ? 'Keep it going' : 'Wear watch to bed tonight'}</div>
         </div>
         <div class="streak">
-          <div class="streak-n" style="color:${(str.training_weeks_4x||0)>0?'var(--teal)':'var(--red)'}">${str.training_weeks_4x||0}</div>
+          <div class="streak-n" style="color:${(streaks.training_weeks_4x||0)>0?'var(--teal)':'var(--red)'}">${streaks.training_weeks_4x||0}</div>
           <div class="streak-l">Weeks hitting 4× training</div>
-          <div class="dots">${[0,1,2,3].map(i=>`<div class="dot ${i<(str.training_weeks_4x||0)?'don':'dof'}"></div>`).join('')}</div>
+          <div class="dots">${[0,1,2,3].map(i=>`<div class="dot ${i<(streaks.training_weeks_4x||0)?'don':'dof'}"></div>`).join('')}</div>
           <div class="streak-note">Avg ~2×/wk past month</div>
         </div>
         <div class="streak">
@@ -750,10 +748,10 @@ function render(d){
       <div class="sec-head"><div class="sec-title">⚡ Training load</div><div class="sec-line"></div></div>
       <div class="card">
         <div class="g4" style="margin-bottom:1.25rem">
-          <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:${tlCol(tl.acute||0)}">${tl.acute||0}</div><div class="mm-s">recent stimulus</div><span class="tag tr">${tlTag(tl.acute||0)}</span></div>
-          <div class="mm"><div class="mm-l">Chronic (28d)</div><div class="mm-v" style="color:var(--teal)">${tl.chronic||0}</div><div class="mm-s">baseline fitness</div><span class="tag tg">baseline</span></div>
-          <div class="mm"><div class="mm-l">Aerobic low</div><div class="mm-v" style="color:var(--teal)">${tl.aerobic_low||0}</div><div class="mm-s">target ${(tl.aerobic_low_min??97)}–${(tl.aerobic_low_max??261)</div>`+((tl.aerobic_low??0)>=(tl.aerobic_low_min??97)?'<span class="tag tg">✓ on target</span>':'<span class="tag tr">shortage</span>')+`</div>
-          <div class="mm"><div class="mm-l">Aerobic high</div><div class="mm-v" style="color:var(--red)">${tl.aerobic_high||0}</div><div class="mm-s">target ${(tl.aerobic_high_min??203)}–${(tl.aerobic_high_max??368)</div><span class="tag tr">shortage</span></div>
+          <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:${tlCol(d.training_load?.acute??0)}">${d.training_load?.acute??0}</div><div class="mm-s">recent stimulus</div><span class="tag tr">${tlTag(d.training_load?.acute??0)}</span></div>
+          <div class="mm"><div class="mm-l">Chronic (28d)</div><div class="mm-v" style="color:var(--teal)">${d.training_load?.chronic??0}</div><div class="mm-s">baseline fitness</div><span class="tag tg">baseline</span></div>
+          <div class="mm"><div class="mm-l">Aerobic low</div><div class="mm-v" style="color:var(--teal)">${d.training_load?.aerobic_low??0}</div><div class="mm-s">target ${d.training_load?.aerobic_low_min??97}–${d.training_load?.aerobic_low_max??261}</div><span class="${(d.training_load?.aerobic_low??0)>=(d.training_load?.aerobic_low_min??97)?'tag tg':'tag tr'}">${(d.training_load?.aerobic_low??0)>=(d.training_load?.aerobic_low_min??97)?'✓ on target':'shortage'}</span></div>
+          <div class="mm"><div class="mm-l">Aerobic high</div><div class="mm-v" style="color:var(--red)">${d.training_load?.aerobic_high??0}</div><div class="mm-s">target ${d.training_load?.aerobic_high_min??203}–${d.training_load?.aerobic_high_max??368}</div><span class="tag tr">shortage</span></div>
         </div>
         <div style="font-size:12px;color:var(--text2);font-style:italic;line-height:1.6">${tlMsg}</div>
       </div>
