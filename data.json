@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-24T12:41:13.893408",
+  "synced_at": "2026-05-24T14:04:47.187706",
   "garmin": {
     "date": "2026-05-24",
     "resting_hr": 62,
@@ -9,12 +9,12 @@
     "sleep_hours": 8.8,
     "sleep_missing": false,
     "bb_charged": 62,
-    "bb_drained": 17,
-    "bb_current": 45,
-    "steps": 162,
+    "bb_drained": 24,
+    "bb_current": 38,
+    "steps": 169,
     "active_kcal": 24.0,
-    "total_kcal": 1177.0,
-    "avg_stress": 21,
+    "total_kcal": 1294.0,
+    "avg_stress": 23,
     "fitness_age": null,
     "achievable_age": null,
     "chrono_age": 29,
@@ -237,7 +237,7 @@
   "calendar": [],
   "calendar_load_today": 0,
   "weather": {
-    "temp_max": 20.9,
+    "temp_max": 21.0,
     "temp_min": 14.3,
     "precipitation": 0,
     "wind_max": 20.9,
