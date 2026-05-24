@@ -397,11 +397,12 @@ function render(d){
   }
   document.getElementById('sub').textContent=synced;
 
-  const rs=g.readiness_score||51;
-  const rv=coachingVerdict(rs,g.readiness_level||'MODERATE');
-  const bioAge=g.fitness_age?g.fitness_age.toFixed(1):'25.8';
+  const rs = g.readiness_score ?? null;
+  const rsDisplay = rs !== null ? rs : '—';
+  const rv = rs !== null ? coachingVerdict(rs, g.readiness_level||'MOD') : {title:'Sync your watch', body:'No readiness data yet. Wear your Fenix to bed and run sync in the morning.', color:'var(--text3)'};
+  const bioAge=g.fitness_age?g.fitness_age.toFixed(1):'—';
   const chronoAge=g.chrono_age||29;
-  const achieveAge=g.achievable_age?g.achievable_age.toFixed(1):'21.1';
+  const achieveAge=g.achievable_age?g.achievable_age.toFixed(1):'—';
   const ageDiff=(chronoAge-parseFloat(bioAge)).toFixed(1);
   const vd=g.vigorous_days!=null?parseFloat(g.vigorous_days):0.1;
   const vt=g.vigorous_target||3;
@@ -450,8 +451,8 @@ function render(d){
         <div style="display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:start;margin-bottom:1.25rem">
           <div>
             ${[
-              {l:'😴 Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score||57),w:g.readiness_sleep_score||57},
-              {l:'💓 HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:(g.readiness_hrv_pct||83)>=75?'var(--teal)':'var(--amber)',w:g.readiness_hrv_pct||83},
+              {l:'😴 Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score??0),w:g.readiness_sleep_score??0},
+              {l:'💓 HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:((g.readiness_hrv_pct??0)>=75?'var(--teal)':'var(--amber)',w:g.readiness_hrv_pct??0},
               {l:'🧠 Stress history',v:fmt(g.readiness_stress_pct,'%'),c:scol(g.readiness_stress_pct||32),w:g.readiness_stress_pct||32},
               {l:'⏱ Recovery time',v:'98%',c:'var(--teal)',w:98},
             ].map(r=>`
@@ -643,15 +644,92 @@ function render(d){
   };
 
   // ── TRAINING TAB ───────────────────────────────────────────────────────
+  const str = d.streaks || {};
+  const tl  = d.training_load || {};
+  const wqs = d.workouts_quality || [];
+  const wks = d.workouts || [];
+
+  // Helper: level colour
+  const tlCol = v => v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
+  const tlTag = v => v >= 70 ? 'good' : v >= 40 ? 'moderate' : 'very low';
+
+  // Training load feedback — no hardcoded HYROX
+  const tlStatus = tl.status || 'RECOVERY';
+  const tlFeedback = tl.feedback || '';
+  let tlMsg = '';
+  if (tlStatus === 'BUILDING') tlMsg = 'Acute load is above your chronic baseline — good momentum, manage recovery.';
+  else if (tlStatus === 'MAINTAINING') tlMsg = 'Load is balanced. Keep the frequency consistent.';
+  else tlMsg = 'Acute load is below your chronic baseline — a good time to build.';
+  if (tlFeedback === 'AEROBIC_HIGH_SHORTAGE') tlMsg += ' Your aerobic high-intensity load is at zero — add a high-intensity session this week.';
+
+  // Days since session label
+  const daysSince = str.days_since_session ?? 0;
+  const lastLabel = str.last_session_label || '—';
+  const daysSinceCol = daysSince > 4 ? 'var(--red)' : daysSince > 2 ? 'var(--amber)' : 'var(--teal)';
+
+  // Workout quality cards
+  const wqHTML = wqs.length ? wqs.map(wq => {
+    const scoreCol = wq.score >= 70 ? 'var(--teal)' : wq.score >= 45 ? 'var(--amber)' : 'var(--red)';
+    const type = wq.type || (wq.name||'').toLowerCase().includes('upper') ? 'upper' : 'lower';
+    const typeCol = type === 'upper' ? 'var(--blue)' : 'var(--teal)';
+    const durMin = wq.dur || 0;
+    return `
+      <div class="wq-row">
+        <div class="wq-meta">
+          <div class="wq-date">${wq.date||'—'}<br><span class="wq-type" style="color:${typeCol}">${type}</span></div>
+          <div class="wq-body">
+            <div class="wq-name">${wq.name||'—'}</div>
+            <div class="wq-stats">${durMin}min · ${wq.note||''}</div>
+            <div class="wq-bars">
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+                <span style="font-size:9px;color:var(--text3);font-family:var(--mono);width:14px">z2</span>
+                <div style="flex:1;height:3px;background:var(--s3);border-radius:2px"><div style="width:${wq.z2||0}%;height:100%;background:var(--amber);border-radius:2px"></div></div>
+                <span style="font-size:9px;color:var(--text3);font-family:var(--mono)">${wq.z2||0}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wq-score" style="color:${scoreCol}">${wq.score||0}<span style="font-size:10px;display:block;color:var(--text3);font-family:var(--mono)">quality</span></div>
+      </div>`;
+  }).join('') : '<div style="color:var(--text3);font-size:12px;padding:1rem">No sessions yet — run sync after training</div>';
+
+  // Recent sessions
+  const sessionHTML = wks.slice(0,5).map(w => {
+    const exTags = (w.exercises||[]).slice(0,4).map(e =>
+      `<span class="ex-tag">${e.name} ${e.weight > 0 ? e.weight+'kg' : ''}</span>`
+    ).join('');
+    const type = (w.title||'').toLowerCase().includes('upper') ? 'upper' : 'lower';
+    const typeCol = type === 'upper' ? 'var(--blue)' : 'var(--teal)';
+    const dateLabel = w.date ? (() => { try { const d=new Date(w.date); return d.getDate()+' '+(d.toLocaleString('en-GB',{month:'short'})); } catch(e){return w.date;} })() : '—';
+    return `
+      <div class="ws-row">
+        <div class="ws-left">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3)">${dateLabel}</div>
+          <div class="ws-type" style="color:${typeCol}">${type} ${w.title&&w.title.match(/\d/)?' '+w.title.match(/\d/)[0]:''}</div>
+        </div>
+        <div class="ws-body">
+          <div class="ws-name">${w.title||'—'}</div>
+          <div class="ex-tags">${exTags}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Muscle coverage
+  const muscles = [
+    {k:'CHEST',s:'covered'},{k:'BACK',s:'excellent'},{k:'SHOULDERS',s:'rear delt ✨'},
+    {k:'BICEPS',s:'good'},{k:'TRICEPS',s:'added ✨'},{k:'QUADS',s:'excellent'},
+    {k:'HAMSTRINGS',s:'RDL + curl'},{k:'ABS',s:'leg raise ✨'},{k:'CALVES',s:'two variations'},
+  ];
+
   document.getElementById('tab-training').innerHTML=`
     <div class="sec">
       <div class="sec-head"><div class="sec-title">🔥 Streaks</div><div class="sec-line"></div></div>
       <div class="g3">
         <div class="streak">
-          <div class="streak-n" style="color:var(--teal)">${str.watch_nights||5}</div>
+          <div class="streak-n" style="color:var(--teal)">${str.watch_nights||0}</div>
           <div class="streak-l">Nights watch worn to bed</div>
-          <div class="dots">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(str.watch_nights||5))?'don':'dof'}"></div>`).join('')}</div>
-          <div class="streak-note">Started 18 May · keep it going</div>
+          <div class="dots">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(str.watch_nights||0))?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">${str.watch_nights > 0 ? 'Keep it going' : 'Wear watch to bed tonight'}</div>
         </div>
         <div class="streak">
           <div class="streak-n" style="color:${(str.training_weeks_4x||0)>0?'var(--teal)':'var(--red)'}">${str.training_weeks_4x||0}</div>
@@ -660,10 +738,10 @@ function render(d){
           <div class="streak-note">Avg ~2×/wk past month</div>
         </div>
         <div class="streak">
-          <div class="streak-n" style="color:${(str.days_since_session||5)>3?'var(--red)':'var(--amber)'}">${str.days_since_session||5}</div>
+          <div class="streak-n" style="color:${daysSinceCol}">${daysSince}</div>
           <div class="streak-l">Days since last session</div>
-          <div class="dots">${[0,1,2,3,4].map(i=>`<div class="dot ${i===0?'don':'dof'}"></div>`).join('')}</div>
-          <div class="streak-note">Last: Upper 2 · 17 May</div>
+          <div class="dots">${[0,1,2,3,4].map(i=>`<div class="dot ${i===0&&daysSince===0?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">Last: ${lastLabel}</div>
         </div>
       </div>
     </div>
@@ -672,75 +750,37 @@ function render(d){
       <div class="sec-head"><div class="sec-title">⚡ Training load</div><div class="sec-line"></div></div>
       <div class="card">
         <div class="g4" style="margin-bottom:1.25rem">
-          <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:var(--red)">${tl.acute||10}</div><div class="mm-s">recent stimulus</div><span class="tag tr">very low</span></div>
-          <div class="mm"><div class="mm-l">Chronic (28d)</div><div class="mm-v" style="color:var(--amber)">${tl.chronic||137}</div><div class="mm-s">baseline fitness</div><span class="tag ta">healthy</span></div>
-          <div class="mm"><div class="mm-l">Aerobic low</div><div class="mm-v" style="color:var(--teal)">${tl.aerobic_low||101}</div><div class="mm-s">target 97–261</div><span class="tag tt">✓ on target</span></div>
-          <div class="mm"><div class="mm-l">Aerobic high</div><div class="mm-v" style="color:var(--red)">${tl.aerobic_high||0}</div><div class="mm-s">target 203–368</div><span class="tag tr">shortage</span></div>
+          <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:${tlCol(tl.acute||0)}">${tl.acute||0}</div><div class="mm-s">recent stimulus</div><span class="tag tr">${tlTag(tl.acute||0)}</span></div>
+          <div class="mm"><div class="mm-l">Chronic (28d)</div><div class="mm-v" style="color:var(--teal)">${tl.chronic||0}</div><div class="mm-s">baseline fitness</div><span class="tag tg">baseline</span></div>
+          <div class="mm"><div class="mm-l">Aerobic low</div><div class="mm-v" style="color:var(--teal)">${tl.aerobic_low||0}</div><div class="mm-s">target ${(tl.aerobic_low_min??97)}–${(tl.aerobic_low_max??261)</div>`+((tl.aerobic_low??0)>=(tl.aerobic_low_min??97)?'<span class="tag tg">✓ on target</span>':'<span class="tag tr">shortage</span>')+`</div>
+          <div class="mm"><div class="mm-l">Aerobic high</div><div class="mm-v" style="color:var(--red)">${tl.aerobic_high||0}</div><div class="mm-s">target ${(tl.aerobic_high_min??203)}–${(tl.aerobic_high_max??368)</div><span class="tag tr">shortage</span></div>
         </div>
-        <div style="font-size:13px;color:var(--text2);font-style:italic;padding-top:1rem;border-top:.5px solid var(--border);line-height:1.6">${trainingCoaching(acwr)} Your aerobic high-intensity load is at zero — HYROX on Saturday will directly address this.</div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;line-height:1.6">${tlMsg}</div>
       </div>
     </div>
 
     <div class="sec">
       <div class="sec-head"><div class="sec-title">🏋 Workout quality</div><div class="sec-line"></div></div>
-      <div class="card">
-        ${wq.map(w=>`
-          <div class="wqr">
-            <div class="wqd">${w.date.split(' ')[0]}<br><span style="font-size:9px">${w.date.split(' ')[1]||''}</span><br><span style="color:${w.name.includes('Upper')?'var(--blue)':'var(--teal)'}">${(w.name||'').split(' ')[0].toLowerCase()}</span></div>
-            <div>
-              <div class="wqn">${w.name||'—'}</div>
-              <div class="wqdet">${w.dur}min · avg ${w.hr}bpm · ${w.kcal}kcal</div>
-              <div class="wqnote">${w.note||''}</div>
-              <div class="hbar"><span style="min-width:18px">z2</span><div class="hbg"><div class="hbf" style="width:${w.z2||0}%;background:var(--amber)"></div></div><span>${w.z2||0}%</span></div>
-              ${(w.z3||0)>0?`<div class="hbar"><span style="min-width:18px">z3+</span><div class="hbg"><div class="hbf" style="width:${w.z3}%;background:var(--red)"></div></div><span>${w.z3}%</span></div>`:''}
-            </div>
-            <div class="wqs">
-              <div class="wqsn" style="color:${scol(w.score||50)}">${w.score||'—'}</div>
-              <div class="wqsl">quality</div>
-            </div>
-          </div>`).join('')}
-        <div style="font-family:var(--m);font-size:10px;color:var(--text3);padding-top:10px;border-top:.5px solid var(--border);margin-top:2px">Score = duration + zone distribution + rest compliance · max 100</div>
-      </div>
+      <div class="card" style="padding:0">${wqHTML}</div>
+      <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">Score = duration + exercise count · max 100 · HR zones post-Kyiv</div>
     </div>
 
     <div class="sec">
       <div class="sec-head"><div class="sec-title">📋 Recent sessions</div><div class="sec-line"></div></div>
-      <div class="card">
-        ${wks.length===0?'<div style="color:var(--text3);font-family:var(--m);font-size:12px">No sessions found in data.json</div>':
-          wks.map(w=>`
-            <div class="wqr">
-              <div class="wqd">${(w.date||'').split('T')[0]?.slice(5)||w.date||'—'}<br><span style="color:${(w.title||'').includes('Upper')?'var(--blue)':'var(--teal)'}">${(w.title||'').toLowerCase()}</span></div>
-              <div>
-                <div class="wqn">${w.title||'—'}</div>
-                <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">${(w.exercises||[]).slice(0,4).map(e=>`<span style="font-family:var(--m);font-size:9px;padding:2px 7px;border-radius:10px;border:.5px solid var(--border2);color:var(--text3)">${e.name||''} ${e.weight||0}kg</span>`).join('')}</div>
-              </div>
-              <div></div>
-            </div>`).join('')}
-      </div>
+      <div class="card" style="padding:0">${sessionHTML||'<div style="color:var(--text3);font-size:12px;padding:1rem">No sessions found — run sync</div>'}</div>
     </div>
 
     <div class="sec">
       <div class="sec-head"><div class="sec-title">💪 Muscle coverage</div><div class="sec-line"></div></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px">
-        ${[
-          {n:'Chest',p:85,s:'covered'},{n:'Back',p:90,s:'excellent'},
-          {n:'Shoulders',p:80,s:'rear delt ✨'},{n:'Biceps',p:80,s:'good'},
-          {n:'Triceps',p:75,s:'added ✨'},{n:'Quads',p:90,s:'excellent'},
-          {n:'Hamstrings',p:85,s:'RDL + curl'},{n:'Abs',p:70,s:'leg raise ✨'},
-          {n:'Calves',p:85,s:'two variations'}
-        ].map(m=>`
-          <div class="mtile">
-            <div class="mname">${m.n}</div>
-            <div class="mbar"><div class="mbarf" style="width:${m.p}%;background:${m.p>=85?'var(--teal)':'var(--amber)'}"></div></div>
-            <div class="mstat">${m.s}</div>
-          </div>`).join('')}
+      <div class="muscle-grid">
+        ${muscles.map(m=>`<div class="muscle-item"><div class="muscle-k">${m.k}</div><div class="mstat">${m.s}</div></div>`).join('')}
       </div>
     </div>
 
     <div class="upd">synced ${synced} · hevy pro · garmin fenix 7x</div>
   `;
 
-  // ── TRENDS TAB ─────────────────────────────────────────────────────────
+    // ── TRENDS TAB ─────────────────────────────────────────────────────────
   document.getElementById('tab-trends').innerHTML=`
     <div class="sec">
       <div class="sec-head"><div class="sec-title">🧬 Biological age</div><div class="sec-line"></div></div>
@@ -767,11 +807,11 @@ function render(d){
         <div class="card">
           <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">🔬 Age drivers</div>
           ${[
-            {l:'Resting HR',v:`${g.resting_hr||65} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
-            {l:'HRV',v:`${g.hrv_weekly||41} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
+            {l:'Resting HR',v:`${g.resting_hr??'—'} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
+            {l:'HRV',v:`${g.hrv_weekly??'—'} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
             {l:'Vigorous activity',v:`${vd.toFixed(1)}d/wk`,c:vd<1?'var(--red)':'var(--amber)',w:Math.min(100,Math.round(vd/vt*100)),note:`target ${vt}d/wk — biggest lever`},
-            {l:'Body fat',v:`${bc.fat_pct||21}%`,c:'var(--amber)',w:40,note:'target 16–17%'},
-            {l:'BMI',v:`${bc.bmi||23.1}`,c:'var(--teal)',w:72,note:'normal range ✓'},
+            {l:'Body fat',v:`${bc.fat_pct??'—'}%`,c:'var(--amber)',w:40,note:'target 16–17%'},
+            {l:'BMI',v:`${bc.bmi??'—'}`,c:'var(--teal)',w:72,note:'normal range ✓'},
           ].map(r=>`
             <div style="margin-bottom:12px">
               <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">${r.l}</span><span style="font-family:var(--m);font-size:11px;color:${r.c}">${r.v}</span></div>
