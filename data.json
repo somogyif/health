@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-24T14:49:49.004099",
+  "synced_at": "2026-05-24T22:33:56.745670",
   "garmin": {
     "date": "2026-05-24",
     "resting_hr": 62,
@@ -13,7 +13,7 @@
     "bb_current": 35,
     "steps": 221,
     "active_kcal": 28.0,
-    "total_kcal": 1415.0,
+    "total_kcal": 1599.0,
     "avg_stress": 24,
     "fitness_age": null,
     "achievable_age": null,
@@ -30,6 +30,49 @@
     "training_status": null
   },
   "workouts": [
+    {
+      "date": "",
+      "title": "Lower 2",
+      "duration": null,
+      "exercises": [
+        {
+          "name": "Hack Squat (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 12
+        },
+        {
+          "name": "Lying Leg Curl (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 15
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "sets": 3,
+          "weight": 0,
+          "reps": 15
+        },
+        {
+          "name": "Cable Crunch",
+          "sets": 3,
+          "weight": 0,
+          "reps": 15
+        }
+      ]
+    },
     {
       "date": "",
       "title": "Upper 2",
@@ -189,60 +232,17 @@
           "reps": 12
         }
       ]
-    },
-    {
-      "date": "",
-      "title": "Upper 2",
-      "duration": null,
-      "exercises": [
-        {
-          "name": "Incline Bench Press (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Dumbbell Row",
-          "sets": 3,
-          "weight": 0,
-          "reps": 10
-        },
-        {
-          "name": "Arnold Press (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 10
-        },
-        {
-          "name": "Lat Pulldown (Cable)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 8
-        },
-        {
-          "name": "Lateral Raise (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 10
-        },
-        {
-          "name": "Seated Palms Up Wrist Curl",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        }
-      ]
     }
   ],
   "calendar": [],
   "calendar_load_today": 0,
   "weather": {
-    "temp_max": 21.0,
+    "temp_max": 21.2,
     "temp_min": 14.3,
     "precipitation": 0,
-    "wind_max": 20.9,
+    "wind_max": 19.8,
     "condition": "Cloudy",
-    "weathercode": 3,
+    "weathercode": 2,
     "is_raining": false,
     "is_heavy_rain": false,
     "good_for_bike": true
