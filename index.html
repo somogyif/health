@@ -876,7 +876,7 @@ function render(d){
       <div class="sec-head"><div class="sec-title">🔥 Streaks</div><div class="sec-line"></div></div>
       <div class="g3">
         <div class="streak">
-          <div class="streak-n" style="color:var(--teal)">${streaks.watch_nights||0}</div>
+          <div class="streak-n" style="color:var(--teal)">${streaks.watch_nights??'—'}</div>
           <div class="streak-l">Nights watch worn to bed</div>
           <div class="dots">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(streaks.watch_nights||0))?'don':'dof'}"></div>`).join('')}</div>
           <div class="streak-note">${streaks.watch_nights > 0 ? 'Keep it going' : 'Wear watch to bed tonight'}</div>
@@ -885,7 +885,7 @@ function render(d){
           <div class="streak-n" style="color:${(streaks.training_weeks_4x||0)>0?'var(--teal)':'var(--red)'}">${streaks.training_weeks_4x||0}</div>
           <div class="streak-l">Weeks hitting 4× training</div>
           <div class="dots">${[0,1,2,3].map(i=>`<div class="dot ${i<(streaks.training_weeks_4x||0)?'don':'dof'}"></div>`).join('')}</div>
-          <div class="streak-note">Avg ~2×/wk past month</div>
+          <div class="streak-note">${d.streaks?.training_freq_note||'Avg ~2×/wk past 4 weeks'}</div>
         </div>
         <div class="streak">
           <div class="streak-n" style="color:${daysSinceCol}">${daysSince}</div>
@@ -1005,11 +1005,11 @@ function render(d){
       <div class="card">
         <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
           <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Avg score</div><div class="mm-v" style="color:var(--amber)">${ss.scores&&ss.scores.length?Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length):'74'}</div><div class="mm-s">this week</div></div>
-          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Best night</div><div class="mm-v" style="color:var(--teal)">${ss.scores&&ss.scores.length?Math.max(...ss.scores):'91'}</div><div class="mm-s">18 May</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Best night</div><div class="mm-v" style="color:var(--teal)">${ss.scores&&ss.scores.length?Math.max(...ss.scores):'91'}</div><div class="mm-s">${ss.best_date??'—'}</div></div>
           <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Trend</div><div class="mm-v" style="color:var(--red)">↓</div><div class="mm-s">declining this week</div></div>
         </div>
         <div class="cw" style="height:140px"><canvas id="sleepChart" role="img" aria-label="Sleep scores by night">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+(ss.scores||[])[i]).join(', ')}</canvas></div>
-        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">Sleep score declined from 91 (18 May) to 57 (22 May) over the week. A consistent bedtime will stabilise this — aim for the same 30-minute window each night.</div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${ss.scores&&ss.scores.length>=2 ? `Sleep score moved from ${Math.max(...ss.scores)} to ${ss.scores[ss.scores.length-1]} this week.` : 'Keep wearing the watch to bed for sleep trend data.'} A consistent bedtime will stabilise this — aim for the same 30-minute window each night.</div>
       </div>
     </div>
 
@@ -1021,7 +1021,7 @@ function render(d){
           <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>wake-up battery</span>
           <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--amber);display:inline-block"></span>points drained</span>
         </div>
-        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">Late April your battery was regularly hitting 93–100 overnight. The decline in May coincided with your exam period. Recovery is beginning — 3 nights of good sleep data now showing.</div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${bbData.length>=2 ? `Your wake-up battery has averaged ${Math.round(bbData.slice(-7).reduce((a,b)=>a+(b.val||0),0)/Math.min(7,bbData.length))} over the last 7 days.` : 'Wear your watch to bed to build battery trend data.'} Keep consistent sleep timing to improve overnight recovery.</div>
       </div>
     </div>
 
