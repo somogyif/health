@@ -1021,7 +1021,7 @@ function render(d){
           <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>wake-up battery</span>
           <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--amber);display:inline-block"></span>points drained</span>
         </div>
-        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${bbData.length>=2 ? `Your wake-up battery has averaged ${Math.round(bbData.slice(-7).reduce((a,b)=>a+(b.val||0),0)/Math.min(7,bbData.length))} over the last 7 days.` : 'Wear your watch to bed to build battery trend data.'} Keep consistent sleep timing to improve overnight recovery.</div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${(d.body_battery_6wk||[]).length>=2 ? `Your wake-up battery has averaged ${Math.round((d.body_battery_6wk||[]).slice(-7).reduce((a,b)=>a+(b.val||0),0)/Math.min(7,(d.body_battery_6wk||[]).length))} over the last 7 days.` : 'Wear your watch to bed to build battery trend data.'} Keep consistent sleep timing to improve overnight recovery.</div>
       </div>
     </div>
 
