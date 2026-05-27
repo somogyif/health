@@ -214,6 +214,33 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 .pf-score{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
 .pf-pick{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono);background:var(--teal-d);color:var(--teal)}
 @media(max-width:560px){.pf-hero{flex-direction:column;gap:1rem}.pf-hero-num{font-size:52px}}
+
+.matrix-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:480px){.matrix-grid{grid-template-columns:repeat(2,1fr)}}
+.gauge-card{background:var(--s2);border-radius:var(--rs);padding:.9rem 1rem;text-align:center}
+.gauge-val{font-size:32px;font-weight:300;letter-spacing:-1.5px;line-height:1;margin-bottom:2px}
+.gauge-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-family:var(--mono);margin-bottom:6px}
+.gauge-bar{height:3px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.gauge-bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
+.gauge-desc{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.illness-factors{margin-top:8px}
+.illness-factor{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border);font-size:11px;color:var(--text2)}
+.illness-factor:last-child{border-bottom:none}
+.if-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.spotify-rides{margin-top:0}
+.sr-card{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem;margin-bottom:8px}
+.sr-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.sr-title{font-size:13px;font-weight:500;color:var(--text)}
+.sr-time{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.sr-stats{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.sr-stat{text-align:center}
+.sr-stat-v{font-size:16px;font-weight:300;color:var(--teal)}
+.sr-stat-l{font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase}
+.sr-tracks{display:flex;flex-direction:column;gap:4px}
+.sr-track{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:.5px solid var(--border);font-size:11px}
+.sr-track:last-child{border-bottom:none}
+.sr-track-name{color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sr-track-meta{font-family:var(--mono);font-size:10px;color:var(--text3);flex-shrink:0;margin-left:8px}
 </style>
 </head>
 <body>
@@ -517,6 +544,16 @@ function render(d){
       <div id="perfumeBody"><div style="font-family:var(--m);font-size:12px;color:var(--text3)">Loading...</div></div>
     </div>
 
+    <div class="sec" id="matrixSection">
+      <div class="sec-head"><div class="sec-title">🧠 Health matrix</div><div class="sec-line"></div></div>
+      <div id="matrixBody"><div style="font-size:12px;color:var(--text3)">Loading...</div></div>
+    </div>
+
+    <div class="sec" id="illnessSection">
+      <div class="sec-head"><div class="sec-title">🦠 Illness risk</div><div class="sec-line"></div></div>
+      <div id="illnessBody"><div style="font-size:12px;color:var(--text3)">Loading...</div></div>
+    </div>
+
     <div class="sec">
       <div class="sec-head"><div class="sec-title">💡 Recommendations</div><div class="sec-line"></div></div>
       <div class="card">
@@ -541,13 +578,16 @@ function render(d){
   if (wxEl && wx.condition) {
     const bikeIcon = wx.good_for_bike ? '🚲' : '🌧';
     const rainTxt  = wx.is_heavy_rain ? 'Heavy rain — public transport' : (wx.is_raining ? 'Rain — no biking outbound' : 'No rain — biking ok');
+    const uvColor  = wx.uv_index >= 6 ? 'var(--red)' : wx.uv_index >= 3 ? 'var(--amber)' : 'var(--teal)';
     wxEl.innerHTML = `
       <span style="color:var(--text2)">${bikeIcon}</span>
       <span style="color:var(--text2)">${wx.condition}</span>
       <span>·</span>
-      <span>${wx.temp_max != null ? wx.temp_max + '°C max' : '—'}</span>
+      <span>${wx.temp_max != null ? wx.temp_max + '°C' : '—'}</span>
       <span>·</span>
-      <span>${wx.precipitation != null ? wx.precipitation + 'mm' : '—'} rain</span>
+      <span>${wx.precipitation != null ? wx.precipitation + 'mm rain' : '—'}</span>
+      ${wx.uv_index != null ? `<span>·</span><span style="color:${uvColor}">UV ${wx.uv_index} ${wx.uv_label||''}</span>` : ''}
+      ${wx.solar_mj != null ? `<span>·</span><span style="color:var(--text3)">☀️ ${wx.solar_mj} MJ/m²</span>` : ''}
       <span>·</span>
       <span style="color:${wx.good_for_bike ? 'var(--teal)' : 'var(--amber)'}">${rainTxt}</span>
     `;
@@ -662,6 +702,94 @@ function render(d){
       c.classList.toggle('pf-active', c.getAttribute('onclick').includes(`'${num}'`));
     });
   };
+
+  // ── HEALTH MATRIX ──────────────────────────────────────────────────────
+  const mx = d.health_matrix || {};
+  const mxEl = document.getElementById('matrixBody');
+  if (mxEl && Object.keys(mx).length) {
+    const gauges = [
+      {key:'readiness',       label:'Readiness',        icon:'🫀'},
+      {key:'training_signal', label:'Train today?',     icon:'🏋'},
+      {key:'illness_risk',    label:'Illness defence',  icon:'🦠'},
+      {key:'recovery_debt',   label:'Recovery',         icon:'⏱'},
+      {key:'cognitive_load',  label:'Cognitive load',   icon:'🧠'},
+      {key:'calendar_load',   label:'Schedule space',   icon:'📅'},
+    ];
+    const gc = v => v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
+    const gd = (k,v) => {
+      if (k==='readiness') return v>=85?'Prime':'Moderate';
+      if (k==='training_signal') return v>=70?'Train':'Rest';
+      if (k==='illness_risk') return v>=70?'Low risk':v>=45?'Watch':'High risk';
+      if (k==='recovery_debt') return v>=70?'Recovered':v>=45?'Partial':'Depleted';
+      if (k==='cognitive_load') return v>=70?'Sharp':v>=45?'Moderate':'Fatigued';
+      if (k==='calendar_load') return v>=70?'Light':'Busy';
+    };
+    mxEl.innerHTML = '<div class="matrix-grid">' + gauges.map(g => {
+      const val = mx[g.key] ?? 0;
+      const col = gc(val);
+      return `<div class="gauge-card">
+        <div class="gauge-label">${g.icon} ${g.label}</div>
+        <div class="gauge-val" style="color:${col}">${val}</div>
+        <div class="gauge-bar"><div class="gauge-bar-fill" style="width:${val}%;background:${col}"></div></div>
+        <div class="gauge-desc">${gd(g.key,val)}</div>
+      </div>`;
+    }).join('') + '</div>';
+  }
+
+  // ── ILLNESS RISK ─────────────────────────────────────────────────────────
+  const ir = d.illness_risk || {};
+  const irEl = document.getElementById('illnessBody');
+  if (irEl && ir.level) {
+    const irCol = ir.level==='low'?'var(--teal)':ir.level==='moderate'?'var(--amber)':'var(--red)';
+    const factors = (ir.factors||[]).map(f => {
+      const dc = f.severity==='high'?'var(--red)':'var(--amber)';
+      return `<div class="illness-factor"><div class="if-dot" style="background:${dc}"></div>${f.label}</div>`;
+    }).join('');
+    irEl.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:${factors?'12px':'0'}">
+        <div style="font-size:36px;font-weight:300;letter-spacing:-2px;color:${irCol}">${ir.score}</div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:${irCol};text-transform:capitalize">${ir.level} risk</div>
+          <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">/100 · lower is better</div>
+        </div>
+      </div>
+      ${factors ? '<div class="illness-factors">'+factors+'</div>' : '<div style="font-size:11px;color:var(--text3)">No significant risk factors today</div>'}`;
+  }
+
+  // ── SPOTIFY RIDES ──────────────────────────────────────────────────────
+  const spRides = d.spotify_rides || [];
+  let spotifyHTML = '';
+  if (spRides.length > 0) {
+    const rideCards = spRides.map(ride => {
+      const trackList = ride.tracks.slice(0, 5).map(t =>
+        `<div class="sr-track">
+          <div class="sr-track-name">${t.name} <span style="color:var(--text3)">· ${t.artist}</span></div>
+          <div class="sr-track-meta">${t.bpm>0?t.bpm+'bpm':''} ${t.energy>0?'E'+t.energy:''}${t.valence>0?' V'+t.valence:''}</div>
+        </div>`
+      ).join('');
+      const valColor = ride.avg_valence >= 60 ? 'var(--teal)' : ride.avg_valence >= 40 ? 'var(--amber)' : 'var(--text3)';
+      return `<div class="sr-card">
+        <div class="sr-header">
+          <div class="sr-title">🎵 ${ride.title}</div>
+          <div class="sr-time">${ride.start}</div>
+        </div>
+        <div class="sr-stats">
+          <div class="sr-stat"><div class="sr-stat-v">${ride.avg_bpm||'—'}</div><div class="sr-stat-l">avg BPM</div></div>
+          <div class="sr-stat"><div class="sr-stat-v" style="color:var(--amber)">${ride.avg_energy||'—'}</div><div class="sr-stat-l">energy</div></div>
+          <div class="sr-stat"><div class="sr-stat-v" style="color:${valColor}">${ride.avg_valence||'—'}</div><div class="sr-stat-l">mood</div></div>
+          <div class="sr-stat"><div class="sr-stat-v" style="color:var(--text2)">${ride.track_count}</div><div class="sr-stat-l">tracks</div></div>
+        </div>
+        <div class="sr-tracks">${trackList}</div>
+      </div>`;
+    }).join('');
+    spotifyHTML = `
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">🎵 Music on rides</div><div class="sec-line"></div></div>
+        <div class="spotify-rides">${rideCards}</div>
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">BPM · Energy (0-100) · Mood valence (0-100, higher = happier)</div>
+      </div>`;
+  }
+  // ── SPOTIFY RIDES (in Training tab — added below) ─────────────────────
 
   // ── TRAINING TAB ───────────────────────────────────────────────────────
   // streaks, tl, wqs, wks — use d.* directly (already in scope)
@@ -799,6 +927,7 @@ function render(d){
       </div>
     </div>
 
+    ${spotifyHTML}
     <div class="upd">synced ${synced} · hevy pro · garmin fenix 7x</div>
   `;
 
