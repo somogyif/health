@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-27 22:47",
+  "synced_at": "2026-05-27 22:48",
   "garmin": {
     "date": "2026-05-27",
     "resting_hr": 64,
@@ -713,7 +713,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "22:47",
+    "generated_at": "22:48",
     "readiness": 52,
     "bb": 25,
     "hrv": 43,
