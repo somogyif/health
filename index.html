@@ -185,21 +185,21 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 .pf-note{font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border2);color:var(--text2);font-family:var(--mono)}
 .pf-how{font-size:11px;color:var(--text3);font-family:var(--mono);padding-top:12px;border-top:.5px solid var(--border)}
 .pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
-.wq-row{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:start;padding:1rem 1.1rem;border-bottom:.5px solid var(--border)}
+.wq-row{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:.7rem 1.1rem;border-bottom:.5px solid var(--border)}
 .wq-row:last-child{border-bottom:none}
 .wq-meta{display:none}
 .wq-date{font-size:11px;color:var(--text3);font-family:var(--mono);white-space:nowrap;padding-top:2px}
 .wq-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono);margin-top:2px}
 .wq-body{min-width:0}
 .wq-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
-.wq-stats{font-size:11px;color:var(--text2);margin-bottom:4px}
-.wq-score{font-size:28px;font-weight:300;letter-spacing:-1px;text-align:right;white-space:nowrap}
+.wq-stats{font-size:11px;color:var(--text3);margin-bottom:2px}
+.wq-score{font-size:24px;font-weight:400;letter-spacing:-.5px;text-align:right;white-space:nowrap;line-height:1}
 .ws-row{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:start;padding:.85rem 1.1rem;border-bottom:.5px solid var(--border)}
 .ws-row:last-child{border-bottom:none}
 .ws-left{text-align:right}
 .ws-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono);margin-top:2px}
 .ws-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
-.ex-tags{display:flex;flex-wrap:wrap;gap:4px}
+.ex-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
 .ex-tag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);white-space:nowrap}
 .muscle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
 .muscle-item{background:var(--s2);border-radius:var(--rs);padding:.7rem .8rem}
@@ -717,12 +717,12 @@ function render(d){
     ];
     const gc = v => v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
     const gd = (k,v) => {
-      if (k==='readiness') return v>=85?'Prime':'Moderate';
-      if (k==='training_signal') return v>=70?'Train':'Rest';
-      if (k==='illness_risk') return v>=70?'Low risk':v>=45?'Watch':'High risk';
+      if (k==='readiness') return v>=85?'Prime':v>=65?'Moderate':'Low';
+      if (k==='training_signal') return v>=70?'Train today':v>=45?'Light only':'Rest';
+      if (k==='illness_risk') return v>=70?'Low risk':v>=45?'Watch it':'High risk';
       if (k==='recovery_debt') return v>=70?'Recovered':v>=45?'Partial':'Depleted';
       if (k==='cognitive_load') return v>=70?'Sharp':v>=45?'Moderate':'Fatigued';
-      if (k==='calendar_load') return v>=70?'Light':'Busy';
+      if (k==='calendar_load') return v>=70?'Light':v>=45?'Moderate':'Packed';
     };
     mxEl.innerHTML = '<div class="matrix-grid">' + gauges.map(g => {
       const val = mx[g.key] ?? 0;
@@ -731,7 +731,7 @@ function render(d){
         <div class="gauge-label">${g.icon} ${g.label}</div>
         <div class="gauge-val" style="color:${col}">${val}</div>
         <div class="gauge-bar"><div class="gauge-bar-fill" style="width:${val}%;background:${col}"></div></div>
-        <div class="gauge-desc">${gd(g.key,val)}</div>
+        <div class="gauge-desc" style="color:${col}">${gd(g.key,val)}</div>
       </div>`;
     }).join('') + '</div>';
   }
@@ -885,7 +885,7 @@ function render(d){
           <div class="streak-n" style="color:${(streaks.training_weeks_4x||0)>0?'var(--teal)':'var(--red)'}">${streaks.training_weeks_4x||0}</div>
           <div class="streak-l">Weeks hitting 4× training</div>
           <div class="dots">${[0,1,2,3].map(i=>`<div class="dot ${i<(streaks.training_weeks_4x||0)?'don':'dof'}"></div>`).join('')}</div>
-          <div class="streak-note">${d.streaks?.training_freq_note||'Avg ~2×/wk past 4 weeks'}</div>
+          <div class="streak-note">${d.streaks?.training_freq_note||`${(d.streaks?.sessions_this_week||0)}× this week`}</div>
         </div>
         <div class="streak">
           <div class="streak-n" style="color:${daysSinceCol}">${daysSince}</div>
@@ -1009,7 +1009,7 @@ function render(d){
           <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Trend</div><div class="mm-v" style="color:var(--red)">↓</div><div class="mm-s">declining this week</div></div>
         </div>
         <div class="cw" style="height:140px"><canvas id="sleepChart" role="img" aria-label="Sleep scores by night">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+(ss.scores||[])[i]).join(', ')}</canvas></div>
-        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${ss.scores&&ss.scores.length>=2 ? `Sleep score moved from ${Math.max(...ss.scores)} to ${ss.scores[ss.scores.length-1]} this week.` : 'Keep wearing the watch to bed for sleep trend data.'} A consistent bedtime will stabilise this — aim for the same 30-minute window each night.</div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${ss.scores&&ss.scores.length>=2 ? `Sleep score this week: avg ${Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length)}, best ${Math.max(...ss.scores)}, worst ${Math.min(...ss.scores)}.` : 'Keep wearing the watch to bed for sleep trend data.'} A consistent bedtime will stabilise this — aim for the same 30-minute window each night.</div>
       </div>
     </div>
 
@@ -1021,7 +1021,7 @@ function render(d){
           <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>wake-up battery</span>
           <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--amber);display:inline-block"></span>points drained</span>
         </div>
-        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${(d.body_battery_6wk||[]).length>=2 ? `Your wake-up battery has averaged ${Math.round((d.body_battery_6wk||[]).slice(-7).reduce((a,b)=>a+(b.val||0),0)/Math.min(7,(d.body_battery_6wk||[]).length))} over the last 7 days.` : 'Wear your watch to bed to build battery trend data.'} Keep consistent sleep timing to improve overnight recovery.</div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${(d.body_battery_6wk||[]).length>=2 ? `Wake-up battery avg ${Math.round((d.body_battery_6wk||[]).slice(-7).reduce((a,b)=>a+(b.val||0),0)/Math.min(7,(d.body_battery_6wk||[]).length))} over the last 7 days. Keep consistent sleep timing to stabilise recovery.` : 'Keep wearing the watch to bed to build battery trend data.'}</div>
       </div>
     </div>
 
