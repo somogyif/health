@@ -1220,47 +1220,31 @@
     "tomorrow": {
       "tasks": [
         {
-          "things_id": "Ldy3Z5dkESqkXCHhT17ZsE",
-          "name": "Send DTU Startup Day content to Uffe for review",
+          "name": "Send DTU Startup Day content to Uffe",
           "status": "todo",
           "due": "2026-05-28",
-          "project": "",
-          "area": "",
           "tags": "",
-          "notes": "",
           "overdue": false
         },
         {
-          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
           "name": "SU Phone Call",
           "status": "todo",
           "due": "2026-05-28",
-          "project": "",
-          "area": "",
           "tags": "",
-          "notes": "",
           "overdue": false
         },
         {
-          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
           "name": "UCplus phone call",
           "status": "todo",
           "due": "2026-05-28",
-          "project": "",
-          "area": "",
           "tags": "",
-          "notes": "",
           "overdue": false
         },
         {
-          "things_id": "GwTdfrALeVkJW6DNAnPwU1",
           "name": "Interview preparation",
           "status": "todo",
           "due": "2026-05-28",
-          "project": "",
-          "area": "",
           "tags": "",
-          "notes": "",
           "overdue": false
         }
       ],
@@ -1279,68 +1263,52 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "22:18",
+    "generated_at": "22:21",
     "readiness": 68,
-    "bb": 20,
+    "bb": 25,
     "hrv": 43,
     "today": {
       "tasks": [],
       "count": 0,
-      "work_shifts": 0,
       "score": 0,
-      "label": "Clear"
+      "label": "Light",
+      "work_shifts": 0
     },
     "tomorrow": {
       "tasks": [
         {
-          "things_id": "Ldy3Z5dkESqkXCHhT17ZsE",
-          "name": "Send DTU Startup Day content to Uffe for review",
+          "name": "Send DTU Startup Day content to Uffe",
           "status": "todo",
           "due": "2026-05-28",
-          "project": "",
-          "area": "",
           "tags": "",
-          "notes": "",
           "overdue": false
         },
         {
-          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
           "name": "SU Phone Call",
           "status": "todo",
           "due": "2026-05-28",
-          "project": "",
-          "area": "",
           "tags": "",
-          "notes": "",
           "overdue": false
         },
         {
-          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
           "name": "UCplus phone call",
           "status": "todo",
           "due": "2026-05-28",
-          "project": "",
-          "area": "",
           "tags": "",
-          "notes": "",
           "overdue": false
         },
         {
-          "things_id": "GwTdfrALeVkJW6DNAnPwU1",
           "name": "Interview preparation",
           "status": "todo",
           "due": "2026-05-28",
-          "project": "",
-          "area": "",
           "tags": "",
-          "notes": "",
           "overdue": false
         }
       ],
       "count": 4,
-      "work_shifts": 2,
       "score": 40,
-      "label": "Heavy"
+      "label": "Heavy",
+      "work_shifts": 2
     }
   }
 }
