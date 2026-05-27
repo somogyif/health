@@ -1298,8 +1298,8 @@
     "feedback": "AEROBIC_HIGH_SHORTAGE"
   },
   "streaks": {
-    "watch_nights": 1,
-    "watch_streak_date": "2026-05-27",
+    "watch_nights": 10,
+    "watch_streak_date": "",
     "training_weeks_4x": 0,
     "sessions_this_week": 3,
     "days_since_session": 0,
