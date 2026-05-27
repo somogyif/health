@@ -1,1214 +1,615 @@
 {
-  "synced_at": "2026-05-27T22:18:39.337386",
+  "synced_at": "2026-05-27 22:29",
   "garmin": {
     "date": "2026-05-27",
-    "resting_hr": 64,
-    "hrv_weekly": 42,
-    "hrv_last_night": 43,
+    "resting_hr": null,
+    "hrv_weekly": null,
+    "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": 8.6,
-    "sleep_missing": false,
-    "bb_charged": 59,
-    "bb_drained": 39,
-    "bb_current": 20,
-    "steps": 2019,
-    "active_kcal": 550.0,
-    "total_kcal": 2246.0,
-    "avg_stress": 36,
+    "sleep_hours": null,
+    "sleep_score": null,
+    "sleep_missing": true,
+    "bb_charged": null,
+    "bb_drained": null,
+    "bb_current": null,
+    "steps": 0,
+    "step_goal": 8000,
+    "active_kcal": 0,
+    "total_kcal": 0,
+    "avg_stress": 0,
+    "readiness_score": null,
     "fitness_age": null,
     "achievable_age": null,
     "chrono_age": 29,
-    "vigorous_days": null,
+    "vigorous_days": 0.1,
     "vigorous_target": 3,
-    "readiness_score": 68,
-    "readiness_level": "MODERATE",
-    "readiness_sleep_score": 87,
-    "readiness_hrv_pct": 90,
-    "readiness_stress_pct": 45,
+    "training_status": "",
     "acute_load": null,
     "chronic_load": null,
-    "training_status": null
-  },
-  "workouts": [
-    {
-      "date": "",
-      "title": "Upper 2",
-      "duration": null,
-      "exercises": [
-        {
-          "name": "Incline Bench Press (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "T Bar Row",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Seated Shoulder Press (Machine)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Lat Pulldown (Cable)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Lateral Raise (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        },
-        {
-          "name": "Rear Delt Reverse Fly (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        }
-      ]
-    },
-    {
-      "date": "",
-      "title": "Lower 1",
-      "duration": null,
-      "exercises": [
-        {
-          "name": "Leg Press (Machine)",
-          "sets": 6,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Romanian Deadlift (Barbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Seated Calf Raise",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        },
-        {
-          "name": "Cable Crunch",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        }
-      ]
-    },
-    {
-      "date": "",
-      "title": "Upper 1",
-      "duration": null,
-      "exercises": [
-        {
-          "name": "Bent Over Row (Barbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 10
-        },
-        {
-          "name": "Shoulder Press (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Bench Press (Barbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Cable Fly Crossovers",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        },
-        {
-          "name": "Bicep Curl (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        },
-        {
-          "name": "Triceps Rope Pushdown",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        }
-      ]
-    },
-    {
-      "date": "",
-      "title": "Lower 2",
-      "duration": null,
-      "exercises": [
-        {
-          "name": "Hack Squat (Machine)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Back Extension (Weighted Hyperextension)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Leg Press Horizontal (Machine)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Lying Leg Curl (Machine)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        },
-        {
-          "name": "Calf Extension (Machine)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        },
-        {
-          "name": "Cable Crunch",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        }
-      ]
-    },
-    {
-      "date": "",
-      "title": "Upper 2",
-      "duration": null,
-      "exercises": [
-        {
-          "name": "Incline Bench Press (Barbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 10
-        },
-        {
-          "name": "Bent Over Row (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 10
-        },
-        {
-          "name": "Arnold Press (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 10
-        },
-        {
-          "name": "Lat Pulldown (Cable)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 10
-        },
-        {
-          "name": "Lateral Raise (Dumbbell)",
-          "sets": 3,
-          "weight": 0,
-          "reps": 12
-        },
-        {
-          "name": "Seated Palms Up Wrist Curl",
-          "sets": 3,
-          "weight": 0,
-          "reps": 15
-        }
-      ]
-    }
-  ],
-  "calendar": [
-    {
-      "travel_time_minutes": 0,
-      "end": "2026-05-28T07:00:00Z",
-      "start": "2026-05-28T05:00:00Z",
-      "travel_time_seconds": 0,
-      "has_travel": false,
-      "notes": "",
-      "title": "Mos\u00e1s, f\u0151z\u00e9s",
-      "start_time": "07:00",
-      "all_day": false,
-      "category": "personal",
-      "location": "",
-      "start_date": "28 May",
-      "travel_mode": "unknown",
-      "calendar": "Otthon"
-    },
-    {
-      "calendar": "Test \u00e9s l\u00e9lek",
-      "has_travel": true,
-      "start_date": "28 May",
-      "location": "Shc \u00c5boulevarden\n\u00c5boulevard 58, 2200 K\u00f8benhavn N, Denmark",
-      "title": "Edz\u00e9s",
-      "all_day": false,
-      "start": "2026-05-28T07:15:00Z",
-      "travel_time_seconds": 1020,
-      "notes": "",
-      "end": "2026-05-28T08:30:00Z",
-      "start_time": "09:15",
-      "travel_mode": "unknown",
-      "travel_time_minutes": 17,
-      "category": "wellness"
-    },
-    {
-      "start_time": "13:30",
-      "calendar": "Caf\u00e9 Nexus",
-      "location": "Caf\u00e9 Nexus - Caf\u00e9 Nexus",
-      "start_date": "28 May",
-      "start": "2026-05-28T11:30:00Z",
-      "end": "2026-05-28T15:00:00Z",
-      "title": "Cafe",
-      "travel_time_seconds": 0,
-      "travel_mode": "unknown",
-      "travel_time_minutes": 0,
-      "has_travel": false,
-      "notes": "Planday shift time:\n1:30\u202fPM - 5:00\u202fPM",
-      "all_day": false,
-      "category": "work"
-    },
-    {
-      "end": "2026-05-28T18:00:00Z",
-      "start_time": "17:00",
-      "category": "work",
-      "notes": "Planday shift time:\n5:00\u202fPM - 8:00\u202fPM",
-      "has_travel": false,
-      "start": "2026-05-28T15:00:00Z",
-      "travel_time_seconds": 0,
-      "calendar": "Caf\u00e9 Nexus",
-      "title": "Cafe",
-      "travel_time_minutes": 0,
-      "travel_mode": "unknown",
-      "all_day": false,
-      "location": "Caf\u00e9 Nexus - Caf\u00e9 Nexus",
-      "start_date": "28 May"
-    },
-    {
-      "travel_mode": "unknown",
-      "location": "Shc \u00c5boulevarden\n\u00c5boulevard 58, 2200 K\u00f8benhavn N, Denmark",
-      "start_date": "29 May",
-      "all_day": false,
-      "has_travel": true,
-      "end": "2026-05-29T08:30:00Z",
-      "travel_time_seconds": 1020,
-      "start_time": "09:15",
-      "category": "wellness",
-      "title": "Edz\u00e9s",
-      "calendar": "Test \u00e9s l\u00e9lek",
-      "start": "2026-05-29T07:15:00Z",
-      "notes": "",
-      "travel_time_minutes": 17
-    },
-    {
-      "travel_mode": "unknown",
-      "travel_time_minutes": 30,
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "notes": "",
-      "all_day": false,
-      "start": "2026-05-29T09:00:00Z",
-      "start_time": "11:00",
-      "start_date": "29 May",
-      "title": "Jonathan tali ",
-      "location": "Original Coffee\nGammel Kongevej 173, 1850 Frederiksberg C, Denmark",
-      "end": "2026-05-29T10:00:00Z",
-      "has_travel": true,
-      "category": "social",
-      "travel_time_seconds": 1800
-    },
-    {
-      "travel_time_seconds": 1800,
-      "category": "personal",
-      "start": "2026-05-29T12:30:00Z",
-      "all_day": false,
-      "has_travel": true,
-      "start_time": "14:30",
-      "start_date": "29 May",
-      "travel_time_minutes": 30,
-      "calendar": "Napt\u00e1r",
-      "title": "BLOXHUB IW",
-      "travel_mode": "unknown",
-      "notes": "BLOXHUB, Bryghuspladsen 8, 3rd floor, this Friday, May 29 at 14:30",
-      "end": "2026-05-29T13:00:00Z",
-      "location": "Bloxhub\nBryghusgade 8, 1473 K\u00f8benhavn K, Denmark"
-    },
-    {
-      "start_time": "17:00",
-      "notes": "Planday shift time:\n5:00\u202fPM - 10:30\u202fPM",
-      "all_day": false,
-      "travel_mode": "unknown",
-      "start_date": "29 May",
-      "category": "work",
-      "location": "Caf\u00e9 Nexus - Caf\u00e9 Nexus",
-      "title": "Cafe",
-      "calendar": "Caf\u00e9 Nexus",
-      "start": "2026-05-29T15:00:00Z",
-      "has_travel": false,
-      "end": "2026-05-29T20:30:00Z",
-      "travel_time_minutes": 0,
-      "travel_time_seconds": 0
-    },
-    {
-      "has_travel": false,
-      "notes": "Join the CPH Vibe Coders hackathon! Turn your idea into an MVP in just 5 hours. Details: https://cphvibecoders.lovable.app/events/vol-4",
-      "all_day": false,
-      "travel_time_minutes": 0,
-      "start_date": "30 May",
-      "location": "Copenhagen, Denmark",
-      "travel_time_seconds": 0,
-      "start_time": "12:00",
-      "category": "personal",
-      "end": "2026-05-30T16:00:00Z",
-      "travel_mode": "unknown",
-      "calendar": "Napt\u00e1r",
-      "start": "2026-05-30T10:00:00Z",
-      "title": "CPH Vibe Coders \u2014 Vol. 4"
-    },
-    {
-      "all_day": false,
-      "has_travel": false,
-      "location": "Microsoft Teams Meeting",
-      "start": "2026-06-01T11:30:00Z",
-      "title": "RE: Thesis Meeting",
-      "travel_time_minutes": 0,
-      "start_date": "1 Jun",
-      "travel_mode": "unknown",
-      "start_time": "13:30",
-      "notes": "online\n________________________________\nFrom: Ferenc Somogyi <feso24ac@student.cbs.dk>\nSent: Monday, 25 May 2026 20:55:03\nTo: Torkil Clemmensen <tc.digi@cbs.dk>\nCc: Lukas Alistair Hauge Gray <luha20ad@student.cbs.dk>\nSubject: Re: Thesis Meeting\n\nHello Torkil,\n\nWould you have time slots on 1, 3 June and between 15-17 June?\n\nDeadlines are (2nd attempt):\n\n  *   Submit contract: 1 August before 23.59 CET\n  *   Contract approval: No later than 6 weeks after 1 August\n  *   Submit thesis: 15 September before 15.59 CET\n  *   Submission on Digital Exam: 1 - 15 September (15.59 CET the 15th at the latest)\n  *   Oral defence: 16 September - 31 October\n\nFerenc and Lukas\n\nOn 18 May 2026, at 22.43, Torkil Clemmensen <tc.digi@cbs.dk> wrote:\n\nHello,\nI have a timeslot june 11 at 1300. When is you new deadline?\nCheers\nTorkil\n________________________________\nFrom: Lukas Alistair Hauge Gray <luha20ad@student.cbs.dk>\nSent: Monday, 18 May 2026 07:43:10\nTo: Torkil Clemmensen <tc.digi@cbs.dk>\nCc: Ferenc Somogyi <feso24ac@student.cbs.dk>\nSubject: Thesis Meeting\n\nHello,\nThis is Lukas Hauge Gray and Ferenc Somogyi, the two students from Digital Business who are writing our thesis on digital entrepreneurship. We are writing to let you know that we decided to delay our thesis to the second attempt due to a few factors. We are wondering if you are available for a meeting soon to discuss our project and if anything needs to change in our project, etc. Would you be available on Wednesday or Friday this week? If so, what times? And if not, how about next week?\nThank you for your time.\nKind regards,\nLukas Hauge Gray and Ferenc Somogyi\n\n________________________________________________________________________________\nMicrosoft Teams meeting\nJoin: https://teams.microsoft.com/meet/366754400738908?p=HPORCYN0cj6d4rQY03<https://eur02.safelinks.protection.outlook.com/ap/t-59584e83/?url=https%3A%2F%2Fteams.microsoft.com%2Fmeet%2F366754400738908%3Fp%3DHPORCYN0cj6d4rQY03&data=05%7C02%7Cfeso24ac%40student.cbs.dk%7C14f47d4b9b4642e367e308debb1d61b4%7C875c414e5d004cdbb77adeae5d6ab201%7C0%7C0%7C639153932033070956%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=evNjmrb9Q77MuoJy2%2Fw7%2BEHbd9zR7q7Z%2FlUV9AMGhfI%3D&reserved=0>\nMeeting ID: 366 754 400 738 908\nPasscode: TX65jC39\n________________________________\nNeed help?<https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Faka.ms%2FJoinTeamsMeeting%3Fomkt%3Den-US&data=05%7C02%7Cfeso24ac%40student.cbs.dk%7C14f47d4b9b4642e367e308debb1d61b4%7C875c414e5d004cdbb77adeae5d6ab201%7C0%7C0%7C639153932033113740%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=KG3FhU8muJjHNiIGd3MpdrUsEDFN9VcbRSPbxM9Phf4%3D&reserved=0> | System reference<https://eur02.safelinks.protection.outlook.com/ap/t-59584e83/?url=https%3A%2F%2Fteams.microsoft.com%2Fl%2Fmeetup-join%2F19%253ameeting_Yjk2YzRkMjAtNmNjMC00ZWRlLTkwM2QtMjkwMDE0NzBhMTQy%2540thread.v2%2F0%3Fcontext%3D%257b%2522Tid%2522%253a%2522875c414e-5d00-4cdb-b77a-deae5d6ab201%2522%252c%2522Oid%2522%253a%252203db0361-9b5c-444f-b36b-6e2d35be721a%2522%257d&data=05%7C02%7Cfeso24ac%40student.cbs.dk%7C14f47d4b9b4642e367e308debb1d61b4%7C875c414e5d004cdbb77adeae5d6ab201%7C0%7C0%7C639153932033138359%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=yDkQHzfh%2FlwSuNd6yXsm1Fd40v%2Bdwfug9vbmj1IEGCo%3D&reserved=0>\nDial in by phone\n+45 32 72 66 19,,552226388#<tel:+4532726619,,552226388#> Denmark, All locations\nFind a local number<https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdialin.teams.microsoft.com%2F92d80060-c013-41d8-9f8c-d493275c8768%3Fid%3D552226388&data=05%7C02%7Cfeso24ac%40student.cbs.dk%7C14f47d4b9b4642e367e308debb1d61b4%7C875c414e5d004cdbb77adeae5d6ab201%7C0%7C0%7C639153932033158128%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=EQy%2Fz4n1cpX1BQ3vEiZtVf0Lh4dpv7A7XGtc60DHohQ%3D&reserved=0>\nPhone conference ID: 552 226 388#\nFor organizers: Meeting options<https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fteams.microsoft.com%2FmeetingOptions%2F%3ForganizerId%3D03db0361-9b5c-444f-b36b-6e2d35be721a%26tenantId%3D875c414e-5d00-4cdb-b77a-deae5d6ab201%26threadId%3D19_meeting_Yjk2YzRkMjAtNmNjMC00ZWRlLTkwM2QtMjkwMDE0NzBhMTQy%40thread.v2%26messageId%3D0%26language%3Den-US&data=05%7C02%7Cfeso24ac%40student.cbs.dk%7C14f47d4b9b4642e367e308debb1d61b4%7C875c414e5d004cdbb77adeae5d6ab201%7C0%7C0%7C639153932033178648%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=%2BrxMyVKPXjjaTa%2BHAk2m8u2k5QV5Ccs75sbA7RVbbsI%3D&reserved=0> | Reset dial-in PIN<https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdialin.teams.microsoft.com%2Fusp%2Fpstnconferencing&data=05%7C02%7Cfeso24ac%40student.cbs.dk%7C14f47d4b9b4642e367e308debb1d61b4%7C875c414e5d004cdbb77adeae5d6ab201%7C0%7C0%7C639153932033197827%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=mFSgif8pS8UwxRaav5nksUKfCh1TIH8x17h3qY3dxDc%3D&reserved=0>\n________________________________________________________________________________\n\n",
-      "calendar": "MS Teams",
-      "travel_time_seconds": 0,
-      "end": "2026-06-01T12:00:00Z",
-      "category": "meeting"
-    },
-    {
-      "travel_time_minutes": 0,
-      "location": "DTU Skylab (Centrifugevej 374, 2800  Kongens Lyngby  Capital Region)",
-      "category": "meeting",
-      "notes": "You don't often get email from startupday@dtu.dk. Learn why this is important<https://aka.ms/LearnAboutSenderIdentification>\nDear all\n\nRemember to prepare your stand the evening before DTU Startup Day 2026.\nIt\u2019s also a great opportunity to see the space and meet the other startups. Pizza, beers, and sodas will be served.\nRemember that at least one member from the startup should participate \ud83d\ude0a\n\n\nWe will be in DTU Skylab, Centrifugevej 374, 2800 Kgs. Lyngby\nPizza and drinks will hopefully be served in the garden behind the stage if the weather allows.\n\nBest regards\nThomas and Rikke from the DSD26 team\n\n",
-      "travel_mode": "unknown",
-      "end": "2026-06-01T16:30:00Z",
-      "start_date": "1 Jun",
-      "start": "2026-06-01T14:30:00Z",
-      "title": "DTU Startup Day - Stand setup + pizza",
-      "start_time": "16:30",
-      "all_day": false,
-      "has_travel": false,
-      "travel_time_seconds": 0,
-      "calendar": "MS Teams"
-    },
-    {
-      "title": "Danish PD3 M2",
-      "travel_time_minutes": 0,
-      "end": "2026-06-01T19:30:00Z",
-      "start_time": "19:50",
-      "has_travel": false,
-      "travel_time_seconds": 0,
-      "start": "2026-06-01T17:50:00Z",
-      "calendar": "Napt\u00e1r",
-      "category": "personal",
-      "start_date": "1 Jun",
-      "travel_mode": "unknown",
-      "all_day": false,
-      "notes": "",
-      "location": "UCPLUS\nGyldenl\u00f8vesgade 11, 1600 K\u00f8benhavn V, Denmark"
-    },
-    {
-      "has_travel": false,
-      "title": "DTU Startup Day 2026",
-      "end": "2026-06-02T15:00:00Z",
-      "start_date": "2 Jun",
-      "all_day": false,
-      "travel_mode": "unknown",
-      "category": "meeting",
-      "start_time": "08:30",
-      "start": "2026-06-02T06:30:00Z",
-      "travel_time_minutes": 0,
-      "notes": "You don't often get email from startupday@dtu.dk. Learn why this is important<https://aka.ms/LearnAboutSenderIdentification>\nDear all exhibiting startups\n\nThis is just a friendly placeholder for your calendar \ud83d\ude0a\n\nBest regards\nThe DSD26 team\n",
-      "location": "DTU Skylab (Centrifugevej 374, 2800  Kongens Lyngby  Capital Region)",
-      "travel_time_seconds": 0,
-      "calendar": "MS Teams"
-    },
-    {
-      "travel_time_minutes": 0,
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "title": "Steffen date",
-      "category": "social",
-      "end": "2026-06-02T18:00:00Z",
-      "start_time": "18:00",
-      "travel_mode": "unknown",
-      "has_travel": false,
-      "location": "",
-      "travel_time_seconds": 0,
-      "notes": "",
-      "start": "2026-06-02T16:00:00Z",
-      "start_date": "2 Jun",
-      "all_day": false
-    },
-    {
-      "category": "personal",
-      "location": "Odense\nDenmark",
-      "start": "2026-06-02T22:00:00Z",
-      "travel_time_seconds": 0,
-      "has_travel": false,
-      "travel_mode": "unknown",
-      "all_day": true,
-      "start_date": "3 Jun",
-      "title": "International Drone Show",
-      "start_time": "",
-      "notes": "",
-      "travel_time_minutes": 0,
-      "calendar": "Napt\u00e1r",
-      "end": "2026-06-04T21:59:59Z"
-    },
-    {
-      "start_date": "3 Jun",
-      "all_day": false,
-      "location": "Strandvejen 44\n2900 Hellerup, Denmark",
-      "category": "personal",
-      "start": "2026-06-03T07:00:00Z",
-      "start_time": "09:00",
-      "travel_mode": "unknown",
-      "travel_time_minutes": 0,
-      "notes": "",
-      "title": "Nordic Defence Conference 2026",
-      "has_travel": false,
-      "end": "2026-06-03T13:00:00Z",
-      "calendar": "Napt\u00e1r",
-      "travel_time_seconds": 0
-    },
-    {
-      "travel_time_seconds": 0,
-      "start": "2026-06-03T17:50:00Z",
-      "has_travel": false,
-      "all_day": false,
-      "location": "UCPLUS\nGyldenl\u00f8vesgade 11, 1600 K\u00f8benhavn V, Denmark",
-      "notes": "",
-      "calendar": "Napt\u00e1r",
-      "title": "Danish PD3 M2",
-      "category": "personal",
-      "start_time": "19:50",
-      "travel_mode": "unknown",
-      "end": "2026-06-03T19:30:00Z",
-      "start_date": "3 Jun",
-      "travel_time_minutes": 0
-    },
-    {
-      "notes": "",
-      "end": "2026-06-12T21:59:59Z",
-      "travel_time_seconds": 0,
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "location": "",
-      "travel_mode": "unknown",
-      "category": "social",
-      "start": "2026-06-03T22:00:00Z",
-      "travel_time_minutes": 0,
-      "all_day": true,
-      "start_time": "",
-      "start_date": "4 Jun",
-      "has_travel": false,
-      "title": "Kijev"
-    },
-    {
-      "all_day": false,
-      "location": "Koppenh\u00e1gai rep\u00fcl\u0151t\u00e9r\nLufthavnsboulevarden 6, 2770 Kastrup, Danmark",
-      "travel_time_seconds": 0,
-      "category": "social",
-      "end": "2026-06-04T08:10:00Z",
-      "start_date": "4 Jun",
-      "start_time": "08:45",
-      "notes": "Visszaigazol\u00f3 k\u00f3d: MI2CVL",
-      "start": "2026-06-04T06:45:00Z",
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "travel_mode": "unknown",
-      "has_travel": false,
-      "travel_time_minutes": 0,
-      "title": "Rep\u00fcl\u0151j\u00e1rat: W6 1368 ett\u0151l: CPH eddig: WAW"
-    },
-    {
-      "start_date": "4 Jun",
-      "start": "2026-06-04T06:45:00Z",
-      "travel_time_minutes": 0,
-      "end": "2026-06-04T08:10:00Z",
-      "has_travel": false,
-      "travel_time_seconds": 0,
-      "title": "Flight to Warsaw (W6 1368)",
-      "start_time": "08:45",
-      "calendar": "sf.somi@gmail.com",
-      "category": "personal",
-      "all_day": false,
-      "notes": "Az ehhez hasonl\u00f3 automatikusan l\u00e9trehozott esem\u00e9nyek r\u00e9szletes adatainak megtekint\u00e9s\u00e9hez t\u00f6ltse le a hivatalos Google Napt\u00e1r alkalmaz\u00e1st. https://g.co/calendar\n\nAz esem\u00e9ny a Gmailben kapott esem\u00e9nyb\u0151l j\u00f6tt l\u00e9tre. https://mail.google.com/mail?extsrc=cal&plid=ACUX6DPcGmQgIjbqXIvsn_ah8_N-QIzUw7belbE\n",
-      "travel_mode": "unknown",
-      "location": "Copenhagen CPH"
-    },
-    {
-      "start_time": "",
-      "travel_time_seconds": 0,
-      "travel_time_minutes": 0,
-      "start": "2026-06-07T22:00:00Z",
-      "title": "DIH Naval Forge ",
-      "calendar": "MS Teams",
-      "location": "Kyiv\nUkraine",
-      "category": "meeting",
-      "start_date": "8 Jun",
-      "all_day": true,
-      "notes": "",
-      "has_travel": false,
-      "travel_mode": "unknown",
-      "end": "2026-06-09T21:59:59Z"
-    },
-    {
-      "location": "",
-      "travel_time_minutes": 0,
-      "has_travel": false,
-      "title": "Bendeg\u00faz diplomav\u00e9d\u00e9s",
-      "start": "2026-06-08T07:00:00Z",
-      "travel_time_seconds": 0,
-      "end": "2026-06-08T08:00:00Z",
-      "travel_mode": "unknown",
-      "notes": "",
-      "start_date": "8 Jun",
-      "start_time": "09:00",
-      "all_day": false,
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "category": "social"
-    },
-    {
-      "all_day": false,
-      "start": "2026-06-08T17:50:00Z",
-      "end": "2026-06-08T19:30:00Z",
-      "start_date": "8 Jun",
-      "travel_time_seconds": 0,
-      "travel_time_minutes": 0,
-      "title": "Danish PD3 M2",
-      "category": "personal",
-      "calendar": "Napt\u00e1r",
-      "has_travel": false,
-      "notes": "",
-      "location": "UCPLUS\nGyldenl\u00f8vesgade 11, 1600 K\u00f8benhavn V, Denmark",
-      "start_time": "19:50",
-      "travel_mode": "unknown"
-    },
-    {
-      "has_travel": false,
-      "travel_mode": "unknown",
-      "travel_time_seconds": 0,
-      "travel_time_minutes": 0,
-      "location": "UCPLUS\nGyldenl\u00f8vesgade 11, 1600 K\u00f8benhavn V, Denmark",
-      "start": "2026-06-10T17:50:00Z",
-      "notes": "",
-      "category": "personal",
-      "all_day": false,
-      "start_date": "10 Jun",
-      "end": "2026-06-10T19:30:00Z",
-      "calendar": "Napt\u00e1r",
-      "start_time": "19:50",
-      "title": "Danish PD3 M2"
-    },
-    {
-      "start_date": "12 Jun",
-      "travel_time_seconds": 0,
-      "start_time": "",
-      "has_travel": false,
-      "end": "2026-06-12T21:59:59Z",
-      "location": "",
-      "category": "social",
-      "title": "Vince \u00e9s Bendeg\u00faz beragad\u00e1s",
-      "travel_mode": "unknown",
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "notes": "",
-      "start": "2026-06-11T22:00:00Z",
-      "travel_time_minutes": 0,
-      "all_day": true
-    },
-    {
-      "notes": "Reservation Number: AZJ27J",
-      "start_time": "23:50",
-      "calendar": "Ferenc Somogyi Calendar (Canvas)",
-      "category": "deadline",
-      "end": "2026-06-12T23:15:00Z",
-      "location": "Modlin Airport\nGen Wiktora Thomm\u00e9e 1a, 05-102 Nowy Dwor Mazowiecki, Poland",
-      "start": "2026-06-12T21:50:00Z",
-      "all_day": false,
-      "title": "Flight: FR 9750 from WMI to CPH",
-      "travel_time_seconds": 0,
-      "has_travel": false,
-      "travel_time_minutes": 0,
-      "start_date": "12 Jun",
-      "travel_mode": "unknown"
-    },
-    {
-      "title": "Vince \u00e9s Bendeg\u00faz Reffen",
-      "end": "2026-06-13T21:59:59Z",
-      "travel_time_seconds": 0,
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "notes": "",
-      "start": "2026-06-12T22:00:00Z",
-      "travel_mode": "unknown",
-      "category": "social",
-      "all_day": true,
-      "location": "",
-      "start_time": "",
-      "travel_time_minutes": 0,
-      "start_date": "13 Jun",
-      "has_travel": false
-    },
-    {
-      "all_day": false,
-      "start_date": "15 Jun",
-      "calendar": "Napt\u00e1r",
-      "notes": "",
-      "travel_mode": "unknown",
-      "end": "2026-06-15T19:30:00Z",
-      "start_time": "19:50",
-      "start": "2026-06-15T17:50:00Z",
-      "travel_time_seconds": 0,
-      "has_travel": false,
-      "title": "Danish PD3 M2",
-      "category": "personal",
-      "location": "UCPLUS\nGyldenl\u00f8vesgade 11, 1600 K\u00f8benhavn V, Denmark",
-      "travel_time_minutes": 0
-    },
-    {
-      "notes": "",
-      "start_date": "16 Jun",
-      "location": "",
-      "end": "2026-06-16T21:59:59Z",
-      "calendar": "Napt\u00e1r",
-      "category": "personal",
-      "travel_mode": "unknown",
-      "title": "Apu sz\u00fclinap",
-      "all_day": true,
-      "start": "2026-06-15T22:00:00Z",
-      "travel_time_seconds": 0,
-      "travel_time_minutes": 0,
-      "has_travel": false,
-      "start_time": ""
-    },
-    {
-      "start_time": "13:00",
-      "all_day": false,
-      "location": "",
-      "travel_mode": "unknown",
-      "has_travel": false,
-      "end": "2026-06-16T12:00:00Z",
-      "travel_time_seconds": 0,
-      "title": "Zal\u00e1n diplomav\u00e9d\u00e9s",
-      "category": "social",
-      "start_date": "16 Jun",
-      "notes": "",
-      "travel_time_minutes": 0,
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "start": "2026-06-16T11:00:00Z"
-    },
-    {
-      "end": "2026-06-17T19:30:00Z",
-      "start_time": "19:50",
-      "travel_time_minutes": 0,
-      "travel_mode": "unknown",
-      "has_travel": false,
-      "title": "Danish PD3 M2",
-      "location": "UCPLUS\nGyldenl\u00f8vesgade 11, 1600 K\u00f8benhavn V, Denmark",
-      "start_date": "17 Jun",
-      "travel_time_seconds": 0,
-      "category": "personal",
-      "start": "2026-06-17T17:50:00Z",
-      "calendar": "Napt\u00e1r",
-      "notes": "",
-      "all_day": false
-    },
-    {
-      "travel_time_minutes": 0,
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "start": "2026-06-17T22:00:00Z",
-      "start_time": "",
-      "title": "Sz\u00e9pfalvi vizit Londonban",
-      "category": "social",
-      "end": "2026-06-23T21:59:59Z",
-      "start_date": "18 Jun",
-      "location": "London\nEngland",
-      "notes": "",
-      "travel_time_seconds": 0,
-      "has_travel": false,
-      "all_day": true,
-      "travel_mode": "unknown"
-    },
-    {
-      "location": "Copenhagen Airport\nLufthavnsboulevarden 6, 2770 Kastrup, Danmark",
-      "travel_time_seconds": 0,
-      "has_travel": false,
-      "travel_time_minutes": 0,
-      "title": "Flight: FR 2619 from CPH to STN",
-      "calendar": "Napt\u00e1r",
-      "category": "personal",
-      "start_date": "18 Jun",
-      "all_day": false,
-      "travel_mode": "unknown",
-      "start_time": "05:55",
-      "notes": "Reservation Number: L444MT",
-      "start": "2026-06-18T03:55:00Z",
-      "end": "2026-06-18T05:50:00Z"
-    },
-    {
-      "all_day": false,
-      "title": "Bus to London Liverpool Street Station",
-      "notes": "Az ehhez hasonl\u00f3 automatikusan l\u00e9trehozott esem\u00e9nyek r\u00e9szletes adatainak megtekint\u00e9s\u00e9hez t\u00f6ltse le a hivatalos Google Napt\u00e1r alkalmaz\u00e1st. https://g.co/calendar\n\nAz esem\u00e9ny a Gmailben kapott esem\u00e9nyb\u0151l j\u00f6tt l\u00e9tre. https://mail.google.com/mail?extsrc=cal&plid=ACUX6DMt14citO8MsBmEjGzrePdciMPYgQDDhac\n",
-      "calendar": "sf.somi@gmail.com",
-      "travel_mode": "unknown",
-      "travel_time_seconds": 0,
-      "travel_time_minutes": 0,
-      "start_time": "09:00",
-      "has_travel": false,
-      "category": "personal",
-      "start": "2026-06-18T07:00:00Z",
-      "end": "2026-06-18T08:00:00Z",
-      "location": "STANSTED Airport London (STN)",
-      "start_date": "18 Jun"
-    },
-    {
-      "travel_time_minutes": 0,
-      "start": "2026-06-20T17:30:00Z",
-      "location": "Ved M\u00f8nten 12, 2300 K\u00f8benhavn S, Danmark",
-      "all_day": false,
-      "end": "2026-06-20T18:30:00Z",
-      "category": "social",
-      "travel_mode": "unknown",
-      "travel_time_seconds": 0,
-      "start_date": "20 Jun",
-      "start_time": "19:30",
-      "has_travel": false,
-      "notes": "\nYour problematic favs are leaving \ud83d\udeeb\n\nThe rumours are true. After years of unsolicited opinions, questionable group chat takes, and being suspiciously well-informed about everyone's business, Martha and Stan are finally being deported from Denmark.\n\nMartha is off to LSE to explain to Londoners how things actually work. Stan is off to the College of Europe, where he will continue being insufferable about EU institutions.\n\nThis is your last chance to:\n- Settle any unfinished beef\n- Get one final hot take you didn't ask for\n- Pretend you'll visit (you won't)\n- Witness us cry at least once before midnight\n\nBring yourself, bring a drink (or dont we have a kollegium bar), bring receipts. \n\nDress code: come as you are!\n\nSee you there before we become someone else's problem. \ud83d\udc94",
-      "calendar": "K\u00f6z\u00f6ss\u00e9g",
-      "title": "Your Problematic Favs are Leaving \u2728\u2728"
-    },
-    {
-      "end": "2026-06-22T19:30:00Z",
-      "notes": "",
-      "travel_mode": "unknown",
-      "travel_time_seconds": 0,
-      "title": "Danish PD3 M2",
-      "start_time": "19:50",
-      "start_date": "22 Jun",
-      "all_day": false,
-      "category": "personal",
-      "location": "UCPLUS\nGyldenl\u00f8vesgade 11, 1600 K\u00f8benhavn V, Denmark",
-      "has_travel": false,
-      "travel_time_minutes": 0,
-      "calendar": "Napt\u00e1r",
-      "start": "2026-06-22T17:50:00Z"
-    },
-    {
-      "notes": "Reservation Number: L444MT",
-      "start_time": "11:45",
-      "travel_time_minutes": 0,
-      "location": "London Stansted Airport\nBassingbourn Road, Mountfitchet, CM24 1QW, England",
-      "start_date": "23 Jun",
-      "calendar": "Napt\u00e1r",
-      "category": "personal",
-      "all_day": false,
-      "end": "2026-06-23T11:30:00Z",
-      "title": "Flight: FR 7384 from STN to CPH",
-      "start": "2026-06-23T09:45:00Z",
-      "travel_mode": "unknown",
-      "has_travel": false,
-      "travel_time_seconds": 0
-    },
-    {
-      "start_date": "24 Jun",
-      "title": "Danish PD3 M2",
-      "calendar": "Napt\u00e1r",
-      "travel_time_seconds": 0,
-      "travel_mode": "unknown",
-      "start_time": "19:50",
-      "category": "personal",
-      "location": "UCPLUS\nGyldenl\u00f8vesgade 11, 1600 K\u00f8benhavn V, Denmark",
-      "has_travel": false,
-      "travel_time_minutes": 0,
-      "start": "2026-06-24T17:50:00Z",
-      "all_day": false,
-      "notes": "",
-      "end": "2026-06-24T19:30:00Z"
-    }
-  ],
-  "calendar_load_today": 0,
-  "weather": {
-    "temp_max": 18.7,
-    "temp_min": 12.1,
-    "precipitation": 0,
-    "wind_max": 22.7,
-    "condition": "Cloudy",
-    "weathercode": 3,
-    "is_raining": false,
-    "is_heavy_rain": false,
-    "good_for_bike": true
-  },
-  "commute": [],
-  "perfume": {
-    "morning": {
-      "number": "197",
-      "name": "Sauvage",
-      "inspired": "Dior Sauvage",
-      "mood": "Fresh & assertive",
-      "reason": "Rest day with no events. Sauvage if you leave the house \u2014 or skip entirely.",
-      "how": "3\u20134 sprays. Neck, wrists, jacket. Works any time, any occasion.",
-      "notes": "Bergamot, pepper, ambroxan, cedarwood"
-    },
-    "evening": null,
-    "gym_reset": false
-  },
-  "body_comp": {
-    "weight": 83.3,
-    "fat_pct": 21,
-    "lean_kg": 65.8,
-    "bmi": 23.1,
-    "date": "2026-05-27"
-  },
-  "goals": [
-    {
-      "label": "Body fat",
-      "current": "21%",
-      "target": "16\u201317%",
-      "pct": 25,
-      "color": "#f5a623"
-    },
-    {
-      "label": "Lean mass",
-      "current": "65.8 kg",
-      "target": "maintain",
-      "pct": 80,
-      "color": "#2dd4a0"
-    },
-    {
-      "label": "Training freq",
-      "current": "~2\u00d7/week",
-      "target": "4\u00d7/week",
-      "pct": 50,
-      "color": "#5b9cf6"
-    },
-    {
-      "label": "Rest time",
-      "current": "~30 sec",
-      "target": "90\u2013120 sec",
-      "pct": 15,
-      "color": "#f5a623"
-    },
-    {
-      "label": "Zone 2 cardio",
-      "current": "0 sessions",
-      "target": "2\u20133\u00d7/wk",
-      "pct": 0,
-      "color": "#ff5f5f"
-    },
-    {
-      "label": "Sleep",
-      "current": "8.6h",
-      "target": "7.5\u20138 hrs",
-      "pct": 95,
-      "color": "#2dd4a0"
-    }
-  ],
-  "recs": [
-    {
-      "level": "red",
-      "title": "Rest 90 seconds between sets",
-      "body": "Upper 1 Garmin data: 79% zone 2. Set rest timer on Fenix 7X."
-    },
-    {
-      "level": "red",
-      "title": "Get back to 4\u00d7 per week",
-      "body": "No gaps longer than 3 days between sessions."
-    },
-    {
-      "level": "amber",
-      "title": "HYROX this Saturday",
-      "body": "Hybrid Culture, Amager Strand. Last session 18 Apr: avg HR 150, 615 kcal."
-    },
-    {
-      "level": "amber",
-      "title": "2\u00d7 zone 2 cardio on rest days",
-      "body": "30\u201340 min at 130\u2013145 bpm. ~700 kcal/week extra fat loss."
-    },
-    {
-      "level": "amber",
-      "title": "Track protein \u2014 160\u2013170 g/day",
-      "body": "Critical to protect lean mass during fat loss."
-    },
-    {
-      "level": "green",
-      "title": "Progressive overload is working",
-      "body": "RDL 36\u219244 kg, Lat Pulldown 64\u219268 kg, Arnold Press 28 kg 3\u00d710."
-    }
-  ],
-  "readiness_week": [
-    {
-      "date": "17 May",
-      "score": 83,
-      "level": "HIGH"
-    },
-    {
-      "date": "18 May",
-      "score": 97,
-      "level": "PRIME"
-    },
-    {
-      "date": "19 May",
-      "score": 91,
-      "level": "HIGH"
-    },
-    {
-      "date": "20 May",
-      "score": 79,
-      "level": "HIGH"
-    },
-    {
-      "date": "21 May",
-      "score": 74,
-      "level": "MOD"
-    },
-    {
-      "date": "22 May",
-      "score": 51,
-      "level": "MOD"
-    }
-  ],
-  "stress_week": {
-    "labels": [
-      "15 May",
-      "16 May",
-      "17 May",
-      "18 May",
-      "19 May",
-      "20 May",
-      "21 May",
-      "22 May"
-    ],
-    "stress": [
-      41,
-      37,
-      51,
-      37,
-      43,
-      45,
-      42,
-      24
-    ],
-    "bb_charged": [
-      null,
-      null,
-      null,
-      69,
-      52,
-      null,
-      43,
-      43
-    ]
-  },
-  "workouts_quality": [
-    {
-      "date": "17 May",
-      "name": "Upper 2",
-      "dur": 42,
-      "hr": 107,
-      "z2": 23,
-      "z3": 2,
-      "kcal": 260,
-      "score": 72,
-      "verdict": "good",
-      "note": "Moderate HR, rear delt fly first time"
-    },
-    {
-      "date": "5 May",
-      "name": "Lower 1",
-      "dur": 37,
-      "hr": 112,
-      "z2": 39,
-      "z3": 3,
-      "kcal": 225,
-      "score": 65,
-      "verdict": "mod",
-      "note": "Good effort, RDL 44kg"
-    },
-    {
-      "date": "4 May",
-      "name": "Upper 1",
-      "dur": 23,
-      "hr": 126,
-      "z2": 79,
-      "z3": 16,
-      "kcal": 155,
-      "score": 31,
-      "verdict": "warn",
-      "note": "79% zone 2 \u2014 no rest between sets"
-    },
-    {
-      "date": "3 May",
-      "name": "Lower 2",
-      "dur": 50,
-      "hr": 110,
-      "z2": 27,
-      "z3": 6,
-      "kcal": 321,
-      "score": 82,
-      "verdict": "good",
-      "note": "Best session \u2014 full duration, high kcal"
-    }
-  ],
-  "sleep_scores": {
-    "labels": [
-      "18 May",
-      "19 May",
-      "20 May",
-      "21 May",
-      "22 May"
-    ],
-    "scores": [
-      91,
-      81,
-      76,
-      69,
-      57
-    ]
-  },
-  "training_load": {
-    "acute": 10,
-    "chronic": 137,
-    "aerobic_low": 101,
+    "aerobic_low": 0,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
-    "status": "RECOVERY",
-    "feedback": "AEROBIC_HIGH_SHORTAGE"
+    "load_feedback": "",
+    "sleep_week": [],
+    "sleep_avg": null,
+    "sleep_best": null,
+    "sleep_best_date": null,
+    "sleep_trend": ""
+  },
+  "body_comp": null,
+  "workouts": [
+    {
+      "id": "7a999ba9-aff4-4196-9dae-1b9bd032ddfa",
+      "title": "Upper 2",
+      "date": "2026-05-27",
+      "start_time": "2026-05-27T11:04:11+00:00",
+      "duration": 52,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "T Bar Row",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Shoulder Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "038bf82c-f828-4b2d-b633-3ee79899f811",
+      "title": "Lower 1",
+      "date": "2026-05-26",
+      "start_time": "2026-05-26T14:16:24+00:00",
+      "duration": 47,
+      "exercises": [
+        {
+          "name": "Leg Press (Machine)",
+          "weight": 0,
+          "sets": 6
+        },
+        {
+          "name": "Romanian Deadlift (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Calf Raise",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "b6896468-d5a8-44b3-b20d-c3175b2a7832",
+      "title": "Upper 1",
+      "date": "2026-05-25",
+      "start_time": "2026-05-25T16:45:01+00:00",
+      "duration": 58,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bench Press (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Fly Crossovers",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Triceps Rope Pushdown",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "4d2c3b08-8ed4-4eb9-8a03-3bdbc6dd7541",
+      "title": "Lower 2",
+      "date": "2026-05-24",
+      "start_time": "2026-05-24T16:07:57+00:00",
+      "duration": 50,
+      "exercises": [
+        {
+          "name": "Hack Squat (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lying Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "4938fa5a-47c4-41a6-8026-39bb94c030bb",
+      "title": "Upper 2",
+      "date": "2026-05-17",
+      "start_time": "2026-05-17T11:52:26+00:00",
+      "duration": 43,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bent Over Row (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Arnold Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Palms Up Wrist Curl",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "8e764b3b-de9e-49cd-9c5b-f65b746b8cab",
+      "title": "Lower 1",
+      "date": "2026-05-05",
+      "start_time": "2026-05-05T05:23:28+00:00",
+      "duration": 37,
+      "exercises": [
+        {
+          "name": "Squat (Smith Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Romanian Deadlift (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Calf Raise",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Crunch (Machine)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "76521152-5f95-4123-9dad-ab7cec107650",
+      "title": "Upper 1",
+      "date": "2026-05-04",
+      "start_time": "2026-05-04T07:06:16+00:00",
+      "duration": 23,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Chest Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Chest Fly (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "db657c4a-20e5-46e9-98c5-fddbba645196",
+      "title": "Lower 2",
+      "date": "2026-05-03",
+      "start_time": "2026-05-03T09:58:05+00:00",
+      "duration": 50,
+      "exercises": [
+        {
+          "name": "Lunge (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Goblet Squat",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Crunch (Machine)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "90f7800e-1c62-45de-b97e-e907348242ac",
+      "title": "Upper 2",
+      "date": "2026-05-02",
+      "start_time": "2026-05-02T08:05:21+00:00",
+      "duration": 35,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Dumbbell Row",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Arnold Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Palms Up Wrist Curl",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "5334d49f-d458-4abb-8180-ddeef94f0edd",
+      "title": "Lower 1",
+      "date": "2026-04-29",
+      "start_time": "2026-04-29T08:59:36+00:00",
+      "duration": 31,
+      "exercises": [
+        {
+          "name": "Lunge (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Romanian Deadlift (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Crunch (Machine)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    }
+  ],
+  "workout_quality": [
+    {
+      "date": "2026-05-27",
+      "title": "Upper 2",
+      "duration": 52,
+      "label": "Full session \u2014 52 min",
+      "score": 60,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "T Bar Row",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Shoulder Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-05-26",
+      "title": "Lower 1",
+      "duration": 47,
+      "label": "Full session \u2014 47 min",
+      "score": 50,
+      "exercises": [
+        {
+          "name": "Leg Press (Machine)",
+          "weight": 0,
+          "sets": 6
+        },
+        {
+          "name": "Romanian Deadlift (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Calf Raise",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-05-25",
+      "title": "Upper 1",
+      "duration": 58,
+      "label": "Full session \u2014 58 min",
+      "score": 64,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bench Press (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Fly Crossovers",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Triceps Rope Pushdown",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-05-24",
+      "title": "Lower 2",
+      "duration": 50,
+      "label": "Full session \u2014 50 min",
+      "score": 58,
+      "exercises": [
+        {
+          "name": "Hack Squat (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lying Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-05-17",
+      "title": "Upper 2",
+      "duration": 43,
+      "label": "Good session \u2014 43 min",
+      "score": 52,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bent Over Row (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Arnold Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Palms Up Wrist Curl",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    }
+  ],
+  "calendar": [],
+  "weather": {
+    "temp": 15.2,
+    "description": "Cloudy",
+    "precip_mm": 0,
+    "uv_index": 6.2,
+    "solar_mj": 29.0,
+    "wind_kmh": 22.7,
+    "rain": false
   },
   "streaks": {
-    "watch_nights": 5,
+    "watch_nights": 10,
+    "sessions_this_week": 3,
     "training_weeks_4x": 0,
-    "days_since_session": 5
-  },
-  "bb_trend": {
-    "labels": [
-      "19 Apr",
-      "20 Apr",
-      "21 Apr",
-      "22 Apr",
-      "23 Apr",
-      "24 Apr",
-      "25 Apr",
-      "26 Apr",
-      "27 Apr",
-      "28 Apr",
-      "29 Apr",
-      "30 Apr",
-      "1 May",
-      "2 May",
-      "3 May",
-      "4 May",
-      "5 May",
-      "6 May",
-      "7 May",
-      "8 May",
-      "9 May",
-      "10 May",
-      "11 May",
-      "12 May",
-      "13 May",
-      "14 May",
-      "15 May",
-      "16 May",
-      "17 May",
-      "18 May",
-      "19 May",
-      "20 May",
-      "21 May",
-      "22 May"
-    ],
-    "wake": [
-      53,
-      100,
-      63,
-      93,
-      73,
-      64,
-      80,
-      58,
-      100,
-      98,
-      97,
-      68,
-      76,
-      82,
-      100,
-      99,
-      76,
-      100,
-      60,
-      95,
-      64,
-      47,
-      35,
-      59,
-      43,
-      62,
-      63,
-      46,
-      61,
-      69,
-      52,
-      null,
-      null,
-      null
-    ],
-    "drain": [
-      27,
-      14,
-      15,
-      12,
-      8,
-      7,
-      12,
-      25,
-      25,
-      15,
-      18,
-      10,
-      5,
-      16,
-      29,
-      31,
-      17,
-      7,
-      13,
-      13,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      6,
-      18,
-      23,
-      12,
-      17,
-      null,
-      null,
-      null
-    ]
+    "days_since_session": 0,
+    "last_session_label": "27 May \u00b7 Upper 2"
   },
   "tasks": {
     "today": {
@@ -1220,31 +621,47 @@
     "tomorrow": {
       "tasks": [
         {
-          "name": "Send DTU Startup Day content to Uffe",
+          "things_id": "Ldy3Z5dkESqkXCHhT17ZsE",
+          "name": "Send DTU Startup Day content to Uffe for review",
           "status": "todo",
           "due": "2026-05-28",
+          "project": "",
+          "area": "",
           "tags": "",
+          "notes": "",
           "overdue": false
         },
         {
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
           "name": "SU Phone Call",
           "status": "todo",
           "due": "2026-05-28",
+          "project": "",
+          "area": "",
           "tags": "",
+          "notes": "",
           "overdue": false
         },
         {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
           "name": "UCplus phone call",
           "status": "todo",
           "due": "2026-05-28",
+          "project": "",
+          "area": "",
           "tags": "",
+          "notes": "",
           "overdue": false
         },
         {
+          "things_id": "GwTdfrALeVkJW6DNAnPwU1",
           "name": "Interview preparation",
           "status": "todo",
           "due": "2026-05-28",
+          "project": "",
+          "area": "",
           "tags": "",
+          "notes": "",
           "overdue": false
         }
       ],
@@ -1263,52 +680,105 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "22:21",
+    "generated_at": "22:29",
     "readiness": 68,
-    "bb": 25,
-    "hrv": 43,
+    "bb": 50,
+    "hrv": 42,
     "today": {
+      "label": "Clear",
+      "lines": [
+        "Clear day \u2014 good for deep work or extra recovery.",
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
+      ],
+      "task_count": 0,
+      "work_shifts": 0,
+      "has_gym": false,
       "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Light",
-      "work_shifts": 0
+      "recovery": "moderate"
     },
     "tomorrow": {
+      "label": "Heavy",
+      "lines": [
+        "4 tasks due. Sequence them by who they unblock first.",
+        "Sequence: Send DTU Startup Day content t \u2192 SU Phone Call \u2192 UCplus phone call \u2192 Interview preparation"
+      ],
+      "task_count": 4,
+      "work_shifts": 0,
+      "has_gym": false,
       "tasks": [
         {
-          "name": "Send DTU Startup Day content to Uffe",
+          "things_id": "Ldy3Z5dkESqkXCHhT17ZsE",
+          "name": "Send DTU Startup Day content to Uffe for review",
           "status": "todo",
           "due": "2026-05-28",
+          "project": "",
+          "area": "",
           "tags": "",
+          "notes": "",
           "overdue": false
         },
         {
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
           "name": "SU Phone Call",
           "status": "todo",
           "due": "2026-05-28",
+          "project": "",
+          "area": "",
           "tags": "",
+          "notes": "",
           "overdue": false
         },
         {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
           "name": "UCplus phone call",
           "status": "todo",
           "due": "2026-05-28",
+          "project": "",
+          "area": "",
           "tags": "",
+          "notes": "",
           "overdue": false
         },
         {
+          "things_id": "GwTdfrALeVkJW6DNAnPwU1",
           "name": "Interview preparation",
           "status": "todo",
           "due": "2026-05-28",
+          "project": "",
+          "area": "",
           "tags": "",
+          "notes": "",
           "overdue": false
         }
       ],
-      "count": 4,
-      "score": 40,
-      "label": "Heavy",
-      "work_shifts": 2
+      "recovery": "moderate"
     }
+  },
+  "health_matrix": {
+    "readiness": 68,
+    "training_signal": 72,
+    "illness_risk": 82,
+    "recovery_debt": 62,
+    "cognitive_load": 68,
+    "calendar_load": 75
+  },
+  "illness_risk": {
+    "score": 0,
+    "factors": [
+      "No significant risk factors today"
+    ]
+  },
+  "bb_trend": [],
+  "training_load": {
+    "acute": null,
+    "chronic": null,
+    "aerobic_low": 0,
+    "aerobic_low_min": 97,
+    "aerobic_low_max": 261,
+    "aerobic_high": 0,
+    "aerobic_high_min": 203,
+    "aerobic_high_max": 368,
+    "feedback": ""
   }
 }
