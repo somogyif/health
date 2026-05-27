@@ -373,6 +373,35 @@ function render(d){
 
   const synced=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
 
+  // Day Plan
+  const dayPlan = d.day_plan || null;
+  const dpEl = document.getElementById('dayPlanBody');
+  const dpSec = document.getElementById('dayPlanSection');
+  const dpLabel = document.getElementById('dayPlanLabel');
+  if (dpEl && dpSec) {
+    if (dayPlan) {
+      dpSec.style.display = '';
+      const ctx = dayPlan.context || 'morning';
+      if (dpLabel) dpLabel.textContent = ctx === 'evening' ? '📋 Tomorrow\'s plan' : ctx === 'morning' ? '📋 Today\'s plan' : '📋 Plan';
+      dpEl.innerHTML = renderDayPlan(dayPlan);
+    } else {
+      dpSec.style.display = 'none';
+    }
+  }
+
+  // Tasks
+  const tasks = d.tasks || null;
+  const tasksEl = document.getElementById('tasksBody');
+  const tasksSec = document.getElementById('tasksSection');
+  if (tasksEl && tasksSec) {
+    if (tasks) {
+      tasksSec.style.display = '';
+      tasksEl.innerHTML = renderTasks(tasks);
+    } else {
+      tasksSec.style.display = 'none';
+    }
+  }
+
   // Render calendar events
   const calEvents = d.calendar || [];
   const calLoad = d.calendar_load_today || 0;
@@ -388,6 +417,166 @@ function render(d){
     wellness: 'wellness', meeting: 'meeting', social: 'social',
     personal: 'personal', other: 'other'
   };
+
+  function renderDayPlan(plan) {
+    if (!plan) return '';
+    const ctx = plan.context || 'morning';
+    const tod = plan.today || {};
+    const tom = plan.tomorrow || {};
+
+    const loadBadge = l => {
+      const styles = {Clear:'#E1F5EE;color:#0F6E56',Light:'#E1F5EE;color:#0F6E56',Moderate:'#FAEEDA;color:#854F0B',Heavy:'#FAEEDA;color:#854F0B',Packed:'#FCEBEB;color:#A32D2D'};
+      const s = styles[l] || styles.Clear;
+      return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'Clear'}</span>`;
+    };
+    const pill = (icon, text, type) => {
+      const s = {work:'background:#FAEEDA;color:#854F0B;border-color:#FAC775',gym:'background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB',task:'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4',over:'background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1'}[type]||'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4';
+      return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid;${s}"><i class="ti ti-${icon}" aria-hidden="true" style="font-size:12px"></i>${text}</span>`;
+    };
+    const seqBox = (text, cls) => {
+      const s = cls==='first'?'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4':cls==='deep'?'background:#EEEDFE;color:#534AB7;border-color:#CECBF6':'background:var(--card2);color:var(--text2);border-color:var(--border)';
+      return `<span style="font-size:11px;padding:4px 9px;border-radius:6px;border:0.5px solid;white-space:nowrap;flex-shrink:0;${s}">${text}</span>`;
+    };
+    const tlBar = (label, flex, color) => `<div style="flex:${flex};min-width:0"><div style="height:5px;border-radius:3px;background:${color};margin-bottom:3px"></div><div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label}</div></div>`;
+    const recBox = (icon, html) => `<div style="background:var(--card2);border-radius:8px;padding:.55rem .8rem;display:flex;gap:8px;align-items:flex-start;margin-top:.5rem"><i class="ti ti-${icon}" aria-hidden="true" style="font-size:15px;color:var(--text3);margin-top:1px;flex-shrink:0"></i><span style="font-size:12px;color:var(--text2);line-height:1.5">${html}</span></div>`;
+    const secHead = s => `<div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:.4rem">${s}</div>`;
+    const divLine = () => `<div style="height:.5px;background:var(--border);margin:.6rem 0"></div>`;
+
+    const renderBlock = (label, p, isTom) => {
+      if (!p) return '';
+      const tasks = p.tasks || [];
+      const wShifts = p.work_shifts != null ? p.work_shifts : (p.label === 'Heavy' ? 2 : 0);
+
+      let tlHtml = '';
+      if (isTom) {
+        tlHtml = `${secHead('Timeline')}<div style="display:flex;gap:2px;margin-bottom:.85rem">${tlBar('07:00 morning',1.5,'#9FE1CB')}${tlBar('09:15 gym',1,'#5DCAA5')}${tlBar('focus 10:30',2,'#B5D4F4')}${tlBar('13:30 Café',1.5,'#FAC775')}${tlBar('17:00 Café',1.5,'#FAC775')}</div>`;
+      }
+
+      let energyHtml = '';
+      if (!isTom && (plan.bb || plan.readiness)) {
+        const bb = plan.bb || 25, rd = plan.readiness || 68, hrv = plan.hrv || 43;
+        const bar = (v,max,c) => `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
+        const eRow = (lbl,v,max,c,sfx) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:var(--text3);width:62px;flex-shrink:0">${lbl}</span>${bar(v,max,c)}<span style="font-size:10px;color:var(--text2);width:38px;text-align:right">${v}${sfx}</span></div>`;
+        energyHtml = `<div style="margin-bottom:.6rem">${eRow('Body battery',bb,100,bb<30?'#E24B4A':bb<60?'#EF9F27':'#1D9E75','')}${eRow('Readiness',rd,100,rd<50?'#E24B4A':rd<70?'#EF9F27':'#1D9E75','/100')}${eRow('HRV',hrv,80,hrv<35?'#E24B4A':hrv<45?'#EF9F27':'#1D9E75','ms')}</div>`;
+      }
+
+      let commitPills = '';
+      if (wShifts >= 2) commitPills += pill('coffee','Café 13:30','work')+' '+pill('coffee','Café 17:00','work');
+      else if (wShifts === 1) commitPills += pill('coffee','Café shift','work');
+      if (isTom || p.has_gym) commitPills += ' '+pill('barbell','Gym 09:15','gym');
+
+      let taskPills = tasks.slice(0,4).map(t => {
+        const icon = /call|phone/i.test(t.name)?'phone':/send|review/i.test(t.name)?'send':/prep|interview/i.test(t.name)?'briefcase':'check';
+        return pill(icon, t.name.length>24?t.name.slice(0,22)+'…':t.name, t.overdue?'over':'task');
+      }).join(' ');
+
+      let seqHtml = '';
+      if (tasks.length > 0 || isTom) {
+        const allTasks = isTom ? [
+          {name:'Send to Uffe'}, {name:'SU call'}, {name:'UCplus call'}, {name:'Interview prep'}
+        ] : tasks;
+        const sends = allTasks.filter(t => /send|uffe|review/i.test(t.name));
+        const calls = allTasks.filter(t => /call|phone/i.test(t.name));
+        const deep  = allTasks.filter(t => /prep|interview|plan|write/i.test(t.name));
+        const ordered = [...sends,...calls,...deep].slice(0,4);
+        if (ordered.length > 0) {
+          seqHtml = `${divLine()}${secHead('Recommended sequence')}<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">` +
+            ordered.map((t,i) => {
+              const cls = i===0?'first':/prep|interview/i.test(t.name)?'deep':'';
+              const n = t.name.length>18?t.name.slice(0,16)+'…':t.name;
+              return (i>0?`<span style="color:var(--text3);font-size:12px">›</span>`:'')+seqBox(n,cls);
+            }).join('') +
+            (wShifts>0||isTom?`<span style="color:var(--text3);font-size:12px">›</span>${seqBox('Café shifts','')}`:'')+
+          `</div>`;
+        }
+      }
+
+      const note = isTom
+        ? recBox('clock','<b style="color:var(--text1)">Focus window 10:30–12:30.</b> Send Uffe first — unblocks someone else. Calls back-to-back at 11:00. Interview prep last, 30 min is enough. All done before 13:30.')
+        : recBox('moon','<b style="color:var(--text1)">Wind down now.</b> Battery is low (25). Prep the Uffe content tonight so morning is execution only. Bed before 23:00.');
+
+      return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text1)">${label}</span>${loadBadge(p.label||'Clear')}</div><div style="background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
+    };
+
+    const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    const todStr = fmt(new Date());
+    const tomStr = fmt(new Date(Date.now()+86400000));
+    const tomP = {...tom, work_shifts:2, has_gym:true};
+    const todP = {...tod, bb:plan.bb, readiness:plan.readiness, hrv:plan.hrv};
+
+    let out = '';
+    if (ctx === 'evening') {
+      out += renderBlock(`Tomorrow · ${tomStr}`, tomP, true);
+      out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
+      out += renderBlock(`Tonight · ${todStr}`, todP, false);
+    } else {
+      out += renderBlock(`Today · ${todStr}`, todP, false);
+      out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
+      out += renderBlock(`Tomorrow · ${tomStr}`, tomP, true);
+    }
+    out += `<div style="font-size:10px;color:var(--text3);text-align:right;margin-top:.3rem">generated ${plan.generated_at||''}</div>`;
+    return out;
+  }
+
+  function renderTasks(tasks) {
+    if (!tasks) return '';
+    const today = tasks.today || {tasks:[], count:0, score:0, label:'Clear'};
+    const tomorrow = tasks.tomorrow || {tasks:[], count:0, score:0, label:'Clear'};
+    const overdue = tasks.overdue || {tasks:[], count:0};
+
+    const scoreColor = s => s === 'Packed' ? 'var(--red)' : s === 'Heavy' ? 'var(--amber)' : s === 'Moderate' ? 'var(--amber)' : 'var(--teal)';
+
+    const taskRow = t => {
+      const name = t.name || '';
+      const proj = t.project ? `<span style="font-size:10px;color:var(--text3);margin-left:4px">${t.project}</span>` : '';
+      const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px">overdue</span>` : '';
+      return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border)">
+        <span style="font-size:14px;opacity:.5">□</span>
+        <span style="font-size:12px;font-family:var(--m);color:var(--text1)">${name}</span>${proj}${over}
+      </div>`;
+    };
+
+    let html = '';
+
+    // Overdue banner
+    if (overdue.count > 0) {
+      html += `<div style="background:var(--red-d);border-radius:8px;padding:.5rem .8rem;margin-bottom:.8rem;font-family:var(--m);font-size:11px;color:var(--red)">
+        ⚠️ ${overdue.count} overdue task${overdue.count>1?'s':''} — handle these first
+      </div>`;
+    }
+
+    // Today tasks
+    if (today.count > 0 || overdue.count > 0) {
+      const allToday = [...(overdue.tasks||[]), ...(today.tasks||[])];
+      html += `<div style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+          <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Today</span>
+          <span style="font-family:var(--m);font-size:11px;color:${scoreColor(today.label)}">${today.label}</span>
+        </div>
+        ${allToday.map(taskRow).join('')}
+      </div>`;
+    } else {
+      html += `<div style="font-family:var(--m);font-size:12px;color:var(--text3);margin-bottom:.8rem">✓ Nothing due today</div>`;
+    }
+
+    // Tomorrow tasks
+    html += `<div style="margin-bottom:.5rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+        <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Tomorrow</span>
+        <span style="font-family:var(--m);font-size:11px;color:${scoreColor(tomorrow.label)}">${tomorrow.count > 0 ? tomorrow.label : '—'}</span>
+      </div>
+      ${tomorrow.count > 0 ? tomorrow.tasks.map(taskRow).join('') : '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">Nothing scheduled</div>'}
+    </div>`;
+
+    // Open without date
+    if (tasks.no_date?.count > 0) {
+      html += `<div style="font-family:var(--m);font-size:11px;color:var(--text3);margin-top:.5rem">
+        + ${tasks.no_date.count} open task${tasks.no_date.count>1?'s':''} without a due date
+      </div>`;
+    }
+
+    return html;
+  }
 
   function renderCalendar(events, readScore) {
     if (!events || events.length === 0) return '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events — run sync to load calendar.</div>';
@@ -537,6 +726,18 @@ function render(d){
       <div class="card" id="calCard">
         <div id="calBody" style="font-family:var(--m);font-size:12px;color:var(--text3)">No calendar data — run sync script to load events.</div>
       </div>
+    </div>
+
+    <!-- DAY PLAN SECTION -->
+    <div class="sec" id="dayPlanSection" style="display:none">
+      <div class="sec-label" id="dayPlanLabel">📋 Today&#39;s plan</div>
+      <div id="dayPlanBody" class="card"></div>
+    </div>
+
+    <!-- TASKS SECTION -->
+    <div class="sec" id="tasksSection" style="display:none">
+      <div class="sec-label">✅ Tasks</div>
+      <div id="tasksBody" class="card"></div>
     </div>
 
     <div class="sec" id="perfumeSection">
