@@ -639,7 +639,7 @@ function render(d){
   const bioAge=g.fitness_age?g.fitness_age.toFixed(1):'—';
   const chronoAge=g.chrono_age||29;
   const achieveAge=g.achievable_age?g.achievable_age.toFixed(1):'—';
-  const ageDiff=(chronoAge-parseFloat(bioAge)).toFixed(1);
+  const ageDiff=g.fitness_age?((chronoAge-g.fitness_age).toFixed(1)):'—';
   const vd=g.vigorous_days!=null?parseFloat(g.vigorous_days):0.1;
   const vt=g.vigorous_target||3;
   const acwr=(d.training_load||{}).acute&&(d.training_load||{}).chronic?(d.training_load||{}).acute/(d.training_load||{}).chronic:null;
@@ -1141,7 +1141,7 @@ function render(d){
           <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">Garmin fitness age</div>
           <div style="display:flex;align-items:flex-end;gap:1rem;margin-bottom:.5rem">
             <div style="font-size:56px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--teal)">${bioAge}</div>
-            <div style="padding-bottom:8px;font-size:13px;color:var(--text2)">yrs · <span style="color:var(--teal);font-weight:500">${ageDiff} younger</span> than ${chronoAge}</div>
+            <div style="padding-bottom:8px;font-size:13px;color:var(--text2)">yrs · <span style="color:var(--teal);font-weight:500">${ageDiff!=='—'?ageDiff+' younger':''}</span>${ageDiff!=='—'?' than '+chronoAge:'actual age'}</div>
           </div>
           <div style="font-size:13px;color:var(--text2);font-style:italic;margin-bottom:1rem;line-height:1.5">With consistent vigorous training, Garmin estimates you could reach <strong style="color:var(--teal);font-style:normal">${achieveAge}</strong> fitness age.</div>
           <div class="agebar">
