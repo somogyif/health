@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-05-27 22:51",
+  "synced_at": "2026-05-28 07:01",
   "garmin": {
-    "date": "2026-05-27",
+    "date": "2026-05-28",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": null,
+    "sleep_hours": 0.0,
     "sleep_score": null,
     "sleep_missing": true,
     "bb_charged": null,
@@ -17,7 +17,7 @@
     "active_kcal": 0,
     "total_kcal": 0,
     "avg_stress": 0,
-    "readiness_score": null,
+    "readiness_score": 56,
     "fitness_age": null,
     "achievable_age": null,
     "chrono_age": 29,
@@ -33,11 +33,40 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [],
-    "sleep_avg": null,
-    "sleep_best": null,
-    "sleep_best_date": null,
-    "sleep_trend": ""
+    "sleep_week": [
+      {
+        "date": "2026-05-21",
+        "score": 69
+      },
+      {
+        "date": "2026-05-22",
+        "score": 57
+      },
+      {
+        "date": "2026-05-23",
+        "score": 67
+      },
+      {
+        "date": "2026-05-24",
+        "score": 85
+      },
+      {
+        "date": "2026-05-25",
+        "score": 75
+      },
+      {
+        "date": "2026-05-26",
+        "score": 64
+      },
+      {
+        "date": "2026-05-27",
+        "score": 87
+      }
+    ],
+    "sleep_avg": 72,
+    "sleep_best": 87,
+    "sleep_best_date": "27 May",
+    "sleep_trend": "improving"
   },
   "body_comp": null,
   "workouts": [
@@ -596,19 +625,19 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 15.2,
+    "temp": 12.0,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.2,
-    "solar_mj": 29.0,
-    "wind_kmh": 22.7,
+    "uv_index": 6.3,
+    "solar_mj": 29.1,
+    "wind_kmh": 18.0,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 10,
+    "watch_nights": 11,
     "sessions_this_week": 3,
     "training_weeks_4x": 0,
-    "days_since_session": 0,
+    "days_since_session": 1,
     "last_session_label": "27 May \u00b7 Upper 2"
   },
   "tasks": {
@@ -619,147 +648,55 @@
       "label": "Clear"
     },
     "tomorrow": {
-      "tasks": [
-        {
-          "things_id": "Ldy3Z5dkESqkXCHhT17ZsE",
-          "name": "Send DTU Startup Day content to Uffe for review",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": false
-        },
-        {
-          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
-          "name": "SU Phone Call",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": false
-        },
-        {
-          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
-          "name": "UCplus phone call",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": false
-        },
-        {
-          "things_id": "GwTdfrALeVkJW6DNAnPwU1",
-          "name": "Interview preparation",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": false
-        }
-      ],
-      "count": 4,
-      "score": 40,
-      "label": "Heavy"
+      "tasks": [],
+      "count": 0,
+      "score": 0,
+      "label": "Clear"
     },
     "overdue": {
       "tasks": [],
       "count": 0
     },
     "no_date": {
-      "count": 18
+      "count": 0
     },
-    "total_open": 22
+    "total_open": 0
   },
   "day_plan": {
-    "context": "evening",
-    "generated_at": "22:51",
-    "readiness": 68,
+    "context": "morning",
+    "generated_at": "07:01",
+    "readiness": 56,
     "bb": 50,
     "hrv": 42,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure.",
-        "Evening \u2014 wind down now. Set up tomorrow before bed."
+        "Recovery is low (readiness 56, battery 50). Keep intensity moderate."
+      ],
+      "task_count": 0,
+      "work_shifts": 0,
+      "has_gym": false,
+      "tasks": [],
+      "recovery": "low"
+    },
+    "tomorrow": {
+      "label": "Clear",
+      "lines": [
+        "Clear day \u2014 good for deep work or extra recovery."
       ],
       "task_count": 0,
       "work_shifts": 0,
       "has_gym": false,
       "tasks": [],
       "recovery": "moderate"
-    },
-    "tomorrow": {
-      "label": "Heavy",
-      "lines": [
-        "4 tasks due. Sequence them by who they unblock first.",
-        "Sequence: Send DTU Startup Day content t \u2192 SU Phone Call \u2192 UCplus phone call \u2192 Interview preparation"
-      ],
-      "task_count": 4,
-      "work_shifts": 0,
-      "has_gym": false,
-      "tasks": [
-        {
-          "things_id": "Ldy3Z5dkESqkXCHhT17ZsE",
-          "name": "Send DTU Startup Day content to Uffe for review",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": false
-        },
-        {
-          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
-          "name": "SU Phone Call",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": false
-        },
-        {
-          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
-          "name": "UCplus phone call",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": false
-        },
-        {
-          "things_id": "GwTdfrALeVkJW6DNAnPwU1",
-          "name": "Interview preparation",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": false
-        }
-      ],
-      "recovery": "moderate"
     }
   },
   "health_matrix": {
-    "readiness": 68,
-    "training_signal": 72,
+    "readiness": 56,
+    "training_signal": 67,
     "illness_risk": 82,
-    "recovery_debt": 62,
+    "recovery_debt": 57,
     "cognitive_load": 68,
     "calendar_load": 75
   },
