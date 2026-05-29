@@ -1,23 +1,23 @@
 {
-  "synced_at": "2026-05-28 07:01",
+  "synced_at": "2026-05-29 07:03",
   "garmin": {
-    "date": "2026-05-28",
-    "resting_hr": null,
+    "date": "2026-05-29",
+    "resting_hr": 67,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
     "sleep_hours": 0.0,
     "sleep_score": null,
     "sleep_missing": true,
-    "bb_charged": null,
-    "bb_drained": null,
-    "bb_current": null,
-    "steps": 0,
-    "step_goal": 8000,
-    "active_kcal": 0,
-    "total_kcal": 0,
-    "avg_stress": 0,
-    "readiness_score": 56,
+    "bb_charged": 18,
+    "bb_drained": 0,
+    "bb_current": 23,
+    "steps": 133,
+    "step_goal": 5540,
+    "active_kcal": 20.0,
+    "total_kcal": 499.0,
+    "avg_stress": 31,
+    "readiness_score": 55,
     "fitness_age": null,
     "achievable_age": null,
     "chrono_age": 29,
@@ -34,10 +34,6 @@
     "aerobic_high_max": 368,
     "load_feedback": "",
     "sleep_week": [
-      {
-        "date": "2026-05-21",
-        "score": 69
-      },
       {
         "date": "2026-05-22",
         "score": 57
@@ -61,15 +57,58 @@
       {
         "date": "2026-05-27",
         "score": 87
+      },
+      {
+        "date": "2026-05-28",
+        "score": 74
       }
     ],
-    "sleep_avg": 72,
+    "sleep_avg": 73,
     "sleep_best": 87,
     "sleep_best_date": "27 May",
     "sleep_trend": "improving"
   },
   "body_comp": null,
   "workouts": [
+    {
+      "id": "4748686b-157e-4c92-8d1f-a9e935cbd56d",
+      "title": "Lower 2",
+      "date": "2026-05-28",
+      "start_time": "2026-05-28T08:33:30+00:00",
+      "duration": 49,
+      "exercises": [
+        {
+          "name": "Hack Squat (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lying Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
     {
       "id": "7a999ba9-aff4-4196-9dae-1b9bd032ddfa",
       "title": "Upper 2",
@@ -400,43 +439,48 @@
           "sets": 3
         }
       ]
-    },
+    }
+  ],
+  "workout_quality": [
     {
-      "id": "5334d49f-d458-4abb-8180-ddeef94f0edd",
-      "title": "Lower 1",
-      "date": "2026-04-29",
-      "start_time": "2026-04-29T08:59:36+00:00",
-      "duration": 31,
+      "date": "2026-05-28",
+      "title": "Lower 2",
+      "duration": 49,
+      "label": "Full session \u2014 49 min",
+      "score": 57,
       "exercises": [
         {
-          "name": "Lunge (Dumbbell)",
+          "name": "Hack Squat (Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Leg Press (Machine)",
+          "name": "Back Extension (Weighted Hyperextension)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Romanian Deadlift (Dumbbell)",
+          "name": "Leg Press Horizontal (Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Calf Press (Machine)",
+          "name": "Lying Leg Curl (Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Crunch (Machine)",
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
           "weight": 0,
           "sets": 3
         }
       ]
-    }
-  ],
-  "workout_quality": [
+    },
     {
       "date": "2026-05-27",
       "title": "Upper 2",
@@ -582,63 +626,24 @@
           "sets": 3
         }
       ]
-    },
-    {
-      "date": "2026-05-17",
-      "title": "Upper 2",
-      "duration": 43,
-      "label": "Good session \u2014 43 min",
-      "score": 52,
-      "exercises": [
-        {
-          "name": "Incline Bench Press (Barbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Bent Over Row (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Arnold Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Lat Pulldown (Cable)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Lateral Raise (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Seated Palms Up Wrist Curl",
-          "weight": 0,
-          "sets": 3
-        }
-      ]
     }
   ],
   "calendar": [],
   "weather": {
-    "temp": 12.0,
+    "temp": 14.1,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.3,
-    "solar_mj": 29.1,
-    "wind_kmh": 18.0,
+    "uv_index": 6.4,
+    "solar_mj": 25.5,
+    "wind_kmh": 16.2,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 11,
-    "sessions_this_week": 3,
+    "watch_nights": 12,
+    "sessions_this_week": 4,
     "training_weeks_4x": 0,
     "days_since_session": 1,
-    "last_session_label": "27 May \u00b7 Upper 2"
+    "last_session_label": "28 May \u00b7 Lower 2"
   },
   "tasks": {
     "today": {
@@ -664,15 +669,15 @@
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "07:01",
-    "readiness": 56,
-    "bb": 50,
+    "generated_at": "07:03",
+    "readiness": 55,
+    "bb": 23,
     "hrv": 42,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 56, battery 50). Keep intensity moderate."
+        "Recovery is low (readiness 55, battery 23). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -693,17 +698,17 @@
     }
   },
   "health_matrix": {
-    "readiness": 56,
-    "training_signal": 67,
+    "readiness": 55,
+    "training_signal": 59,
     "illness_risk": 82,
-    "recovery_debt": 57,
-    "cognitive_load": 68,
+    "recovery_debt": 46,
+    "cognitive_load": 63,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 0,
+    "score": 10,
     "factors": [
-      "No significant risk factors today"
+      "Body battery low"
     ]
   },
   "bb_trend": [],
