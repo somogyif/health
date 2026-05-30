@@ -1037,15 +1037,18 @@ function render(d){
   // Workout quality cards
   const wqHTML = (d.workout_quality||d.workouts_quality||[]).length ? (d.workout_quality||d.workouts_quality||[]).map(wq => {
     const scoreCol = wq.score >= 70 ? 'var(--teal)' : wq.score >= 45 ? 'var(--amber)' : 'var(--red)';
-    const type = wq.type || ((wq.name||'').toLowerCase().includes('upper') ? 'upper' : 'lower');
+    const wqTitle = wq.title || wq.name || '—';
+    const type = wq.type || (wqTitle.toLowerCase().includes('upper') ? 'upper' : 'lower');
     const typeCol = type === 'upper' ? 'var(--blue)' : 'var(--teal)';
-    const durMin = wq.dur || 0;
+    const durMin = wq.duration || wq.dur || 0;
+    const exList = (wq.exercises||[]).slice(0,3).map(e=>e.name).join(' · ');
     return `
       <div class="wq-row">
-          <div class="wq-date">${wq.date||'—'}<br><span class="wq-type" style="color:${typeCol}">${type}</span></div>
+          <div class="wq-date">${wq.date||'—'}<br><span class="wq-type" style="color:${typeCol}">${type.toUpperCase()}</span></div>
           <div class="wq-body">
-            <div class="wq-name">${wq.name||'—'}</div>
-            <div class="wq-stats">${durMin > 0 ? durMin+'min' : '—'} · ${wq.note||''}</div>
+            <div class="wq-name">${wqTitle}</div>
+            <div class="wq-stats">${durMin > 0 ? durMin+'min' : '—'} · ${wq.label||wq.note||''}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4">${exList}</div>
             <div class="wq-bars">
               <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
                 <span style="font-size:9px;color:var(--text3);font-family:var(--mono);width:14px">z2</span>
