@@ -858,5 +858,10 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "feedback": "AEROBIC_HIGH_SHORTAGE"
-  }
+  },
+  "fitness_age": 25.9,
+  "achievable_age": 21.1,
+  "chrono_age": 29,
+  "vigorous_days": 0.0,
+  "vigorous_target": 3
 }
