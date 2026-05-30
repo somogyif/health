@@ -635,12 +635,14 @@ function render(d){
 
   const rs = g.readiness_score ?? null;
   const rsDisplay = rs !== null ? rs : '—';
-  const rv = rs !== null ? coachingVerdict(rs, g.readiness_level||'MOD') : {title:'Sync your watch', body:'No readiness data yet. Wear your Fenix to bed and run sync in the morning.', color:'var(--text3)'};
-  const bioAge=g.fitness_age?g.fitness_age.toFixed(1):'—';
-  const chronoAge=g.chrono_age||29;
-  const achieveAge=g.achievable_age?g.achievable_age.toFixed(1):'—';
-  const ageDiff=g.fitness_age?((chronoAge-g.fitness_age).toFixed(1)):'—';
-  const vd=g.vigorous_days!=null?parseFloat(g.vigorous_days):0.1;
+  const rv = rs !== null ? coachingVerdict(rs, g.readiness_level||'MOD') : {label:'No sleep data', coaching:'Wear your watch to bed tonight for readiness score.', color:'var(--text3)'};
+  const _fa=d.fitness_age??g.fitness_age??null;
+  const bioAge=_fa?parseFloat(_fa).toFixed(1):'—';
+  const chronoAge=d.chrono_age??g.chrono_age??29;
+  const _aa=d.achievable_age??g.achievable_age??null;
+  const achieveAge=_aa?parseFloat(_aa).toFixed(1):'—';
+  const ageDiff=_fa?((chronoAge-parseFloat(_fa)).toFixed(1)):'—';
+  const vd=(d.vigorous_days??g.vigorous_days)!=null?parseFloat(d.vigorous_days??g.vigorous_days):0.0;
   const vt=g.vigorous_target||3;
   const acwr=(d.training_load||{}).acute&&(d.training_load||{}).chronic?(d.training_load||{}).acute/(d.training_load||{}).chronic:null;
 
