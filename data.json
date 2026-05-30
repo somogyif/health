@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-30 15:00",
+  "synced_at": "2026-05-30 15:27",
   "garmin": {
     "date": "2026-05-30",
     "resting_hr": 64,
@@ -10,13 +10,13 @@
     "sleep_score": 83,
     "sleep_missing": false,
     "bb_charged": 57,
-    "bb_drained": 13,
-    "bb_current": 49,
-    "steps": 735,
+    "bb_drained": 24,
+    "bb_current": 38,
+    "steps": 1593,
     "step_goal": 6300,
-    "active_kcal": 152.0,
-    "total_kcal": 1326.0,
-    "avg_stress": 23,
+    "active_kcal": 177.0,
+    "total_kcal": 1620.0,
+    "avg_stress": 27,
     "readiness_score": 60,
     "fitness_age": null,
     "achievable_age": null,
@@ -633,7 +633,15 @@
     }
   ],
   "calendar": [],
-  "weather": {},
+  "weather": {
+    "temp": 20.5,
+    "description": "Cloudy",
+    "precip_mm": 0,
+    "uv_index": 5.8,
+    "solar_mj": 18.7,
+    "wind_kmh": 21.6,
+    "rain": false
+  },
   "streaks": {
     "watch_nights": 13,
     "sessions_this_week": 4,
@@ -710,9 +718,9 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "15:00",
+    "generated_at": "15:27",
     "readiness": 60,
-    "bb": 49,
+    "bb": 38,
     "hrv": 43,
     "today": {
       "label": "Packed",
@@ -786,10 +794,10 @@
   },
   "health_matrix": {
     "readiness": 60,
-    "training_signal": 68,
-    "illness_risk": 86,
-    "recovery_debt": 60,
-    "cognitive_load": 74,
+    "training_signal": 65,
+    "illness_risk": 85,
+    "recovery_debt": 56,
+    "cognitive_load": 71,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -798,7 +806,48 @@
       "No significant risk factors today"
     ]
   },
-  "bb_trend": [],
+  "bb_trend": [
+    {
+      "date": "2026-05-23",
+      "val": 43,
+      "drain": 36
+    },
+    {
+      "date": "2026-05-24",
+      "val": 88,
+      "drain": 67
+    },
+    {
+      "date": "2026-05-25",
+      "val": 65,
+      "drain": 63
+    },
+    {
+      "date": "2026-05-26",
+      "val": 44,
+      "drain": 39
+    },
+    {
+      "date": "2026-05-27",
+      "val": 63,
+      "drain": 56
+    },
+    {
+      "date": "2026-05-28",
+      "val": 53,
+      "drain": 53
+    },
+    {
+      "date": "2026-05-29",
+      "val": 42,
+      "drain": 37
+    },
+    {
+      "date": "2026-05-30",
+      "val": 39,
+      "drain": 24
+    }
+  ],
   "training_load": {
     "acute": 89,
     "chronic": 137,
