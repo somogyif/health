@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-30 15:41",
+  "synced_at": "2026-05-30 16:14",
   "garmin": {
     "date": "2026-05-30",
     "resting_hr": 64,
@@ -10,13 +10,13 @@
     "sleep_score": 83,
     "sleep_missing": false,
     "bb_charged": 57,
-    "bb_drained": 24,
-    "bb_current": 38,
+    "bb_drained": 25,
+    "bb_current": 37,
     "steps": 1593,
     "step_goal": 6300,
     "active_kcal": 177.0,
-    "total_kcal": 1620.0,
-    "avg_stress": 27,
+    "total_kcal": 1687.0,
+    "avg_stress": 28,
     "readiness_score": 60,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -72,7 +72,13 @@
     "sleep_best_date": "27 May",
     "sleep_trend": "improving"
   },
-  "body_comp": null,
+  "body_comp": {
+    "weight": 83.3,
+    "fat_pct": 21.0,
+    "lean_kg": 65.8,
+    "bmi": 23.1,
+    "date": "-2026-05.j"
+  },
   "workouts": [
     {
       "id": "4748686b-157e-4c92-8d1f-a9e935cbd56d",
@@ -632,9 +638,26 @@
       ]
     }
   ],
-  "calendar": [],
+  "calendar": [
+    {
+      "title": "Flight to Warsaw (W6 1368)",
+      "start": "2026-06-04T06:45:00+00:00",
+      "start_date": "2026-06-04",
+      "time": "08:45",
+      "category": "personal",
+      "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
+    },
+    {
+      "title": "Bus to London Liverpool Street Station",
+      "start": "2026-06-18T07:00:00+00:00",
+      "start_date": "2026-06-18",
+      "time": "09:00",
+      "category": "personal",
+      "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
+    }
+  ],
   "weather": {
-    "temp": 20.5,
+    "temp": 19.3,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 5.8,
@@ -718,9 +741,9 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "15:41",
+    "generated_at": "16:14",
     "readiness": 60,
-    "bb": 38,
+    "bb": 37,
     "hrv": 43,
     "today": {
       "label": "Packed",
@@ -794,10 +817,10 @@
   },
   "health_matrix": {
     "readiness": 60,
-    "training_signal": 65,
+    "training_signal": 64,
     "illness_risk": 85,
-    "recovery_debt": 56,
-    "cognitive_load": 71,
+    "recovery_debt": 55,
+    "cognitive_load": 70,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -844,8 +867,8 @@
     },
     {
       "date": "2026-05-30",
-      "val": 39,
-      "drain": 24
+      "val": 41,
+      "drain": 25
     }
   ],
   "training_load": {
