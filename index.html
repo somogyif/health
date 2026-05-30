@@ -361,7 +361,13 @@ function trainingCoaching(acwr){
 
 function render(d){
   killCharts();
-  const g=d.garmin||{}, bc=d.body_comp||{}, goals=d.goals||[];
+  const g=d.garmin||{}, bc=d.body_comp||{};
+  const goals=(d.goals&&d.goals.length)?d.goals:[
+    {label:'Body fat',current:`${bc.fat_pct??g.body_fat??21}%`,target:'16–17%',pct:Math.min(100,Math.round((21-(bc.fat_pct??21))/(21-16.5)*100)),color:'var(--amber)'},
+    {label:'Lean mass',current:`${bc.lean_kg??g.lean_mass??65.8}kg`,target:'68kg',pct:Math.min(100,Math.round(((bc.lean_kg??65.8)-63)/(68-63)*100)),color:'var(--teal)'},
+    {label:'Vigorous days',current:`${g.vigorous_days??0}/wk`,target:'3/wk',pct:Math.min(100,Math.round(((g.vigorous_days??0)/3)*100)),color:'var(--blue)'},
+    {label:'Watch streak',current:`${(d.streaks||{}).watch_nights??0} nights`,target:'30 nights',pct:Math.min(100,Math.round(((d.streaks||{}).watch_nights??0)/30*100)),color:'var(--teal)'},
+  ];
   const recs=(d.recs&&d.recs.length)?d.recs:(d.recommendations||[]).length?(d.recommendations||[]):(()=>{
     const r=[];
     if(g.sleep_hours&&g.sleep_hours<7.5) r.push({level:'amber',title:'Sleep debt',body:`${g.sleep_hours}h last night — aim for 7.5h+ tonight.`});
@@ -378,8 +384,18 @@ function render(d){
     drain:_bbtRaw.map(x=>x.drain)
   }:{labels:[],wake:[],drain:[]};
   const rw=d.readiness_week||[];
-  const sw=d.stress_week||{labels:[],stress:[],bb_charged:[]};
-  const ss=d.sleep_scores||{labels:[],scores:[]};
+  const _bbt=d.bb_trend||[];
+  const sw=_bbt.length?{
+    labels:_bbt.map(x=>{const d=new Date(x.date);return d.toLocaleDateString('en-GB',{weekday:'short'});}),
+    stress:_bbt.map(()=>g.avg_stress||0),
+    bb_charged:_bbt.map(x=>x.val||0)
+  }:(d.stress_week||{labels:[],stress:[],bb_charged:[]});
+  const _sw=g.sleep_week||[];
+  const ss=_sw.length?{
+    labels:_sw.map(x=>{const d=new Date(x.date);return d.toLocaleDateString('en-GB',{weekday:'short'});}),
+    scores:_sw.map(x=>x.score),
+    best_date:(_sw.reduce((a,b)=>b.score>a.score?b:a,_sw[0])||{}).date||'—'
+  }:(d.sleep_scores||{labels:[],scores:[]});
   const tl=d.training_load||{};
   const str=d.streaks||{};
   const wq=d.workout_quality||d.workouts_quality||[];
