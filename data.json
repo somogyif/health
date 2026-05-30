@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-30 15:39",
+  "synced_at": "2026-05-30 15:41",
   "garmin": {
     "date": "2026-05-30",
     "resting_hr": 64,
@@ -18,8 +18,8 @@
     "total_kcal": 1620.0,
     "avg_stress": 27,
     "readiness_score": 60,
-    "fitness_age": null,
-    "achievable_age": null,
+    "fitness_age": 25.9,
+    "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
@@ -718,7 +718,7 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "15:39",
+    "generated_at": "15:41",
     "readiness": 60,
     "bb": 38,
     "hrv": 43,
