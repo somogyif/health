@@ -361,14 +361,28 @@ function trainingCoaching(acwr){
 
 function render(d){
   killCharts();
-  const g=d.garmin||{}, bc=d.body_comp||{}, goals=d.goals||[], recs=d.recs||[];
-  const bbt=d.bb_trend||{labels:[],wake:[],drain:[]};
+  const g=d.garmin||{}, bc=d.body_comp||{}, goals=d.goals||[];
+  const recs=(d.recs&&d.recs.length)?d.recs:(d.recommendations||[]).length?(d.recommendations||[]):(()=>{
+    const r=[];
+    if(g.sleep_hours&&g.sleep_hours<7.5) r.push({level:'amber',title:'Sleep debt',body:`${g.sleep_hours}h last night — aim for 7.5h+ tonight.`});
+    if(g.bb_current&&g.bb_current<40) r.push({level:'amber',title:'Low body battery',body:`Battery at ${g.bb_current} — rest and recovery today.`});
+    if(g.resting_hr&&g.resting_hr>65) r.push({level:'amber',title:'Elevated resting HR',body:`RHR ${g.resting_hr} bpm — monitor recovery.`});
+    if((d.training_load||{}).feedback==='AEROBIC_HIGH_SHORTAGE') r.push({level:'amber',title:'Aerobic high shortage',body:'Add one high-intensity session this week (HYROX, run, or swim).'});
+    if(!r.length) r.push({level:'teal',title:'All good',body:'No urgent recommendations today.'});
+    return r;
+  })();
+  const _bbtRaw=d.bb_trend||[];
+  const bbt=Array.isArray(_bbtRaw)&&_bbtRaw.length?{
+    labels:_bbtRaw.map(x=>x.date),
+    wake:_bbtRaw.map(x=>x.val),
+    drain:_bbtRaw.map(x=>x.drain)
+  }:{labels:[],wake:[],drain:[]};
   const rw=d.readiness_week||[];
   const sw=d.stress_week||{labels:[],stress:[],bb_charged:[]};
   const ss=d.sleep_scores||{labels:[],scores:[]};
   const tl=d.training_load||{};
   const str=d.streaks||{};
-  const wq=d.workouts_quality||[];
+  const wq=d.workout_quality||d.workouts_quality||[];
   const wks=d.workouts||[];
 
   const synced=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
@@ -941,13 +955,17 @@ function render(d){
 
   // ── ILLNESS RISK ─────────────────────────────────────────────────────────
   const ir = d.illness_risk || {};
+  if (!ir.level && ir.score !== undefined) {
+    ir.level = ir.score <= 20 ? 'low' : ir.score <= 50 ? 'moderate' : 'high';
+  }
   const irEl = document.getElementById('illnessBody');
   if (irEl && ir.level) {
     const irCol = ir.level==='low'?'var(--teal)':ir.level==='moderate'?'var(--amber)':'var(--red)';
     const factors = (ir.factors||[]).map(f => {
-      const dc = f.severity==='high'?'var(--red)':'var(--amber)';
-      return `<div class="illness-factor"><div class="if-dot" style="background:${dc}"></div>${f.label}</div>`;
-    }).join('');
+      const label = typeof f === 'string' ? f : (f.label||'');
+      const dc = (typeof f === 'object' && f.severity==='high')?'var(--red)':'var(--teal)';
+      return label ? `<div class="illness-factor"><div class="if-dot" style="background:${dc}"></div>${label}</div>` : '';
+    }).filter(Boolean).join('');
     irEl.innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:${factors?'12px':'0'}">
         <div style="font-size:36px;font-weight:300;letter-spacing:-2px;color:${irCol}">${ir.score}</div>
@@ -1017,7 +1035,7 @@ function render(d){
   const daysSinceCol = daysSince > 4 ? 'var(--red)' : daysSince > 2 ? 'var(--amber)' : 'var(--teal)';
 
   // Workout quality cards
-  const wqHTML = (d.workouts_quality||[]).length ? (d.workouts_quality||[]).map(wq => {
+  const wqHTML = (d.workout_quality||d.workouts_quality||[]).length ? (d.workout_quality||d.workouts_quality||[]).map(wq => {
     const scoreCol = wq.score >= 70 ? 'var(--teal)' : wq.score >= 45 ? 'var(--amber)' : 'var(--red)';
     const type = wq.type || ((wq.name||'').toLowerCase().includes('upper') ? 'upper' : 'lower');
     const typeCol = type === 'upper' ? 'var(--blue)' : 'var(--teal)';
@@ -1188,8 +1206,8 @@ function render(d){
           </div>
           <div class="cw" style="height:70px"><canvas id="compChart" role="img" aria-label="Body composition">Lean ${bc.lean_kg}kg vs Fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg</canvas></div>
           <div style="display:flex;gap:12px;margin-top:8px;font-family:var(--m);font-size:10px;color:var(--text3)">
-            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--teal);border-radius:2px;display:inline-block"></span>lean ${bc.lean_kg}kg (${bc.weight?Math.round(bc.lean_kg/bc.weight*100):'?'}%)</span>
-            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--amber);border-radius:2px;display:inline-block"></span>fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg (${bc.fat_pct}%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--teal);border-radius:2px;display:inline-block"></span>lean ${bc.lean_kg??'—'}kg (${bc.weight&&bc.lean_kg?Math.round(bc.lean_kg/bc.weight*100):'?'}%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--amber);border-radius:2px;display:inline-block"></span>fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg (${bc.fat_pct??'—'}%)</span>
           </div>
         </div>
         <div class="card">
