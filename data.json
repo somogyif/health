@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-30 16:14",
+  "synced_at": "2026-05-30 16:26",
   "garmin": {
     "date": "2026-05-30",
     "resting_hr": 64,
@@ -10,12 +10,12 @@
     "sleep_score": 83,
     "sleep_missing": false,
     "bb_charged": 57,
-    "bb_drained": 25,
-    "bb_current": 37,
+    "bb_drained": 26,
+    "bb_current": 36,
     "steps": 1593,
     "step_goal": 6300,
     "active_kcal": 177.0,
-    "total_kcal": 1687.0,
+    "total_kcal": 1712.0,
     "avg_stress": 28,
     "readiness_score": 60,
     "fitness_age": 25.9,
@@ -640,6 +640,102 @@
   ],
   "calendar": [
     {
+      "title": "CPH Vibe Coders Vol. 4",
+      "start": "2026-05-30",
+      "start_date": "2026-05-30",
+      "time": "12:00",
+      "category": "social",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Saunagus & Cold Plunge, Sauna Yard",
+      "start": "2026-05-30",
+      "start_date": "2026-05-30",
+      "time": "18:00",
+      "category": "wellness",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Gyermeknap",
+      "start": "2026-05-31",
+      "start_date": "2026-05-31",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Padel @ Padel Yard Reffen",
+      "start": "2026-05-31",
+      "start_date": "2026-05-31",
+      "time": "17:00",
+      "category": "wellness",
+      "calendar": "Notion"
+    },
+    {
+      "title": "RE: Thesis Meeting",
+      "start": "2026-06-01",
+      "start_date": "2026-06-01",
+      "time": "13:30",
+      "category": "work",
+      "calendar": "Notion"
+    },
+    {
+      "title": "DTU Startup Day - Stand setup + pizza @ DTU Skylab",
+      "start": "2026-06-01",
+      "start_date": "2026-06-01",
+      "time": "16:30",
+      "category": "work",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-01",
+      "start_date": "2026-06-01",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "DTU Startup Day 2026 @ DTU Skylab",
+      "start": "2026-06-02",
+      "start_date": "2026-06-02",
+      "time": "08:30",
+      "category": "work",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Steffen date",
+      "start": "2026-06-02",
+      "start_date": "2026-06-02",
+      "time": "18:00",
+      "category": "social",
+      "calendar": "Notion"
+    },
+    {
+      "title": "International Drone Show @ Odense",
+      "start": "2026-06-03",
+      "start_date": "2026-06-03",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Nordic Defence Conference 2026 @ Hellerup",
+      "start": "2026-06-03",
+      "start_date": "2026-06-03",
+      "time": "09:00",
+      "category": "work",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-03",
+      "start_date": "2026-06-03",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
       "title": "Flight to Warsaw (W6 1368)",
       "start": "2026-06-04T06:45:00+00:00",
       "start_date": "2026-06-04",
@@ -648,12 +744,196 @@
       "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
     },
     {
+      "title": "Kijev",
+      "start": "2026-06-04",
+      "start_date": "2026-06-04",
+      "time": "",
+      "category": "travel",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Flight W6 1368 CPH\u2192WAW",
+      "start": "2026-06-04",
+      "start_date": "2026-06-04",
+      "time": "08:45",
+      "category": "travel",
+      "calendar": "Notion"
+    },
+    {
+      "title": "DIH Naval Forge @ Kyiv",
+      "start": "2026-06-08",
+      "start_date": "2026-06-08",
+      "time": "",
+      "category": "work",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Bendeg\u00faz diplomav\u00e9d\u00e9s",
+      "start": "2026-06-08",
+      "start_date": "2026-06-08",
+      "time": "09:00",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-08",
+      "start_date": "2026-06-08",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-10",
+      "start_date": "2026-06-10",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Vince \u00e9s Bendeg\u00faz arrive",
+      "start": "2026-06-12",
+      "start_date": "2026-06-12",
+      "time": "",
+      "category": "social",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Flight FR 9750 WMI\u2192CPH",
+      "start": "2026-06-12",
+      "start_date": "2026-06-12",
+      "time": "23:50",
+      "category": "travel",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Vince \u00e9s Bendeg\u00faz @ Reffen",
+      "start": "2026-06-13",
+      "start_date": "2026-06-13",
+      "time": "",
+      "category": "social",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-15",
+      "start_date": "2026-06-15",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Apu sz\u00fclinap",
+      "start": "2026-06-16",
+      "start_date": "2026-06-16",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Zal\u00e1n diplomav\u00e9d\u00e9s",
+      "start": "2026-06-16",
+      "start_date": "2026-06-16",
+      "time": "13:00",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-17",
+      "start_date": "2026-06-17",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
       "title": "Bus to London Liverpool Street Station",
       "start": "2026-06-18T07:00:00+00:00",
       "start_date": "2026-06-18",
       "time": "09:00",
       "category": "personal",
       "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
+    },
+    {
+      "title": "London visit B\u00e1lint",
+      "start": "2026-06-18",
+      "start_date": "2026-06-18",
+      "time": "",
+      "category": "social",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Flight FR 2619 CPH\u2192STN",
+      "start": "2026-06-18",
+      "start_date": "2026-06-18",
+      "time": "05:55",
+      "category": "travel",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Bus to London Liverpool Street",
+      "start": "2026-06-18",
+      "start_date": "2026-06-18",
+      "time": "09:00",
+      "category": "travel",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Your Problematic Favs are Leaving \u26a0\ufe0f CONFLICT \u2014 in London",
+      "start": "2026-06-20",
+      "start_date": "2026-06-20",
+      "time": "19:30",
+      "category": "travel",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Ap\u00e1k napja",
+      "start": "2026-06-21",
+      "start_date": "2026-06-21",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-22",
+      "start_date": "2026-06-22",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Flight FR 7384 STN\u2192CPH",
+      "start": "2026-06-23",
+      "start_date": "2026-06-23",
+      "time": "11:45",
+      "category": "travel",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-24",
+      "start_date": "2026-06-24",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "V\u00e9gh J\u00falia Odin birthday",
+      "start": "2026-06-28",
+      "start_date": "2026-06-28",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Danish PD3 M2 @ UCPLUS",
+      "start": "2026-06-29",
+      "start_date": "2026-06-29",
+      "time": "19:50",
+      "category": "personal",
+      "calendar": "Notion"
     }
   ],
   "weather": {
@@ -741,20 +1021,21 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "16:14",
+    "generated_at": "16:26",
     "readiness": 60,
-    "bb": 37,
+    "bb": 36,
     "hrv": 43,
     "today": {
       "label": "Packed",
       "lines": [
         "4 tasks due. Sequence them by who they unblock first.",
         "Moderate readiness (60/100). Train but don't push to failure.",
+        "Gym is in the calendar at 18:00. Keep it.",
         "Sequence: SU Phone Call \u2192 UCplus phone call"
       ],
       "task_count": 4,
       "work_shifts": 0,
-      "has_gym": false,
+      "has_gym": true,
       "tasks": [
         {
           "things_id": "EszsNeL8LVZdwcp5fLQNZb",
@@ -806,11 +1087,12 @@
     "tomorrow": {
       "label": "Clear",
       "lines": [
-        "Clear day \u2014 good for deep work or extra recovery."
+        "Clear day \u2014 good for deep work or extra recovery.",
+        "Gym is in the calendar at 17:00. Keep it."
       ],
       "task_count": 0,
       "work_shifts": 0,
-      "has_gym": false,
+      "has_gym": true,
       "tasks": [],
       "recovery": "moderate"
     }
@@ -867,8 +1149,8 @@
     },
     {
       "date": "2026-05-30",
-      "val": 41,
-      "drain": 25
+      "val": 42,
+      "drain": 26
     }
   ],
   "training_load": {
