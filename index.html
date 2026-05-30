@@ -1060,7 +1060,7 @@ function render(d){
     const exList = (wq.exercises||[]).slice(0,3).map(e=>e.name).join(' · ');
     return `
       <div class="wq-row">
-          <div class="wq-date">${wq.date||'—'}<br><span class="wq-type" style="color:${typeCol}">${type.toUpperCase()}</span></div>
+          <div class="wq-date">${wq.date?(() => { const p=wq.date.split('-'); const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return parseInt(p[2])+' '+m[parseInt(p[1])-1]; })():'—'}<br><span class="wq-type" style="color:${typeCol}">${type.toUpperCase()}</span></div>
           <div class="wq-body">
             <div class="wq-name">${wqTitle}</div>
             <div class="wq-stats">${durMin > 0 ? durMin+'min' : '—'} · ${wq.label||wq.note||''}</div>
