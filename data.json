@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-05-30 15:27",
+  "synced_at": "2026-05-30 15:39",
   "garmin": {
     "date": "2026-05-30",
     "resting_hr": 64,
@@ -21,7 +21,7 @@
     "fitness_age": null,
     "achievable_age": null,
     "chrono_age": 29,
-    "vigorous_days": 0.1,
+    "vigorous_days": 0.0,
     "vigorous_target": 3,
     "training_status": "RECOVERY_1",
     "acute_load": 89,
@@ -645,7 +645,7 @@
   "streaks": {
     "watch_nights": 13,
     "sessions_this_week": 4,
-    "training_weeks_4x": 0,
+    "training_weeks_4x": 1,
     "days_since_session": 2,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
@@ -718,7 +718,7 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "15:27",
+    "generated_at": "15:39",
     "readiness": 60,
     "bb": 38,
     "hrv": 43,
@@ -858,10 +858,5 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "feedback": "AEROBIC_HIGH_SHORTAGE"
-  },
-  "fitness_age": 25.9,
-  "achievable_age": 21.1,
-  "chrono_age": 29,
-  "vigorous_days": 0.0,
-  "vigorous_target": 3
+  }
 }
