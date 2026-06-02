@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-02 22:27",
+  "synced_at": "2026-06-02 22:29",
   "garmin": {
     "date": "2026-06-02",
     "resting_hr": 62,
@@ -656,15 +656,7 @@
       "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
     }
   ],
-  "weather": {
-    "temp": 18.6,
-    "description": "Cloudy",
-    "precip_mm": 0,
-    "uv_index": 6.3,
-    "solar_mj": 23.3,
-    "wind_kmh": 18.4,
-    "rain": false
-  },
+  "weather": {},
   "streaks": {
     "watch_nights": 16,
     "sessions_this_week": 0,
@@ -741,7 +733,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "22:27",
+    "generated_at": "22:29",
     "readiness": 30,
     "bb": 7,
     "hrv": 48,
