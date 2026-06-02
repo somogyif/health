@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-02 07:00",
+  "synced_at": "2026-06-02 22:27",
   "garmin": {
     "date": "2026-06-02",
     "resting_hr": 62,
@@ -10,13 +10,13 @@
     "sleep_score": 77,
     "sleep_missing": false,
     "bb_charged": 58,
-    "bb_drained": 2,
-    "bb_current": 63,
-    "steps": 147,
+    "bb_drained": 56,
+    "bb_current": 7,
+    "steps": 5687,
     "step_goal": 7260,
-    "active_kcal": 10.0,
-    "total_kcal": 663.0,
-    "avg_stress": 15,
+    "active_kcal": 654.0,
+    "total_kcal": 2709.0,
+    "avg_stress": 36,
     "readiness_score": 30,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -24,9 +24,9 @@
     "vigorous_days": 0.0,
     "vigorous_target": 3,
     "training_status": "PRODUCTIVE_6",
-    "acute_load": 188,
+    "acute_load": 210,
     "chronic_load": 137,
-    "aerobic_low": 218,
+    "aerobic_low": 235,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
@@ -640,46 +640,6 @@
   ],
   "calendar": [
     {
-      "title": "DTU Startup Day 2026 @ DTU Skylab",
-      "start": "2026-06-02",
-      "start_date": "2026-06-02",
-      "time": "08:30",
-      "category": "work",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Steffen date",
-      "start": "2026-06-02",
-      "start_date": "2026-06-02",
-      "time": "18:00",
-      "category": "social",
-      "calendar": "Notion"
-    },
-    {
-      "title": "International Drone Show @ Odense",
-      "start": "2026-06-03",
-      "start_date": "2026-06-03",
-      "time": "",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Nordic Defence Conference 2026 @ Hellerup",
-      "start": "2026-06-03",
-      "start_date": "2026-06-03",
-      "time": "09:00",
-      "category": "work",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-03",
-      "start_date": "2026-06-03",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
       "title": "Flight to Warsaw (W6 1368)",
       "start": "2026-06-04T06:45:00+00:00",
       "start_date": "2026-06-04",
@@ -688,207 +648,23 @@
       "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
     },
     {
-      "title": "Kijev",
-      "start": "2026-06-04",
-      "start_date": "2026-06-04",
-      "time": "",
-      "category": "travel",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Flight W6 1368 CPH\u2192WAW",
-      "start": "2026-06-04",
-      "start_date": "2026-06-04",
-      "time": "08:45",
-      "category": "travel",
-      "calendar": "Notion"
-    },
-    {
-      "title": "DIH Naval Forge @ Kyiv",
-      "start": "2026-06-08",
-      "start_date": "2026-06-08",
-      "time": "",
-      "category": "work",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Bendeg\u00faz diplomav\u00e9d\u00e9s",
-      "start": "2026-06-08",
-      "start_date": "2026-06-08",
-      "time": "09:00",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-08",
-      "start_date": "2026-06-08",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-10",
-      "start_date": "2026-06-10",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Vince \u00e9s Bendeg\u00faz arrive",
-      "start": "2026-06-12",
-      "start_date": "2026-06-12",
-      "time": "",
-      "category": "social",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Flight FR 9750 WMI\u2192CPH",
-      "start": "2026-06-12",
-      "start_date": "2026-06-12",
-      "time": "23:50",
-      "category": "travel",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Vince \u00e9s Bendeg\u00faz @ Reffen",
-      "start": "2026-06-13",
-      "start_date": "2026-06-13",
-      "time": "",
-      "category": "social",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-15",
-      "start_date": "2026-06-15",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Apu sz\u00fclinap",
-      "start": "2026-06-16",
-      "start_date": "2026-06-16",
-      "time": "",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Zal\u00e1n diplomav\u00e9d\u00e9s",
-      "start": "2026-06-16",
-      "start_date": "2026-06-16",
-      "time": "13:00",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-17",
-      "start_date": "2026-06-17",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
       "title": "Bus to London Liverpool Street Station",
       "start": "2026-06-18T07:00:00+00:00",
       "start_date": "2026-06-18",
       "time": "09:00",
       "category": "personal",
       "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
-    },
-    {
-      "title": "London visit B\u00e1lint",
-      "start": "2026-06-18",
-      "start_date": "2026-06-18",
-      "time": "",
-      "category": "social",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Flight FR 2619 CPH\u2192STN",
-      "start": "2026-06-18",
-      "start_date": "2026-06-18",
-      "time": "05:55",
-      "category": "travel",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Bus to London Liverpool Street",
-      "start": "2026-06-18",
-      "start_date": "2026-06-18",
-      "time": "09:00",
-      "category": "travel",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Your Problematic Favs are Leaving \u26a0\ufe0f CONFLICT \u2014 in London",
-      "start": "2026-06-20",
-      "start_date": "2026-06-20",
-      "time": "19:30",
-      "category": "travel",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Ap\u00e1k napja",
-      "start": "2026-06-21",
-      "start_date": "2026-06-21",
-      "time": "",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-22",
-      "start_date": "2026-06-22",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Flight FR 7384 STN\u2192CPH",
-      "start": "2026-06-23",
-      "start_date": "2026-06-23",
-      "time": "11:45",
-      "category": "travel",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-24",
-      "start_date": "2026-06-24",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "V\u00e9gh J\u00falia Odin birthday",
-      "start": "2026-06-28",
-      "start_date": "2026-06-28",
-      "time": "",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-29",
-      "start_date": "2026-06-29",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-07-01",
-      "start_date": "2026-07-01",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
     }
   ],
-  "weather": {},
+  "weather": {
+    "temp": 18.6,
+    "description": "Cloudy",
+    "precip_mm": 0,
+    "uv_index": 6.3,
+    "solar_mj": 23.3,
+    "wind_kmh": 18.4,
+    "rain": false
+  },
   "streaks": {
     "watch_nights": 16,
     "sessions_this_week": 0,
@@ -900,8 +676,8 @@
     "today": {
       "tasks": [],
       "count": 0,
-      "score": 0,
-      "label": "Clear"
+      "score": 80,
+      "label": "Packed"
     },
     "tomorrow": {
       "tasks": [],
@@ -910,41 +686,131 @@
       "label": "Clear"
     },
     "overdue": {
-      "tasks": [],
-      "count": 0
+      "tasks": [
+        {
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
+          "name": "SU Phone Call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        },
+        {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
+          "name": "UCplus phone call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        },
+        {
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
+          "name": "SU Phone Call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        },
+        {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
+          "name": "UCplus phone call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        }
+      ],
+      "count": 4
     },
     "no_date": {
-      "count": 0
+      "count": 18
     },
-    "total_open": 0
+    "total_open": 22
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "07:00",
+    "context": "evening",
+    "generated_at": "22:27",
     "readiness": 30,
-    "bb": 63,
+    "bb": 7,
     "hrv": 48,
     "today": {
-      "label": "Clear",
+      "label": "Packed",
       "lines": [
-        "Manageable day.",
-        "Recovery is low (readiness 30, battery 63). Keep intensity moderate.",
-        "Caf\u00e9 shifts at 08:30. Finish cognitive tasks before 08:30."
+        "4 tasks due. Sequence them by who they unblock first.",
+        "Recovery is low (readiness 30, battery 7). Keep intensity moderate.",
+        "Sequence: SU Phone Call \u2192 UCplus phone call",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
-      "task_count": 0,
-      "work_shifts": 1,
+      "task_count": 4,
+      "work_shifts": 0,
       "has_gym": false,
-      "tasks": [],
+      "tasks": [
+        {
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
+          "name": "SU Phone Call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        },
+        {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
+          "name": "UCplus phone call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        },
+        {
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
+          "name": "SU Phone Call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        },
+        {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
+          "name": "UCplus phone call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        }
+      ],
       "recovery": "low"
     },
     "tomorrow": {
       "label": "Clear",
       "lines": [
-        "Manageable day.",
-        "Caf\u00e9 shifts at 09:00. Finish cognitive tasks before 09:00."
+        "Clear day \u2014 good for deep work or extra recovery."
       ],
       "task_count": 0,
-      "work_shifts": 1,
+      "work_shifts": 0,
       "has_gym": false,
       "tasks": [],
       "recovery": "moderate"
@@ -952,16 +818,17 @@
   },
   "health_matrix": {
     "readiness": 30,
-    "training_signal": 64,
-    "illness_risk": 87,
-    "recovery_debt": 53,
-    "cognitive_load": 77,
+    "training_signal": 47,
+    "illness_risk": 81,
+    "recovery_debt": 30,
+    "cognitive_load": 59,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 15,
+    "score": 35,
     "factors": [
-      "Sleep < 7h"
+      "Sleep < 7h",
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -1002,14 +869,14 @@
     },
     {
       "date": "2026-06-02",
-      "val": 29,
-      "drain": 2
+      "val": 63,
+      "drain": 56
     }
   ],
   "training_load": {
-    "acute": 188,
+    "acute": 210,
     "chronic": 137,
-    "aerobic_low": 218,
+    "aerobic_low": 235,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
