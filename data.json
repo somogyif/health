@@ -1,43 +1,39 @@
 {
-  "synced_at": "2026-06-01 07:00",
+  "synced_at": "2026-06-02 07:00",
   "garmin": {
-    "date": "2026-06-01",
-    "resting_hr": null,
-    "hrv_weekly": null,
-    "hrv_last_night": null,
+    "date": "2026-06-02",
+    "resting_hr": 62,
+    "hrv_weekly": 44,
+    "hrv_last_night": 48,
     "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
-    "sleep_score": null,
-    "sleep_missing": true,
-    "bb_charged": null,
-    "bb_drained": null,
-    "bb_current": null,
-    "steps": 0,
-    "step_goal": 8000,
-    "active_kcal": 0,
-    "total_kcal": 0,
-    "avg_stress": 0,
-    "readiness_score": 74,
+    "sleep_hours": 6.4,
+    "sleep_score": 77,
+    "sleep_missing": false,
+    "bb_charged": 58,
+    "bb_drained": 2,
+    "bb_current": 63,
+    "steps": 147,
+    "step_goal": 7260,
+    "active_kcal": 10.0,
+    "total_kcal": 663.0,
+    "avg_stress": 15,
+    "readiness_score": 30,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
-    "training_status": "",
-    "acute_load": null,
-    "chronic_load": null,
-    "aerobic_low": 0,
+    "training_status": "PRODUCTIVE_6",
+    "acute_load": 188,
+    "chronic_load": 137,
+    "aerobic_low": 218,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
-    "load_feedback": "",
+    "load_feedback": "AEROBIC_HIGH_SHORTAGE",
     "sleep_week": [
-      {
-        "date": "2026-05-25",
-        "score": 75
-      },
       {
         "date": "2026-05-26",
         "score": 64
@@ -60,6 +56,14 @@
       },
       {
         "date": "2026-05-31",
+        "score": 77
+      },
+      {
+        "date": "2026-06-01",
+        "score": 71
+      },
+      {
+        "date": "2026-06-02",
         "score": 77
       }
     ],
@@ -636,30 +640,6 @@
   ],
   "calendar": [
     {
-      "title": "RE: Thesis Meeting",
-      "start": "2026-06-01",
-      "start_date": "2026-06-01",
-      "time": "13:30",
-      "category": "work",
-      "calendar": "Notion"
-    },
-    {
-      "title": "DTU Startup Day - Stand setup + pizza @ DTU Skylab",
-      "start": "2026-06-01",
-      "start_date": "2026-06-01",
-      "time": "16:30",
-      "category": "work",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Danish PD3 M2 @ UCPLUS",
-      "start": "2026-06-01",
-      "start_date": "2026-06-01",
-      "time": "19:50",
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
       "title": "DTU Startup Day 2026 @ DTU Skylab",
       "start": "2026-06-02",
       "start_date": "2026-06-02",
@@ -908,20 +888,12 @@
       "calendar": "Notion"
     }
   ],
-  "weather": {
-    "temp": 15.3,
-    "description": "Cloudy",
-    "precip_mm": 0,
-    "uv_index": 5.5,
-    "solar_mj": 14.7,
-    "wind_kmh": 11.2,
-    "rain": false
-  },
+  "weather": {},
   "streaks": {
-    "watch_nights": 15,
+    "watch_nights": 16,
     "sessions_this_week": 0,
     "training_weeks_4x": 1,
-    "days_since_session": 4,
+    "days_since_session": 5,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
   "tasks": {
@@ -949,28 +921,27 @@
   "day_plan": {
     "context": "morning",
     "generated_at": "07:00",
-    "readiness": 74,
-    "bb": 50,
-    "hrv": 42,
+    "readiness": 30,
+    "bb": 63,
+    "hrv": 48,
     "today": {
       "label": "Clear",
       "lines": [
-        "2 work shifts. Batch tasks before the first shift.",
-        "Moderate readiness (74/100). Train but don't push to failure.",
-        "No gym scheduled \u2014 if you train, go before 14:00.",
-        "Caf\u00e9 shifts at 13:30 and 16:30. Finish cognitive tasks before 13:30."
+        "Manageable day.",
+        "Recovery is low (readiness 30, battery 63). Keep intensity moderate.",
+        "Caf\u00e9 shifts at 08:30. Finish cognitive tasks before 08:30."
       ],
       "task_count": 0,
-      "work_shifts": 2,
+      "work_shifts": 1,
       "has_gym": false,
       "tasks": [],
-      "recovery": "moderate"
+      "recovery": "low"
     },
     "tomorrow": {
       "label": "Clear",
       "lines": [
         "Manageable day.",
-        "Caf\u00e9 shifts at 08:30. Finish cognitive tasks before 08:30."
+        "Caf\u00e9 shifts at 09:00. Finish cognitive tasks before 09:00."
       ],
       "task_count": 0,
       "work_shifts": 1,
@@ -980,25 +951,20 @@
     }
   },
   "health_matrix": {
-    "readiness": 74,
-    "training_signal": 75,
-    "illness_risk": 82,
-    "recovery_debt": 65,
-    "cognitive_load": 68,
+    "readiness": 30,
+    "training_signal": 64,
+    "illness_risk": 87,
+    "recovery_debt": 53,
+    "cognitive_load": 77,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 0,
+    "score": 15,
     "factors": [
-      "No significant risk factors today"
+      "Sleep < 7h"
     ]
   },
   "bb_trend": [
-    {
-      "date": "2026-05-25",
-      "val": 65,
-      "drain": 63
-    },
     {
       "date": "2026-05-26",
       "val": 44,
@@ -1026,24 +992,29 @@
     },
     {
       "date": "2026-05-31",
-      "val": 32,
-      "drain": 15
+      "val": 68,
+      "drain": 63
     },
     {
       "date": "2026-06-01",
-      "val": null,
-      "drain": null
+      "val": 54,
+      "drain": 52
+    },
+    {
+      "date": "2026-06-02",
+      "val": 29,
+      "drain": 2
     }
   ],
   "training_load": {
-    "acute": null,
-    "chronic": null,
-    "aerobic_low": 0,
+    "acute": 188,
+    "chronic": 137,
+    "aerobic_low": 218,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
-    "feedback": ""
+    "feedback": "AEROBIC_HIGH_SHORTAGE"
   }
 }
