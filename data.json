@@ -1,38 +1,38 @@
 {
-  "synced_at": "2026-06-03 07:04",
+  "synced_at": "2026-06-03 12:00",
   "garmin": {
     "date": "2026-06-03",
-    "resting_hr": 65,
-    "hrv_weekly": null,
-    "hrv_last_night": null,
+    "resting_hr": 63,
+    "hrv_weekly": 44,
+    "hrv_last_night": 43,
     "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
-    "sleep_score": null,
-    "sleep_missing": true,
-    "bb_charged": 12,
-    "bb_drained": 1,
-    "bb_current": 21,
-    "steps": 0,
+    "sleep_hours": 7.4,
+    "sleep_score": 86,
+    "sleep_missing": false,
+    "bb_charged": 60,
+    "bb_drained": 7,
+    "bb_current": 69,
+    "steps": 35,
     "step_goal": 7110,
-    "active_kcal": 0,
-    "total_kcal": 112.0,
-    "avg_stress": 17,
+    "active_kcal": 12.0,
+    "total_kcal": 837.0,
+    "avg_stress": 21,
     "readiness_score": 50,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
-    "training_status": "",
-    "acute_load": null,
-    "chronic_load": null,
-    "aerobic_low": 0,
+    "training_status": "PRODUCTIVE_6",
+    "acute_load": 176,
+    "chronic_load": 137,
+    "aerobic_low": 235,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
-    "load_feedback": "",
+    "load_feedback": "AEROBIC_HIGH_SHORTAGE",
     "sleep_week": [
       {
         "date": "2026-05-27",
@@ -61,14 +61,24 @@
       {
         "date": "2026-06-02",
         "score": 77
+      },
+      {
+        "date": "2026-06-03",
+        "score": 86
       }
     ],
-    "sleep_avg": 77,
+    "sleep_avg": 78,
     "sleep_best": 87,
     "sleep_best_date": "27 May",
     "sleep_trend": "declining"
   },
-  "body_comp": null,
+  "body_comp": {
+    "weight": 83.3,
+    "fat_pct": 21.0,
+    "lean_kg": 65.8,
+    "bmi": 23.1,
+    "date": "-2026-05.j"
+  },
   "workouts": [
     {
       "id": "4748686b-157e-4c92-8d1f-a9e935cbd56d",
@@ -647,11 +657,11 @@
     }
   ],
   "weather": {
-    "temp": 16.8,
-    "description": "Drizzle",
-    "precip_mm": 0.9,
-    "uv_index": 4.0,
-    "solar_mj": 10.8,
+    "temp": 22.4,
+    "description": "Cloudy",
+    "precip_mm": 1.2,
+    "uv_index": 4.8,
+    "solar_mj": 11.3,
     "wind_kmh": 17.3,
     "rain": true
   },
@@ -730,16 +740,16 @@
     "total_open": 22
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "07:04",
+    "context": "afternoon",
+    "generated_at": "12:00",
     "readiness": 50,
-    "bb": 21,
-    "hrv": 42,
+    "bb": 69,
+    "hrv": 43,
     "today": {
       "label": "Packed",
       "lines": [
         "4 tasks due. Sequence them by who they unblock first.",
-        "Recovery is low (readiness 50, battery 21). Keep intensity moderate.",
+        "Recovery is low (readiness 50, battery 69). Keep intensity moderate.",
         "Sequence: SU Phone Call \u2192 UCplus phone call"
       ],
       "task_count": 4,
@@ -807,16 +817,16 @@
   },
   "health_matrix": {
     "readiness": 50,
-    "training_signal": 56,
-    "illness_risk": 86,
-    "recovery_debt": 43,
-    "cognitive_load": 67,
+    "training_signal": 70,
+    "illness_risk": 88,
+    "recovery_debt": 65,
+    "cognitive_load": 80,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 10,
+    "score": 0,
     "factors": [
-      "Body battery low"
+      "No significant risk factors today"
     ]
   },
   "bb_trend": [
@@ -857,19 +867,19 @@
     },
     {
       "date": "2026-06-03",
-      "val": 12,
-      "drain": 1
+      "val": 42,
+      "drain": 7
     }
   ],
   "training_load": {
-    "acute": null,
-    "chronic": null,
-    "aerobic_low": 0,
+    "acute": 176,
+    "chronic": 137,
+    "aerobic_low": 235,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
-    "feedback": ""
+    "feedback": "AEROBIC_HIGH_SHORTAGE"
   }
 }
