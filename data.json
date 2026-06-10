@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-06-10 04:14",
+  "synced_at": "2026-06-10 09:47",
   "garmin": {
     "date": "2026-06-10",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": null,
+    "sleep_hours": 0.0,
     "sleep_score": null,
     "sleep_missing": true,
     "bb_charged": null,
@@ -18,10 +18,10 @@
     "total_kcal": 0,
     "avg_stress": 0,
     "readiness_score": null,
-    "fitness_age": null,
-    "achievable_age": null,
+    "fitness_age": 25.9,
+    "achievable_age": 21.1,
     "chrono_age": 29,
-    "vigorous_days": 0.1,
+    "vigorous_days": 0.0,
     "vigorous_target": 3,
     "training_status": "",
     "acute_load": null,
@@ -33,11 +33,20 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [],
-    "sleep_avg": null,
-    "sleep_best": null,
-    "sleep_best_date": null,
-    "sleep_trend": ""
+    "sleep_week": [
+      {
+        "date": "2026-06-03",
+        "score": 86
+      },
+      {
+        "date": "2026-06-04",
+        "score": 81
+      }
+    ],
+    "sleep_avg": 84,
+    "sleep_best": 86,
+    "sleep_best_date": "3 Jun",
+    "sleep_trend": "declining"
   },
   "body_comp": null,
   "workouts": [
@@ -610,13 +619,13 @@
     }
   ],
   "weather": {
-    "temp": 11.9,
-    "description": "Drizzle",
-    "precip_mm": 0.1,
-    "uv_index": 6.3,
-    "solar_mj": 23.1,
-    "wind_kmh": 18.7,
-    "rain": false
+    "temp": 14.3,
+    "description": "Cloudy",
+    "precip_mm": 1.2,
+    "uv_index": 6.2,
+    "solar_mj": 23.4,
+    "wind_kmh": 20.9,
+    "rain": true
   },
   "streaks": {
     "watch_nights": 2,
@@ -694,7 +703,7 @@
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "04:14",
+    "generated_at": "09:47",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -783,7 +792,48 @@
       "No significant risk factors today"
     ]
   },
-  "bb_trend": [],
+  "bb_trend": [
+    {
+      "date": "2026-06-03",
+      "val": 69,
+      "drain": 61
+    },
+    {
+      "date": "2026-06-04",
+      "val": 71,
+      "drain": 66
+    },
+    {
+      "date": "2026-06-05",
+      "val": 5,
+      "drain": 0
+    },
+    {
+      "date": "2026-06-06",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-06-07",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-06-08",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-06-09",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-06-10",
+      "val": null,
+      "drain": null
+    }
+  ],
   "training_load": {
     "acute": null,
     "chronic": null,
