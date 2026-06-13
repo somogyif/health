@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-06-11 08:00",
+  "synced_at": "2026-06-13 07:00",
   "garmin": {
-    "date": "2026-06-11",
+    "date": "2026-06-13",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
+    "sleep_hours": null,
     "sleep_score": null,
     "sleep_missing": true,
     "bb_charged": null,
@@ -18,10 +18,10 @@
     "total_kcal": 0,
     "avg_stress": 0,
     "readiness_score": null,
-    "fitness_age": 25.9,
-    "achievable_age": 21.1,
+    "fitness_age": null,
+    "achievable_age": null,
     "chrono_age": 29,
-    "vigorous_days": 0.0,
+    "vigorous_days": 0.1,
     "vigorous_target": 3,
     "training_status": "",
     "acute_load": null,
@@ -33,16 +33,11 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [
-      {
-        "date": "2026-06-04",
-        "score": 81
-      }
-    ],
-    "sleep_avg": 81,
-    "sleep_best": 81,
-    "sleep_best_date": "4 Jun",
-    "sleep_trend": "declining"
+    "sleep_week": [],
+    "sleep_avg": null,
+    "sleep_best": null,
+    "sleep_best_date": null,
+    "sleep_trend": ""
   },
   "body_comp": null,
   "workouts": [
@@ -615,39 +610,107 @@
     }
   ],
   "weather": {
-    "temp": 15.6,
+    "temp": 13.3,
     "description": "Cloudy",
-    "precip_mm": 1.2,
-    "uv_index": 6.0,
-    "solar_mj": 13.6,
-    "wind_kmh": 11.2,
+    "precip_mm": 4.1,
+    "uv_index": 6.2,
+    "solar_mj": 9.2,
+    "wind_kmh": 21.2,
     "rain": true
   },
   "streaks": {
-    "watch_nights": 3,
+    "watch_nights": 5,
     "sessions_this_week": 0,
     "training_weeks_4x": 1,
-    "days_since_session": 14,
+    "days_since_session": 16,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
-  "tasks": null,
+  "tasks": {
+    "today": {
+      "tasks": [],
+      "count": 0,
+      "score": 40,
+      "label": "Heavy"
+    },
+    "tomorrow": {
+      "tasks": [],
+      "count": 0,
+      "score": 0,
+      "label": "Clear"
+    },
+    "overdue": {
+      "tasks": [
+        {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
+          "name": "UCplus phone call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        },
+        {
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
+          "name": "SU Phone Call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        }
+      ],
+      "count": 2
+    },
+    "no_date": {
+      "count": 23
+    },
+    "total_open": 25
+  },
   "day_plan": {
     "context": "morning",
-    "generated_at": "08:00",
+    "generated_at": "07:00",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
     "today": {
-      "label": "Clear",
+      "label": "Heavy",
       "lines": [
-        "Clear day \u2014 good for deep work or extra recovery.",
+        "Manageable day.",
         "Moderate readiness (68/100). Train but don't push to failure.",
-        "No gym scheduled \u2014 if you train, go before 14:00."
+        "No gym scheduled \u2014 if you train, go before 14:00.",
+        "Sequence: UCplus phone call \u2192 SU Phone Call"
       ],
-      "task_count": 0,
+      "task_count": 2,
       "work_shifts": 0,
       "has_gym": false,
-      "tasks": [],
+      "tasks": [
+        {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
+          "name": "UCplus phone call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        },
+        {
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
+          "name": "SU Phone Call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
+        }
+      ],
       "recovery": "moderate"
     },
     "tomorrow": {
@@ -676,48 +739,7 @@
       "No significant risk factors today"
     ]
   },
-  "bb_trend": [
-    {
-      "date": "2026-06-04",
-      "val": 71,
-      "drain": 66
-    },
-    {
-      "date": "2026-06-05",
-      "val": 5,
-      "drain": 0
-    },
-    {
-      "date": "2026-06-06",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-06-07",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-06-08",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-06-09",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-06-10",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-06-11",
-      "val": null,
-      "drain": null
-    }
-  ],
+  "bb_trend": [],
   "training_load": {
     "acute": null,
     "chronic": null,
