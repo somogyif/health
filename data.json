@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-14 07:17",
+  "synced_at": "2026-06-14 19:25",
   "garmin": {
     "date": "2026-06-14",
     "resting_hr": null,
@@ -635,12 +635,12 @@
     }
   ],
   "weather": {
-    "temp": 11.8,
+    "temp": 17.7,
     "description": "Rain",
-    "precip_mm": 7.5,
-    "uv_index": 6.3,
-    "solar_mj": 16.5,
-    "wind_kmh": 20.5,
+    "precip_mm": 5.1,
+    "uv_index": 5.8,
+    "solar_mj": 17.4,
+    "wind_kmh": 22.0,
     "rain": true
   },
   "streaks": {
@@ -691,13 +691,13 @@
       "count": 2
     },
     "no_date": {
-      "count": 25
+      "count": 23
     },
-    "total_open": 27
+    "total_open": 25
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "07:17",
+    "context": "evening",
+    "generated_at": "19:25",
     "readiness": 19,
     "bb": 50,
     "hrv": 42,
@@ -706,7 +706,8 @@
       "lines": [
         "Manageable day.",
         "Recovery is low (readiness 19, battery 50). Keep intensity moderate.",
-        "Sequence: UCplus phone call \u2192 SU Phone Call"
+        "Sequence: UCplus phone call \u2192 SU Phone Call",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 2,
       "work_shifts": 0,
