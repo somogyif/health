@@ -1,7 +1,7 @@
 {
-  "synced_at": "2026-06-14 19:25",
+  "synced_at": "2026-06-15 07:00",
   "garmin": {
-    "date": "2026-06-14",
+    "date": "2026-06-15",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
@@ -17,7 +17,7 @@
     "active_kcal": 0,
     "total_kcal": 0,
     "avg_stress": 0,
-    "readiness_score": 19,
+    "readiness_score": null,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
@@ -34,10 +34,6 @@
     "aerobic_high_max": 368,
     "load_feedback": "",
     "sleep_week": [
-      {
-        "date": "2026-06-07",
-        "score": 76
-      },
       {
         "date": "2026-06-08",
         "score": 30
@@ -59,7 +55,7 @@
         "score": 28
       }
     ],
-    "sleep_avg": 50,
+    "sleep_avg": 45,
     "sleep_best": 84,
     "sleep_best_date": "9 Jun",
     "sleep_trend": "declining"
@@ -635,26 +631,26 @@
     }
   ],
   "weather": {
-    "temp": 17.7,
-    "description": "Rain",
-    "precip_mm": 5.1,
-    "uv_index": 5.8,
-    "solar_mj": 17.4,
-    "wind_kmh": 22.0,
+    "temp": 12.9,
+    "description": "Cloudy",
+    "precip_mm": 2.4,
+    "uv_index": 6.0,
+    "solar_mj": 15.9,
+    "wind_kmh": 23.8,
     "rain": true
   },
   "streaks": {
-    "watch_nights": 6,
+    "watch_nights": 7,
     "sessions_this_week": 0,
     "training_weeks_4x": 1,
-    "days_since_session": 17,
+    "days_since_session": 18,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
   "tasks": {
     "today": {
       "tasks": [],
       "count": 0,
-      "score": 40,
+      "score": 60,
       "label": "Heavy"
     },
     "tomorrow": {
@@ -686,30 +682,41 @@
           "tags": "",
           "notes": "",
           "overdue": true
+        },
+        {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
+          "name": "UCplus phone call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
         }
       ],
-      "count": 2
+      "count": 3
     },
     "no_date": {
       "count": 23
     },
-    "total_open": 25
+    "total_open": 26
   },
   "day_plan": {
-    "context": "evening",
-    "generated_at": "19:25",
-    "readiness": 19,
+    "context": "morning",
+    "generated_at": "07:00",
+    "readiness": 68,
     "bb": 50,
     "hrv": 42,
     "today": {
       "label": "Heavy",
       "lines": [
-        "Manageable day.",
-        "Recovery is low (readiness 19, battery 50). Keep intensity moderate.",
-        "Sequence: UCplus phone call \u2192 SU Phone Call",
-        "Evening \u2014 wind down now. Set up tomorrow before bed."
+        "3 tasks due. Sequence them by who they unblock first.",
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00.",
+        "Sequence: UCplus phone call \u2192 SU Phone Call"
       ],
-      "task_count": 2,
+      "task_count": 3,
       "work_shifts": 0,
       "has_gym": false,
       "tasks": [
@@ -734,9 +741,20 @@
           "tags": "",
           "notes": "",
           "overdue": true
+        },
+        {
+          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
+          "name": "UCplus phone call",
+          "status": "todo",
+          "due": "2026-05-28",
+          "project": "",
+          "area": "",
+          "tags": "",
+          "notes": "",
+          "overdue": true
         }
       ],
-      "recovery": "low"
+      "recovery": "moderate"
     },
     "tomorrow": {
       "label": "Clear",
@@ -751,10 +769,10 @@
     }
   },
   "health_matrix": {
-    "readiness": 19,
-    "training_signal": 53,
+    "readiness": 68,
+    "training_signal": 72,
     "illness_risk": 82,
-    "recovery_debt": 43,
+    "recovery_debt": 62,
     "cognitive_load": 68,
     "calendar_load": 75
   },
@@ -765,11 +783,6 @@
     ]
   },
   "bb_trend": [
-    {
-      "date": "2026-06-07",
-      "val": 45,
-      "drain": 52
-    },
     {
       "date": "2026-06-08",
       "val": 15,
@@ -802,6 +815,11 @@
     },
     {
       "date": "2026-06-14",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-06-15",
       "val": null,
       "drain": null
     }
