@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-06-15 12:00",
+  "synced_at": "2026-06-16 07:12",
   "garmin": {
-    "date": "2026-06-15",
+    "date": "2026-06-16",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
+    "sleep_hours": null,
     "sleep_score": null,
     "sleep_missing": true,
     "bb_charged": null,
@@ -18,10 +18,10 @@
     "total_kcal": 0,
     "avg_stress": 0,
     "readiness_score": null,
-    "fitness_age": 25.9,
-    "achievable_age": 21.1,
+    "fitness_age": null,
+    "achievable_age": null,
     "chrono_age": 29,
-    "vigorous_days": 0.0,
+    "vigorous_days": 0.1,
     "vigorous_target": 3,
     "training_status": "",
     "acute_load": null,
@@ -33,32 +33,11 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [
-      {
-        "date": "2026-06-08",
-        "score": 30
-      },
-      {
-        "date": "2026-06-09",
-        "score": 84
-      },
-      {
-        "date": "2026-06-10",
-        "score": 54
-      },
-      {
-        "date": "2026-06-12",
-        "score": 29
-      },
-      {
-        "date": "2026-06-13",
-        "score": 28
-      }
-    ],
-    "sleep_avg": 45,
-    "sleep_best": 84,
-    "sleep_best_date": "9 Jun",
-    "sleep_trend": "declining"
+    "sleep_week": [],
+    "sleep_avg": null,
+    "sleep_best": null,
+    "sleep_best_date": null,
+    "sleep_trend": ""
   },
   "body_comp": null,
   "workouts": [
@@ -631,26 +610,26 @@
     }
   ],
   "weather": {
-    "temp": 17.0,
+    "temp": 13.6,
     "description": "Cloudy",
-    "precip_mm": 2.4,
-    "uv_index": 6.2,
-    "solar_mj": 16.6,
-    "wind_kmh": 23.8,
-    "rain": true
+    "precip_mm": 0,
+    "uv_index": 6.5,
+    "solar_mj": 24.1,
+    "wind_kmh": 18.4,
+    "rain": false
   },
   "streaks": {
-    "watch_nights": 7,
+    "watch_nights": 8,
     "sessions_this_week": 0,
     "training_weeks_4x": 1,
-    "days_since_session": 18,
+    "days_since_session": 19,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
   "tasks": {
     "today": {
       "tasks": [],
       "count": 0,
-      "score": 60,
+      "score": 40,
       "label": "Heavy"
     },
     "tomorrow": {
@@ -662,17 +641,6 @@
     "overdue": {
       "tasks": [
         {
-          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
-          "name": "UCplus phone call",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": true
-        },
-        {
           "things_id": "EszsNeL8LVZdwcp5fLQNZb",
           "name": "SU Phone Call",
           "status": "todo",
@@ -684,8 +652,8 @@
           "overdue": true
         },
         {
-          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
-          "name": "UCplus phone call",
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
+          "name": "SU Phone Call",
           "status": "todo",
           "due": "2026-05-28",
           "project": "",
@@ -695,42 +663,31 @@
           "overdue": true
         }
       ],
-      "count": 3
+      "count": 2
     },
     "no_date": {
-      "count": 21
+      "count": 19
     },
-    "total_open": 24
+    "total_open": 21
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "12:00",
+    "context": "morning",
+    "generated_at": "07:12",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
     "today": {
       "label": "Heavy",
       "lines": [
-        "3 tasks due. Sequence them by who they unblock first.",
+        "Manageable day.",
         "Moderate readiness (68/100). Train but don't push to failure.",
         "No gym scheduled \u2014 if you train, go before 14:00.",
-        "Sequence: UCplus phone call \u2192 SU Phone Call"
+        "Sequence: SU Phone Call"
       ],
-      "task_count": 3,
+      "task_count": 2,
       "work_shifts": 0,
       "has_gym": false,
       "tasks": [
-        {
-          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
-          "name": "UCplus phone call",
-          "status": "todo",
-          "due": "2026-05-28",
-          "project": "",
-          "area": "",
-          "tags": "",
-          "notes": "",
-          "overdue": true
-        },
         {
           "things_id": "EszsNeL8LVZdwcp5fLQNZb",
           "name": "SU Phone Call",
@@ -743,8 +700,8 @@
           "overdue": true
         },
         {
-          "things_id": "NXRcsSrVjUsppoZqzPJ9qQ",
-          "name": "UCplus phone call",
+          "things_id": "EszsNeL8LVZdwcp5fLQNZb",
+          "name": "SU Phone Call",
           "status": "todo",
           "due": "2026-05-28",
           "project": "",
@@ -782,48 +739,7 @@
       "No significant risk factors today"
     ]
   },
-  "bb_trend": [
-    {
-      "date": "2026-06-08",
-      "val": 15,
-      "drain": 10
-    },
-    {
-      "date": "2026-06-09",
-      "val": 64,
-      "drain": 59
-    },
-    {
-      "date": "2026-06-10",
-      "val": 39,
-      "drain": 34
-    },
-    {
-      "date": "2026-06-11",
-      "val": 66,
-      "drain": 67
-    },
-    {
-      "date": "2026-06-12",
-      "val": 5,
-      "drain": 0
-    },
-    {
-      "date": "2026-06-13",
-      "val": 5,
-      "drain": 0
-    },
-    {
-      "date": "2026-06-14",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-06-15",
-      "val": null,
-      "drain": null
-    }
-  ],
+  "bb_trend": [],
   "training_load": {
     "acute": null,
     "chronic": null,
