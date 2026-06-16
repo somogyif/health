@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-16 12:21",
+  "synced_at": "2026-06-16 16:37",
   "garmin": {
     "date": "2026-06-16",
     "resting_hr": null,
@@ -627,11 +627,11 @@
     }
   ],
   "weather": {
-    "temp": 15.6,
+    "temp": 17.9,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.5,
-    "solar_mj": 25.5,
+    "uv_index": 5.4,
+    "solar_mj": 25.4,
     "wind_kmh": 18.4,
     "rain": false
   },
@@ -660,13 +660,13 @@
       "count": 0
     },
     "no_date": {
-      "count": 19
+      "count": 15
     },
-    "total_open": 19
+    "total_open": 15
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "12:21",
+    "generated_at": "16:37",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -674,8 +674,7 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure.",
-        "No gym scheduled \u2014 if you train, go before 14:00."
+        "Moderate readiness (68/100). Train but don't push to failure."
       ],
       "task_count": 0,
       "work_shifts": 0,
