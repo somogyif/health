@@ -1,7 +1,7 @@
 {
-  "synced_at": "2026-06-19 17:45",
+  "synced_at": "2026-06-20 13:00",
   "garmin": {
-    "date": "2026-06-19",
+    "date": "2026-06-20",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
@@ -17,7 +17,7 @@
     "active_kcal": 0,
     "total_kcal": 0,
     "avg_stress": 0,
-    "readiness_score": 77,
+    "readiness_score": null,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
@@ -34,10 +34,6 @@
     "aerobic_high_max": 368,
     "load_feedback": "",
     "sleep_week": [
-      {
-        "date": "2026-06-12",
-        "score": 29
-      },
       {
         "date": "2026-06-13",
         "score": 75
@@ -59,7 +55,7 @@
         "score": 77
       }
     ],
-    "sleep_avg": 66,
+    "sleep_avg": 73,
     "sleep_best": 83,
     "sleep_best_date": "15 Jun",
     "sleep_trend": "improving"
@@ -626,19 +622,19 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 27.1,
+    "temp": 26.1,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.2,
-    "solar_mj": 19.3,
-    "wind_kmh": 17.3,
+    "uv_index": 6.5,
+    "solar_mj": 18.5,
+    "wind_kmh": 15.5,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 11,
+    "watch_nights": 12,
     "sessions_this_week": 0,
     "training_weeks_4x": 1,
-    "days_since_session": 22,
+    "days_since_session": 23,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
   "tasks": {
@@ -665,15 +661,16 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "17:45",
-    "readiness": 77,
+    "generated_at": "13:00",
+    "readiness": 68,
     "bb": 50,
     "hrv": 42,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (77/100). Train but don't push to failure."
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -694,10 +691,10 @@
     }
   },
   "health_matrix": {
-    "readiness": 77,
-    "training_signal": 76,
+    "readiness": 68,
+    "training_signal": 72,
     "illness_risk": 82,
-    "recovery_debt": 66,
+    "recovery_debt": 62,
     "cognitive_load": 68,
     "calendar_load": 75
   },
@@ -708,11 +705,6 @@
     ]
   },
   "bb_trend": [
-    {
-      "date": "2026-06-12",
-      "val": 5,
-      "drain": 0
-    },
     {
       "date": "2026-06-13",
       "val": 26,
@@ -745,6 +737,11 @@
     },
     {
       "date": "2026-06-19",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-06-20",
       "val": null,
       "drain": null
     }
