@@ -1,7 +1,7 @@
 {
-  "synced_at": "2026-06-20 13:00",
+  "synced_at": "2026-06-21 06:07",
   "garmin": {
-    "date": "2026-06-20",
+    "date": "2026-06-21",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
@@ -34,10 +34,6 @@
     "aerobic_high_max": 368,
     "load_feedback": "",
     "sleep_week": [
-      {
-        "date": "2026-06-13",
-        "score": 75
-      },
       {
         "date": "2026-06-14",
         "score": 56
@@ -622,19 +618,19 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 26.1,
+    "temp": 19.9,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.5,
-    "solar_mj": 18.5,
-    "wind_kmh": 15.5,
+    "solar_mj": 23.5,
+    "wind_kmh": 15.1,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 12,
+    "watch_nights": 13,
     "sessions_this_week": 0,
     "training_weeks_4x": 1,
-    "days_since_session": 23,
+    "days_since_session": 24,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
   "tasks": {
@@ -660,8 +656,8 @@
     "total_open": 14
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "13:00",
+    "context": "morning",
+    "generated_at": "06:07",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -706,11 +702,6 @@
   },
   "bb_trend": [
     {
-      "date": "2026-06-13",
-      "val": 26,
-      "drain": 38
-    },
-    {
       "date": "2026-06-14",
       "val": 7,
       "drain": 26
@@ -742,6 +733,11 @@
     },
     {
       "date": "2026-06-20",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-06-21",
       "val": null,
       "drain": null
     }
