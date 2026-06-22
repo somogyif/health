@@ -1,7 +1,7 @@
 {
-  "synced_at": "2026-06-21 17:22",
+  "synced_at": "2026-06-22 08:42",
   "garmin": {
-    "date": "2026-06-21",
+    "date": "2026-06-22",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
@@ -35,10 +35,6 @@
     "load_feedback": "",
     "sleep_week": [
       {
-        "date": "2026-06-14",
-        "score": 56
-      },
-      {
         "date": "2026-06-15",
         "score": 83
       },
@@ -51,10 +47,10 @@
         "score": 77
       }
     ],
-    "sleep_avg": 73,
+    "sleep_avg": 78,
     "sleep_best": 83,
     "sleep_best_date": "15 Jun",
-    "sleep_trend": "improving"
+    "sleep_trend": "declining"
   },
   "body_comp": null,
   "workouts": [
@@ -618,19 +614,19 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 24.3,
+    "temp": 16.6,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.5,
-    "solar_mj": 26.1,
-    "wind_kmh": 16.9,
+    "solar_mj": 27.3,
+    "wind_kmh": 14.4,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 13,
+    "watch_nights": 14,
     "sessions_this_week": 0,
     "training_weeks_4x": 1,
-    "days_since_session": 24,
+    "days_since_session": 25,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
   "tasks": {
@@ -656,8 +652,8 @@
     "total_open": 14
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "17:22",
+    "context": "morning",
+    "generated_at": "08:42",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -665,7 +661,8 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure."
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -701,11 +698,6 @@
   },
   "bb_trend": [
     {
-      "date": "2026-06-14",
-      "val": 7,
-      "drain": 26
-    },
-    {
       "date": "2026-06-15",
       "val": 67,
       "drain": 61
@@ -737,6 +729,11 @@
     },
     {
       "date": "2026-06-21",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-06-22",
       "val": null,
       "drain": null
     }
