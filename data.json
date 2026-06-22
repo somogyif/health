@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-22 11:00",
+  "synced_at": "2026-06-22 12:01",
   "garmin": {
     "date": "2026-06-22",
     "resting_hr": null,
@@ -614,7 +614,7 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 20.0,
+    "temp": 21.5,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.5,
@@ -652,8 +652,8 @@
     "total_open": 14
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "11:00",
+    "context": "afternoon",
+    "generated_at": "12:01",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
