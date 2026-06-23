@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-23 11:00",
+  "synced_at": "2026-06-23 21:30",
   "garmin": {
     "date": "2026-06-23",
     "resting_hr": 70,
@@ -10,13 +10,13 @@
     "sleep_score": 25,
     "sleep_missing": false,
     "bb_charged": 9,
-    "bb_drained": 7,
-    "bb_current": 8,
-    "steps": 2351,
+    "bb_drained": 10,
+    "bb_current": 5,
+    "steps": 6041,
     "step_goal": 8280,
-    "active_kcal": 549.0,
-    "total_kcal": 1368.0,
-    "avg_stress": 74,
+    "active_kcal": 1181.0,
+    "total_kcal": 2889.0,
+    "avg_stress": 72,
     "readiness_score": 89,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -622,12 +622,12 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 19.9,
+    "temp": 21.9,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.7,
-    "solar_mj": 26.2,
-    "wind_kmh": 10.8,
+    "uv_index": 6.6,
+    "solar_mj": 26.1,
+    "wind_kmh": 11.9,
     "rain": false
   },
   "streaks": {
@@ -660,16 +660,17 @@
     "total_open": 14
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "11:00",
+    "context": "evening",
+    "generated_at": "21:30",
     "readiness": 89,
-    "bb": 8,
+    "bb": 5,
     "hrv": 24,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 89, battery 8). Keep intensity moderate."
+        "Recovery is low (readiness 89, battery 5). Keep intensity moderate.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -691,9 +692,9 @@
   },
   "health_matrix": {
     "readiness": 89,
-    "training_signal": 57,
+    "training_signal": 56,
     "illness_risk": 39,
-    "recovery_debt": 44,
+    "recovery_debt": 43,
     "cognitive_load": 22,
     "calendar_load": 75
   },
@@ -744,8 +745,8 @@
     },
     {
       "date": "2026-06-23",
-      "val": 7,
-      "drain": 7
+      "val": 12,
+      "drain": 10
     }
   ],
   "training_load": {
