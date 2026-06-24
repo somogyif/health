@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-24 21:52",
+  "synced_at": "2026-06-24 23:09",
   "garmin": {
     "date": "2026-06-24",
     "resting_hr": 67,
@@ -10,13 +10,13 @@
     "sleep_score": 78,
     "sleep_missing": false,
     "bb_charged": 47,
-    "bb_drained": 27,
-    "bb_current": 25,
-    "steps": 148,
+    "bb_drained": 47,
+    "bb_current": 5,
+    "steps": 391,
     "step_goal": 7990,
-    "active_kcal": 244.0,
-    "total_kcal": 1540.0,
-    "avg_stress": 38,
+    "active_kcal": 314.0,
+    "total_kcal": 2439.0,
+    "avg_stress": 48,
     "readiness_score": 29,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -622,7 +622,7 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 26.6,
+    "temp": 24.5,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.5,
@@ -661,15 +661,15 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "21:52",
+    "generated_at": "23:09",
     "readiness": 29,
-    "bb": 25,
+    "bb": 5,
     "hrv": 37,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 29, battery 25). Keep intensity moderate.",
+        "Recovery is low (readiness 29, battery 5). Keep intensity moderate.",
         "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
@@ -692,16 +692,16 @@
   },
   "health_matrix": {
     "readiness": 29,
-    "training_signal": 50,
-    "illness_risk": 81,
-    "recovery_debt": 37,
-    "cognitive_load": 63,
+    "training_signal": 44,
+    "illness_risk": 78,
+    "recovery_debt": 29,
+    "cognitive_load": 56,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 10,
+    "score": 28,
     "factors": [
-      "Body battery low"
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -742,8 +742,8 @@
     },
     {
       "date": "2026-06-24",
-      "val": 37,
-      "drain": 27
+      "val": 51,
+      "drain": 47
     }
   ],
   "training_load": {
