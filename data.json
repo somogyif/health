@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-24 12:36",
+  "synced_at": "2026-06-24 14:01",
   "garmin": {
     "date": "2026-06-24",
     "resting_hr": 67,
@@ -10,13 +10,13 @@
     "sleep_score": 78,
     "sleep_missing": false,
     "bb_charged": 47,
-    "bb_drained": 13,
-    "bb_current": 39,
-    "steps": 78,
+    "bb_drained": 27,
+    "bb_current": 25,
+    "steps": 148,
     "step_goal": 7990,
-    "active_kcal": 76.0,
-    "total_kcal": 1068.0,
-    "avg_stress": 30,
+    "active_kcal": 244.0,
+    "total_kcal": 1540.0,
+    "avg_stress": 38,
     "readiness_score": 29,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -622,10 +622,10 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 25.0,
+    "temp": 27.1,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.3,
+    "uv_index": 6.5,
     "solar_mj": 22.2,
     "wind_kmh": 17.6,
     "rain": false
@@ -661,15 +661,15 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "12:36",
+    "generated_at": "14:01",
     "readiness": 29,
-    "bb": 39,
+    "bb": 25,
     "hrv": 37,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 29, battery 39). Keep intensity moderate."
+        "Recovery is low (readiness 29, battery 25). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -691,16 +691,16 @@
   },
   "health_matrix": {
     "readiness": 29,
-    "training_signal": 54,
-    "illness_risk": 83,
-    "recovery_debt": 43,
-    "cognitive_load": 68,
+    "training_signal": 50,
+    "illness_risk": 81,
+    "recovery_debt": 37,
+    "cognitive_load": 63,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 0,
+    "score": 10,
     "factors": [
-      "No significant risk factors today"
+      "Body battery low"
     ]
   },
   "bb_trend": [
@@ -741,8 +741,8 @@
     },
     {
       "date": "2026-06-24",
-      "val": 28,
-      "drain": 13
+      "val": 37,
+      "drain": 27
     }
   ],
   "training_load": {
