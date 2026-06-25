@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-25 07:00",
+  "synced_at": "2026-06-25 12:00",
   "garmin": {
     "date": "2026-06-25",
     "resting_hr": 71,
@@ -9,14 +9,14 @@
     "sleep_hours": 3.5,
     "sleep_score": 18,
     "sleep_missing": false,
-    "bb_charged": 11,
-    "bb_drained": 2,
-    "bb_current": 12,
-    "steps": 45,
+    "bb_charged": 20,
+    "bb_drained": 5,
+    "bb_current": 20,
+    "steps": 58,
     "step_goal": 7990,
-    "active_kcal": 6.0,
-    "total_kcal": 502.0,
-    "avg_stress": 70,
+    "active_kcal": 8.0,
+    "total_kcal": 891.0,
+    "avg_stress": 59,
     "readiness_score": 51,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -622,12 +622,12 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 20.1,
+    "temp": 24.7,
     "description": "Partly cloudy",
     "precip_mm": 0,
     "uv_index": 6.7,
     "solar_mj": 29.2,
-    "wind_kmh": 15.1,
+    "wind_kmh": 14.4,
     "rain": false
   },
   "streaks": {
@@ -660,16 +660,16 @@
     "total_open": 12
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "07:00",
+    "context": "afternoon",
+    "generated_at": "12:00",
     "readiness": 51,
-    "bb": 12,
+    "bb": 20,
     "hrv": 23,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 51, battery 12). Keep intensity moderate."
+        "Recovery is low (readiness 51, battery 20). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -691,19 +691,18 @@
   },
   "health_matrix": {
     "readiness": 51,
-    "training_signal": 45,
-    "illness_risk": 40,
-    "recovery_debt": 29,
-    "cognitive_load": 20,
+    "training_signal": 47,
+    "illness_risk": 43,
+    "recovery_debt": 32,
+    "cognitive_load": 25,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 85,
+    "score": 68,
     "factors": [
       "HRV below baseline",
       "Sleep < 6h",
-      "Body battery critical",
-      "High stress"
+      "Body battery low"
     ]
   },
   "bb_trend": [
@@ -744,8 +743,8 @@
     },
     {
       "date": "2026-06-25",
-      "val": 9,
-      "drain": 2
+      "val": 13,
+      "drain": 5
     }
   ],
   "training_load": {
