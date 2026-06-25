@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-25 18:41",
+  "synced_at": "2026-06-25 20:02",
   "garmin": {
     "date": "2026-06-25",
     "resting_hr": 71,
@@ -61,11 +61,568 @@
     "sleep_trend": "declining"
   },
   "body_comp": null,
-  "workouts": [],
-  "workout_quality": [],
+  "workouts": [
+    {
+      "id": "4748686b-157e-4c92-8d1f-a9e935cbd56d",
+      "title": "Lower 2",
+      "date": "2026-05-28",
+      "start_time": "2026-05-28T08:33:30+00:00",
+      "duration": 49,
+      "exercises": [
+        {
+          "name": "Hack Squat (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lying Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "7a999ba9-aff4-4196-9dae-1b9bd032ddfa",
+      "title": "Upper 2",
+      "date": "2026-05-27",
+      "start_time": "2026-05-27T11:04:11+00:00",
+      "duration": 52,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "T Bar Row",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Shoulder Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "038bf82c-f828-4b2d-b633-3ee79899f811",
+      "title": "Lower 1",
+      "date": "2026-05-26",
+      "start_time": "2026-05-26T14:16:24+00:00",
+      "duration": 47,
+      "exercises": [
+        {
+          "name": "Leg Press (Machine)",
+          "weight": 0,
+          "sets": 6
+        },
+        {
+          "name": "Romanian Deadlift (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Calf Raise",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "b6896468-d5a8-44b3-b20d-c3175b2a7832",
+      "title": "Upper 1",
+      "date": "2026-05-25",
+      "start_time": "2026-05-25T16:45:01+00:00",
+      "duration": 58,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bench Press (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Fly Crossovers",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Triceps Rope Pushdown",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "4d2c3b08-8ed4-4eb9-8a03-3bdbc6dd7541",
+      "title": "Lower 2",
+      "date": "2026-05-24",
+      "start_time": "2026-05-24T16:07:57+00:00",
+      "duration": 50,
+      "exercises": [
+        {
+          "name": "Hack Squat (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lying Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "4938fa5a-47c4-41a6-8026-39bb94c030bb",
+      "title": "Upper 2",
+      "date": "2026-05-17",
+      "start_time": "2026-05-17T11:52:26+00:00",
+      "duration": 43,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bent Over Row (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Arnold Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Palms Up Wrist Curl",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "8e764b3b-de9e-49cd-9c5b-f65b746b8cab",
+      "title": "Lower 1",
+      "date": "2026-05-05",
+      "start_time": "2026-05-05T05:23:28+00:00",
+      "duration": 37,
+      "exercises": [
+        {
+          "name": "Squat (Smith Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Romanian Deadlift (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Calf Raise",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Crunch (Machine)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "76521152-5f95-4123-9dad-ab7cec107650",
+      "title": "Upper 1",
+      "date": "2026-05-04",
+      "start_time": "2026-05-04T07:06:16+00:00",
+      "duration": 23,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Chest Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Chest Fly (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "db657c4a-20e5-46e9-98c5-fddbba645196",
+      "title": "Lower 2",
+      "date": "2026-05-03",
+      "start_time": "2026-05-03T09:58:05+00:00",
+      "duration": 50,
+      "exercises": [
+        {
+          "name": "Lunge (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Goblet Squat",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Crunch (Machine)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "id": "90f7800e-1c62-45de-b97e-e907348242ac",
+      "title": "Upper 2",
+      "date": "2026-05-02",
+      "start_time": "2026-05-02T08:05:21+00:00",
+      "duration": 35,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Dumbbell Row",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Arnold Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Palms Up Wrist Curl",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    }
+  ],
+  "workout_quality": [
+    {
+      "date": "2026-05-28",
+      "title": "Lower 2",
+      "duration": 49,
+      "label": "Full session \u2014 49 min",
+      "score": 57,
+      "exercises": [
+        {
+          "name": "Hack Squat (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lying Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-05-27",
+      "title": "Upper 2",
+      "duration": 52,
+      "label": "Full session \u2014 52 min",
+      "score": 60,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "T Bar Row",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Shoulder Press (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-05-26",
+      "title": "Lower 1",
+      "duration": 47,
+      "label": "Full session \u2014 47 min",
+      "score": 50,
+      "exercises": [
+        {
+          "name": "Leg Press (Machine)",
+          "weight": 0,
+          "sets": 6
+        },
+        {
+          "name": "Romanian Deadlift (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Seated Calf Raise",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-05-25",
+      "title": "Upper 1",
+      "duration": 58,
+      "label": "Full session \u2014 58 min",
+      "score": 64,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bench Press (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Fly Crossovers",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Triceps Rope Pushdown",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-05-24",
+      "title": "Lower 2",
+      "duration": 50,
+      "label": "Full session \u2014 50 min",
+      "score": 58,
+      "exercises": [
+        {
+          "name": "Hack Squat (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Lying Leg Curl (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    }
+  ],
   "calendar": [],
   "weather": {
-    "temp": 26.5,
+    "temp": 25.2,
     "description": "Partly cloudy",
     "precip_mm": 0,
     "uv_index": 6.6,
@@ -76,9 +633,9 @@
   "streaks": {
     "watch_nights": 17,
     "sessions_this_week": 0,
-    "training_weeks_4x": 0,
-    "days_since_session": null,
-    "last_session_label": ""
+    "training_weeks_4x": 1,
+    "days_since_session": 28,
+    "last_session_label": "28 May \u00b7 Lower 2"
   },
   "tasks": {
     "today": {
@@ -104,7 +661,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "18:41",
+    "generated_at": "20:02",
     "readiness": 51,
     "bb": 10,
     "hrv": 23,
@@ -112,7 +669,8 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 51, battery 10). Keep intensity moderate."
+        "Recovery is low (readiness 51, battery 10). Keep intensity moderate.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 0,
