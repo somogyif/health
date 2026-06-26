@@ -1,21 +1,21 @@
 {
-  "synced_at": "2026-06-26 07:11",
+  "synced_at": "2026-06-26 12:01",
   "garmin": {
     "date": "2026-06-26",
-    "resting_hr": 69,
+    "resting_hr": 66,
     "hrv_weekly": 34,
     "hrv_last_night": 44,
     "hrv_status": "Low",
-    "sleep_hours": 0.0,
-    "sleep_score": null,
-    "sleep_missing": true,
-    "bb_charged": 54,
-    "bb_drained": 0,
-    "bb_current": 59,
-    "steps": 0,
+    "sleep_hours": 7.2,
+    "sleep_score": 77,
+    "sleep_missing": false,
+    "bb_charged": 56,
+    "bb_drained": 4,
+    "bb_current": 61,
+    "steps": 14,
     "step_goal": 6810,
     "active_kcal": 0,
-    "total_kcal": 290.0,
+    "total_kcal": 912.0,
     "avg_stress": 18,
     "readiness_score": 6,
     "fitness_age": 25.9,
@@ -626,12 +626,12 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 20.7,
+    "temp": 26.5,
     "description": "Mostly clear",
     "precip_mm": 0,
     "uv_index": 6.7,
-    "solar_mj": 28.9,
-    "wind_kmh": 14.8,
+    "solar_mj": 28.8,
+    "wind_kmh": 15.1,
     "rain": false
   },
   "streaks": {
@@ -664,16 +664,16 @@
     "total_open": 12
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "07:11",
+    "context": "afternoon",
+    "generated_at": "12:01",
     "readiness": 6,
-    "bb": 59,
+    "bb": 61,
     "hrv": 44,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 6, battery 59). Keep intensity moderate."
+        "Recovery is low (readiness 6, battery 61). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -695,10 +695,10 @@
   },
   "health_matrix": {
     "readiness": 6,
-    "training_signal": 59,
-    "illness_risk": 86,
-    "recovery_debt": 41,
-    "cognitive_load": 74,
+    "training_signal": 60,
+    "illness_risk": 87,
+    "recovery_debt": 42,
+    "cognitive_load": 75,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -745,8 +745,8 @@
     },
     {
       "date": "2026-06-26",
-      "val": 19,
-      "drain": 0
+      "val": 26,
+      "drain": 4
     }
   ],
   "training_load": {
