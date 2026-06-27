@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-27 12:00",
+  "synced_at": "2026-06-27 14:50",
   "garmin": {
     "date": "2026-06-27",
     "resting_hr": 62,
@@ -10,13 +10,13 @@
     "sleep_score": 76,
     "sleep_missing": false,
     "bb_charged": 72,
-    "bb_drained": 5,
-    "bb_current": 85,
-    "steps": 31,
+    "bb_drained": 25,
+    "bb_current": 62,
+    "steps": 379,
     "step_goal": 6740,
-    "active_kcal": 0,
-    "total_kcal": 998.0,
-    "avg_stress": 14,
+    "active_kcal": 13.0,
+    "total_kcal": 1306.0,
+    "avg_stress": 18,
     "readiness_score": 44,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -626,12 +626,12 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 30.1,
+    "temp": 33.5,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.7,
     "solar_mj": 27.1,
-    "wind_kmh": 14.8,
+    "wind_kmh": 14.4,
     "rain": false
   },
   "streaks": {
@@ -665,15 +665,15 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "12:00",
+    "generated_at": "14:50",
     "readiness": 44,
-    "bb": 85,
+    "bb": 62,
     "hrv": 46,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 44, battery 85). Keep intensity moderate."
+        "Recovery is low (readiness 44, battery 62). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -695,10 +695,10 @@
   },
   "health_matrix": {
     "readiness": 44,
-    "training_signal": 83,
-    "illness_risk": 87,
-    "recovery_debt": 67,
-    "cognitive_load": 81,
+    "training_signal": 76,
+    "illness_risk": 86,
+    "recovery_debt": 58,
+    "cognitive_load": 75,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -745,8 +745,8 @@
     },
     {
       "date": "2026-06-27",
-      "val": 43,
-      "drain": 5
+      "val": 54,
+      "drain": 25
     }
   ],
   "training_load": {
