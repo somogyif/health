@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-28 18:20",
+  "synced_at": "2026-06-28 19:20",
   "garmin": {
     "date": "2026-06-28",
     "resting_hr": 61,
@@ -630,7 +630,7 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 30.4,
+    "temp": 29.9,
     "description": "Drizzle",
     "precip_mm": 0.1,
     "uv_index": 6.7,
@@ -669,7 +669,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "18:20",
+    "generated_at": "19:20",
     "readiness": 54,
     "bb": 37,
     "hrv": 53,
@@ -677,7 +677,8 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 54, battery 37). Keep intensity moderate."
+        "Recovery is low (readiness 54, battery 37). Keep intensity moderate.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 0,
