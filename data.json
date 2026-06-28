@@ -1,38 +1,38 @@
 {
-  "synced_at": "2026-06-28 06:13",
+  "synced_at": "2026-06-28 17:20",
   "garmin": {
     "date": "2026-06-28",
-    "resting_hr": null,
-    "hrv_weekly": null,
-    "hrv_last_night": null,
-    "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
-    "sleep_score": null,
-    "sleep_missing": true,
-    "bb_charged": null,
-    "bb_drained": null,
-    "bb_current": null,
-    "steps": 0,
-    "step_goal": 8000,
-    "active_kcal": 0,
-    "total_kcal": 0,
-    "avg_stress": 0,
+    "resting_hr": 61,
+    "hrv_weekly": 37,
+    "hrv_last_night": 53,
+    "hrv_status": "Low",
+    "sleep_hours": 6.2,
+    "sleep_score": 72,
+    "sleep_missing": false,
+    "bb_charged": 71,
+    "bb_drained": 44,
+    "bb_current": 39,
+    "steps": 3498,
+    "step_goal": 6220,
+    "active_kcal": 215.0,
+    "total_kcal": 1815.0,
+    "avg_stress": 26,
     "readiness_score": 54,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
-    "training_status": "",
-    "acute_load": null,
-    "chronic_load": null,
-    "aerobic_low": 0,
+    "training_status": "DETRAINING",
+    "acute_load": 8,
+    "chronic_load": 137,
+    "aerobic_low": 131,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
-    "load_feedback": "",
+    "load_feedback": "AEROBIC_HIGH_SHORTAGE",
     "sleep_week": [
       {
         "date": "2026-06-22",
@@ -57,9 +57,13 @@
       {
         "date": "2026-06-27",
         "score": 76
+      },
+      {
+        "date": "2026-06-28",
+        "score": 72
       }
     ],
-    "sleep_avg": 61,
+    "sleep_avg": 62,
     "sleep_best": 90,
     "sleep_best_date": "22 Jun",
     "sleep_trend": "declining"
@@ -626,12 +630,12 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 23.3,
+    "temp": 30.1,
     "description": "Drizzle",
-    "precip_mm": 0.4,
+    "precip_mm": 0.1,
     "uv_index": 6.7,
-    "solar_mj": 21.4,
-    "wind_kmh": 19.1,
+    "solar_mj": 23.8,
+    "wind_kmh": 15.5,
     "rain": false
   },
   "streaks": {
@@ -641,18 +645,39 @@
     "days_since_session": 31,
     "last_session_label": "28 May \u00b7 Lower 2"
   },
-  "tasks": null,
+  "tasks": {
+    "today": {
+      "tasks": [],
+      "count": 0,
+      "score": 0,
+      "label": "Clear"
+    },
+    "tomorrow": {
+      "tasks": [],
+      "count": 0,
+      "score": 0,
+      "label": "Clear"
+    },
+    "overdue": {
+      "tasks": [],
+      "count": 0
+    },
+    "no_date": {
+      "count": 12
+    },
+    "total_open": 12
+  },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "06:13",
+    "context": "afternoon",
+    "generated_at": "17:20",
     "readiness": 54,
-    "bb": 50,
-    "hrv": 42,
+    "bb": 39,
+    "hrv": 53,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 54, battery 50). Keep intensity moderate."
+        "Recovery is low (readiness 54, battery 39). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -674,16 +699,16 @@
   },
   "health_matrix": {
     "readiness": 54,
-    "training_signal": 67,
+    "training_signal": 76,
     "illness_risk": 82,
-    "recovery_debt": 57,
-    "cognitive_load": 68,
+    "recovery_debt": 52,
+    "cognitive_load": 66,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 0,
+    "score": 15,
     "factors": [
-      "No significant risk factors today"
+      "Sleep < 7h"
     ]
   },
   "bb_trend": [
@@ -719,24 +744,24 @@
     },
     {
       "date": "2026-06-27",
-      "val": 78,
-      "drain": 71
+      "val": 79,
+      "drain": 75
     },
     {
       "date": "2026-06-28",
-      "val": null,
-      "drain": null
+      "val": 51,
+      "drain": 44
     }
   ],
   "training_load": {
-    "acute": null,
-    "chronic": null,
-    "aerobic_low": 0,
+    "acute": 8,
+    "chronic": 137,
+    "aerobic_low": 131,
     "aerobic_low_min": 97,
     "aerobic_low_max": 261,
     "aerobic_high": 0,
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
-    "feedback": ""
+    "feedback": "AEROBIC_HIGH_SHORTAGE"
   }
 }
