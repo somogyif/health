@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-29 12:58",
+  "synced_at": "2026-06-29 14:26",
   "garmin": {
     "date": "2026-06-29",
     "resting_hr": 59,
@@ -9,14 +9,14 @@
     "sleep_hours": 8.2,
     "sleep_score": 78,
     "sleep_missing": false,
-    "bb_charged": 78,
-    "bb_drained": 5,
-    "bb_current": 100,
-    "steps": 333,
+    "bb_charged": 79,
+    "bb_drained": 40,
+    "bb_current": 61,
+    "steps": 2072,
     "step_goal": 5750,
-    "active_kcal": 10.0,
-    "total_kcal": 938.0,
-    "avg_stress": 10,
+    "active_kcal": 145.0,
+    "total_kcal": 1422.0,
+    "avg_stress": 18,
     "readiness_score": 64,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -634,10 +634,10 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 23.5,
+    "temp": 24.0,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 5.8,
+    "uv_index": 6.2,
     "solar_mj": 18.7,
     "wind_kmh": 15.8,
     "rain": false
@@ -673,16 +673,15 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "12:58",
+    "generated_at": "14:26",
     "readiness": 64,
-    "bb": 100,
+    "bb": 61,
     "hrv": 54,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (64/100). Train but don't push to failure.",
-        "No gym scheduled \u2014 if you train, go before 14:00."
+        "Moderate readiness (64/100). Train but don't push to failure."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -704,10 +703,10 @@
   },
   "health_matrix": {
     "readiness": 64,
-    "training_signal": 98,
-    "illness_risk": 89,
-    "recovery_debt": 81,
-    "cognitive_load": 86,
+    "training_signal": 87,
+    "illness_risk": 87,
+    "recovery_debt": 66,
+    "cognitive_load": 76,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -754,8 +753,8 @@
     },
     {
       "date": "2026-06-29",
-      "val": 55,
-      "drain": 5
+      "val": 67,
+      "drain": 40
     }
   ],
   "training_load": {
