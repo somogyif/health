@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-06-29 14:26",
+  "synced_at": "2026-06-29 15:26",
   "garmin": {
     "date": "2026-06-29",
     "resting_hr": 59,
@@ -10,13 +10,13 @@
     "sleep_score": 78,
     "sleep_missing": false,
     "bb_charged": 79,
-    "bb_drained": 40,
-    "bb_current": 61,
-    "steps": 2072,
+    "bb_drained": 48,
+    "bb_current": 53,
+    "steps": 2258,
     "step_goal": 5750,
-    "active_kcal": 145.0,
-    "total_kcal": 1422.0,
-    "avg_stress": 18,
+    "active_kcal": 177.0,
+    "total_kcal": 1548.0,
+    "avg_stress": 22,
     "readiness_score": 64,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -634,11 +634,11 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 24.0,
+    "temp": 26.0,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.2,
-    "solar_mj": 18.7,
+    "solar_mj": 17.4,
     "wind_kmh": 15.8,
     "rain": false
   },
@@ -673,9 +673,9 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "14:26",
+    "generated_at": "15:26",
     "readiness": 64,
-    "bb": 61,
+    "bb": 53,
     "hrv": 54,
     "today": {
       "label": "Clear",
@@ -703,10 +703,10 @@
   },
   "health_matrix": {
     "readiness": 64,
-    "training_signal": 87,
-    "illness_risk": 87,
-    "recovery_debt": 66,
-    "cognitive_load": 76,
+    "training_signal": 84,
+    "illness_risk": 86,
+    "recovery_debt": 62,
+    "cognitive_load": 73,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -753,8 +753,8 @@
     },
     {
       "date": "2026-06-29",
-      "val": 67,
-      "drain": 40
+      "val": 72,
+      "drain": 48
     }
   ],
   "training_load": {
