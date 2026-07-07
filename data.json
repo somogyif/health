@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-07-07 09:25",
+  "synced_at": "2026-07-07 13:45",
   "garmin": {
     "date": "2026-07-07",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
+    "sleep_hours": null,
     "sleep_score": null,
     "sleep_missing": true,
     "bb_charged": null,
@@ -18,10 +18,10 @@
     "total_kcal": 0,
     "avg_stress": 0,
     "readiness_score": null,
-    "fitness_age": 25.9,
-    "achievable_age": 21.1,
+    "fitness_age": null,
+    "achievable_age": null,
     "chrono_age": 29,
-    "vigorous_days": 0.0,
+    "vigorous_days": 0.1,
     "vigorous_target": 3,
     "training_status": "",
     "acute_load": null,
@@ -33,23 +33,48 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [
-      {
-        "date": "2026-06-30",
-        "score": 72
-      },
-      {
-        "date": "2026-07-01",
-        "score": 86
-      }
-    ],
-    "sleep_avg": 79,
-    "sleep_best": 86,
-    "sleep_best_date": "1 Jul",
-    "sleep_trend": "improving"
+    "sleep_week": [],
+    "sleep_avg": null,
+    "sleep_best": null,
+    "sleep_best_date": null,
+    "sleep_trend": ""
   },
   "body_comp": null,
   "workouts": [
+    {
+      "id": "97d7a2d6-429f-43a0-a637-388a2a9e39c2",
+      "title": "Lower 1",
+      "date": "2026-07-07",
+      "start_time": "2026-07-07T07:46:48+00:00",
+      "duration": 51,
+      "exercises": [
+        {
+          "name": "Squat (Smith Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Romanian Deadlift (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
     {
       "id": "06e1487c-060f-4abd-8c6b-d14ed9f33815",
       "title": "Upper 1",
@@ -375,48 +400,43 @@
           "sets": 3
         }
       ]
-    },
+    }
+  ],
+  "workout_quality": [
     {
-      "id": "db657c4a-20e5-46e9-98c5-fddbba645196",
-      "title": "Lower 2",
-      "date": "2026-05-03",
-      "start_time": "2026-05-03T09:58:05+00:00",
-      "duration": 50,
+      "date": "2026-07-07",
+      "title": "Lower 1",
+      "duration": 51,
+      "label": "Full session \u2014 51 min",
+      "score": 56,
       "exercises": [
         {
-          "name": "Lunge (Dumbbell)",
+          "name": "Squat (Smith Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Back Extension (Weighted Hyperextension)",
+          "name": "Romanian Deadlift (Dumbbell)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Goblet Squat",
+          "name": "Leg Extension (Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Seated Leg Curl (Machine)",
+          "name": "Calf Extension (Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Calf Press (Machine)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Crunch (Machine)",
+          "name": "Cable Crunch",
           "weight": 0,
           "sets": 3
         }
       ]
-    }
-  ],
-  "workout_quality": [
+    },
     {
       "date": "2026-07-01",
       "title": "Upper 1",
@@ -557,63 +577,24 @@
           "sets": 3
         }
       ]
-    },
-    {
-      "date": "2026-05-25",
-      "title": "Upper 1",
-      "duration": 58,
-      "label": "Full session \u2014 58 min",
-      "score": 64,
-      "exercises": [
-        {
-          "name": "Bent Over Row (Barbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Shoulder Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Bench Press (Barbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Cable Fly Crossovers",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Bicep Curl (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Triceps Rope Pushdown",
-          "weight": 0,
-          "sets": 3
-        }
-      ]
     }
   ],
   "calendar": [],
   "weather": {
-    "temp": 15.4,
+    "temp": 17.0,
     "description": "Cloudy",
     "precip_mm": 3.9,
     "uv_index": 4.3,
-    "solar_mj": 8.6,
-    "wind_kmh": 31.3,
+    "solar_mj": 9.0,
+    "wind_kmh": 29.5,
     "rain": true
   },
   "streaks": {
     "watch_nights": 5,
-    "sessions_this_week": 0,
+    "sessions_this_week": 1,
     "training_weeks_4x": 1,
-    "days_since_session": 6,
-    "last_session_label": "1 Jul \u00b7 Upper 1"
+    "days_since_session": 0,
+    "last_session_label": "7 Jul \u00b7 Lower 1"
   },
   "tasks": {
     "today": {
@@ -638,8 +619,8 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "09:25",
+    "context": "afternoon",
+    "generated_at": "13:45",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -682,48 +663,7 @@
       "No significant risk factors today"
     ]
   },
-  "bb_trend": [
-    {
-      "date": "2026-06-30",
-      "val": 66,
-      "drain": 58
-    },
-    {
-      "date": "2026-07-01",
-      "val": 75,
-      "drain": 49
-    },
-    {
-      "date": "2026-07-02",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-07-03",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-07-04",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-07-05",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-07-06",
-      "val": null,
-      "drain": null
-    },
-    {
-      "date": "2026-07-07",
-      "val": null,
-      "drain": null
-    }
-  ],
+  "bb_trend": [],
   "training_load": {
     "acute": null,
     "chronic": null,
