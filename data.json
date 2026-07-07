@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-07-07 13:45",
+  "synced_at": "2026-07-07 14:48",
   "garmin": {
     "date": "2026-07-07",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": null,
+    "sleep_hours": 0.0,
     "sleep_score": null,
     "sleep_missing": true,
     "bb_charged": null,
@@ -18,10 +18,10 @@
     "total_kcal": 0,
     "avg_stress": 0,
     "readiness_score": null,
-    "fitness_age": null,
-    "achievable_age": null,
+    "fitness_age": 25.9,
+    "achievable_age": 21.1,
     "chrono_age": 29,
-    "vigorous_days": 0.1,
+    "vigorous_days": 0.0,
     "vigorous_target": 3,
     "training_status": "",
     "acute_load": null,
@@ -33,11 +33,20 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [],
-    "sleep_avg": null,
-    "sleep_best": null,
-    "sleep_best_date": null,
-    "sleep_trend": ""
+    "sleep_week": [
+      {
+        "date": "2026-06-30",
+        "score": 72
+      },
+      {
+        "date": "2026-07-01",
+        "score": 86
+      }
+    ],
+    "sleep_avg": 79,
+    "sleep_best": 86,
+    "sleep_best_date": "1 Jul",
+    "sleep_trend": "improving"
   },
   "body_comp": null,
   "workouts": [
@@ -581,12 +590,12 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 17.0,
+    "temp": 16.9,
     "description": "Cloudy",
     "precip_mm": 3.9,
     "uv_index": 4.3,
-    "solar_mj": 9.0,
-    "wind_kmh": 29.5,
+    "solar_mj": 8.5,
+    "wind_kmh": 29.9,
     "rain": true
   },
   "streaks": {
@@ -620,7 +629,7 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "13:45",
+    "generated_at": "14:48",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -628,8 +637,7 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure.",
-        "No gym scheduled \u2014 if you train, go before 14:00."
+        "Moderate readiness (68/100). Train but don't push to failure."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -663,7 +671,48 @@
       "No significant risk factors today"
     ]
   },
-  "bb_trend": [],
+  "bb_trend": [
+    {
+      "date": "2026-06-30",
+      "val": 66,
+      "drain": 58
+    },
+    {
+      "date": "2026-07-01",
+      "val": 75,
+      "drain": 49
+    },
+    {
+      "date": "2026-07-02",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-03",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-04",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-05",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-06",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-07",
+      "val": null,
+      "drain": null
+    }
+  ],
   "training_load": {
     "acute": null,
     "chronic": null,
