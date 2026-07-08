@@ -1,7 +1,7 @@
 {
-  "synced_at": "2026-07-07 18:37",
+  "synced_at": "2026-07-08 07:05",
   "garmin": {
-    "date": "2026-07-07",
+    "date": "2026-07-08",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
@@ -35,18 +35,14 @@
     "load_feedback": "",
     "sleep_week": [
       {
-        "date": "2026-06-30",
-        "score": 72
-      },
-      {
         "date": "2026-07-01",
         "score": 86
       }
     ],
-    "sleep_avg": 79,
+    "sleep_avg": 86,
     "sleep_best": 86,
     "sleep_best_date": "1 Jul",
-    "sleep_trend": "improving"
+    "sleep_trend": "declining"
   },
   "body_comp": null,
   "workouts": [
@@ -590,19 +586,19 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 17.9,
+    "temp": 14.5,
     "description": "Cloudy",
-    "precip_mm": 3.9,
-    "uv_index": 4.3,
-    "solar_mj": 8.5,
-    "wind_kmh": 30.6,
-    "rain": true
+    "precip_mm": 0,
+    "uv_index": 6.2,
+    "solar_mj": 28.8,
+    "wind_kmh": 23.8,
+    "rain": false
   },
   "streaks": {
-    "watch_nights": 5,
+    "watch_nights": 6,
     "sessions_this_week": 1,
     "training_weeks_4x": 1,
-    "days_since_session": 0,
+    "days_since_session": 1,
     "last_session_label": "7 Jul \u00b7 Lower 1"
   },
   "tasks": {
@@ -623,13 +619,13 @@
       "count": 0
     },
     "no_date": {
-      "count": 18
+      "count": 20
     },
-    "total_open": 18
+    "total_open": 20
   },
   "day_plan": {
-    "context": "evening",
-    "generated_at": "18:37",
+    "context": "morning",
+    "generated_at": "07:05",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -637,7 +633,8 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure."
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -673,11 +670,6 @@
   },
   "bb_trend": [
     {
-      "date": "2026-06-30",
-      "val": 66,
-      "drain": 58
-    },
-    {
       "date": "2026-07-01",
       "val": 75,
       "drain": 49
@@ -709,6 +701,11 @@
     },
     {
       "date": "2026-07-07",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-08",
       "val": null,
       "drain": null
     }
