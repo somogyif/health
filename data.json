@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-13 15:52",
+  "synced_at": "2026-07-13 17:01",
   "garmin": {
     "date": "2026-07-13",
     "resting_hr": null,
@@ -615,7 +615,7 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 21.6,
+    "temp": 23.2,
     "description": "Cloudy",
     "precip_mm": 47.4,
     "uv_index": 5.8,
@@ -630,31 +630,10 @@
     "days_since_session": 4,
     "last_session_label": "9 Jul \u00b7 Upper 2"
   },
-  "tasks": {
-    "today": {
-      "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Clear"
-    },
-    "tomorrow": {
-      "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Clear"
-    },
-    "overdue": {
-      "tasks": [],
-      "count": 0
-    },
-    "no_date": {
-      "count": 17
-    },
-    "total_open": 17
-  },
+  "tasks": null,
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "15:52",
+    "generated_at": "17:01",
     "readiness": 74,
     "bb": 50,
     "hrv": 42,
