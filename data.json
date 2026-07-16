@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-07-16 07:15",
+  "synced_at": "2026-07-16 13:55",
   "garmin": {
     "date": "2026-07-16",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": null,
+    "sleep_hours": 0.0,
     "sleep_score": null,
     "sleep_missing": true,
     "bb_charged": null,
@@ -18,10 +18,10 @@
     "total_kcal": 0,
     "avg_stress": 0,
     "readiness_score": null,
-    "fitness_age": null,
-    "achievable_age": null,
+    "fitness_age": 25.9,
+    "achievable_age": 21.1,
     "chrono_age": 29,
-    "vigorous_days": 0.1,
+    "vigorous_days": 0.0,
     "vigorous_target": 3,
     "training_status": "",
     "acute_load": null,
@@ -33,11 +33,28 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [],
-    "sleep_avg": null,
-    "sleep_best": null,
-    "sleep_best_date": null,
-    "sleep_trend": ""
+    "sleep_week": [
+      {
+        "date": "2026-07-09",
+        "score": 94
+      },
+      {
+        "date": "2026-07-10",
+        "score": 83
+      },
+      {
+        "date": "2026-07-11",
+        "score": 66
+      },
+      {
+        "date": "2026-07-12",
+        "score": 93
+      }
+    ],
+    "sleep_avg": 84,
+    "sleep_best": 94,
+    "sleep_best_date": "9 Jul",
+    "sleep_trend": "declining"
   },
   "body_comp": null,
   "workouts": [
@@ -586,12 +603,12 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 19.9,
+    "temp": 27.0,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.0,
-    "solar_mj": 27.1,
-    "wind_kmh": 11.5,
+    "uv_index": 6.3,
+    "solar_mj": 26.8,
+    "wind_kmh": 12.2,
     "rain": false
   },
   "streaks": {
@@ -624,8 +641,8 @@
     "total_open": 20
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "07:15",
+    "context": "afternoon",
+    "generated_at": "13:55",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -668,7 +685,48 @@
       "No significant risk factors today"
     ]
   },
-  "bb_trend": [],
+  "bb_trend": [
+    {
+      "date": "2026-07-09",
+      "val": 76,
+      "drain": 73
+    },
+    {
+      "date": "2026-07-10",
+      "val": 80,
+      "drain": 77
+    },
+    {
+      "date": "2026-07-11",
+      "val": 63,
+      "drain": 62
+    },
+    {
+      "date": "2026-07-12",
+      "val": 33,
+      "drain": 36
+    },
+    {
+      "date": "2026-07-13",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-14",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-15",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-16",
+      "val": null,
+      "drain": null
+    }
+  ],
   "training_load": {
     "acute": null,
     "chronic": null,
