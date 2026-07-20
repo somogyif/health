@@ -1,7 +1,7 @@
 {
-  "synced_at": "2026-07-19 18:48",
+  "synced_at": "2026-07-20 00:00",
   "garmin": {
-    "date": "2026-07-19",
+    "date": "2026-07-20",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
@@ -33,16 +33,11 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [
-      {
-        "date": "2026-07-12",
-        "score": 93
-      }
-    ],
-    "sleep_avg": 93,
-    "sleep_best": 93,
-    "sleep_best_date": "12 Jul",
-    "sleep_trend": "declining"
+    "sleep_week": [],
+    "sleep_avg": null,
+    "sleep_best": null,
+    "sleep_best_date": null,
+    "sleep_trend": ""
   },
   "body_comp": null,
   "workouts": [
@@ -591,46 +586,25 @@
   ],
   "calendar": [],
   "weather": {
-    "temp": 17.6,
-    "description": "Cloudy",
+    "temp": 16.1,
+    "description": "Rain",
     "precip_mm": 1.9,
     "uv_index": 5.5,
-    "solar_mj": 5.7,
-    "wind_kmh": 19.8,
+    "solar_mj": 11.7,
+    "wind_kmh": 19.1,
     "rain": true
   },
   "streaks": {
-    "watch_nights": 17,
+    "watch_nights": 18,
     "sessions_this_week": 0,
-    "training_weeks_4x": 1,
-    "days_since_session": 10,
+    "training_weeks_4x": 0,
+    "days_since_session": 11,
     "last_session_label": "9 Jul \u00b7 Upper 2"
   },
-  "tasks": {
-    "today": {
-      "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Clear"
-    },
-    "tomorrow": {
-      "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Clear"
-    },
-    "overdue": {
-      "tasks": [],
-      "count": 0
-    },
-    "no_date": {
-      "count": 20
-    },
-    "total_open": 20
-  },
+  "tasks": null,
   "day_plan": {
-    "context": "evening",
-    "generated_at": "18:48",
+    "context": "morning",
+    "generated_at": "00:00",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -638,7 +612,8 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure."
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -674,11 +649,6 @@
   },
   "bb_trend": [
     {
-      "date": "2026-07-12",
-      "val": 33,
-      "drain": 36
-    },
-    {
       "date": "2026-07-13",
       "val": null,
       "drain": null
@@ -710,6 +680,11 @@
     },
     {
       "date": "2026-07-19",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-20",
       "val": null,
       "drain": null
     }
