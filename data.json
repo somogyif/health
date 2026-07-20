@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-20 00:00",
+  "synced_at": "2026-07-20 18:42",
   "garmin": {
     "date": "2026-07-20",
     "resting_hr": null,
@@ -41,6 +41,40 @@
   },
   "body_comp": null,
   "workouts": [
+    {
+      "id": "d757de54-6cfd-41e1-81c9-8cf459677a1e",
+      "title": "Upper 1",
+      "date": "2026-07-20",
+      "start_time": "2026-07-20T07:48:27+00:00",
+      "duration": 53,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bench Press (Barbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Butterfly (Pec Deck)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
     {
       "id": "7936aef9-8f3d-4d42-a3fe-b0970373a821",
       "title": "Upper 2",
@@ -366,43 +400,43 @@
           "sets": 3
         }
       ]
-    },
+    }
+  ],
+  "workout_quality": [
     {
-      "id": "8e764b3b-de9e-49cd-9c5b-f65b746b8cab",
-      "title": "Lower 1",
-      "date": "2026-05-05",
-      "start_time": "2026-05-05T05:23:28+00:00",
-      "duration": 37,
+      "date": "2026-07-20",
+      "title": "Upper 1",
+      "duration": 53,
+      "label": "Full session \u2014 53 min",
+      "score": 57,
       "exercises": [
         {
-          "name": "Squat (Smith Machine)",
+          "name": "Bent Over Row (Dumbbell)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Leg Press (Machine)",
+          "name": "Shoulder Press (Dumbbell)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Romanian Deadlift (Dumbbell)",
+          "name": "Bench Press (Barbell)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Seated Calf Raise",
+          "name": "Butterfly (Pec Deck)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Crunch (Machine)",
+          "name": "Bicep Curl (Dumbbell)",
           "weight": 0,
           "sets": 3
         }
       ]
-    }
-  ],
-  "workout_quality": [
+    },
     {
       "date": "2026-07-09",
       "title": "Upper 2",
@@ -543,68 +577,50 @@
           "sets": 3
         }
       ]
-    },
-    {
-      "date": "2026-05-27",
-      "title": "Upper 2",
-      "duration": 52,
-      "label": "Full session \u2014 52 min",
-      "score": 60,
-      "exercises": [
-        {
-          "name": "Incline Bench Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "T Bar Row",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Seated Shoulder Press (Machine)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Lat Pulldown (Cable)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Lateral Raise (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Rear Delt Reverse Fly (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        }
-      ]
     }
   ],
   "calendar": [],
   "weather": {
-    "temp": 16.1,
-    "description": "Rain",
-    "precip_mm": 1.9,
-    "uv_index": 5.5,
-    "solar_mj": 11.7,
-    "wind_kmh": 19.1,
+    "temp": 21.6,
+    "description": "Cloudy",
+    "precip_mm": 1.8,
+    "uv_index": 4.3,
+    "solar_mj": 10.1,
+    "wind_kmh": 20.5,
     "rain": true
   },
   "streaks": {
     "watch_nights": 18,
-    "sessions_this_week": 0,
+    "sessions_this_week": 1,
     "training_weeks_4x": 0,
-    "days_since_session": 11,
-    "last_session_label": "9 Jul \u00b7 Upper 2"
+    "days_since_session": 0,
+    "last_session_label": "20 Jul \u00b7 Upper 1"
   },
-  "tasks": null,
+  "tasks": {
+    "today": {
+      "tasks": [],
+      "count": 0,
+      "score": 0,
+      "label": "Clear"
+    },
+    "tomorrow": {
+      "tasks": [],
+      "count": 0,
+      "score": 0,
+      "label": "Clear"
+    },
+    "overdue": {
+      "tasks": [],
+      "count": 0
+    },
+    "no_date": {
+      "count": 20
+    },
+    "total_open": 20
+  },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "00:00",
+    "context": "evening",
+    "generated_at": "18:42",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -612,8 +628,7 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure.",
-        "No gym scheduled \u2014 if you train, go before 14:00."
+        "Moderate readiness (68/100). Train but don't push to failure."
       ],
       "task_count": 0,
       "work_shifts": 0,
