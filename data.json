@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-21 11:44",
+  "synced_at": "2026-07-21 15:17",
   "garmin": {
     "date": "2026-07-21",
     "resting_hr": null,
@@ -41,6 +41,40 @@
   },
   "body_comp": null,
   "workouts": [
+    {
+      "id": "98bc38a5-bdb9-498b-a931-8273def87761",
+      "title": "Lower 1",
+      "date": "2026-07-21",
+      "start_time": "2026-07-21T10:12:51+00:00",
+      "duration": 63,
+      "exercises": [
+        {
+          "name": "Leg Press Horizontal (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Romanian Deadlift (Dumbbell)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Leg Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "weight": 0,
+          "sets": 3
+        },
+        {
+          "name": "Cable Crunch",
+          "weight": 0,
+          "sets": 3
+        }
+      ]
+    },
     {
       "id": "d757de54-6cfd-41e1-81c9-8cf459677a1e",
       "title": "Upper 1",
@@ -361,48 +395,43 @@
           "sets": 3
         }
       ]
-    },
+    }
+  ],
+  "workout_quality": [
     {
-      "id": "4938fa5a-47c4-41a6-8026-39bb94c030bb",
-      "title": "Upper 2",
-      "date": "2026-05-17",
-      "start_time": "2026-05-17T11:52:26+00:00",
-      "duration": 43,
+      "date": "2026-07-21",
+      "title": "Lower 1",
+      "duration": 63,
+      "label": "Full session \u2014 63 min",
+      "score": 65,
       "exercises": [
         {
-          "name": "Incline Bench Press (Barbell)",
+          "name": "Leg Press Horizontal (Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Bent Over Row (Dumbbell)",
+          "name": "Romanian Deadlift (Dumbbell)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Arnold Press (Dumbbell)",
+          "name": "Leg Extension (Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Lat Pulldown (Cable)",
+          "name": "Calf Extension (Machine)",
           "weight": 0,
           "sets": 3
         },
         {
-          "name": "Lateral Raise (Dumbbell)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Seated Palms Up Wrist Curl",
+          "name": "Cable Crunch",
           "weight": 0,
           "sets": 3
         }
       ]
-    }
-  ],
-  "workout_quality": [
+    },
     {
       "date": "2026-07-20",
       "title": "Upper 1",
@@ -538,45 +567,6 @@
           "sets": 3
         }
       ]
-    },
-    {
-      "date": "2026-05-28",
-      "title": "Lower 2",
-      "duration": 49,
-      "label": "Full session \u2014 49 min",
-      "score": 57,
-      "exercises": [
-        {
-          "name": "Hack Squat (Machine)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Back Extension (Weighted Hyperextension)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Leg Press Horizontal (Machine)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Lying Leg Curl (Machine)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Calf Extension (Machine)",
-          "weight": 0,
-          "sets": 3
-        },
-        {
-          "name": "Cable Crunch",
-          "weight": 0,
-          "sets": 3
-        }
-      ]
     }
   ],
   "calendar": [
@@ -590,20 +580,20 @@
     }
   ],
   "weather": {
-    "temp": 21.1,
-    "description": "Partly cloudy",
+    "temp": 24.3,
+    "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.2,
-    "solar_mj": 28.0,
-    "wind_kmh": 17.6,
+    "solar_mj": 27.5,
+    "wind_kmh": 17.3,
     "rain": false
   },
   "streaks": {
     "watch_nights": 19,
-    "sessions_this_week": 1,
+    "sessions_this_week": 2,
     "training_weeks_4x": 0,
-    "days_since_session": 1,
-    "last_session_label": "20 Jul \u00b7 Upper 1"
+    "days_since_session": 0,
+    "last_session_label": "21 Jul \u00b7 Lower 1"
   },
   "tasks": {
     "today": {
@@ -628,8 +618,8 @@
     "total_open": 20
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "11:44",
+    "context": "afternoon",
+    "generated_at": "15:17",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -637,8 +627,7 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure.",
-        "No gym scheduled \u2014 if you train, go before 14:00."
+        "Moderate readiness (68/100). Train but don't push to failure."
       ],
       "task_count": 0,
       "work_shifts": 0,
