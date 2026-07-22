@@ -1,7 +1,7 @@
 {
-  "synced_at": "2026-07-21 23:41",
+  "synced_at": "2026-07-22 21:16",
   "garmin": {
-    "date": "2026-07-21",
+    "date": "2026-07-22",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
@@ -580,19 +580,19 @@
     }
   ],
   "weather": {
-    "temp": 20.1,
-    "description": "Partly cloudy",
-    "precip_mm": 0,
-    "uv_index": 6.2,
-    "solar_mj": 27.5,
-    "wind_kmh": 17.3,
+    "temp": 19.3,
+    "description": "Drizzle",
+    "precip_mm": 0.2,
+    "uv_index": 5.0,
+    "solar_mj": 7.4,
+    "wind_kmh": 18.0,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 19,
+    "watch_nights": 20,
     "sessions_this_week": 2,
     "training_weeks_4x": 0,
-    "days_since_session": 0,
+    "days_since_session": 1,
     "last_session_label": "21 Jul \u00b7 Lower 1"
   },
   "tasks": {
@@ -619,7 +619,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "23:41",
+    "generated_at": "21:16",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -664,11 +664,6 @@
   },
   "bb_trend": [
     {
-      "date": "2026-07-14",
-      "val": null,
-      "drain": null
-    },
-    {
       "date": "2026-07-15",
       "val": null,
       "drain": null
@@ -700,6 +695,11 @@
     },
     {
       "date": "2026-07-21",
+      "val": null,
+      "drain": null
+    },
+    {
+      "date": "2026-07-22",
       "val": null,
       "drain": null
     }
