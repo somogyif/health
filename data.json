@@ -1,23 +1,23 @@
 {
-  "synced_at": "2026-07-22 23:27",
+  "synced_at": "2026-07-23 09:02",
   "garmin": {
-    "date": "2026-07-22",
-    "resting_hr": null,
+    "date": "2026-07-23",
+    "resting_hr": 62,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
     "sleep_hours": 0.0,
     "sleep_score": null,
     "sleep_missing": true,
-    "bb_charged": null,
-    "bb_drained": null,
-    "bb_current": null,
-    "steps": 0,
-    "step_goal": 8000,
-    "active_kcal": 0,
-    "total_kcal": 0,
-    "avg_stress": 0,
-    "readiness_score": null,
+    "bb_charged": 14,
+    "bb_drained": 2,
+    "bb_current": 26,
+    "steps": 101,
+    "step_goal": 7750,
+    "active_kcal": 1.0,
+    "total_kcal": 317.0,
+    "avg_stress": 21,
+    "readiness_score": 84,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
@@ -33,11 +33,36 @@
     "aerobic_high_min": 203,
     "aerobic_high_max": 368,
     "load_feedback": "",
-    "sleep_week": [],
-    "sleep_avg": null,
-    "sleep_best": null,
-    "sleep_best_date": null,
-    "sleep_trend": ""
+    "sleep_week": [
+      {
+        "date": "2026-07-16",
+        "score": 73
+      },
+      {
+        "date": "2026-07-17",
+        "score": 90
+      },
+      {
+        "date": "2026-07-18",
+        "score": 57
+      },
+      {
+        "date": "2026-07-19",
+        "score": 73
+      },
+      {
+        "date": "2026-07-21",
+        "score": 86
+      },
+      {
+        "date": "2026-07-22",
+        "score": 76
+      }
+    ],
+    "sleep_avg": 76,
+    "sleep_best": 90,
+    "sleep_best_date": "17 Jul",
+    "sleep_trend": "improving"
   },
   "body_comp": null,
   "workouts": [
@@ -580,19 +605,19 @@
     }
   ],
   "weather": {
-    "temp": 18.1,
-    "description": "Drizzle",
-    "precip_mm": 0.2,
-    "uv_index": 5.0,
-    "solar_mj": 7.4,
-    "wind_kmh": 18.0,
+    "temp": 17.7,
+    "description": "Partly cloudy",
+    "precip_mm": 0,
+    "uv_index": 6.0,
+    "solar_mj": 24.1,
+    "wind_kmh": 16.6,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 20,
+    "watch_nights": 21,
     "sessions_this_week": 2,
     "training_weeks_4x": 0,
-    "days_since_session": 1,
+    "days_since_session": 2,
     "last_session_label": "21 Jul \u00b7 Lower 1"
   },
   "tasks": {
@@ -618,23 +643,22 @@
     "total_open": 20
   },
   "day_plan": {
-    "context": "evening",
-    "generated_at": "23:27",
-    "readiness": 68,
-    "bb": 50,
+    "context": "morning",
+    "generated_at": "09:02",
+    "readiness": 84,
+    "bb": 26,
     "hrv": 42,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure.",
-        "Evening \u2014 wind down now. Set up tomorrow before bed."
+        "Recovery is low (readiness 84, battery 26). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
       "has_gym": false,
       "tasks": [],
-      "recovery": "moderate"
+      "recovery": "low"
     },
     "tomorrow": {
       "label": "Clear",
@@ -649,59 +673,59 @@
     }
   },
   "health_matrix": {
-    "readiness": 68,
-    "training_signal": 72,
-    "illness_risk": 82,
-    "recovery_debt": 62,
-    "cognitive_load": 68,
+    "readiness": 84,
+    "training_signal": 71,
+    "illness_risk": 85,
+    "recovery_debt": 59,
+    "cognitive_load": 66,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 0,
+    "score": 10,
     "factors": [
-      "No significant risk factors today"
+      "Body battery low"
     ]
   },
   "bb_trend": [
     {
-      "date": "2026-07-15",
-      "val": null,
-      "drain": null
-    },
-    {
       "date": "2026-07-16",
-      "val": null,
-      "drain": null
+      "val": 54,
+      "drain": 49
     },
     {
       "date": "2026-07-17",
-      "val": null,
-      "drain": null
+      "val": 70,
+      "drain": 71
     },
     {
       "date": "2026-07-18",
-      "val": null,
-      "drain": null
+      "val": 50,
+      "drain": 46
     },
     {
       "date": "2026-07-19",
-      "val": null,
-      "drain": null
+      "val": 47,
+      "drain": 56
     },
     {
       "date": "2026-07-20",
-      "val": null,
-      "drain": null
+      "val": 61,
+      "drain": 38
     },
     {
       "date": "2026-07-21",
-      "val": null,
-      "drain": null
+      "val": 62,
+      "drain": 63
     },
     {
       "date": "2026-07-22",
-      "val": null,
-      "drain": null
+      "val": 62,
+      "drain": 61
+    },
+    {
+      "date": "2026-07-23",
+      "val": 15,
+      "drain": 2
     }
   ],
   "training_load": {
