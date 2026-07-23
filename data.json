@@ -1,38 +1,38 @@
 {
-  "synced_at": "2026-07-23 16:51",
+  "synced_at": "2026-07-23 17:39",
   "garmin": {
     "date": "2026-07-23",
-    "resting_hr": 62,
-    "hrv_weekly": null,
-    "hrv_last_night": null,
+    "resting_hr": 61,
+    "hrv_weekly": 47,
+    "hrv_last_night": 50,
     "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
-    "sleep_score": null,
-    "sleep_missing": true,
-    "bb_charged": 14,
-    "bb_drained": 2,
-    "bb_current": 26,
-    "steps": 101,
+    "sleep_hours": 6.3,
+    "sleep_score": 68,
+    "sleep_missing": false,
+    "bb_charged": 63,
+    "bb_drained": 15,
+    "bb_current": 38,
+    "steps": 287,
     "step_goal": 7750,
-    "active_kcal": 1.0,
-    "total_kcal": 317.0,
-    "avg_stress": 21,
+    "active_kcal": 14.0,
+    "total_kcal": 1638.0,
+    "avg_stress": 22,
     "readiness_score": 84,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
-    "training_status": "",
-    "acute_load": null,
-    "chronic_load": null,
-    "aerobic_low": 0,
-    "aerobic_low_min": 97,
-    "aerobic_low_max": 261,
-    "aerobic_high": 0,
-    "aerobic_high_min": 203,
-    "aerobic_high_max": 368,
-    "load_feedback": "",
+    "training_status": "RECOVERY_1",
+    "acute_load": 29,
+    "chronic_load": 100,
+    "aerobic_low": 96,
+    "aerobic_low_min": 95,
+    "aerobic_low_max": 260,
+    "aerobic_high": 101,
+    "aerobic_high_min": 205,
+    "aerobic_high_max": 369,
+    "load_feedback": "AEROBIC_HIGH_SHORTAGE",
     "sleep_week": [
       {
         "date": "2026-07-16",
@@ -57,12 +57,16 @@
       {
         "date": "2026-07-22",
         "score": 76
+      },
+      {
+        "date": "2026-07-23",
+        "score": 68
       }
     ],
-    "sleep_avg": 76,
+    "sleep_avg": 75,
     "sleep_best": 90,
     "sleep_best_date": "17 Jul",
-    "sleep_trend": "improving"
+    "sleep_trend": "declining"
   },
   "body_comp": null,
   "workouts": [
@@ -455,7 +459,8 @@
           "weight": 0,
           "sets": 3
         }
-      ]
+      ],
+      "overload": []
     },
     {
       "date": "2026-07-20",
@@ -489,7 +494,8 @@
           "weight": 0,
           "sets": 3
         }
-      ]
+      ],
+      "overload": []
     },
     {
       "date": "2026-07-09",
@@ -523,7 +529,8 @@
           "weight": 0,
           "sets": 3
         }
-      ]
+      ],
+      "overload": []
     },
     {
       "date": "2026-07-07",
@@ -557,7 +564,8 @@
           "weight": 0,
           "sets": 3
         }
-      ]
+      ],
+      "overload": []
     },
     {
       "date": "2026-07-01",
@@ -591,7 +599,8 @@
           "weight": 0,
           "sets": 3
         }
-      ]
+      ],
+      "overload": []
     }
   ],
   "calendar": [
@@ -605,12 +614,12 @@
     }
   ],
   "weather": {
-    "temp": 23.9,
+    "temp": 23.2,
     "description": "Partly cloudy",
     "precip_mm": 0,
     "uv_index": 6.0,
     "solar_mj": 24.3,
-    "wind_kmh": 16.6,
+    "wind_kmh": 17.3,
     "rain": false
   },
   "streaks": {
@@ -644,21 +653,21 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "16:51",
+    "generated_at": "17:39",
     "readiness": 84,
-    "bb": 26,
-    "hrv": 42,
+    "bb": 38,
+    "hrv": 50,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 84, battery 26). Keep intensity moderate."
+        "Moderate readiness (84/100). Train but don't push to failure."
       ],
       "task_count": 0,
       "work_shifts": 0,
       "has_gym": false,
       "tasks": [],
-      "recovery": "low"
+      "recovery": "moderate"
     },
     "tomorrow": {
       "label": "Clear",
@@ -674,16 +683,16 @@
   },
   "health_matrix": {
     "readiness": 84,
-    "training_signal": 71,
-    "illness_risk": 85,
-    "recovery_debt": 59,
-    "cognitive_load": 66,
+    "training_signal": 77,
+    "illness_risk": 82,
+    "recovery_debt": 62,
+    "cognitive_load": 65,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 10,
+    "score": 15,
     "factors": [
-      "Body battery low"
+      "Sleep < 7h"
     ]
   },
   "bb_trend": [
@@ -724,19 +733,36 @@
     },
     {
       "date": "2026-07-23",
-      "val": 15,
-      "drain": 2
+      "val": 52,
+      "drain": 15
     }
   ],
+  "bb_predicted_wake": 92,
+  "weekly_training": {
+    "this_week": {
+      "sessions": 2,
+      "upper": 1,
+      "lower": 1,
+      "volume_kg": 0
+    },
+    "last_week": {
+      "sessions": 0,
+      "upper": 0,
+      "lower": 0,
+      "volume_kg": 0
+    },
+    "vol_change_pct": 0,
+    "on_track": false
+  },
   "training_load": {
-    "acute": null,
-    "chronic": null,
-    "aerobic_low": 0,
-    "aerobic_low_min": 97,
-    "aerobic_low_max": 261,
-    "aerobic_high": 0,
-    "aerobic_high_min": 203,
-    "aerobic_high_max": 368,
-    "feedback": ""
+    "acute": 29,
+    "chronic": 100,
+    "aerobic_low": 96,
+    "aerobic_low_min": 95,
+    "aerobic_low_max": 260,
+    "aerobic_high": 101,
+    "aerobic_high_min": 205,
+    "aerobic_high_max": 369,
+    "feedback": "AEROBIC_HIGH_SHORTAGE"
   }
 }
