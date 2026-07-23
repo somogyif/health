@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-23 18:56",
+  "synced_at": "2026-07-23 22:49",
   "garmin": {
     "date": "2026-07-23",
     "resting_hr": 61,
@@ -10,13 +10,13 @@
     "sleep_score": 68,
     "sleep_missing": false,
     "bb_charged": 63,
-    "bb_drained": 19,
-    "bb_current": 34,
-    "steps": 366,
+    "bb_drained": 36,
+    "bb_current": 17,
+    "steps": 2266,
     "step_goal": 7750,
-    "active_kcal": 17.0,
-    "total_kcal": 1719.0,
-    "avg_stress": 23,
+    "active_kcal": 115.0,
+    "total_kcal": 2223.0,
+    "avg_stress": 30,
     "readiness_score": 84,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -889,7 +889,7 @@
     }
   ],
   "weather": {
-    "temp": 23.0,
+    "temp": 19.7,
     "description": "Partly cloudy",
     "precip_mm": 0,
     "uv_index": 6.0,
@@ -928,15 +928,16 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "18:56",
+    "generated_at": "22:49",
     "readiness": 84,
-    "bb": 34,
+    "bb": 17,
     "hrv": 50,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 84, battery 34). Keep intensity moderate."
+        "Recovery is low (readiness 84, battery 17). Keep intensity moderate.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -958,17 +959,17 @@
   },
   "health_matrix": {
     "readiness": 84,
-    "training_signal": 76,
-    "illness_risk": 82,
-    "recovery_debt": 61,
-    "cognitive_load": 64,
+    "training_signal": 71,
+    "illness_risk": 80,
+    "recovery_debt": 54,
+    "cognitive_load": 58,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 25,
+    "score": 35,
     "factors": [
       "Sleep < 7h",
-      "Body battery low"
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -1009,11 +1010,11 @@
     },
     {
       "date": "2026-07-23",
-      "val": 53,
-      "drain": 19
+      "val": 63,
+      "drain": 36
     }
   ],
-  "bb_predicted_wake": 88,
+  "bb_predicted_wake": 71,
   "sleep_consistency": 56,
   "late_night_penalty": false,
   "training_warning": false,
