@@ -750,6 +750,7 @@ function render(d){
         <div class="mm"><div class="mm-l">🧠 Avg stress</div><div class="mm-v" style="color:${(g.avg_stress||0)>50?'var(--amber)':'var(--teal)'}">${fmt(g.avg_stress)}</div><div class="mm-s">${(g.avg_stress||0)>50?'moderate-high':'low — good'}</div></div>
         <div class="mm"><div class="mm-l">🔥 Active kcal</div><div class="mm-v">${fmt(g.active_kcal)}</div><div class="mm-s">total ${fmt(g.total_kcal)} kcal</div></div>
         <div class="mm"><div class="mm-l">💓 HRV last night</div><div class="mm-v" style="color:var(--teal)">${fmt(g.hrv_last_night,' ms')}</div><div class="mm-s">weekly ${fmt(g.hrv_weekly,' ms')}</div></div>
+        <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">🔋 Tomorrow BB est.</div><div class="mm-v" style="color:${(d.bb_predicted_wake||0)>=60?"var(--teal)":(d.bb_predicted_wake||0)>=40?"var(--amber)":"var(--red)"}">${d.bb_predicted_wake||"\u2014"}</div><div class="mm-s">predicted wake</div></div>
       </div>
     </div>
 
@@ -1051,7 +1052,17 @@ function render(d){
   const daysSinceCol = daysSince > 4 ? 'var(--red)' : daysSince > 2 ? 'var(--amber)' : 'var(--teal)';
 
   // Workout quality cards
+  const wt = d.weekly_training || {};
+  const wtThis = wt.this_week || {};
+  const wtLast = wt.last_week || {};
+  const volChange = wt.vol_change_pct || 0;
+  const volCol = volChange > 0 ? "var(--teal)" : volChange < -10 ? "var(--red)" : "var(--text2)";
+  const weeklyHTML = `<div class="card" style="margin-bottom:1rem"><div class="section-label">📊 THIS WEEK</div><div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem"><div class="mm"><div class="mm-l">Sessions</div><div class="mm-v" style="color:${wtThis.sessions>=3?"var(--teal)":"var(--amber)"}">${wtThis.sessions||0}/4</div><div class="mm-s">${wt.on_track?"on track":"below target"}</div></div><div class="mm"><div class="mm-l">Upper</div><div class="mm-v">${wtThis.upper||0}</div><div class="mm-s">sessions</div></div><div class="mm"><div class="mm-l">Lower</div><div class="mm-v">${wtThis.lower||0}</div><div class="mm-s">sessions</div></div><div class="mm"><div class="mm-l">Volume</div><div class="mm-v" style="color:${volCol}">${wtThis.volume_kg||0} kg</div><div class="mm-s">${volChange>0?"+":""}${volChange}% vs last week</div></div></div></div>`;
   const wqHTML = (d.workout_quality||d.workouts_quality||[]).length ? (d.workout_quality||d.workouts_quality||[]).map(wq => {
+    const overloadHTML = (wq.overload||[]).map(o => {
+      const arrow = o.type==="weight" ? `${o.from}→${o.to}kg` : `${o.from}→${o.to} sets`;
+      return `<span style="display:inline-block;background:rgba(52,201,154,0.15);color:var(--teal);border:1px solid rgba(52,201,154,0.3);border-radius:4px;padding:1px 6px;font-size:10px;margin:2px 2px 0 0">↑ ${o.name.split(" ")[0]} ${arrow}</span>`;
+    }).join("");
     const scoreCol = wq.score >= 70 ? 'var(--teal)' : wq.score >= 45 ? 'var(--amber)' : 'var(--red)';
     const wqTitle = wq.title || wq.name || '—';
     const type = wq.type || (wqTitle.toLowerCase().includes('upper') ? 'upper' : 'lower');
@@ -1112,6 +1123,7 @@ function render(d){
   ];
 
   document.getElementById('tab-training').innerHTML=`
+    ${weeklyHTML}
     <div class="sec">
       <div class="sec-head"><div class="sec-title">🔥 Streaks</div><div class="sec-line"></div></div>
       <div class="g3">
