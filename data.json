@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-23 18:02",
+  "synced_at": "2026-07-23 18:21",
   "garmin": {
     "date": "2026-07-23",
     "resting_hr": 61,
@@ -10,13 +10,13 @@
     "sleep_score": 68,
     "sleep_missing": false,
     "bb_charged": 63,
-    "bb_drained": 15,
-    "bb_current": 38,
-    "steps": 287,
+    "bb_drained": 19,
+    "bb_current": 34,
+    "steps": 366,
     "step_goal": 7750,
-    "active_kcal": 14.0,
-    "total_kcal": 1638.0,
-    "avg_stress": 22,
+    "active_kcal": 17.0,
+    "total_kcal": 1719.0,
+    "avg_stress": 23,
     "readiness_score": 84,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -816,21 +816,21 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "18:02",
+    "generated_at": "18:21",
     "readiness": 84,
-    "bb": 38,
+    "bb": 34,
     "hrv": 50,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (84/100). Train but don't push to failure."
+        "Recovery is low (readiness 84, battery 34). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
       "has_gym": false,
       "tasks": [],
-      "recovery": "moderate"
+      "recovery": "low"
     },
     "tomorrow": {
       "label": "Clear",
@@ -846,16 +846,17 @@
   },
   "health_matrix": {
     "readiness": 84,
-    "training_signal": 77,
+    "training_signal": 76,
     "illness_risk": 82,
-    "recovery_debt": 62,
-    "cognitive_load": 65,
+    "recovery_debt": 61,
+    "cognitive_load": 64,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 15,
+    "score": 25,
     "factors": [
-      "Sleep < 7h"
+      "Sleep < 7h",
+      "Body battery low"
     ]
   },
   "bb_trend": [
@@ -896,11 +897,14 @@
     },
     {
       "date": "2026-07-23",
-      "val": 52,
-      "drain": 15
+      "val": 53,
+      "drain": 19
     }
   ],
-  "bb_predicted_wake": 92,
+  "bb_predicted_wake": 88,
+  "sleep_consistency": 56,
+  "late_night_penalty": false,
+  "training_warning": false,
   "weekly_training": {
     "this_week": {
       "sessions": 2,
