@@ -362,6 +362,9 @@ function trainingCoaching(acwr){
 function render(d){
   killCharts();
   const g=d.garmin||{}, bc=d.body_comp||{};
+  const sleepCons = d.sleep_consistency;
+  const lateNight = d.late_night_penalty || false;
+  const trainWarn = d.training_warning || false;
   const goals=(d.goals&&d.goals.length)?d.goals:[
     {label:'Body fat',current:`${bc.fat_pct??g.body_fat??21}%`,target:'16–17%',pct:Math.min(100,Math.round((21-(bc.fat_pct??21))/(21-16.5)*100)),color:'var(--amber)'},
     {label:'Lean mass',current:`${bc.lean_kg??g.lean_mass??65.8}kg`,target:'68kg',pct:Math.min(100,Math.round(((bc.lean_kg??65.8)-63)/(68-63)*100)),color:'var(--teal)'},
@@ -1054,9 +1057,6 @@ function render(d){
   const daysSinceCol = daysSince > 4 ? 'var(--red)' : daysSince > 2 ? 'var(--amber)' : 'var(--teal)';
 
   // Workout quality cards
-  const sleepCons = d.sleep_consistency;
-  const lateNight = d.late_night_penalty || false;
-  const trainWarn = d.training_warning || false;
   const wt = d.weekly_training || {};
   const wtThis = wt.this_week || {};
   const wtLast = wt.last_week || {};
