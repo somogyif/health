@@ -1052,6 +1052,9 @@ function render(d){
   const daysSinceCol = daysSince > 4 ? 'var(--red)' : daysSince > 2 ? 'var(--amber)' : 'var(--teal)';
 
   // Workout quality cards
+  const sleepCons = d.sleep_consistency;
+  const lateNight = d.late_night_penalty || false;
+  const trainWarn = d.training_warning || false;
   const wt = d.weekly_training || {};
   const wtThis = wt.this_week || {};
   const wtLast = wt.last_week || {};
@@ -1257,6 +1260,7 @@ function render(d){
       <div class="sec-head"><div class="sec-title">😴 Sleep this week</div><div class="sec-line"></div></div>
       <div class="card">
         <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Consistency</div><div class="mm-v" style="color:${sleepCons>=80?'var(--teal)':sleepCons>=60?'var(--amber)':'var(--red)'}">${sleepCons!=null?sleepCons:'—'}</div><div class="mm-s">${sleepCons>=80?'stable':sleepCons>=60?'variable':'irregular'}</div></div>
           <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Avg score</div><div class="mm-v" style="color:var(--amber)">${ss.scores&&ss.scores.length?Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length):'74'}</div><div class="mm-s">this week</div></div>
           <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Best night</div><div class="mm-v" style="color:var(--teal)">${ss.scores&&ss.scores.length?Math.max(...ss.scores):'91'}</div><div class="mm-s">${ss.best_date??'—'}</div></div>
           <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Trend</div><div class="mm-v" style="color:var(--red)">↓</div><div class="mm-s">declining this week</div></div>
