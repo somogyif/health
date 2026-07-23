@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-23 17:49",
+  "synced_at": "2026-07-23 18:02",
   "garmin": {
     "date": "2026-07-23",
     "resting_hr": 61,
@@ -79,28 +79,38 @@
       "exercises": [
         {
           "name": "Leg Press Horizontal (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 110,
+          "sets": 3,
+          "reps": 11,
+          "volume": 3740
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 40,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1360
         },
         {
           "name": "Leg Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 55,
+          "sets": 3,
+          "reps": 13,
+          "volume": 1900
         },
         {
           "name": "Calf Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 130,
+          "sets": 3,
+          "reps": 15,
+          "volume": 5700
         },
         {
           "name": "Cable Crunch",
-          "weight": 0,
-          "sets": 3
+          "weight": 75,
+          "sets": 3,
+          "reps": 15,
+          "volume": 3375
         }
       ]
     },
@@ -113,28 +123,38 @@
       "exercises": [
         {
           "name": "Bent Over Row (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 32,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1152
         },
         {
           "name": "Shoulder Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 36,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1152
         },
         {
           "name": "Bench Press (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 50,
+          "sets": 3,
+          "reps": 9,
+          "volume": 1400
         },
         {
           "name": "Butterfly (Pec Deck)",
-          "weight": 0,
-          "sets": 3
+          "weight": 40,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1440
         },
         {
           "name": "Bicep Curl (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 24,
+          "sets": 3,
+          "reps": 13,
+          "volume": 936
         }
       ]
     },
@@ -147,28 +167,38 @@
       "exercises": [
         {
           "name": "Incline Bench Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 36,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1296
         },
         {
           "name": "Seated Cable Row - V Grip (Cable)",
-          "weight": 0,
-          "sets": 3
+          "weight": 50,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1680
         },
         {
           "name": "Lat Pulldown (Cable)",
-          "weight": 0,
-          "sets": 3
+          "weight": 60,
+          "sets": 3,
+          "reps": 10,
+          "volume": 1800
         },
         {
           "name": "Triceps Pushdown",
-          "weight": 0,
-          "sets": 3
+          "weight": 35,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1470
         },
         {
           "name": "Lateral Raise (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 16,
+          "sets": 3,
+          "reps": 14,
+          "volume": 672
         }
       ]
     },
@@ -181,28 +211,38 @@
       "exercises": [
         {
           "name": "Squat (Smith Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 30,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1080
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 40,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1440
         },
         {
           "name": "Leg Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 35,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1470
         },
         {
           "name": "Calf Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 120,
+          "sets": 3,
+          "reps": 15,
+          "volume": 3615
         },
         {
           "name": "Cable Crunch",
-          "weight": 0,
-          "sets": 3
+          "weight": 80,
+          "sets": 3,
+          "reps": 15,
+          "volume": 3375
         }
       ]
     },
@@ -215,28 +255,38 @@
       "exercises": [
         {
           "name": "Bent Over Row (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 52,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1664
         },
         {
           "name": "Shoulder Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 36,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1152
         },
         {
           "name": "Bench Press (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 47.5,
+          "sets": 3,
+          "reps": 9,
+          "volume": 1235
         },
         {
           "name": "Chest Fly (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 45,
+          "sets": 3,
+          "reps": 13,
+          "volume": 1620
         },
         {
           "name": "Bicep Curl (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 24,
+          "sets": 3,
+          "reps": 11,
+          "volume": 768
         }
       ]
     },
@@ -249,33 +299,45 @@
       "exercises": [
         {
           "name": "Hack Squat (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 20,
+          "sets": 3,
+          "reps": 11,
+          "volume": 625
         },
         {
           "name": "Back Extension (Weighted Hyperextension)",
-          "weight": 0,
-          "sets": 3
+          "weight": 25,
+          "sets": 3,
+          "reps": 12,
+          "volume": 900
         },
         {
           "name": "Leg Press Horizontal (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 117,
+          "sets": 3,
+          "reps": 11,
+          "volume": 3978
         },
         {
           "name": "Lying Leg Curl (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 40,
+          "sets": 3,
+          "reps": 13,
+          "volume": 1500
         },
         {
           "name": "Calf Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 125,
+          "sets": 3,
+          "reps": 15,
+          "volume": 5380
         },
         {
           "name": "Cable Crunch",
-          "weight": 0,
-          "sets": 3
+          "weight": 73,
+          "sets": 3,
+          "reps": 16,
+          "volume": 3431
         }
       ]
     },
@@ -288,33 +350,45 @@
       "exercises": [
         {
           "name": "Incline Bench Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 32,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1152
         },
         {
           "name": "T Bar Row",
-          "weight": 0,
-          "sets": 3
+          "weight": 35,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1140
         },
         {
           "name": "Seated Shoulder Press (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 40,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1220
         },
         {
           "name": "Lat Pulldown (Cable)",
-          "weight": 0,
-          "sets": 3
+          "weight": 60,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1920
         },
         {
           "name": "Lateral Raise (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 14,
+          "sets": 3,
+          "reps": 15,
+          "volume": 630
         },
         {
           "name": "Rear Delt Reverse Fly (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 14,
+          "sets": 3,
+          "reps": 14,
+          "volume": 588
         }
       ]
     },
@@ -327,23 +401,31 @@
       "exercises": [
         {
           "name": "Leg Press (Machine)",
-          "weight": 0,
-          "sets": 6
+          "weight": 40,
+          "sets": 6,
+          "reps": 12,
+          "volume": 2880
         },
         {
           "name": "Romanian Deadlift (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 55,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1620
         },
         {
           "name": "Seated Calf Raise",
-          "weight": 0,
-          "sets": 3
+          "weight": 60,
+          "sets": 3,
+          "reps": 15,
+          "volume": 2700
         },
         {
           "name": "Cable Crunch",
-          "weight": 0,
-          "sets": 3
+          "weight": 77,
+          "sets": 3,
+          "reps": 13,
+          "volume": 3003
         }
       ]
     },
@@ -356,33 +438,45 @@
       "exercises": [
         {
           "name": "Bent Over Row (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 50,
+          "sets": 3,
+          "reps": 10,
+          "volume": 1500
         },
         {
           "name": "Shoulder Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 30,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1080
         },
         {
           "name": "Bench Press (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 45,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1620
         },
         {
           "name": "Cable Fly Crossovers",
-          "weight": 0,
-          "sets": 3
+          "weight": 23,
+          "sets": 3,
+          "reps": 13,
+          "volume": 897
         },
         {
           "name": "Bicep Curl (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 20,
+          "sets": 3,
+          "reps": 14,
+          "volume": 840
         },
         {
           "name": "Triceps Rope Pushdown",
-          "weight": 0,
-          "sets": 3
+          "weight": 23,
+          "sets": 3,
+          "reps": 14,
+          "volume": 891
         }
       ]
     },
@@ -395,33 +489,45 @@
       "exercises": [
         {
           "name": "Hack Squat (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 15,
+          "sets": 3,
+          "reps": 12,
+          "volume": 540
         },
         {
           "name": "Back Extension (Weighted Hyperextension)",
-          "weight": 0,
-          "sets": 3
+          "weight": 25,
+          "sets": 3,
+          "reps": 12,
+          "volume": 900
         },
         {
           "name": "Leg Press Horizontal (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 117,
+          "sets": 3,
+          "reps": 12,
+          "volume": 4116
         },
         {
           "name": "Lying Leg Curl (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 35,
+          "sets": 3,
+          "reps": 15,
+          "volume": 1575
         },
         {
           "name": "Calf Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 125,
+          "sets": 3,
+          "reps": 15,
+          "volume": 5505
         },
         {
           "name": "Cable Crunch",
-          "weight": 0,
-          "sets": 3
+          "weight": 82,
+          "sets": 3,
+          "reps": 13,
+          "volume": 2982
         }
       ]
     }
@@ -436,28 +542,38 @@
       "exercises": [
         {
           "name": "Leg Press Horizontal (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 110,
+          "sets": 3,
+          "reps": 11,
+          "volume": 3740
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 40,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1360
         },
         {
           "name": "Leg Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 55,
+          "sets": 3,
+          "reps": 13,
+          "volume": 1900
         },
         {
           "name": "Calf Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 130,
+          "sets": 3,
+          "reps": 15,
+          "volume": 5700
         },
         {
           "name": "Cable Crunch",
-          "weight": 0,
-          "sets": 3
+          "weight": 75,
+          "sets": 3,
+          "reps": 15,
+          "volume": 3375
         }
       ],
       "overload": []
@@ -471,28 +587,38 @@
       "exercises": [
         {
           "name": "Bent Over Row (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 32,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1152
         },
         {
           "name": "Shoulder Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 36,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1152
         },
         {
           "name": "Bench Press (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 50,
+          "sets": 3,
+          "reps": 9,
+          "volume": 1400
         },
         {
           "name": "Butterfly (Pec Deck)",
-          "weight": 0,
-          "sets": 3
+          "weight": 40,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1440
         },
         {
           "name": "Bicep Curl (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 24,
+          "sets": 3,
+          "reps": 13,
+          "volume": 936
         }
       ],
       "overload": []
@@ -506,28 +632,38 @@
       "exercises": [
         {
           "name": "Incline Bench Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 36,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1296
         },
         {
           "name": "Seated Cable Row - V Grip (Cable)",
-          "weight": 0,
-          "sets": 3
+          "weight": 50,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1680
         },
         {
           "name": "Lat Pulldown (Cable)",
-          "weight": 0,
-          "sets": 3
+          "weight": 60,
+          "sets": 3,
+          "reps": 10,
+          "volume": 1800
         },
         {
           "name": "Triceps Pushdown",
-          "weight": 0,
-          "sets": 3
+          "weight": 35,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1470
         },
         {
           "name": "Lateral Raise (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 16,
+          "sets": 3,
+          "reps": 14,
+          "volume": 672
         }
       ],
       "overload": []
@@ -541,31 +677,48 @@
       "exercises": [
         {
           "name": "Squat (Smith Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 30,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1080
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 40,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1440
         },
         {
           "name": "Leg Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 35,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1470
         },
         {
           "name": "Calf Extension (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 120,
+          "sets": 3,
+          "reps": 15,
+          "volume": 3615
         },
         {
           "name": "Cable Crunch",
-          "weight": 0,
-          "sets": 3
+          "weight": 80,
+          "sets": 3,
+          "reps": 15,
+          "volume": 3375
         }
       ],
-      "overload": []
+      "overload": [
+        {
+          "name": "Cable Crunch",
+          "type": "weight",
+          "from": 75,
+          "to": 80
+        }
+      ]
     },
     {
       "date": "2026-07-01",
@@ -576,28 +729,38 @@
       "exercises": [
         {
           "name": "Bent Over Row (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 52,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1664
         },
         {
           "name": "Shoulder Press (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 36,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1152
         },
         {
           "name": "Bench Press (Barbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 47.5,
+          "sets": 3,
+          "reps": 9,
+          "volume": 1235
         },
         {
           "name": "Chest Fly (Machine)",
-          "weight": 0,
-          "sets": 3
+          "weight": 45,
+          "sets": 3,
+          "reps": 13,
+          "volume": 1620
         },
         {
           "name": "Bicep Curl (Dumbbell)",
-          "weight": 0,
-          "sets": 3
+          "weight": 24,
+          "sets": 3,
+          "reps": 11,
+          "volume": 768
         }
       ],
       "overload": []
@@ -614,7 +777,7 @@
     }
   ],
   "weather": {
-    "temp": 23.2,
+    "temp": 23.0,
     "description": "Partly cloudy",
     "precip_mm": 0,
     "uv_index": 6.0,
@@ -652,8 +815,8 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "17:49",
+    "context": "evening",
+    "generated_at": "18:02",
     "readiness": 84,
     "bb": 38,
     "hrv": 50,
@@ -743,7 +906,7 @@
       "sessions": 2,
       "upper": 1,
       "lower": 1,
-      "volume_kg": 0
+      "volume_kg": 22155
     },
     "last_week": {
       "sessions": 0,
