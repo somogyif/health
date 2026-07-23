@@ -716,6 +716,7 @@ function render(d){
 
     <div class="sec">
       <div class="sec-head"><div class="sec-title">Recovery factors</div><div class="sec-line"></div></div>
+      ${lateNight ? `<div style="margin-bottom:.5rem;padding:.4rem .7rem;background:rgba(232,153,58,0.12);border:1px solid rgba(232,153,58,0.3);border-radius:6px;font-size:12px;color:var(--amber)">⚠️ Last night sleep score below 65 — earlier bedtime tonight will improve recovery.</div>` : ""}
       <div class="card">
         <div style="display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:start;margin-bottom:1.25rem">
           <div>
