@@ -685,6 +685,7 @@ function render(d){
           <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem">Today · ${g.date||'—'}</div>
           <div class="hero-label" style="color:${rv.color}">${rv.label}</div>
           <div class="hero-coaching">${rv.coaching}</div>
+          ${trainWarn ? `<div style="margin-top:.5rem;padding:.4rem .7rem;background:rgba(224,82,82,0.12);border:1px solid rgba(224,82,82,0.3);border-radius:6px;font-size:12px;color:var(--red)">⚠️ Training tomorrow but BB is low — consider lighter intensity or extra rest tonight.</div>` : ""}
         </div>
         <div class="hero-ring">
           <canvas id="heroRing" width="88" height="88" role="img" aria-label="Readiness ${rs}/100">${rs}/100</canvas>
