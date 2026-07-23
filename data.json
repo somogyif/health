@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-23 18:45",
+  "synced_at": "2026-07-23 18:56",
   "garmin": {
     "date": "2026-07-23",
     "resting_hr": 61,
@@ -768,12 +768,124 @@
   ],
   "calendar": [
     {
+      "title": "Zs\u00f3fi tali",
+      "start": "2026-07-24",
+      "start_date": "2026-07-24",
+      "time": "17:00",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Alex 30 sz\u00fclinap",
+      "start": "2026-07-25",
+      "start_date": "2026-07-25",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Mama sz\u00fclinap",
+      "start": "2026-07-31",
+      "start_date": "2026-07-31",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Misi leg\u00e9nyb\u00facs\u00fa",
+      "start": "2026-07-31",
+      "start_date": "2026-07-31",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Kenderessy Szabolcs\u2019s 35th Birthday",
+      "start": "2026-08-01",
+      "start_date": "2026-08-01",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Orient fund opens",
+      "start": "2026-08-03",
+      "start_date": "2026-08-03",
+      "time": "09:00",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Piranha MarineTech X DTU DG folow up meeting",
+      "start": "2026-08-04",
+      "start_date": "2026-08-04",
+      "time": "11:00",
+      "category": "work",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Barlay Krist\u00f3f\u2019s 29th Birthday",
+      "start": "2026-08-07",
+      "start_date": "2026-08-07",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Foldvari Andras\u2019s 74th Birthday",
+      "start": "2026-08-11",
+      "start_date": "2026-08-11",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "DALO Days",
+      "start": "2026-08-19",
+      "start_date": "2026-08-19",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
       "title": "Stay at Orfalusi Vend\u00e9gh\u00e1z",
       "start": "2026-08-20",
       "start_date": "2026-08-20",
       "time": "",
       "category": "personal",
       "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
+    },
+    {
+      "title": "Szent Istv\u00e1n \u00fcnnepe",
+      "start": "2026-08-20",
+      "start_date": "2026-08-20",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Szent Istv\u00e1n \u00fcnnepe (pihen\u0151nap)",
+      "start": "2026-08-21",
+      "start_date": "2026-08-21",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Beszteri Zolt\u00e1n\u2019s 58th Birthday",
+      "start": "2026-08-21",
+      "start_date": "2026-08-21",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Dessewffy Tam\u00e1s\u2019s 34th Birthday",
+      "start": "2026-08-22",
+      "start_date": "2026-08-22",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
     }
   ],
   "weather": {
@@ -816,7 +928,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "18:45",
+    "generated_at": "18:56",
     "readiness": 84,
     "bb": 34,
     "hrv": 50,
