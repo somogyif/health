@@ -1,72 +1,43 @@
 {
-  "synced_at": "2026-07-24 18:29",
+  "synced_at": "2026-07-24 20:26",
   "garmin": {
     "date": "2026-07-24",
-    "resting_hr": 64,
-    "hrv_weekly": 47,
-    "hrv_last_night": 46,
+    "resting_hr": null,
+    "hrv_weekly": null,
+    "hrv_last_night": null,
     "hrv_status": "Balanced",
-    "sleep_hours": 8.5,
-    "sleep_score": 80,
-    "sleep_missing": false,
-    "bb_charged": 61,
-    "bb_drained": 26,
-    "bb_current": 53,
-    "steps": 2286,
-    "step_goal": 6690,
-    "active_kcal": 410.0,
-    "total_kcal": 1641.0,
-    "avg_stress": 22,
-    "readiness_score": 77,
-    "fitness_age": 25.9,
-    "achievable_age": 21.1,
+    "sleep_hours": null,
+    "sleep_score": null,
+    "sleep_missing": true,
+    "bb_charged": null,
+    "bb_drained": null,
+    "bb_current": null,
+    "steps": 0,
+    "step_goal": 8000,
+    "active_kcal": 0,
+    "total_kcal": 0,
+    "avg_stress": 0,
+    "readiness_score": null,
+    "fitness_age": null,
+    "achievable_age": null,
     "chrono_age": 29,
-    "vigorous_days": 0.0,
+    "vigorous_days": 0.1,
     "vigorous_target": 3,
-    "training_status": "RECOVERY_1",
-    "acute_load": 44,
-    "chronic_load": 100,
-    "aerobic_low": 107,
-    "aerobic_low_min": 95,
-    "aerobic_low_max": 260,
-    "aerobic_high": 101,
-    "aerobic_high_min": 205,
-    "aerobic_high_max": 369,
-    "load_feedback": "AEROBIC_HIGH_SHORTAGE",
-    "sleep_week": [
-      {
-        "date": "2026-07-17",
-        "score": 90
-      },
-      {
-        "date": "2026-07-18",
-        "score": 57
-      },
-      {
-        "date": "2026-07-19",
-        "score": 73
-      },
-      {
-        "date": "2026-07-21",
-        "score": 86
-      },
-      {
-        "date": "2026-07-22",
-        "score": 76
-      },
-      {
-        "date": "2026-07-23",
-        "score": 68
-      },
-      {
-        "date": "2026-07-24",
-        "score": 80
-      }
-    ],
-    "sleep_avg": 76,
-    "sleep_best": 90,
-    "sleep_best_date": "17 Jul",
-    "sleep_trend": "declining"
+    "training_status": "",
+    "acute_load": null,
+    "chronic_load": null,
+    "aerobic_low": 0,
+    "aerobic_low_min": 97,
+    "aerobic_low_max": 261,
+    "aerobic_high": 0,
+    "aerobic_high_min": 203,
+    "aerobic_high_max": 368,
+    "load_feedback": "",
+    "sleep_week": [],
+    "sleep_avg": null,
+    "sleep_best": null,
+    "sleep_best_date": null,
+    "sleep_trend": ""
   },
   "body_comp": null,
   "workouts": [
@@ -778,7 +749,7 @@
       "title": "Zs\u00f3fi tali",
       "start": "2026-07-24",
       "start_date": "2026-07-24",
-      "time": "17:00",
+      "time": "20:00",
       "category": "social",
       "calendar": "Notion"
     },
@@ -788,6 +759,14 @@
       "start_date": "2026-07-25",
       "time": "",
       "category": "social",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Anders x Piranha catch-up",
+      "start": "2026-07-27",
+      "start_date": "2026-07-27",
+      "time": "10:00",
+      "category": "work",
       "calendar": "Notion"
     },
     {
@@ -818,6 +797,14 @@
       "title": "Orient fund opens",
       "start": "2026-08-03",
       "start_date": "2026-08-03",
+      "time": "09:00",
+      "category": "work",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Piranha Board Meeting",
+      "start": "2026-08-04",
+      "start_date": "2026-08-04",
       "time": "09:00",
       "category": "work",
       "calendar": "Notion"
@@ -912,7 +899,7 @@
     }
   ],
   "weather": {
-    "temp": 21.1,
+    "temp": 20.4,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.0,
@@ -951,15 +938,16 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "18:29",
-    "readiness": 77,
-    "bb": 53,
-    "hrv": 46,
+    "generated_at": "20:26",
+    "readiness": 68,
+    "bb": 50,
+    "hrv": 42,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (77/100). Train but don't push to failure."
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -980,11 +968,11 @@
     }
   },
   "health_matrix": {
-    "readiness": 77,
-    "training_signal": 76,
-    "illness_risk": 86,
-    "recovery_debt": 68,
-    "cognitive_load": 74,
+    "readiness": 68,
+    "training_signal": 72,
+    "illness_risk": 82,
+    "recovery_debt": 62,
+    "cognitive_load": 68,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -993,50 +981,9 @@
       "No significant risk factors today"
     ]
   },
-  "bb_trend": [
-    {
-      "date": "2026-07-17",
-      "val": 70,
-      "drain": 71
-    },
-    {
-      "date": "2026-07-18",
-      "val": 50,
-      "drain": 46
-    },
-    {
-      "date": "2026-07-19",
-      "val": 47,
-      "drain": 56
-    },
-    {
-      "date": "2026-07-20",
-      "val": 61,
-      "drain": 38
-    },
-    {
-      "date": "2026-07-21",
-      "val": 62,
-      "drain": 63
-    },
-    {
-      "date": "2026-07-22",
-      "val": 62,
-      "drain": 61
-    },
-    {
-      "date": "2026-07-23",
-      "val": 66,
-      "drain": 38
-    },
-    {
-      "date": "2026-07-24",
-      "val": 49,
-      "drain": 26
-    }
-  ],
-  "bb_predicted_wake": 100,
-  "sleep_consistency": 55,
+  "bb_trend": [],
+  "bb_predicted_wake": 68,
+  "sleep_consistency": null,
   "late_night_penalty": false,
   "training_warning": false,
   "weekly_training": {
@@ -1056,14 +1003,14 @@
     "on_track": true
   },
   "training_load": {
-    "acute": 44,
-    "chronic": 100,
-    "aerobic_low": 107,
-    "aerobic_low_min": 95,
-    "aerobic_low_max": 260,
-    "aerobic_high": 101,
-    "aerobic_high_min": 205,
-    "aerobic_high_max": 369,
-    "feedback": "AEROBIC_HIGH_SHORTAGE"
+    "acute": null,
+    "chronic": null,
+    "aerobic_low": 0,
+    "aerobic_low_min": 97,
+    "aerobic_low_max": 261,
+    "aerobic_high": 0,
+    "aerobic_high_min": 203,
+    "aerobic_high_max": 368,
+    "feedback": ""
   }
 }
