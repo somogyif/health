@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-24 10:09",
+  "synced_at": "2026-07-24 10:13",
   "garmin": {
     "date": "2026-07-24",
     "resting_hr": 64,
@@ -944,7 +944,7 @@
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "10:09",
+    "generated_at": "10:13",
     "readiness": 77,
     "bb": 78,
     "hrv": 46,
