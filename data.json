@@ -1,30 +1,30 @@
 {
-  "synced_at": "2026-07-23 22:49",
+  "synced_at": "2026-07-24 09:57",
   "garmin": {
-    "date": "2026-07-23",
-    "resting_hr": 61,
+    "date": "2026-07-24",
+    "resting_hr": 64,
     "hrv_weekly": 47,
-    "hrv_last_night": 50,
+    "hrv_last_night": 46,
     "hrv_status": "Balanced",
-    "sleep_hours": 6.3,
-    "sleep_score": 68,
+    "sleep_hours": 8.5,
+    "sleep_score": 80,
     "sleep_missing": false,
-    "bb_charged": 63,
-    "bb_drained": 36,
-    "bb_current": 17,
-    "steps": 2266,
-    "step_goal": 7750,
-    "active_kcal": 115.0,
-    "total_kcal": 2223.0,
-    "avg_stress": 30,
-    "readiness_score": 84,
+    "bb_charged": 61,
+    "bb_drained": 1,
+    "bb_current": 78,
+    "steps": 70,
+    "step_goal": 6690,
+    "active_kcal": 7.0,
+    "total_kcal": 937.0,
+    "avg_stress": 19,
+    "readiness_score": 77,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
     "training_status": "RECOVERY_1",
-    "acute_load": 29,
+    "acute_load": 24,
     "chronic_load": 100,
     "aerobic_low": 96,
     "aerobic_low_min": 95,
@@ -34,10 +34,6 @@
     "aerobic_high_max": 369,
     "load_feedback": "AEROBIC_HIGH_SHORTAGE",
     "sleep_week": [
-      {
-        "date": "2026-07-16",
-        "score": 73
-      },
       {
         "date": "2026-07-17",
         "score": 90
@@ -61,9 +57,13 @@
       {
         "date": "2026-07-23",
         "score": 68
+      },
+      {
+        "date": "2026-07-24",
+        "score": 80
       }
     ],
-    "sleep_avg": 75,
+    "sleep_avg": 76,
     "sleep_best": 90,
     "sleep_best_date": "17 Jul",
     "sleep_trend": "declining"
@@ -886,22 +886,38 @@
       "time": "",
       "category": "personal",
       "calendar": "Notion"
+    },
+    {
+      "title": "K\u00e1roly Varga\u2019s 61st Birthday",
+      "start": "2026-08-23",
+      "start_date": "2026-08-23",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "R\u00f6nky \u00c1ron\u2019s 32nd Birthday",
+      "start": "2026-08-23",
+      "start_date": "2026-08-23",
+      "time": "",
+      "category": "personal",
+      "calendar": "Notion"
     }
   ],
   "weather": {
-    "temp": 19.7,
-    "description": "Partly cloudy",
+    "temp": 17.5,
+    "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.0,
-    "solar_mj": 24.3,
-    "wind_kmh": 17.3,
+    "uv_index": 6.2,
+    "solar_mj": 19.9,
+    "wind_kmh": 16.2,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 21,
+    "watch_nights": 22,
     "sessions_this_week": 2,
     "training_weeks_4x": 0,
-    "days_since_session": 2,
+    "days_since_session": 3,
     "last_session_label": "21 Jul \u00b7 Lower 1"
   },
   "tasks": {
@@ -927,23 +943,23 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "evening",
-    "generated_at": "22:49",
-    "readiness": 84,
-    "bb": 17,
-    "hrv": 50,
+    "context": "morning",
+    "generated_at": "09:57",
+    "readiness": 77,
+    "bb": 78,
+    "hrv": 46,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 84, battery 17). Keep intensity moderate.",
-        "Evening \u2014 wind down now. Set up tomorrow before bed."
+        "Moderate readiness (77/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00."
       ],
       "task_count": 0,
       "work_shifts": 0,
       "has_gym": false,
       "tasks": [],
-      "recovery": "low"
+      "recovery": "moderate"
     },
     "tomorrow": {
       "label": "Clear",
@@ -958,26 +974,20 @@
     }
   },
   "health_matrix": {
-    "readiness": 84,
-    "training_signal": 71,
-    "illness_risk": 80,
-    "recovery_debt": 54,
-    "cognitive_load": 58,
+    "readiness": 77,
+    "training_signal": 84,
+    "illness_risk": 87,
+    "recovery_debt": 78,
+    "cognitive_load": 80,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 35,
+    "score": 0,
     "factors": [
-      "Sleep < 7h",
-      "Body battery critical"
+      "No significant risk factors today"
     ]
   },
   "bb_trend": [
-    {
-      "date": "2026-07-16",
-      "val": 54,
-      "drain": 49
-    },
     {
       "date": "2026-07-17",
       "val": 70,
@@ -1010,12 +1020,17 @@
     },
     {
       "date": "2026-07-23",
-      "val": 63,
-      "drain": 36
+      "val": 66,
+      "drain": 38
+    },
+    {
+      "date": "2026-07-24",
+      "val": 45,
+      "drain": 1
     }
   ],
-  "bb_predicted_wake": 71,
-  "sleep_consistency": 56,
+  "bb_predicted_wake": 100,
+  "sleep_consistency": 55,
   "late_night_penalty": false,
   "training_warning": false,
   "weekly_training": {
@@ -1035,7 +1050,7 @@
     "on_track": false
   },
   "training_load": {
-    "acute": 29,
+    "acute": 24,
     "chronic": 100,
     "aerobic_low": 96,
     "aerobic_low_min": 95,
