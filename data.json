@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-24 09:57",
+  "synced_at": "2026-07-24 10:09",
   "garmin": {
     "date": "2026-07-24",
     "resting_hr": 64,
@@ -10,7 +10,7 @@
     "sleep_score": 80,
     "sleep_missing": false,
     "bb_charged": 61,
-    "bb_drained": 1,
+    "bb_drained": 4,
     "bb_current": 78,
     "steps": 70,
     "step_goal": 6690,
@@ -772,7 +772,7 @@
       "start": "2026-07-24",
       "start_date": "2026-07-24",
       "time": "17:00",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -780,7 +780,7 @@
       "start": "2026-07-25",
       "start_date": "2026-07-25",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -788,7 +788,7 @@
       "start": "2026-07-31",
       "start_date": "2026-07-31",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -796,7 +796,7 @@
       "start": "2026-07-31",
       "start_date": "2026-07-31",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -804,7 +804,7 @@
       "start": "2026-08-01",
       "start_date": "2026-08-01",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -812,7 +812,7 @@
       "start": "2026-08-03",
       "start_date": "2026-08-03",
       "time": "09:00",
-      "category": "personal",
+      "category": "work",
       "calendar": "Notion"
     },
     {
@@ -828,7 +828,7 @@
       "start": "2026-08-07",
       "start_date": "2026-08-07",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -836,7 +836,7 @@
       "start": "2026-08-11",
       "start_date": "2026-08-11",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -844,7 +844,7 @@
       "start": "2026-08-19",
       "start_date": "2026-08-19",
       "time": "",
-      "category": "personal",
+      "category": "work",
       "calendar": "Notion"
     },
     {
@@ -876,7 +876,7 @@
       "start": "2026-08-21",
       "start_date": "2026-08-21",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -884,7 +884,7 @@
       "start": "2026-08-22",
       "start_date": "2026-08-22",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -892,7 +892,7 @@
       "start": "2026-08-23",
       "start_date": "2026-08-23",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     },
     {
@@ -900,12 +900,12 @@
       "start": "2026-08-23",
       "start_date": "2026-08-23",
       "time": "",
-      "category": "personal",
+      "category": "social",
       "calendar": "Notion"
     }
   ],
   "weather": {
-    "temp": 17.5,
+    "temp": 18.2,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.2,
@@ -944,7 +944,7 @@
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "09:57",
+    "generated_at": "10:09",
     "readiness": 77,
     "bb": 78,
     "hrv": 46,
@@ -1026,7 +1026,7 @@
     {
       "date": "2026-07-24",
       "val": 45,
-      "drain": 1
+      "drain": 4
     }
   ],
   "bb_predicted_wake": 100,
