@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-24 12:31",
+  "synced_at": "2026-07-24 18:24",
   "garmin": {
     "date": "2026-07-24",
     "resting_hr": 64,
@@ -10,13 +10,13 @@
     "sleep_score": 80,
     "sleep_missing": false,
     "bb_charged": 61,
-    "bb_drained": 4,
-    "bb_current": 78,
-    "steps": 70,
+    "bb_drained": 26,
+    "bb_current": 53,
+    "steps": 2286,
     "step_goal": 6690,
-    "active_kcal": 7.0,
-    "total_kcal": 937.0,
-    "avg_stress": 19,
+    "active_kcal": 410.0,
+    "total_kcal": 1641.0,
+    "avg_stress": 22,
     "readiness_score": 77,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -912,11 +912,11 @@
     }
   ],
   "weather": {
-    "temp": 19.4,
+    "temp": 21.1,
     "description": "Cloudy",
     "precip_mm": 0,
-    "uv_index": 6.2,
-    "solar_mj": 20.2,
+    "uv_index": 6.0,
+    "solar_mj": 20.7,
     "wind_kmh": 16.6,
     "rain": false
   },
@@ -950,17 +950,16 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "12:31",
+    "context": "evening",
+    "generated_at": "18:24",
     "readiness": 77,
-    "bb": 78,
+    "bb": 53,
     "hrv": 46,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (77/100). Train but don't push to failure.",
-        "No gym scheduled \u2014 if you train, go before 14:00."
+        "Moderate readiness (77/100). Train but don't push to failure."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -982,10 +981,10 @@
   },
   "health_matrix": {
     "readiness": 77,
-    "training_signal": 84,
-    "illness_risk": 87,
-    "recovery_debt": 78,
-    "cognitive_load": 80,
+    "training_signal": 76,
+    "illness_risk": 86,
+    "recovery_debt": 68,
+    "cognitive_load": 74,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -1032,8 +1031,8 @@
     },
     {
       "date": "2026-07-24",
-      "val": 45,
-      "drain": 4
+      "val": 49,
+      "drain": 26
     }
   ],
   "bb_predicted_wake": 100,
