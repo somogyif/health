@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-26 23:43",
+  "synced_at": "2026-07-26 23:50",
   "garmin": {
     "date": "2026-07-26",
     "resting_hr": 68,
@@ -15,7 +15,7 @@
     "steps": 8773,
     "step_goal": 7950,
     "active_kcal": 1000.0,
-    "total_kcal": 3217.0,
+    "total_kcal": 3226.0,
     "avg_stress": 48,
     "readiness_score": 83,
     "fitness_age": 25.9,
@@ -920,7 +920,7 @@
     }
   ],
   "weather": {
-    "temp": 16.8,
+    "temp": 16.6,
     "description": "Rain",
     "precip_mm": 0.8,
     "uv_index": 3.5,
@@ -959,7 +959,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "23:43",
+    "generated_at": "23:50",
     "readiness": 83,
     "bb": 5,
     "hrv": 35,
@@ -1043,7 +1043,7 @@
     },
     {
       "date": "2026-07-26",
-      "val": 13,
+      "val": 14,
       "drain": 18
     }
   ],
