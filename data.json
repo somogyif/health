@@ -1,38 +1,38 @@
 {
-  "synced_at": "2026-07-27 23:10",
+  "synced_at": "2026-07-28 00:10",
   "garmin": {
-    "date": "2026-07-27",
-    "resting_hr": 66,
+    "date": "2026-07-28",
+    "resting_hr": null,
     "hrv_weekly": 44,
     "hrv_last_night": 39,
     "hrv_status": "Balanced",
     "sleep_hours": 6.7,
     "sleep_score": 75,
     "sleep_missing": false,
-    "bb_charged": 41,
-    "bb_drained": 40,
-    "bb_current": 6,
-    "steps": 2770,
-    "step_goal": 8120,
-    "active_kcal": 406.0,
-    "total_kcal": 2562.0,
-    "avg_stress": 37,
-    "readiness_score": 29,
+    "bb_charged": null,
+    "bb_drained": null,
+    "bb_current": null,
+    "steps": 0,
+    "step_goal": 8000,
+    "active_kcal": 0,
+    "total_kcal": 0,
+    "avg_stress": 0,
+    "readiness_score": 53,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
-    "training_status": "RECOVERY_1",
-    "acute_load": 73,
-    "chronic_load": 100,
-    "aerobic_low": 139,
-    "aerobic_low_min": 95,
-    "aerobic_low_max": 260,
-    "aerobic_high": 101,
-    "aerobic_high_min": 205,
-    "aerobic_high_max": 369,
-    "load_feedback": "AEROBIC_HIGH_SHORTAGE",
+    "training_status": "",
+    "acute_load": null,
+    "chronic_load": null,
+    "aerobic_low": 0,
+    "aerobic_low_min": 97,
+    "aerobic_low_max": 261,
+    "aerobic_high": 0,
+    "aerobic_high_min": 203,
+    "aerobic_high_max": 368,
+    "load_feedback": "",
     "sleep_week": [
       {
         "date": "2026-07-21",
@@ -952,42 +952,6 @@
   "calendar": [
     {
       "title": "Edz\u00e9s",
-      "start": "2026-07-27",
-      "start_date": "2026-07-27",
-      "time": "08:00",
-      "all_day": false,
-      "category": "wellness",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Anders x Piranha catch-up",
-      "start": "2026-07-27",
-      "start_date": "2026-07-27",
-      "time": "10:00",
-      "all_day": false,
-      "category": "work",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Pisti bevasarlas",
-      "start": "2026-07-27",
-      "start_date": "2026-07-27",
-      "time": "17:00",
-      "all_day": false,
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Purda M\u00e1rk telefon",
-      "start": "2026-07-27",
-      "start_date": "2026-07-27",
-      "time": "19:00",
-      "all_day": false,
-      "category": "personal",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Edz\u00e9s",
       "start": "2026-07-28",
       "start_date": "2026-07-28",
       "time": "08:00",
@@ -1186,19 +1150,19 @@
     }
   ],
   "weather": {
-    "temp": 16.2,
+    "temp": 15.7,
     "description": "Cloudy",
-    "precip_mm": 21.3,
-    "uv_index": 5.8,
-    "solar_mj": 18.4,
-    "wind_kmh": 27.4,
-    "rain": true
+    "precip_mm": 0,
+    "uv_index": 5.9,
+    "solar_mj": 22.7,
+    "wind_kmh": 26.3,
+    "rain": false
   },
   "streaks": {
-    "watch_nights": 25,
+    "watch_nights": 26,
     "sessions_this_week": 1,
     "training_weeks_4x": 1,
-    "days_since_session": 0,
+    "days_since_session": 1,
     "last_session_label": "27 Jul \u00b7 Upper 1"
   },
   "tasks": {
@@ -1224,22 +1188,20 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "evening",
-    "generated_at": "23:10",
-    "readiness": 29,
-    "bb": 6,
+    "context": "morning",
+    "generated_at": "00:10",
+    "readiness": 53,
+    "bb": 50,
     "hrv": 39,
     "today": {
       "label": "Clear",
       "lines": [
-        "Manageable day.",
-        "Recovery is low (readiness 29, battery 6). Keep intensity moderate.",
-        "Gym is in the calendar at 08:00. Keep it.",
-        "Caf\u00e9 shifts at 10:00. Finish cognitive tasks before 10:00.",
-        "Evening \u2014 wind down now. Set up tomorrow before bed."
+        "Clear day \u2014 good for deep work or extra recovery.",
+        "Recovery is low (readiness 53, battery 50). Keep intensity moderate.",
+        "Gym is in the calendar at 08:00. Keep it."
       ],
       "task_count": 0,
-      "work_shifts": 1,
+      "work_shifts": 0,
       "has_gym": true,
       "tasks": [],
       "recovery": "low"
@@ -1247,37 +1209,30 @@
     "tomorrow": {
       "label": "Clear",
       "lines": [
-        "Clear day \u2014 good for deep work or extra recovery.",
-        "Gym is in the calendar at 08:00. Keep it."
+        "Clear day \u2014 good for deep work or extra recovery."
       ],
       "task_count": 0,
       "work_shifts": 0,
-      "has_gym": true,
+      "has_gym": false,
       "tasks": [],
       "recovery": "moderate"
     }
   },
   "health_matrix": {
-    "readiness": 29,
-    "training_signal": 40,
-    "illness_risk": 76,
-    "recovery_debt": 29,
-    "cognitive_load": 58,
+    "readiness": 53,
+    "training_signal": 63,
+    "illness_risk": 78,
+    "recovery_debt": 56,
+    "cognitive_load": 68,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 35,
+    "score": 15,
     "factors": [
-      "Sleep < 7h",
-      "Body battery critical"
+      "Sleep < 7h"
     ]
   },
   "bb_trend": [
-    {
-      "date": "2026-07-20",
-      "val": 61,
-      "drain": 38
-    },
     {
       "date": "2026-07-21",
       "val": 62,
@@ -1310,14 +1265,19 @@
     },
     {
       "date": "2026-07-27",
-      "val": 38,
-      "drain": 40
+      "val": 39,
+      "drain": 41
+    },
+    {
+      "date": "2026-07-28",
+      "val": null,
+      "drain": null
     }
   ],
-  "bb_predicted_wake": 41,
+  "bb_predicted_wake": 68,
   "sleep_consistency": 51,
   "late_night_penalty": false,
-  "training_warning": true,
+  "training_warning": false,
   "weekly_training": {
     "this_week": {
       "sessions": 1,
@@ -1335,14 +1295,14 @@
     "on_track": false
   },
   "training_load": {
-    "acute": 73,
-    "chronic": 100,
-    "aerobic_low": 139,
-    "aerobic_low_min": 95,
-    "aerobic_low_max": 260,
-    "aerobic_high": 101,
-    "aerobic_high_min": 205,
-    "aerobic_high_max": 369,
-    "feedback": "AEROBIC_HIGH_SHORTAGE"
+    "acute": null,
+    "chronic": null,
+    "aerobic_low": 0,
+    "aerobic_low_min": 97,
+    "aerobic_low_max": 261,
+    "aerobic_high": 0,
+    "aerobic_high_min": 203,
+    "aerobic_high_max": 368,
+    "feedback": ""
   }
 }
