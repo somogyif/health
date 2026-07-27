@@ -1,38 +1,38 @@
 {
-  "synced_at": "2026-07-27 15:23",
+  "synced_at": "2026-07-27 15:53",
   "garmin": {
     "date": "2026-07-27",
-    "resting_hr": 67,
-    "hrv_weekly": null,
-    "hrv_last_night": null,
+    "resting_hr": 66,
+    "hrv_weekly": 44,
+    "hrv_last_night": 39,
     "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
-    "sleep_score": null,
-    "sleep_missing": true,
-    "bb_charged": 0,
-    "bb_drained": 0,
-    "bb_current": 5,
-    "steps": 112,
+    "sleep_hours": 6.7,
+    "sleep_score": 75,
+    "sleep_missing": false,
+    "bb_charged": 41,
+    "bb_drained": 22,
+    "bb_current": 24,
+    "steps": 2130,
     "step_goal": 8120,
-    "active_kcal": 9.0,
-    "total_kcal": 154.0,
-    "avg_stress": 37,
+    "active_kcal": 386.0,
+    "total_kcal": 1844.0,
+    "avg_stress": 31,
     "readiness_score": 29,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
-    "training_status": "",
-    "acute_load": null,
-    "chronic_load": null,
-    "aerobic_low": 0,
-    "aerobic_low_min": 97,
-    "aerobic_low_max": 261,
-    "aerobic_high": 0,
-    "aerobic_high_min": 203,
-    "aerobic_high_max": 368,
-    "load_feedback": "",
+    "training_status": "RECOVERY_1",
+    "acute_load": 73,
+    "chronic_load": 100,
+    "aerobic_low": 139,
+    "aerobic_low_min": 95,
+    "aerobic_low_max": 260,
+    "aerobic_high": 101,
+    "aerobic_high_min": 205,
+    "aerobic_high_max": 369,
+    "load_feedback": "AEROBIC_HIGH_SHORTAGE",
     "sleep_week": [
       {
         "date": "2026-07-21",
@@ -57,6 +57,10 @@
       {
         "date": "2026-07-26",
         "score": 48
+      },
+      {
+        "date": "2026-07-27",
+        "score": 75
       }
     ],
     "sleep_avg": 73,
@@ -82,6 +86,7 @@
       "exercises": [
         {
           "name": "Bent Over Row (Barbell)",
+          "template_id": "55E6546F",
           "weight": 52,
           "sets": 3,
           "reps": 10,
@@ -89,6 +94,7 @@
         },
         {
           "name": "Shoulder Press (Dumbbell)",
+          "template_id": "878CD1D0",
           "weight": 36,
           "sets": 3,
           "reps": 10,
@@ -96,6 +102,7 @@
         },
         {
           "name": "Bench Press (Barbell)",
+          "template_id": "79D0BB3A",
           "weight": 50,
           "sets": 4,
           "reps": 11,
@@ -103,6 +110,7 @@
         },
         {
           "name": "Butterfly (Pec Deck)",
+          "template_id": "9DCE2D64",
           "weight": 35,
           "sets": 3,
           "reps": 13,
@@ -110,6 +118,7 @@
         },
         {
           "name": "Bicep Curl (Dumbbell)",
+          "template_id": "37FCC2BB",
           "weight": 24,
           "sets": 3,
           "reps": 14,
@@ -117,6 +126,7 @@
         },
         {
           "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
           "weight": 45,
           "sets": 3,
           "reps": 14,
@@ -133,6 +143,7 @@
       "exercises": [
         {
           "name": "Leg Press Horizontal (Machine)",
+          "template_id": "0EB695C9",
           "weight": 110,
           "sets": 3,
           "reps": 11,
@@ -140,6 +151,7 @@
         },
         {
           "name": "Back Extension (Weighted Hyperextension)",
+          "template_id": "091737FA",
           "weight": 30,
           "sets": 3,
           "reps": 12,
@@ -147,6 +159,7 @@
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
+          "template_id": "72CFFAD5",
           "weight": 44,
           "sets": 3,
           "reps": 13,
@@ -154,6 +167,7 @@
         },
         {
           "name": "Seated Leg Curl (Machine)",
+          "template_id": "11A123F3",
           "weight": 40,
           "sets": 3,
           "reps": 14,
@@ -161,6 +175,7 @@
         },
         {
           "name": "Calf Extension (Machine)",
+          "template_id": "47B9DF13",
           "weight": 130,
           "sets": 3,
           "reps": 14,
@@ -168,6 +183,7 @@
         },
         {
           "name": "Cable Crunch",
+          "template_id": "23A48484",
           "weight": 80,
           "sets": 3,
           "reps": 15,
@@ -184,6 +200,7 @@
       "exercises": [
         {
           "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
           "weight": 40,
           "sets": 3,
           "reps": 11,
@@ -191,6 +208,7 @@
         },
         {
           "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
           "weight": 50,
           "sets": 3,
           "reps": 12,
@@ -198,6 +216,7 @@
         },
         {
           "name": "Lat Pulldown (Cable)",
+          "template_id": "6A6C31A5",
           "weight": 60,
           "sets": 3,
           "reps": 10,
@@ -205,6 +224,7 @@
         },
         {
           "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
           "weight": 40,
           "sets": 3,
           "reps": 14,
@@ -212,6 +232,7 @@
         },
         {
           "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
           "weight": 18,
           "sets": 3,
           "reps": 14,
@@ -219,6 +240,7 @@
         },
         {
           "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "template_id": "E5988A0A",
           "weight": 16,
           "sets": 3,
           "reps": 13,
@@ -235,6 +257,7 @@
       "exercises": [
         {
           "name": "Leg Press Horizontal (Machine)",
+          "template_id": "0EB695C9",
           "weight": 110,
           "sets": 3,
           "reps": 11,
@@ -242,6 +265,7 @@
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
+          "template_id": "72CFFAD5",
           "weight": 40,
           "sets": 3,
           "reps": 11,
@@ -249,6 +273,7 @@
         },
         {
           "name": "Leg Extension (Machine)",
+          "template_id": "75A4F6C4",
           "weight": 55,
           "sets": 3,
           "reps": 13,
@@ -256,6 +281,7 @@
         },
         {
           "name": "Calf Extension (Machine)",
+          "template_id": "47B9DF13",
           "weight": 130,
           "sets": 3,
           "reps": 15,
@@ -263,6 +289,7 @@
         },
         {
           "name": "Cable Crunch",
+          "template_id": "23A48484",
           "weight": 75,
           "sets": 3,
           "reps": 15,
@@ -279,6 +306,7 @@
       "exercises": [
         {
           "name": "Bent Over Row (Dumbbell)",
+          "template_id": "23E92538",
           "weight": 32,
           "sets": 3,
           "reps": 12,
@@ -286,6 +314,7 @@
         },
         {
           "name": "Shoulder Press (Dumbbell)",
+          "template_id": "878CD1D0",
           "weight": 36,
           "sets": 3,
           "reps": 11,
@@ -293,6 +322,7 @@
         },
         {
           "name": "Bench Press (Barbell)",
+          "template_id": "79D0BB3A",
           "weight": 50,
           "sets": 3,
           "reps": 9,
@@ -300,6 +330,7 @@
         },
         {
           "name": "Butterfly (Pec Deck)",
+          "template_id": "9DCE2D64",
           "weight": 40,
           "sets": 3,
           "reps": 12,
@@ -307,6 +338,7 @@
         },
         {
           "name": "Bicep Curl (Dumbbell)",
+          "template_id": "37FCC2BB",
           "weight": 24,
           "sets": 3,
           "reps": 13,
@@ -323,6 +355,7 @@
       "exercises": [
         {
           "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
           "weight": 36,
           "sets": 3,
           "reps": 12,
@@ -330,6 +363,7 @@
         },
         {
           "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
           "weight": 50,
           "sets": 3,
           "reps": 12,
@@ -337,6 +371,7 @@
         },
         {
           "name": "Lat Pulldown (Cable)",
+          "template_id": "6A6C31A5",
           "weight": 60,
           "sets": 3,
           "reps": 10,
@@ -344,6 +379,7 @@
         },
         {
           "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
           "weight": 35,
           "sets": 3,
           "reps": 14,
@@ -351,6 +387,7 @@
         },
         {
           "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
           "weight": 16,
           "sets": 3,
           "reps": 14,
@@ -367,6 +404,7 @@
       "exercises": [
         {
           "name": "Squat (Smith Machine)",
+          "template_id": "DDCC3821",
           "weight": 30,
           "sets": 3,
           "reps": 12,
@@ -374,6 +412,7 @@
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
+          "template_id": "72CFFAD5",
           "weight": 40,
           "sets": 3,
           "reps": 12,
@@ -381,6 +420,7 @@
         },
         {
           "name": "Leg Extension (Machine)",
+          "template_id": "75A4F6C4",
           "weight": 35,
           "sets": 3,
           "reps": 14,
@@ -388,6 +428,7 @@
         },
         {
           "name": "Calf Extension (Machine)",
+          "template_id": "47B9DF13",
           "weight": 120,
           "sets": 3,
           "reps": 15,
@@ -395,6 +436,7 @@
         },
         {
           "name": "Cable Crunch",
+          "template_id": "23A48484",
           "weight": 80,
           "sets": 3,
           "reps": 15,
@@ -411,6 +453,7 @@
       "exercises": [
         {
           "name": "Bent Over Row (Barbell)",
+          "template_id": "55E6546F",
           "weight": 52,
           "sets": 3,
           "reps": 11,
@@ -418,6 +461,7 @@
         },
         {
           "name": "Shoulder Press (Dumbbell)",
+          "template_id": "878CD1D0",
           "weight": 36,
           "sets": 3,
           "reps": 11,
@@ -425,6 +469,7 @@
         },
         {
           "name": "Bench Press (Barbell)",
+          "template_id": "79D0BB3A",
           "weight": 47.5,
           "sets": 3,
           "reps": 9,
@@ -432,6 +477,7 @@
         },
         {
           "name": "Chest Fly (Machine)",
+          "template_id": "78683336",
           "weight": 45,
           "sets": 3,
           "reps": 13,
@@ -439,6 +485,7 @@
         },
         {
           "name": "Bicep Curl (Dumbbell)",
+          "template_id": "37FCC2BB",
           "weight": 24,
           "sets": 3,
           "reps": 11,
@@ -455,6 +502,7 @@
       "exercises": [
         {
           "name": "Hack Squat (Machine)",
+          "template_id": "1E42FD5F",
           "weight": 20,
           "sets": 3,
           "reps": 11,
@@ -462,6 +510,7 @@
         },
         {
           "name": "Back Extension (Weighted Hyperextension)",
+          "template_id": "091737FA",
           "weight": 25,
           "sets": 3,
           "reps": 12,
@@ -469,6 +518,7 @@
         },
         {
           "name": "Leg Press Horizontal (Machine)",
+          "template_id": "0EB695C9",
           "weight": 117,
           "sets": 3,
           "reps": 11,
@@ -476,6 +526,7 @@
         },
         {
           "name": "Lying Leg Curl (Machine)",
+          "template_id": "B8127AD1",
           "weight": 40,
           "sets": 3,
           "reps": 13,
@@ -483,6 +534,7 @@
         },
         {
           "name": "Calf Extension (Machine)",
+          "template_id": "47B9DF13",
           "weight": 125,
           "sets": 3,
           "reps": 15,
@@ -490,6 +542,7 @@
         },
         {
           "name": "Cable Crunch",
+          "template_id": "23A48484",
           "weight": 73,
           "sets": 3,
           "reps": 16,
@@ -506,6 +559,7 @@
       "exercises": [
         {
           "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
           "weight": 32,
           "sets": 3,
           "reps": 12,
@@ -513,6 +567,7 @@
         },
         {
           "name": "T Bar Row",
+          "template_id": "08A2974E",
           "weight": 35,
           "sets": 3,
           "reps": 12,
@@ -520,6 +575,7 @@
         },
         {
           "name": "Seated Shoulder Press (Machine)",
+          "template_id": "9237BAD1",
           "weight": 40,
           "sets": 3,
           "reps": 11,
@@ -527,6 +583,7 @@
         },
         {
           "name": "Lat Pulldown (Cable)",
+          "template_id": "6A6C31A5",
           "weight": 60,
           "sets": 3,
           "reps": 11,
@@ -534,6 +591,7 @@
         },
         {
           "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
           "weight": 14,
           "sets": 3,
           "reps": 15,
@@ -541,6 +599,7 @@
         },
         {
           "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "template_id": "E5988A0A",
           "weight": 14,
           "sets": 3,
           "reps": 14,
@@ -559,6 +618,7 @@
       "exercises": [
         {
           "name": "Bent Over Row (Barbell)",
+          "template_id": "55E6546F",
           "weight": 52,
           "sets": 3,
           "reps": 10,
@@ -566,6 +626,7 @@
         },
         {
           "name": "Shoulder Press (Dumbbell)",
+          "template_id": "878CD1D0",
           "weight": 36,
           "sets": 3,
           "reps": 10,
@@ -573,6 +634,7 @@
         },
         {
           "name": "Bench Press (Barbell)",
+          "template_id": "79D0BB3A",
           "weight": 50,
           "sets": 4,
           "reps": 11,
@@ -580,6 +642,7 @@
         },
         {
           "name": "Butterfly (Pec Deck)",
+          "template_id": "9DCE2D64",
           "weight": 35,
           "sets": 3,
           "reps": 13,
@@ -587,6 +650,7 @@
         },
         {
           "name": "Bicep Curl (Dumbbell)",
+          "template_id": "37FCC2BB",
           "weight": 24,
           "sets": 3,
           "reps": 14,
@@ -594,13 +658,21 @@
         },
         {
           "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
           "weight": 45,
           "sets": 3,
           "reps": 14,
           "volume": 1770
         }
       ],
-      "overload": []
+      "overload": [
+        {
+          "name": "Bench Press (Barbell)",
+          "type": "sets",
+          "from": 3,
+          "to": 4
+        }
+      ]
     },
     {
       "date": "2026-07-26",
@@ -611,6 +683,7 @@
       "exercises": [
         {
           "name": "Leg Press Horizontal (Machine)",
+          "template_id": "0EB695C9",
           "weight": 110,
           "sets": 3,
           "reps": 11,
@@ -618,6 +691,7 @@
         },
         {
           "name": "Back Extension (Weighted Hyperextension)",
+          "template_id": "091737FA",
           "weight": 30,
           "sets": 3,
           "reps": 12,
@@ -625,6 +699,7 @@
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
+          "template_id": "72CFFAD5",
           "weight": 44,
           "sets": 3,
           "reps": 13,
@@ -632,6 +707,7 @@
         },
         {
           "name": "Seated Leg Curl (Machine)",
+          "template_id": "11A123F3",
           "weight": 40,
           "sets": 3,
           "reps": 14,
@@ -639,6 +715,7 @@
         },
         {
           "name": "Calf Extension (Machine)",
+          "template_id": "47B9DF13",
           "weight": 130,
           "sets": 3,
           "reps": 14,
@@ -646,13 +723,33 @@
         },
         {
           "name": "Cable Crunch",
+          "template_id": "23A48484",
           "weight": 80,
           "sets": 3,
           "reps": 15,
           "volume": 3600
         }
       ],
-      "overload": []
+      "overload": [
+        {
+          "name": "Back Extension (Weighted Hyperextension)",
+          "type": "weight",
+          "from": 25,
+          "to": 30
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "type": "weight",
+          "from": 125,
+          "to": 130
+        },
+        {
+          "name": "Cable Crunch",
+          "type": "weight",
+          "from": 73,
+          "to": 80
+        }
+      ]
     },
     {
       "date": "2026-07-24",
@@ -663,6 +760,7 @@
       "exercises": [
         {
           "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
           "weight": 40,
           "sets": 3,
           "reps": 11,
@@ -670,6 +768,7 @@
         },
         {
           "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
           "weight": 50,
           "sets": 3,
           "reps": 12,
@@ -677,6 +776,7 @@
         },
         {
           "name": "Lat Pulldown (Cable)",
+          "template_id": "6A6C31A5",
           "weight": 60,
           "sets": 3,
           "reps": 10,
@@ -684,6 +784,7 @@
         },
         {
           "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
           "weight": 40,
           "sets": 3,
           "reps": 14,
@@ -691,6 +792,7 @@
         },
         {
           "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
           "weight": 18,
           "sets": 3,
           "reps": 14,
@@ -698,13 +800,33 @@
         },
         {
           "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "template_id": "E5988A0A",
           "weight": 16,
           "sets": 3,
           "reps": 13,
           "volume": 624
         }
       ],
-      "overload": []
+      "overload": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "type": "weight",
+          "from": 36,
+          "to": 40
+        },
+        {
+          "name": "Triceps Pushdown",
+          "type": "weight",
+          "from": 35,
+          "to": 40
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "type": "weight",
+          "from": 16,
+          "to": 18
+        }
+      ]
     },
     {
       "date": "2026-07-21",
@@ -715,6 +837,7 @@
       "exercises": [
         {
           "name": "Leg Press Horizontal (Machine)",
+          "template_id": "0EB695C9",
           "weight": 110,
           "sets": 3,
           "reps": 11,
@@ -722,6 +845,7 @@
         },
         {
           "name": "Romanian Deadlift (Dumbbell)",
+          "template_id": "72CFFAD5",
           "weight": 40,
           "sets": 3,
           "reps": 11,
@@ -729,6 +853,7 @@
         },
         {
           "name": "Leg Extension (Machine)",
+          "template_id": "75A4F6C4",
           "weight": 55,
           "sets": 3,
           "reps": 13,
@@ -736,6 +861,7 @@
         },
         {
           "name": "Calf Extension (Machine)",
+          "template_id": "47B9DF13",
           "weight": 130,
           "sets": 3,
           "reps": 15,
@@ -743,13 +869,27 @@
         },
         {
           "name": "Cable Crunch",
+          "template_id": "23A48484",
           "weight": 75,
           "sets": 3,
           "reps": 15,
           "volume": 3375
         }
       ],
-      "overload": []
+      "overload": [
+        {
+          "name": "Leg Extension (Machine)",
+          "type": "weight",
+          "from": 35,
+          "to": 55
+        },
+        {
+          "name": "Calf Extension (Machine)",
+          "type": "weight",
+          "from": 120,
+          "to": 130
+        }
+      ]
     },
     {
       "date": "2026-07-20",
@@ -760,6 +900,7 @@
       "exercises": [
         {
           "name": "Bent Over Row (Dumbbell)",
+          "template_id": "23E92538",
           "weight": 32,
           "sets": 3,
           "reps": 12,
@@ -767,6 +908,7 @@
         },
         {
           "name": "Shoulder Press (Dumbbell)",
+          "template_id": "878CD1D0",
           "weight": 36,
           "sets": 3,
           "reps": 11,
@@ -774,6 +916,7 @@
         },
         {
           "name": "Bench Press (Barbell)",
+          "template_id": "79D0BB3A",
           "weight": 50,
           "sets": 3,
           "reps": 9,
@@ -781,6 +924,7 @@
         },
         {
           "name": "Butterfly (Pec Deck)",
+          "template_id": "9DCE2D64",
           "weight": 40,
           "sets": 3,
           "reps": 12,
@@ -788,6 +932,7 @@
         },
         {
           "name": "Bicep Curl (Dumbbell)",
+          "template_id": "37FCC2BB",
           "weight": 24,
           "sets": 3,
           "reps": 13,
@@ -796,10 +941,10 @@
       ],
       "overload": [
         {
-          "name": "Butterfly (Pec Deck)",
+          "name": "Bench Press (Barbell)",
           "type": "weight",
-          "from": 35,
-          "to": 40
+          "from": 47.5,
+          "to": 50
         }
       ]
     }
@@ -810,6 +955,7 @@
       "start": "2026-07-27",
       "start_date": "2026-07-27",
       "time": "08:00",
+      "all_day": false,
       "category": "wellness",
       "calendar": "Notion"
     },
@@ -818,6 +964,7 @@
       "start": "2026-07-27",
       "start_date": "2026-07-27",
       "time": "10:00",
+      "all_day": false,
       "category": "work",
       "calendar": "Notion"
     },
@@ -826,6 +973,7 @@
       "start": "2026-07-27",
       "start_date": "2026-07-27",
       "time": "17:00",
+      "all_day": false,
       "category": "personal",
       "calendar": "Notion"
     },
@@ -834,6 +982,7 @@
       "start": "2026-07-27",
       "start_date": "2026-07-27",
       "time": "19:00",
+      "all_day": false,
       "category": "personal",
       "calendar": "Notion"
     },
@@ -842,6 +991,7 @@
       "start": "2026-07-28",
       "start_date": "2026-07-28",
       "time": "08:00",
+      "all_day": false,
       "category": "wellness",
       "calendar": "Notion"
     },
@@ -850,6 +1000,7 @@
       "start": "2026-07-28",
       "start_date": "2026-07-28",
       "time": "13:00",
+      "all_day": false,
       "category": "personal",
       "calendar": "Notion"
     },
@@ -858,6 +1009,7 @@
       "start": "2026-07-30",
       "start_date": "2026-07-30",
       "time": "15:00",
+      "all_day": false,
       "category": "social",
       "calendar": "Notion"
     },
@@ -866,6 +1018,7 @@
       "start": "2026-07-31",
       "start_date": "2026-07-31",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -874,6 +1027,7 @@
       "start": "2026-07-31",
       "start_date": "2026-07-31",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -882,6 +1036,7 @@
       "start": "2026-07-31",
       "start_date": "2026-07-31",
       "time": "12:00",
+      "all_day": false,
       "category": "social",
       "calendar": "Notion"
     },
@@ -890,6 +1045,7 @@
       "start": "2026-08-01",
       "start_date": "2026-08-01",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -898,6 +1054,7 @@
       "start": "2026-08-03",
       "start_date": "2026-08-03",
       "time": "09:00",
+      "all_day": false,
       "category": "work",
       "calendar": "Notion"
     },
@@ -906,6 +1063,7 @@
       "start": "2026-08-04",
       "start_date": "2026-08-04",
       "time": "09:00",
+      "all_day": false,
       "category": "work",
       "calendar": "Notion"
     },
@@ -914,6 +1072,7 @@
       "start": "2026-08-04",
       "start_date": "2026-08-04",
       "time": "11:00",
+      "all_day": false,
       "category": "work",
       "calendar": "Notion"
     },
@@ -922,6 +1081,7 @@
       "start": "2026-08-07",
       "start_date": "2026-08-07",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -930,6 +1090,7 @@
       "start": "2026-08-08",
       "start_date": "2026-08-08",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -938,6 +1099,7 @@
       "start": "2026-08-11",
       "start_date": "2026-08-11",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -946,6 +1108,7 @@
       "start": "2026-08-19",
       "start_date": "2026-08-19",
       "time": "",
+      "all_day": true,
       "category": "work",
       "calendar": "Notion"
     },
@@ -954,6 +1117,7 @@
       "start": "2026-08-20",
       "start_date": "2026-08-20",
       "time": "",
+      "all_day": true,
       "category": "personal",
       "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
     },
@@ -962,6 +1126,7 @@
       "start": "2026-08-20",
       "start_date": "2026-08-20",
       "time": "",
+      "all_day": true,
       "category": "personal",
       "calendar": "Notion"
     },
@@ -970,6 +1135,7 @@
       "start": "2026-08-21",
       "start_date": "2026-08-21",
       "time": "",
+      "all_day": true,
       "category": "personal",
       "calendar": "Notion"
     },
@@ -978,6 +1144,7 @@
       "start": "2026-08-21",
       "start_date": "2026-08-21",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -986,6 +1153,7 @@
       "start": "2026-08-22",
       "start_date": "2026-08-22",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -994,6 +1162,7 @@
       "start": "2026-08-23",
       "start_date": "2026-08-23",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -1002,6 +1171,7 @@
       "start": "2026-08-23",
       "start_date": "2026-08-23",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     },
@@ -1010,12 +1180,13 @@
       "start": "2026-08-24",
       "start_date": "2026-08-24",
       "time": "",
+      "all_day": true,
       "category": "social",
       "calendar": "Notion"
     }
   ],
   "weather": {
-    "temp": 20.0,
+    "temp": 20.2,
     "description": "Cloudy",
     "precip_mm": 21.3,
     "uv_index": 5.8,
@@ -1054,15 +1225,15 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "15:23",
+    "generated_at": "15:53",
     "readiness": 29,
-    "bb": 5,
-    "hrv": 42,
+    "bb": 24,
+    "hrv": 39,
     "today": {
       "label": "Clear",
       "lines": [
         "Manageable day.",
-        "Recovery is low (readiness 29, battery 5). Keep intensity moderate.",
+        "Recovery is low (readiness 29, battery 24). Keep intensity moderate.",
         "Gym is in the calendar at 08:00. Keep it.",
         "Caf\u00e9 shifts at 10:00. Finish cognitive tasks before 10:00."
       ],
@@ -1087,16 +1258,17 @@
   },
   "health_matrix": {
     "readiness": 29,
-    "training_signal": 43,
-    "illness_risk": 80,
-    "recovery_debt": 29,
-    "cognitive_load": 57,
+    "training_signal": 45,
+    "illness_risk": 78,
+    "recovery_debt": 36,
+    "cognitive_load": 63,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 20,
+    "score": 25,
     "factors": [
-      "Body battery critical"
+      "Sleep < 7h",
+      "Body battery low"
     ]
   },
   "bb_trend": [
@@ -1137,13 +1309,13 @@
     },
     {
       "date": "2026-07-27",
-      "val": 5,
-      "drain": 0
+      "val": 21,
+      "drain": 22
     }
   ],
-  "bb_predicted_wake": 48,
-  "sleep_consistency": 46,
-  "late_night_penalty": true,
+  "bb_predicted_wake": 59,
+  "sleep_consistency": 51,
+  "late_night_penalty": false,
   "training_warning": true,
   "weekly_training": {
     "this_week": {
@@ -1162,14 +1334,14 @@
     "on_track": false
   },
   "training_load": {
-    "acute": null,
-    "chronic": null,
-    "aerobic_low": 0,
-    "aerobic_low_min": 97,
-    "aerobic_low_max": 261,
-    "aerobic_high": 0,
-    "aerobic_high_min": 203,
-    "aerobic_high_max": 368,
-    "feedback": ""
+    "acute": 73,
+    "chronic": 100,
+    "aerobic_low": 139,
+    "aerobic_low_min": 95,
+    "aerobic_low_max": 260,
+    "aerobic_high": 101,
+    "aerobic_high_min": 205,
+    "aerobic_high_max": 369,
+    "feedback": "AEROBIC_HIGH_SHORTAGE"
   }
 }
