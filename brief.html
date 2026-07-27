@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morning Brief — Health Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c0b; --s1:#1a1a18; --s2:#272724; --s3:#313130;
+    --border:rgba(255,255,255,0.1);
+    --text:#f5f2ea; --text2:#b8b4ac; --text3:#7a7874;
+    --teal:#34c99a; --amber:#e8993a; --red:#e05252; --blue:#5b9cf6;
+    --m:'DM Mono',monospace; --sans:'Plus Jakarta Sans',system-ui,sans-serif;
+    --r:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;
+       line-height:1.5;-webkit-font-smoothing:antialiased;padding:2rem 1.25rem 3rem}
+  .wrap{max-width:640px;margin:0 auto}
+  .lbl{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+
+  /* Header */
+  header{margin-bottom:2rem}
+  .kicker{display:flex;align-items:center;gap:8px;margin-bottom:.9rem}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--teal)}
+  .greet{font-size:30px;font-weight:300;letter-spacing:-.5px;line-height:1.15;margin-bottom:.35rem}
+  .subline{font-family:var(--m);font-size:12px;color:var(--text2)}
+
+  /* Recovery hero */
+  .hero{display:flex;align-items:center;gap:1.5rem;background:var(--s1);border:.5px solid var(--border);
+        border-radius:var(--r);padding:1.4rem 1.6rem;margin-bottom:1rem}
+  .ring{flex-shrink:0;width:96px;height:96px;position:relative}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .num b{font-size:30px;font-weight:400}
+  .ring .num s{font-family:var(--m);font-size:9px;color:var(--text3);text-decoration:none}
+  .hero-txt h2{font-size:18px;font-weight:500;margin-bottom:.3rem}
+  .hero-txt p{font-size:13px;color:var(--text2)}
+
+  /* Stat tiles */
+  .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1.75rem}
+  @media(max-width:520px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .tile{background:var(--s2);border-radius:12px;padding:.9rem 1rem;min-width:0}
+  .tile .v{font-size:22px;font-weight:300;letter-spacing:-.5px;line-height:1;margin:6px 0 4px}
+  .tile .s{font-family:var(--m);font-size:10px;color:var(--text3)}
+
+  /* Sections */
+  section{margin-bottom:1.75rem}
+  .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:.9rem}
+  .sec-head .lbl{white-space:nowrap}
+  .sec-head .line{flex:1;height:.5px;background:var(--border)}
+  .card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem 1.4rem}
+
+  /* Focus list */
+  .focus li{list-style:none;display:flex;gap:10px;padding:.55rem 0;font-size:14px;color:var(--text)}
+  .focus li+li{border-top:.5px solid var(--border)}
+  .focus .b{color:var(--teal);flex-shrink:0}
+
+  /* Schedule */
+  .ev{display:flex;align-items:flex-start;gap:12px;padding:.55rem 0}
+  .ev+.ev{border-top:.5px solid var(--border)}
+  .ev .t{font-family:var(--m);font-size:12px;color:var(--text3);min-width:52px;padding-top:1px}
+  .ev .ti{font-size:14px;flex:1}
+  .ev .cat{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
+  .empty{font-family:var(--m);font-size:12px;color:var(--text3)}
+
+  /* Footer strips */
+  .strip{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-family:var(--m);font-size:12px;color:var(--text2);
+         padding:.9rem 1.1rem;background:var(--s2);border-radius:12px}
+  .strip b{color:var(--text);font-weight:500}
+  footer{margin-top:2.5rem;font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;letter-spacing:.06em}
+
+  .pill{display:inline-block;font-family:var(--m);font-size:10px;padding:2px 9px;border-radius:20px;margin-left:8px}
+
+  @media print{
+    body{background:#fff;color:#141414;padding:0}
+    .hero,.card{background:#fff;border:1px solid #e2e2e2}
+    .tile,.strip{background:#f4f4f2}
+    .greet,.hero-txt h2,.tile .v,.ev .ti,.focus li{color:#141414}
+    .subline,.tile .s,.sec .lbl,.ev .t,.strip,.empty{color:#555}
+    footer{color:#999}
+    .dot{display:none}
+    @page{margin:1.4cm}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="root">
+  <p class="lbl" id="loading">Loading today's brief…</p>
+</div>
+
+<script>
+const C = {teal:'#34c99a',amber:'#e8993a',red:'#e05252',blue:'#5b9cf6',text3:'#7a7874'};
+const CAT = {work:C.amber,gym:C.teal,wellness:C.teal,social:C.blue,study:C.blue,travel:C.amber,personal:C.text3,other:C.text3};
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const band = (v,hi,mid) => v==null?C.text3 : v>=hi?C.teal : v>=mid?C.amber : C.red;
+
+function verdict(r){
+  if(r==null) return {h:'No readiness data',p:'Wear your watch to bed for a recovery score.'};
+  if(r>=80) return {h:'Peak recovery',p:'Green light — push hard today if you want to.'};
+  if(r>=65) return {h:'Solid recovery',p:'Train as planned; you are well recovered.'};
+  if(r>=50) return {h:'Moderate recovery',p:'Fine to train, but keep intensity in check.'};
+  if(r>=35) return {h:'Low recovery',p:'Prioritise easy movement and good food today.'};
+  return {h:'Very low recovery',p:'Rest or recovery day — your body needs it.'};
+}
+function ring(score,color){
+  const R=42,C2=2*Math.PI*R,pct=Math.max(0,Math.min(100,score||0))/100;
+  return `<div class="ring"><svg width="96" height="96" viewBox="0 0 96 96">
+    <circle cx="48" cy="48" r="${R}" fill="none" stroke="#313130" stroke-width="6"/>
+    <circle cx="48" cy="48" r="${R}" fill="none" stroke="${color}" stroke-width="6"
+      stroke-linecap="round" stroke-dasharray="${C2}" stroke-dashoffset="${C2*(1-pct)}"/>
+  </svg><div class="num"><b>${score??'—'}</b><s>/100</s></div></div>`;
+}
+
+function greeting(){
+  const h=new Date().getHours();
+  return h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+}
+
+function render(d){
+  const g=d.garmin||{}, dp=(d.day_plan||{}).today||{}, w=d.weather||{}, ir=d.illness_risk||{};
+  const today = g.date || (d.synced_at||'').slice(0,10);
+  const dObj = today ? new Date(today+'T00:00:00') : new Date();
+  const dateStr = dObj.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const r=g.readiness_score, v=verdict(r);
+
+  // stat tiles
+  const tiles = [
+    {l:'🔋 Body Battery', v:g.bb_current??'—', s:g.bb_charged!=null?`+${g.bb_charged} charged`:'energy', c:band(g.bb_current,60,40)},
+    {l:'😴 Sleep', v:g.sleep_hours!=null?g.sleep_hours+'h':'—', s:g.sleep_score!=null?`score ${g.sleep_score}`:'last night', c:band(g.sleep_hours,7.5,6.5)},
+    {l:'💓 HRV', v:g.hrv_last_night??'—', s:g.hrv_status||'last night', c:(g.hrv_status||'').toLowerCase()==='balanced'?C.teal:C.amber},
+    {l:'❤️ Resting HR', v:g.resting_hr??'—', s:'bpm', c:band(g.resting_hr==null?null:(70-g.resting_hr),10,0)},
+  ];
+  const tilesHTML = tiles.map(t=>`<div class="tile"><div class="lbl">${t.l}</div>
+    <div class="v" style="color:${t.c}">${esc(t.v)}</div><div class="s">${esc(t.s)}</div></div>`).join('');
+
+  // focus lines
+  const lines = (dp.lines||[]).filter(Boolean);
+  const focusHTML = lines.length
+    ? `<ul class="focus">${lines.map(l=>`<li><span class="b">›</span><span>${esc(l)}</span></li>`).join('')}</ul>`
+    : `<div class="empty">No plan generated for today.</div>`;
+
+  // today's events
+  const evs = (d.calendar||[]).filter(e=>e.start_date===today)
+    .sort((a,b)=>((a.time||'~')>(b.time||'~')?1:-1));
+  const evHTML = evs.length ? evs.map(e=>{
+    const t=(e.time||'').trim();
+    return `<div class="ev"><span class="cat" style="background:${CAT[e.category]||C.text3}"></span>
+      <span class="t">${t||'all day'}</span>
+      <span class="ti">${esc((e.title||'').replace(/\[pending\]/gi,'').trim())}</span></div>`;
+  }).join('') : `<div class="empty">Nothing scheduled today.</div>`;
+
+  // weather + illness strip
+  const wx = w.temp!=null ? `<span>🌡 <b>${Math.round(w.temp)}°C</b> ${esc(w.description||'')}</span>
+     ${w.uv_index!=null?`<span>☀️ UV <b>${w.uv_index}</b></span>`:''}
+     ${w.rain?`<span>🌧 <b>${w.precip_mm??''}mm</b> rain</span>`:''}` : '';
+  const illHTML = (ir.score!=null) ? `<span>🛡 Illness risk <b style="color:${band(100-ir.score,75,50)}">${ir.score}/100</b>${(ir.factors||[]).length?` · ${esc(ir.factors.join(', '))}`:''}</span>` : '';
+
+  document.getElementById('root').innerHTML = `
+    <header>
+      <div class="kicker"><span class="dot"></span><span class="lbl">Morning Brief · ${esc(dateStr)}</span></div>
+      <div class="greet">${greeting()}, Feri.</div>
+      <div class="subline">${esc(v.h)} — ${esc(v.p)}</div>
+    </header>
+
+    <div class="hero">
+      ${ring(r, band(r,65,45))}
+      <div class="hero-txt"><h2>Readiness ${r??'—'}</h2><p>${esc(v.p)}</p></div>
+    </div>
+
+    <div class="tiles">${tilesHTML}</div>
+
+    <section>
+      <div class="sec-head"><span class="lbl">Today's focus</span><span class="line"></span></div>
+      <div class="card">${focusHTML}</div>
+    </section>
+
+    <section>
+      <div class="sec-head"><span class="lbl">Schedule</span><span class="line"></span></div>
+      <div class="card">${evHTML}</div>
+    </section>
+
+    ${(wx||illHTML)?`<div class="strip">${wx}${illHTML}</div>`:''}
+
+    <footer>Generated from Health Centre · synced ${esc(d.synced_at||'—')}</footer>`;
+}
+
+fetch('data.json',{cache:'no-store'})
+  .then(r=>{if(!r.ok)throw new Error('data.json '+r.status);return r.json();})
+  .then(render)
+  .catch(e=>{document.getElementById('loading').textContent='Could not load data ('+e.message+').';});
+</script>
+</body>
+</html>
