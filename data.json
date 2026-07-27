@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-27 15:53",
+  "synced_at": "2026-07-27 23:10",
   "garmin": {
     "date": "2026-07-27",
     "resting_hr": 66,
@@ -10,13 +10,13 @@
     "sleep_score": 75,
     "sleep_missing": false,
     "bb_charged": 41,
-    "bb_drained": 22,
-    "bb_current": 24,
-    "steps": 2130,
+    "bb_drained": 40,
+    "bb_current": 6,
+    "steps": 2770,
     "step_goal": 8120,
-    "active_kcal": 386.0,
-    "total_kcal": 1844.0,
-    "avg_stress": 31,
+    "active_kcal": 406.0,
+    "total_kcal": 2562.0,
+    "avg_stress": 37,
     "readiness_score": 29,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -1186,12 +1186,12 @@
     }
   ],
   "weather": {
-    "temp": 20.2,
+    "temp": 16.2,
     "description": "Cloudy",
     "precip_mm": 21.3,
     "uv_index": 5.8,
     "solar_mj": 18.4,
-    "wind_kmh": 26.3,
+    "wind_kmh": 27.4,
     "rain": true
   },
   "streaks": {
@@ -1224,18 +1224,19 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "15:53",
+    "context": "evening",
+    "generated_at": "23:10",
     "readiness": 29,
-    "bb": 24,
+    "bb": 6,
     "hrv": 39,
     "today": {
       "label": "Clear",
       "lines": [
         "Manageable day.",
-        "Recovery is low (readiness 29, battery 24). Keep intensity moderate.",
+        "Recovery is low (readiness 29, battery 6). Keep intensity moderate.",
         "Gym is in the calendar at 08:00. Keep it.",
-        "Caf\u00e9 shifts at 10:00. Finish cognitive tasks before 10:00."
+        "Caf\u00e9 shifts at 10:00. Finish cognitive tasks before 10:00.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 1,
@@ -1258,17 +1259,17 @@
   },
   "health_matrix": {
     "readiness": 29,
-    "training_signal": 45,
-    "illness_risk": 78,
-    "recovery_debt": 36,
-    "cognitive_load": 63,
+    "training_signal": 40,
+    "illness_risk": 76,
+    "recovery_debt": 29,
+    "cognitive_load": 58,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 25,
+    "score": 35,
     "factors": [
       "Sleep < 7h",
-      "Body battery low"
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -1309,11 +1310,11 @@
     },
     {
       "date": "2026-07-27",
-      "val": 21,
-      "drain": 22
+      "val": 38,
+      "drain": 40
     }
   ],
-  "bb_predicted_wake": 59,
+  "bb_predicted_wake": 41,
   "sleep_consistency": 51,
   "late_night_penalty": false,
   "training_warning": true,
