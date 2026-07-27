@@ -394,11 +394,24 @@ function render(d){
     bb_charged:_bbt.map(x=>x.val||0)
   }:(d.stress_week||{labels:[],stress:[],bb_charged:[]});
   const _sw=g.sleep_week||[];
-  const ss=_sw.length?{
-    labels:_sw.map(x=>{const d=new Date(x.date);return d.toLocaleDateString('en-GB',{weekday:'short'});}),
-    scores:_sw.map(x=>x.score),
-    best_date:(_sw.reduce((a,b)=>b.score>a.score?b:a,_sw[0])||{}).date||'—'
-  }:(d.sleep_scores||{labels:[],scores:[]});
+  let ss;
+  if(_sw.length){
+    // Build a gap-free axis: one labelled slot per calendar day from the first
+    // to the last recorded night, with null scores where a night is missing.
+    const byDate={}; _sw.forEach(x=>{if(x&&x.date)byDate[x.date]=x.score;});
+    const dts=Object.keys(byDate).sort();
+    const labels=[],scores=[];
+    const cur=new Date(dts[0]+'T00:00:00'), end=new Date(dts[dts.length-1]+'T00:00:00');
+    while(cur<=end){
+      const iso=`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+      labels.push(cur.toLocaleDateString('en-GB',{weekday:'short'}));
+      scores.push(iso in byDate ? byDate[iso] : null);
+      cur.setDate(cur.getDate()+1);
+    }
+    ss={labels,scores,best_date:(_sw.reduce((a,b)=>b.score>a.score?b:a,_sw[0])||{}).date||'—'};
+  } else {
+    ss=(d.sleep_scores||{labels:[],scores:[]});
+  }
   const tl=d.training_load||{};
   const str=d.streaks||{};
   const wq=d.workout_quality||d.workouts_quality||[];
@@ -646,9 +659,10 @@ function render(d){
     const html = entries.map(([date, evs]) => `
       <div style="margin-bottom:1.25rem">
         <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:8px">${date}${date===todayStr?' <span style="color:var(--teal)">· today</span>':''}<span style="flex:1;height:.5px;background:var(--border);display:inline-block"></span></div>
-        ${evs.filter(e => !e.all_day || evs.filter(x=>!x.all_day).length===0).map(e => {
+        ${(evs.some(e => (e.time||e.start_time)) ? evs.filter(e => (e.time||e.start_time)) : evs).map(e => {
           const col = CAT_COLORS[e.category] || 'var(--text3)';
-          const timeStr = e.all_day ? 'all day' : (e.start_time || '—');
+          const _t = (e.time || e.start_time || '').trim();
+          const timeStr = (e.all_day || !_t) ? 'all day' : _t;
           const title = (e.title || '').replace(/\[pending\]/gi,'').trim();
           return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
             <div style="width:5px;height:5px;border-radius:50%;background:${col};flex-shrink:0;margin-top:7px"></div>
