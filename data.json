@@ -1,22 +1,22 @@
 {
-  "synced_at": "2026-07-27 00:26",
+  "synced_at": "2026-07-27 15:23",
   "garmin": {
     "date": "2026-07-27",
-    "resting_hr": null,
+    "resting_hr": 67,
     "hrv_weekly": null,
     "hrv_last_night": null,
     "hrv_status": "Balanced",
     "sleep_hours": 0.0,
     "sleep_score": null,
     "sleep_missing": true,
-    "bb_charged": null,
-    "bb_drained": null,
-    "bb_current": null,
-    "steps": 0,
-    "step_goal": 8000,
-    "active_kcal": 0,
-    "total_kcal": 0,
-    "avg_stress": 0,
+    "bb_charged": 0,
+    "bb_drained": 0,
+    "bb_current": 5,
+    "steps": 112,
+    "step_goal": 8120,
+    "active_kcal": 9.0,
+    "total_kcal": 154.0,
+    "avg_stress": 37,
     "readiness_score": 29,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -73,6 +73,57 @@
     "source": "Zepp Life"
   },
   "workouts": [
+    {
+      "id": "a457cf53-0996-4573-947a-5a2f73662a12",
+      "title": "Upper 1",
+      "date": "2026-07-27",
+      "start_time": "2026-07-27T10:20:07+00:00",
+      "duration": 75,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Barbell)",
+          "weight": 52,
+          "sets": 3,
+          "reps": 10,
+          "volume": 1560
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 36,
+          "sets": 3,
+          "reps": 10,
+          "volume": 1080
+        },
+        {
+          "name": "Bench Press (Barbell)",
+          "weight": 50,
+          "sets": 4,
+          "reps": 11,
+          "volume": 2100
+        },
+        {
+          "name": "Butterfly (Pec Deck)",
+          "weight": 35,
+          "sets": 3,
+          "reps": 13,
+          "volume": 1365
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 24,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1008
+        },
+        {
+          "name": "Triceps Pushdown",
+          "weight": 45,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1770
+        }
+      ]
+    },
     {
       "id": "95033252-a7c2-440a-acb5-0c0a5536ec94",
       "title": "Lower 2",
@@ -496,46 +547,61 @@
           "volume": 588
         }
       ]
-    },
-    {
-      "id": "038bf82c-f828-4b2d-b633-3ee79899f811",
-      "title": "Lower 1",
-      "date": "2026-05-26",
-      "start_time": "2026-05-26T14:16:24+00:00",
-      "duration": 47,
-      "exercises": [
-        {
-          "name": "Leg Press (Machine)",
-          "weight": 40,
-          "sets": 6,
-          "reps": 12,
-          "volume": 2880
-        },
-        {
-          "name": "Romanian Deadlift (Barbell)",
-          "weight": 55,
-          "sets": 3,
-          "reps": 12,
-          "volume": 1620
-        },
-        {
-          "name": "Seated Calf Raise",
-          "weight": 60,
-          "sets": 3,
-          "reps": 15,
-          "volume": 2700
-        },
-        {
-          "name": "Cable Crunch",
-          "weight": 77,
-          "sets": 3,
-          "reps": 13,
-          "volume": 3003
-        }
-      ]
     }
   ],
   "workout_quality": [
+    {
+      "date": "2026-07-27",
+      "title": "Upper 1",
+      "duration": 75,
+      "label": "Full session \u2014 75 min",
+      "score": 78,
+      "exercises": [
+        {
+          "name": "Bent Over Row (Barbell)",
+          "weight": 52,
+          "sets": 3,
+          "reps": 10,
+          "volume": 1560
+        },
+        {
+          "name": "Shoulder Press (Dumbbell)",
+          "weight": 36,
+          "sets": 3,
+          "reps": 10,
+          "volume": 1080
+        },
+        {
+          "name": "Bench Press (Barbell)",
+          "weight": 50,
+          "sets": 4,
+          "reps": 11,
+          "volume": 2100
+        },
+        {
+          "name": "Butterfly (Pec Deck)",
+          "weight": 35,
+          "sets": 3,
+          "reps": 13,
+          "volume": 1365
+        },
+        {
+          "name": "Bicep Curl (Dumbbell)",
+          "weight": 24,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1008
+        },
+        {
+          "name": "Triceps Pushdown",
+          "weight": 45,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1770
+        }
+      ],
+      "overload": []
+    },
     {
       "date": "2026-07-26",
       "title": "Lower 2",
@@ -728,52 +794,14 @@
           "volume": 936
         }
       ],
-      "overload": []
-    },
-    {
-      "date": "2026-07-09",
-      "title": "Upper 2",
-      "duration": 62,
-      "label": "Full session \u2014 62 min",
-      "score": 65,
-      "exercises": [
+      "overload": [
         {
-          "name": "Incline Bench Press (Dumbbell)",
-          "weight": 36,
-          "sets": 3,
-          "reps": 12,
-          "volume": 1296
-        },
-        {
-          "name": "Seated Cable Row - V Grip (Cable)",
-          "weight": 50,
-          "sets": 3,
-          "reps": 12,
-          "volume": 1680
-        },
-        {
-          "name": "Lat Pulldown (Cable)",
-          "weight": 60,
-          "sets": 3,
-          "reps": 10,
-          "volume": 1800
-        },
-        {
-          "name": "Triceps Pushdown",
-          "weight": 35,
-          "sets": 3,
-          "reps": 14,
-          "volume": 1470
-        },
-        {
-          "name": "Lateral Raise (Dumbbell)",
-          "weight": 16,
-          "sets": 3,
-          "reps": 14,
-          "volume": 672
+          "name": "Butterfly (Pec Deck)",
+          "type": "weight",
+          "from": 35,
+          "to": 40
         }
-      ],
-      "overload": []
+      ]
     }
   ],
   "calendar": [
@@ -987,20 +1015,20 @@
     }
   ],
   "weather": {
-    "temp": 16.4,
+    "temp": 20.0,
     "description": "Cloudy",
-    "precip_mm": 20.9,
+    "precip_mm": 21.3,
     "uv_index": 5.8,
-    "solar_mj": 17.1,
-    "wind_kmh": 25.6,
+    "solar_mj": 18.4,
+    "wind_kmh": 26.3,
     "rain": true
   },
   "streaks": {
     "watch_nights": 25,
-    "sessions_this_week": 0,
+    "sessions_this_week": 1,
     "training_weeks_4x": 1,
-    "days_since_session": 1,
-    "last_session_label": "26 Jul \u00b7 Lower 2"
+    "days_since_session": 0,
+    "last_session_label": "27 Jul \u00b7 Upper 1"
   },
   "tasks": {
     "today": {
@@ -1025,16 +1053,16 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "00:26",
+    "context": "afternoon",
+    "generated_at": "15:23",
     "readiness": 29,
-    "bb": 50,
+    "bb": 5,
     "hrv": 42,
     "today": {
       "label": "Clear",
       "lines": [
         "Manageable day.",
-        "Recovery is low (readiness 29, battery 50). Keep intensity moderate.",
+        "Recovery is low (readiness 29, battery 5). Keep intensity moderate.",
         "Gym is in the calendar at 08:00. Keep it.",
         "Caf\u00e9 shifts at 10:00. Finish cognitive tasks before 10:00."
       ],
@@ -1059,16 +1087,16 @@
   },
   "health_matrix": {
     "readiness": 29,
-    "training_signal": 57,
-    "illness_risk": 82,
-    "recovery_debt": 47,
-    "cognitive_load": 68,
+    "training_signal": 43,
+    "illness_risk": 80,
+    "recovery_debt": 29,
+    "cognitive_load": 57,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 0,
+    "score": 20,
     "factors": [
-      "No significant risk factors today"
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -1109,20 +1137,20 @@
     },
     {
       "date": "2026-07-27",
-      "val": null,
-      "drain": null
+      "val": 5,
+      "drain": 0
     }
   ],
-  "bb_predicted_wake": 68,
+  "bb_predicted_wake": 48,
   "sleep_consistency": 46,
   "late_night_penalty": true,
   "training_warning": true,
   "weekly_training": {
     "this_week": {
-      "sessions": 0,
-      "upper": 0,
+      "sessions": 1,
+      "upper": 1,
       "lower": 0,
-      "volume_kg": 0
+      "volume_kg": 8883
     },
     "last_week": {
       "sessions": 4,
@@ -1130,7 +1158,7 @@
       "lower": 2,
       "volume_kg": 47373
     },
-    "vol_change_pct": -100,
+    "vol_change_pct": -81,
     "on_track": false
   },
   "training_load": {
