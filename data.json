@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-28 12:00",
+  "synced_at": "2026-07-28 23:31",
   "garmin": {
     "date": "2026-07-28",
     "resting_hr": null,
@@ -73,7 +73,7 @@
     "fat_pct": 21.6,
     "lean_kg": 66.3,
     "weight_kg": 85.4,
-    "date": "2026-07-26",
+    "date": "2026-07-28",
     "source": "Zepp Life"
   },
   "workouts": [
@@ -1150,11 +1150,11 @@
     }
   ],
   "weather": {
-    "temp": 19.8,
+    "temp": 20.6,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.0,
-    "solar_mj": 20.4,
+    "solar_mj": 21.2,
     "wind_kmh": 26.3,
     "rain": false
   },
@@ -1188,8 +1188,8 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "12:00",
+    "context": "evening",
+    "generated_at": "23:31",
     "readiness": 53,
     "bb": 50,
     "hrv": 39,
@@ -1198,7 +1198,8 @@
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
         "Recovery is low (readiness 53, battery 50). Keep intensity moderate.",
-        "Gym is in the calendar at 08:00. Keep it."
+        "Gym is in the calendar at 08:00. Keep it.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 0,
