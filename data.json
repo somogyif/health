@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-29 11:27",
+  "synced_at": "2026-07-29 12:27",
   "garmin": {
     "date": "2026-07-29",
     "resting_hr": null,
@@ -1128,11 +1128,11 @@
     }
   ],
   "weather": {
-    "temp": 23.1,
+    "temp": 23.9,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.0,
-    "solar_mj": 20.0,
+    "solar_mj": 15.2,
     "wind_kmh": 16.9,
     "rain": false
   },
@@ -1166,8 +1166,8 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "11:27",
+    "context": "afternoon",
+    "generated_at": "12:27",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
