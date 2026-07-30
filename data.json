@@ -1,7 +1,7 @@
 {
-  "synced_at": "2026-07-29 16:43",
+  "synced_at": "2026-07-30 09:58",
   "garmin": {
-    "date": "2026-07-29",
+    "date": "2026-07-30",
     "resting_hr": null,
     "hrv_weekly": null,
     "hrv_last_night": null,
@@ -35,10 +35,6 @@
     "load_feedback": "",
     "sleep_week": [
       {
-        "date": "2026-07-22",
-        "score": 76
-      },
-      {
         "date": "2026-07-23",
         "score": 68
       },
@@ -59,10 +55,10 @@
         "score": 75
       }
     ],
-    "sleep_avg": 71,
+    "sleep_avg": 70,
     "sleep_best": 80,
     "sleep_best_date": "24 Jul",
-    "sleep_trend": "declining"
+    "sleep_trend": "improving"
   },
   "body_comp": {
     "bmi": 23.65,
@@ -1139,22 +1135,31 @@
       "all_day": true,
       "category": "social",
       "calendar": "Notion"
+    },
+    {
+      "title": "Misi \u00e9s Edina esk\u00fcv\u0151",
+      "start": "2026-08-29",
+      "start_date": "2026-08-29",
+      "time": "",
+      "all_day": true,
+      "category": "social",
+      "calendar": "Notion"
     }
   ],
   "weather": {
-    "temp": 28.2,
+    "temp": 22.9,
     "description": "Cloudy",
     "precip_mm": 0,
     "uv_index": 6.0,
-    "solar_mj": 13.7,
-    "wind_kmh": 16.9,
+    "solar_mj": 24.5,
+    "wind_kmh": 17.3,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 27,
+    "watch_nights": 28,
     "sessions_this_week": 2,
     "training_weeks_4x": 1,
-    "days_since_session": 0,
+    "days_since_session": 1,
     "last_session_label": "29 Jul \u00b7 Lower 1"
   },
   "tasks": {
@@ -1180,8 +1185,8 @@
     "total_open": 18
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "16:43",
+    "context": "morning",
+    "generated_at": "09:58",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -1189,7 +1194,8 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure."
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -1225,11 +1231,6 @@
   },
   "bb_trend": [
     {
-      "date": "2026-07-22",
-      "val": 62,
-      "drain": 61
-    },
-    {
       "date": "2026-07-23",
       "val": 66,
       "drain": 38
@@ -1263,10 +1264,15 @@
       "date": "2026-07-29",
       "val": null,
       "drain": null
+    },
+    {
+      "date": "2026-07-30",
+      "val": null,
+      "drain": null
     }
   ],
   "bb_predicted_wake": 68,
-  "sleep_consistency": 52,
+  "sleep_consistency": 47,
   "late_night_penalty": false,
   "training_warning": false,
   "weekly_training": {
