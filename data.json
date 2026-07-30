@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-30 16:16",
+  "synced_at": "2026-07-30 17:16",
   "garmin": {
     "date": "2026-07-30",
     "resting_hr": null,
@@ -1147,9 +1147,9 @@
     }
   ],
   "weather": {
-    "temp": 29.5,
+    "temp": 29.4,
     "description": "Drizzle",
-    "precip_mm": 0,
+    "precip_mm": 0.3,
     "uv_index": 6.0,
     "solar_mj": 24.6,
     "wind_kmh": 17.3,
@@ -1186,7 +1186,7 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "16:16",
+    "generated_at": "17:16",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
