@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-07-31 07:20",
+  "synced_at": "2026-07-31 11:02",
   "garmin": {
     "date": "2026-07-31",
     "resting_hr": null,
@@ -65,6 +65,55 @@
     "source": "Zepp Life"
   },
   "workouts": [
+    {
+      "id": "8f68ca13-b9dd-4563-a80d-dd8704cb6a0a",
+      "title": "Upper 2",
+      "date": "2026-07-31",
+      "start_time": "2026-07-31T06:55:02+00:00",
+      "duration": 69,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
+          "weight": 40,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1440
+        },
+        {
+          "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
+          "weight": 55,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1870
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "template_id": "6A6C31A5",
+          "weight": 60,
+          "sets": 3,
+          "reps": 11,
+          "volume": 2040
+        },
+        {
+          "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
+          "weight": 45,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1830
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
+          "weight": 18,
+          "sets": 3,
+          "reps": 14,
+          "volume": 756
+        }
+      ]
+    },
     {
       "id": "10fee4e3-aaf8-4901-8b11-9959433428e6",
       "title": "Lower 1",
@@ -537,66 +586,72 @@
           "volume": 768
         }
       ]
-    },
-    {
-      "id": "4748686b-157e-4c92-8d1f-a9e935cbd56d",
-      "title": "Lower 2",
-      "date": "2026-05-28",
-      "start_time": "2026-05-28T08:33:30+00:00",
-      "duration": 49,
-      "exercises": [
-        {
-          "name": "Hack Squat (Machine)",
-          "template_id": "1E42FD5F",
-          "weight": 20,
-          "sets": 3,
-          "reps": 11,
-          "volume": 625
-        },
-        {
-          "name": "Back Extension (Weighted Hyperextension)",
-          "template_id": "091737FA",
-          "weight": 25,
-          "sets": 3,
-          "reps": 12,
-          "volume": 900
-        },
-        {
-          "name": "Leg Press Horizontal (Machine)",
-          "template_id": "0EB695C9",
-          "weight": 117,
-          "sets": 3,
-          "reps": 11,
-          "volume": 3978
-        },
-        {
-          "name": "Lying Leg Curl (Machine)",
-          "template_id": "B8127AD1",
-          "weight": 40,
-          "sets": 3,
-          "reps": 13,
-          "volume": 1500
-        },
-        {
-          "name": "Calf Extension (Machine)",
-          "template_id": "47B9DF13",
-          "weight": 125,
-          "sets": 3,
-          "reps": 15,
-          "volume": 5380
-        },
-        {
-          "name": "Cable Crunch",
-          "template_id": "23A48484",
-          "weight": 73,
-          "sets": 3,
-          "reps": 16,
-          "volume": 3431
-        }
-      ]
     }
   ],
   "workout_quality": [
+    {
+      "date": "2026-07-31",
+      "title": "Upper 2",
+      "duration": 69,
+      "label": "Full session \u2014 69 min",
+      "score": 70,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
+          "weight": 40,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1440
+        },
+        {
+          "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
+          "weight": 55,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1870
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "template_id": "6A6C31A5",
+          "weight": 60,
+          "sets": 3,
+          "reps": 11,
+          "volume": 2040
+        },
+        {
+          "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
+          "weight": 45,
+          "sets": 3,
+          "reps": 14,
+          "volume": 1830
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
+          "weight": 18,
+          "sets": 3,
+          "reps": 14,
+          "volume": 756
+        }
+      ],
+      "overload": [
+        {
+          "name": "Seated Cable Row - V Grip (Cable)",
+          "type": "weight",
+          "from": 50,
+          "to": 55
+        },
+        {
+          "name": "Triceps Pushdown",
+          "type": "weight",
+          "from": 40,
+          "to": 45
+        }
+      ]
+    },
     {
       "date": "2026-07-29",
       "title": "Lower 1",
@@ -886,69 +941,6 @@
           "to": 18
         }
       ]
-    },
-    {
-      "date": "2026-07-21",
-      "title": "Lower 1",
-      "duration": 63,
-      "label": "Full session \u2014 63 min",
-      "score": 65,
-      "exercises": [
-        {
-          "name": "Leg Press Horizontal (Machine)",
-          "template_id": "0EB695C9",
-          "weight": 110,
-          "sets": 3,
-          "reps": 11,
-          "volume": 3740
-        },
-        {
-          "name": "Romanian Deadlift (Dumbbell)",
-          "template_id": "72CFFAD5",
-          "weight": 40,
-          "sets": 3,
-          "reps": 11,
-          "volume": 1360
-        },
-        {
-          "name": "Leg Extension (Machine)",
-          "template_id": "75A4F6C4",
-          "weight": 55,
-          "sets": 3,
-          "reps": 13,
-          "volume": 1900
-        },
-        {
-          "name": "Calf Extension (Machine)",
-          "template_id": "47B9DF13",
-          "weight": 130,
-          "sets": 3,
-          "reps": 15,
-          "volume": 5700
-        },
-        {
-          "name": "Cable Crunch",
-          "template_id": "23A48484",
-          "weight": 75,
-          "sets": 3,
-          "reps": 15,
-          "volume": 3375
-        }
-      ],
-      "overload": [
-        {
-          "name": "Leg Extension (Machine)",
-          "type": "weight",
-          "from": 35,
-          "to": 55
-        },
-        {
-          "name": "Calf Extension (Machine)",
-          "type": "weight",
-          "from": 120,
-          "to": 130
-        }
-      ]
     }
   ],
   "calendar": [
@@ -1134,20 +1126,20 @@
     }
   ],
   "weather": {
-    "temp": 17.8,
-    "description": "Drizzle",
-    "precip_mm": 0.3,
-    "uv_index": 5.4,
-    "solar_mj": 22.7,
-    "wind_kmh": 18.4,
+    "temp": 20.3,
+    "description": "Cloudy",
+    "precip_mm": 0,
+    "uv_index": 5.6,
+    "solar_mj": 22.5,
+    "wind_kmh": 17.3,
     "rain": false
   },
   "streaks": {
     "watch_nights": 29,
-    "sessions_this_week": 2,
+    "sessions_this_week": 3,
     "training_weeks_4x": 1,
-    "days_since_session": 2,
-    "last_session_label": "29 Jul \u00b7 Lower 1"
+    "days_since_session": 0,
+    "last_session_label": "31 Jul \u00b7 Upper 2"
   },
   "tasks": {
     "today": {
@@ -1173,7 +1165,7 @@
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "07:20",
+    "generated_at": "11:02",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -1264,10 +1256,10 @@
   "training_warning": false,
   "weekly_training": {
     "this_week": {
-      "sessions": 2,
-      "upper": 1,
+      "sessions": 3,
+      "upper": 2,
       "lower": 1,
-      "volume_kg": 24847
+      "volume_kg": 32783
     },
     "last_week": {
       "sessions": 4,
@@ -1275,8 +1267,8 @@
       "lower": 2,
       "volume_kg": 47373
     },
-    "vol_change_pct": -48,
-    "on_track": false
+    "vol_change_pct": -31,
+    "on_track": true
   },
   "training_load": {
     "acute": null,
