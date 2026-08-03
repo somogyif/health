@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-03 09:06",
+  "synced_at": "2026-08-03 09:14",
   "garmin": {
     "date": "2026-08-03",
     "resting_hr": 61,
@@ -17,7 +17,7 @@
     "active_kcal": 4.0,
     "total_kcal": 855.0,
     "avg_stress": 15,
-    "readiness_score": 33,
+    "readiness_score": 67,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
@@ -68,7 +68,15 @@
     "sleep_best_date": "28 Jul",
     "sleep_trend": "improving"
   },
-  "body_comp": null,
+  "body_comp": {
+    "fat_pct": 21.6,
+    "bmi": 23.65,
+    "lean_kg": 66.3,
+    "weight_kg": 85.4,
+    "weight": 85.4,
+    "date": "2026-07-26",
+    "source": "Zepp Life"
+  },
   "workouts": [
     {
       "id": "871f867b-2b86-456f-a096-cbaa0b31da95",
@@ -1141,22 +1149,23 @@
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "09:06",
-    "readiness": 33,
+    "generated_at": "09:14",
+    "readiness": 67,
     "bb": 75,
     "hrv": 47,
     "today": {
       "label": "Clear",
       "lines": [
         "Manageable day.",
-        "Recovery is low (readiness 33, battery 75). Keep intensity moderate.",
+        "Moderate readiness (67/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00.",
         "Caf\u00e9 shifts at 09:00. Finish cognitive tasks before 09:00."
       ],
       "task_count": 0,
       "work_shifts": 1,
       "has_gym": false,
       "tasks": [],
-      "recovery": "low"
+      "recovery": "moderate"
     },
     "tomorrow": {
       "label": "Clear",
@@ -1172,10 +1181,10 @@
     }
   },
   "health_matrix": {
-    "readiness": 33,
-    "training_signal": 67,
+    "readiness": 67,
+    "training_signal": 81,
     "illness_risk": 91,
-    "recovery_debt": 61,
+    "recovery_debt": 74,
     "cognitive_load": 84,
     "calendar_load": 75
   },
