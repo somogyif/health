@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-03 09:14",
+  "synced_at": "2026-08-03 09:24",
   "garmin": {
     "date": "2026-08-03",
     "resting_hr": 61,
@@ -1119,7 +1119,7 @@
     "rain": false
   },
   "streaks": {
-    "watch_nights": 2,
+    "watch_nights": 4,
     "sessions_this_week": 0,
     "training_weeks_4x": 2,
     "days_since_session": 1,
@@ -1149,7 +1149,7 @@
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "09:14",
+    "generated_at": "09:24",
     "readiness": 67,
     "bb": 75,
     "hrv": 47,
