@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-03 18:23",
+  "synced_at": "2026-08-03 19:27",
   "garmin": {
     "date": "2026-08-03",
     "resting_hr": 61,
@@ -1083,13 +1083,13 @@
     }
   ],
   "weather": {
-    "temp": 24.5,
+    "temp": 23.8,
     "description": "Clear",
     "city": "Copenhagen",
     "precip_mm": 0,
     "uv_index": 5.2,
     "solar_mj": 22.3,
-    "wind_kmh": 12.2,
+    "wind_kmh": 10.1,
     "rain": false
   },
   "streaks": {
@@ -1123,7 +1123,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "18:23",
+    "generated_at": "19:27",
     "readiness": 67,
     "bb": 75,
     "hrv": 47,
@@ -1132,7 +1132,8 @@
       "lines": [
         "Manageable day.",
         "Moderate readiness (67/100). Train but don't push to failure.",
-        "Work commitment at 09:00 (Orient fund opens). Plan focus around it."
+        "Work commitment at 09:00 (Orient fund opens). Plan focus around it.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 1,
