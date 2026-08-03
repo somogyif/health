@@ -337,6 +337,22 @@ const scol=s=>s>=85?'var(--teal)':s>=65?'var(--amber)':'var(--red)';
 const fmt=(v,u='')=>v!=null?`${v}${u}`:'—';
 
 // Coaching copy
+// WMO weather codes → label
+const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm'};
+// Live weather for the VIEWING device's actual location (phone/laptop GPS).
+// Resolves to null if permission denied or geolocation unavailable → caller keeps
+// the synced (home) weather. Follows you wherever you open the dashboard.
+async function deviceWeather(){
+  if(!navigator.geolocation) return null;
+  const pos=await new Promise((ok,no)=>navigator.geolocation.getCurrentPosition(ok,no,{timeout:8000,maximumAge:900000}));
+  const la=pos.coords.latitude, lo=pos.coords.longitude;
+  const wr=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,weather_code&daily=uv_index_max,precipitation_sum&timezone=auto&forecast_days=1`).then(r=>r.json());
+  let city='';
+  try{const g=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${la}&longitude=${lo}&localityLanguage=en`).then(r=>r.json()); city=g.city||g.locality||'';}catch(e){}
+  const c=wr.current||{}, dy=wr.daily||{};
+  return {temp:c.temperature_2m, description:WMO[c.weather_code]||'—', uv_index:(dy.uv_index_max||[])[0], precip_mm:(dy.precipitation_sum||[0])[0], rain:((dy.precipitation_sum||[0])[0]||0)>0.5, city};
+}
+
 function coachingVerdict(score,level){
   if(score>=90) return {label:'Prime condition',coaching:'All systems are go. Your body is fully charged — this is a great day to push hard.',color:'var(--teal)'};
   if(score>=75) return {label:'Well recovered',coaching:'Good recovery overnight. A solid training session is in order.',color:'var(--teal)'};
@@ -835,25 +851,24 @@ function render(d){
   if (calBodyEl) calBodyEl.innerHTML = renderCalendar(calEvents, rs);
 
   // Weather strip
-  const wx = d.weather || {};
   const wxEl = document.getElementById('weatherStrip');
-  if (wxEl && wx.condition) {
-    const bikeIcon = wx.good_for_bike ? '🚲' : '🌧';
-    const rainTxt  = wx.is_heavy_rain ? 'Heavy rain — public transport' : (wx.is_raining ? 'Rain — no biking outbound' : 'No rain — biking ok');
-    const uvColor  = wx.uv_index >= 6 ? 'var(--red)' : wx.uv_index >= 3 ? 'var(--amber)' : 'var(--teal)';
+  function paintWx(w, live){
+    if (!wxEl || w.temp == null) return;
+    const uv = w.uv_index;
+    const uvColor = (uv||0) >= 6 ? 'var(--red)' : (uv||0) >= 3 ? 'var(--amber)' : 'var(--teal)';
+    const rain = w.rain != null ? w.rain : (w.precip_mm||0) > 0.5;
+    const loc = live ? (w.city || 'your location') : (w.city || '');
     wxEl.innerHTML = `
-      <span style="color:var(--text2)">${bikeIcon}</span>
-      <span style="color:var(--text2)">${wx.condition}</span>
-      <span>·</span>
-      <span>${wx.temp_max != null ? wx.temp_max + '°C' : '—'}</span>
-      <span>·</span>
-      <span>${wx.precipitation != null ? wx.precipitation + 'mm rain' : '—'}</span>
-      ${wx.uv_index != null ? `<span>·</span><span style="color:${uvColor}">UV ${wx.uv_index} ${wx.uv_label||''}</span>` : ''}
-      ${wx.solar_mj != null ? `<span>·</span><span style="color:var(--text3)">☀️ ${wx.solar_mj} MJ/m²</span>` : ''}
-      <span>·</span>
-      <span style="color:${wx.good_for_bike ? 'var(--teal)' : 'var(--amber)'}">${rainTxt}</span>
+      <span style="color:var(--text2)">${rain ? '🌧' : '☀️'}</span>
+      <span style="color:var(--text2)">${w.description || '—'}</span>
+      <span>·</span><span>${Math.round(w.temp)}°C</span>
+      ${uv != null ? `<span>·</span><span style="color:${uvColor}">UV ${uv}</span>` : ''}
+      <span>·</span><span style="color:${rain ? 'var(--amber)' : 'var(--teal)'}">${rain ? 'Rain — no biking' : 'No rain — biking ok'}</span>
+      ${loc ? `<span>·</span><span style="color:var(--text3)">📍 ${loc}${live ? '' : ''}</span>` : ''}
     `;
   }
+  paintWx(d.weather || {}, false);                          // synced (home) weather first
+  deviceWeather().then(w => { if (w && w.temp != null) paintWx(w, true); }).catch(()=>{});  // then follow the device
 
   // ── PERFUME RECOMMENDATION ─────────────────────────────────────────────
   const pf = d.perfume || {};

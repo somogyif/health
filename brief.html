@@ -119,6 +119,26 @@ function greeting(){
   return h<12?'Good morning':h<18?'Good afternoon':'Good evening';
 }
 
+const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm'};
+// Live weather for the viewing device's actual location (phone/laptop GPS).
+async function deviceWeather(){
+  if(!navigator.geolocation) return null;
+  const pos=await new Promise((ok,no)=>navigator.geolocation.getCurrentPosition(ok,no,{timeout:8000,maximumAge:900000}));
+  const la=pos.coords.latitude, lo=pos.coords.longitude;
+  const wr=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,weather_code&daily=uv_index_max,precipitation_sum&timezone=auto&forecast_days=1`).then(r=>r.json());
+  let city='';
+  try{const g=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${la}&longitude=${lo}&localityLanguage=en`).then(r=>r.json()); city=g.city||g.locality||'';}catch(e){}
+  const c=wr.current||{}, dy=wr.daily||{};
+  return {temp:c.temperature_2m, description:WMO[c.weather_code]||'—', uv_index:(dy.uv_index_max||[])[0], precip_mm:(dy.precipitation_sum||[0])[0], rain:((dy.precipitation_sum||[0])[0]||0)>0.5, city};
+}
+function wxHtml(w, live){
+  if(w.temp==null) return '';
+  const loc = live ? ` · 📍 ${esc(w.city||'your location')}` : (w.city ? ` · 📍 ${esc(w.city)}` : '');
+  return `<span>🌡 <b>${Math.round(w.temp)}°C</b> ${esc(w.description||'')}${loc}</span>
+     ${w.uv_index!=null?`<span>☀️ UV <b>${w.uv_index}</b></span>`:''}
+     ${w.rain?`<span>🌧 <b>${w.precip_mm??''}mm</b> rain</span>`:''}`;
+}
+
 function render(d){
   const g=d.garmin||{}, dp=(d.day_plan||{}).today||{}, w=d.weather||{}, ir=d.illness_risk||{};
   const today = g.date || (d.synced_at||'').slice(0,10);
@@ -152,10 +172,9 @@ function render(d){
       <span class="ti">${esc((e.title||'').replace(/\[pending\]/gi,'').trim())}</span></div>`;
   }).join('') : `<div class="empty">Nothing scheduled today.</div>`;
 
-  // weather + illness strip
-  const wx = w.temp!=null ? `<span>🌡 <b>${Math.round(w.temp)}°C</b> ${esc(w.description||'')}</span>
-     ${w.uv_index!=null?`<span>☀️ UV <b>${w.uv_index}</b></span>`:''}
-     ${w.rain?`<span>🌧 <b>${w.precip_mm??''}mm</b> rain</span>`:''}` : '';
+  // weather + illness strip — wrapped so device geolocation can update it live
+  const wx = `<span id="wxLine">${wxHtml(w,false)}</span>`;
+  const hasStrip = (w.temp!=null) || (ir.score!=null);
   const illHTML = (ir.score!=null) ? `<span>🛡 Illness risk <b style="color:${band(100-ir.score,75,50)}">${ir.score}/100</b>${(ir.factors||[]).length?` · ${esc(ir.factors.join(', '))}`:''}</span>` : '';
 
   document.getElementById('root').innerHTML = `
@@ -182,9 +201,15 @@ function render(d){
       <div class="card">${evHTML}</div>
     </section>
 
-    ${(wx||illHTML)?`<div class="strip">${wx}${illHTML}</div>`:''}
+    ${hasStrip?`<div class="strip">${wx}${illHTML}</div>`:''}
 
     <footer>Generated from Health Centre · synced ${esc(d.synced_at||'—')}</footer>`;
+
+  // Follow the viewing device's location (phone/laptop GPS) if allowed.
+  deviceWeather().then(w2=>{
+    const el=document.getElementById('wxLine');
+    if(w2 && w2.temp!=null && el) el.innerHTML = wxHtml(w2, true);
+  }).catch(()=>{});
 }
 
 fetch('data.json',{cache:'no-store'})
