@@ -1,43 +1,39 @@
 {
-  "synced_at": "2026-08-04 23:13",
+  "synced_at": "2026-08-05 00:13",
   "garmin": {
-    "date": "2026-08-04",
-    "resting_hr": 63,
+    "date": "2026-08-05",
+    "resting_hr": null,
     "hrv_weekly": 45,
     "hrv_last_night": 47,
     "hrv_status": "Balanced",
     "sleep_hours": 7.5,
     "sleep_score": 79,
     "sleep_missing": false,
-    "bb_charged": 60,
-    "bb_drained": 55,
-    "bb_current": 10,
-    "steps": 7822,
-    "step_goal": 8870,
-    "active_kcal": 535.0,
-    "total_kcal": 2399.0,
-    "avg_stress": 41,
+    "bb_charged": null,
+    "bb_drained": null,
+    "bb_current": null,
+    "steps": 0,
+    "step_goal": 8000,
+    "active_kcal": 0,
+    "total_kcal": 0,
+    "avg_stress": 0,
     "readiness_score": 74,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
-    "training_status": "RECOVERY_1",
-    "acute_load": 62,
-    "chronic_load": 100,
-    "aerobic_low": 160,
-    "aerobic_low_min": 95,
-    "aerobic_low_max": 260,
-    "aerobic_high": 101,
-    "aerobic_high_min": 205,
-    "aerobic_high_max": 369,
-    "load_feedback": "AEROBIC_HIGH_SHORTAGE",
+    "training_status": "",
+    "acute_load": null,
+    "chronic_load": null,
+    "aerobic_low": 0,
+    "aerobic_low_min": 97,
+    "aerobic_low_max": 261,
+    "aerobic_high": 0,
+    "aerobic_high_min": 203,
+    "aerobic_high_max": 368,
+    "load_feedback": "",
     "sleep_week": [
-      {
-        "date": "2026-07-28",
-        "score": 92
-      },
       {
         "date": "2026-07-30",
         "score": 88
@@ -63,9 +59,9 @@
         "score": 79
       }
     ],
-    "sleep_avg": 74,
-    "sleep_best": 92,
-    "sleep_best_date": "28 Jul",
+    "sleep_avg": 71,
+    "sleep_best": 88,
+    "sleep_best_date": "30 Jul",
     "sleep_trend": "declining"
   },
   "body_comp": {
@@ -920,24 +916,6 @@
   ],
   "calendar": [
     {
-      "title": "Piranha Board Meeting",
-      "start": "2026-08-04",
-      "start_date": "2026-08-04",
-      "time": "09:00",
-      "all_day": false,
-      "category": "work",
-      "calendar": "Notion"
-    },
-    {
-      "title": "Piranha MarineTech X DTU DG folow up meeting",
-      "start": "2026-08-04",
-      "start_date": "2026-08-04",
-      "time": "11:00",
-      "all_day": false,
-      "category": "work",
-      "calendar": "Notion"
-    },
-    {
       "title": "Barlay Krist\u00f3f\u2019s 29th Birthday",
       "start": "2026-08-07",
       "start_date": "2026-08-07",
@@ -1071,23 +1049,50 @@
       "all_day": false,
       "category": "personal",
       "calendar": "Notion"
+    },
+    {
+      "title": "Semester Start Celebration",
+      "start": "2026-09-04",
+      "start_date": "2026-09-04",
+      "time": "",
+      "all_day": true,
+      "category": "personal",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Gr\u00e1n\u00e1sy S\u00e1ra\u2019s Birthday",
+      "start": "2026-09-04",
+      "start_date": "2026-09-04",
+      "time": "",
+      "all_day": true,
+      "category": "social",
+      "calendar": "Notion"
+    },
+    {
+      "title": "Cafe",
+      "start": "2026-09-04",
+      "start_date": "2026-09-04",
+      "time": "12:00",
+      "all_day": false,
+      "category": "personal",
+      "calendar": "Notion"
     }
   ],
   "weather": {
-    "temp": 19.5,
+    "temp": 18.9,
     "description": "Clear",
     "city": "Copenhagen",
-    "precip_mm": 0.1,
-    "uv_index": 4.5,
-    "solar_mj": 10.8,
-    "wind_kmh": 10.8,
-    "rain": false
+    "precip_mm": 4.0,
+    "uv_index": 5.9,
+    "solar_mj": 15.1,
+    "wind_kmh": 13.0,
+    "rain": true
   },
   "streaks": {
-    "watch_nights": 5,
+    "watch_nights": 6,
     "sessions_this_week": 1,
     "training_weeks_4x": 2,
-    "days_since_session": 1,
+    "days_since_session": 2,
     "last_session_label": "3 Aug \u00b7 Upper 1"
   },
   "tasks": {
@@ -1113,24 +1118,23 @@
     "total_open": 25
   },
   "day_plan": {
-    "context": "evening",
-    "generated_at": "23:13",
+    "context": "morning",
+    "generated_at": "00:13",
     "readiness": 74,
-    "bb": 10,
+    "bb": 50,
     "hrv": 47,
     "today": {
       "label": "Clear",
       "lines": [
-        "2 commitments today. Batch deep work between them.",
-        "Recovery is low (readiness 74, battery 10). Keep intensity moderate.",
-        "Work commitments at 09:00 and 11:00 (Piranha Board Meeting, Piranha MarineTech X DTU D). Plan focus around it.",
-        "Evening \u2014 wind down now. Set up tomorrow before bed."
+        "Clear day \u2014 good for deep work or extra recovery.",
+        "Moderate readiness (74/100). Train but don't push to failure.",
+        "No gym scheduled \u2014 if you train, go before 14:00."
       ],
       "task_count": 0,
-      "work_shifts": 2,
+      "work_shifts": 0,
       "has_gym": false,
       "tasks": [],
-      "recovery": "low"
+      "recovery": "moderate"
     },
     "tomorrow": {
       "label": "Clear",
@@ -1146,24 +1150,19 @@
   },
   "health_matrix": {
     "readiness": 74,
-    "training_signal": 64,
-    "illness_risk": 80,
-    "recovery_debt": 49,
-    "cognitive_load": 59,
+    "training_signal": 76,
+    "illness_risk": 84,
+    "recovery_debt": 65,
+    "cognitive_load": 70,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 28,
+    "score": 0,
     "factors": [
-      "Body battery critical"
+      "No significant risk factors today"
     ]
   },
   "bb_trend": [
-    {
-      "date": "2026-07-28",
-      "val": 73,
-      "drain": 68
-    },
     {
       "date": "2026-07-29",
       "val": 74,
@@ -1198,10 +1197,15 @@
       "date": "2026-08-04",
       "val": 58,
       "drain": 55
+    },
+    {
+      "date": "2026-08-05",
+      "val": null,
+      "drain": null
     }
   ],
-  "bb_predicted_wake": 61,
-  "sleep_consistency": 21,
+  "bb_predicted_wake": 68,
+  "sleep_consistency": 20,
   "late_night_penalty": false,
   "training_warning": false,
   "weekly_training": {
@@ -1221,14 +1225,14 @@
     "on_track": false
   },
   "training_load": {
-    "acute": 62,
-    "chronic": 100,
-    "aerobic_low": 160,
-    "aerobic_low_min": 95,
-    "aerobic_low_max": 260,
-    "aerobic_high": 101,
-    "aerobic_high_min": 205,
-    "aerobic_high_max": 369,
-    "feedback": "AEROBIC_HIGH_SHORTAGE"
+    "acute": null,
+    "chronic": null,
+    "aerobic_low": 0,
+    "aerobic_low_min": 97,
+    "aerobic_low_max": 261,
+    "aerobic_high": 0,
+    "aerobic_high_min": 203,
+    "aerobic_high_max": 368,
+    "feedback": ""
   }
 }
