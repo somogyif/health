@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-04 18:50",
+  "synced_at": "2026-08-04 20:13",
   "garmin": {
     "date": "2026-08-04",
     "resting_hr": 63,
@@ -10,13 +10,13 @@
     "sleep_score": 79,
     "sleep_missing": false,
     "bb_charged": 60,
-    "bb_drained": 45,
-    "bb_current": 20,
-    "steps": 5169,
+    "bb_drained": 55,
+    "bb_current": 10,
+    "steps": 7822,
     "step_goal": 8870,
-    "active_kcal": 399.0,
-    "total_kcal": 1936.0,
-    "avg_stress": 38,
+    "active_kcal": 535.0,
+    "total_kcal": 2399.0,
+    "avg_stress": 41,
     "readiness_score": 74,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -1074,13 +1074,13 @@
     }
   ],
   "weather": {
-    "temp": 23.0,
-    "description": "Clear",
+    "temp": 21.8,
+    "description": "Partly cloudy",
     "city": "Copenhagen",
     "precip_mm": 0.1,
-    "uv_index": 4.4,
+    "uv_index": 4.5,
     "solar_mj": 10.8,
-    "wind_kmh": 15.5,
+    "wind_kmh": 14.8,
     "rain": false
   },
   "streaks": {
@@ -1108,22 +1108,23 @@
       "count": 0
     },
     "no_date": {
-      "count": 26
+      "count": 24
     },
-    "total_open": 27
+    "total_open": 25
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "18:50",
+    "generated_at": "20:13",
     "readiness": 74,
-    "bb": 20,
+    "bb": 10,
     "hrv": 47,
     "today": {
       "label": "Clear",
       "lines": [
         "2 commitments today. Batch deep work between them.",
-        "Recovery is low (readiness 74, battery 20). Keep intensity moderate.",
-        "Work commitments at 09:00 and 11:00 (Piranha Board Meeting, Piranha MarineTech X DTU D). Plan focus around it."
+        "Recovery is low (readiness 74, battery 10). Keep intensity moderate.",
+        "Work commitments at 09:00 and 11:00 (Piranha Board Meeting, Piranha MarineTech X DTU D). Plan focus around it.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 2,
@@ -1145,16 +1146,16 @@
   },
   "health_matrix": {
     "readiness": 74,
-    "training_signal": 67,
-    "illness_risk": 81,
-    "recovery_debt": 53,
-    "cognitive_load": 62,
+    "training_signal": 64,
+    "illness_risk": 80,
+    "recovery_debt": 49,
+    "cognitive_load": 59,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 10,
+    "score": 28,
     "factors": [
-      "Body battery low"
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -1195,11 +1196,11 @@
     },
     {
       "date": "2026-08-04",
-      "val": 49,
-      "drain": 45
+      "val": 58,
+      "drain": 55
     }
   ],
-  "bb_predicted_wake": 71,
+  "bb_predicted_wake": 61,
   "sleep_consistency": 21,
   "late_night_penalty": false,
   "training_warning": false,
