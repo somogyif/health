@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-05 13:18",
+  "synced_at": "2026-08-05 15:49",
   "garmin": {
     "date": "2026-08-05",
     "resting_hr": 65,
@@ -10,23 +10,23 @@
     "sleep_score": 63,
     "sleep_missing": false,
     "bb_charged": 36,
-    "bb_drained": 3,
-    "bb_current": 41,
-    "steps": 207,
+    "bb_drained": 23,
+    "bb_current": 18,
+    "steps": 1843,
     "step_goal": 8680,
-    "active_kcal": 35.0,
-    "total_kcal": 988.0,
-    "avg_stress": 26,
-    "readiness_score": 55,
+    "active_kcal": 414.0,
+    "total_kcal": 1829.0,
+    "avg_stress": 33,
+    "readiness_score": 42,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
     "vigorous_days": 0.0,
     "vigorous_target": 3,
     "training_status": "RECOVERY_1",
-    "acute_load": 48,
+    "acute_load": 71,
     "chronic_load": 100,
-    "aerobic_low": 160,
+    "aerobic_low": 178,
     "aerobic_low_min": 95,
     "aerobic_low_max": 260,
     "aerobic_high": 0,
@@ -1109,13 +1109,13 @@
     }
   ],
   "weather": {
-    "temp": 26.5,
-    "description": "Clear",
+    "temp": 28.1,
+    "description": "Partly cloudy",
     "city": "Copenhagen",
     "precip_mm": 0,
     "uv_index": 5.9,
-    "solar_mj": 17.6,
-    "wind_kmh": 15.1,
+    "solar_mj": 17.4,
+    "wind_kmh": 18.7,
     "rain": false
   },
   "streaks": {
@@ -1149,15 +1149,15 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "13:18",
-    "readiness": 55,
-    "bb": 41,
+    "generated_at": "15:49",
+    "readiness": 42,
+    "bb": 18,
     "hrv": 43,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 55, battery 41). Keep intensity moderate."
+        "Recovery is low (readiness 42, battery 18). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -1178,17 +1178,18 @@
     }
   },
   "health_matrix": {
-    "readiness": 55,
-    "training_signal": 63,
-    "illness_risk": 78,
-    "recovery_debt": 51,
-    "cognitive_load": 62,
+    "readiness": 42,
+    "training_signal": 51,
+    "illness_risk": 76,
+    "recovery_debt": 37,
+    "cognitive_load": 55,
     "calendar_load": 75
   },
   "illness_risk": {
-    "score": 30,
+    "score": 50,
     "factors": [
-      "Sleep < 6h"
+      "Sleep < 6h",
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -1229,11 +1230,11 @@
     },
     {
       "date": "2026-08-05",
-      "val": 5,
-      "drain": 3
+      "val": 18,
+      "drain": 23
     }
   ],
-  "bb_predicted_wake": 72,
+  "bb_predicted_wake": 49,
   "sleep_consistency": 26,
   "late_night_penalty": true,
   "training_warning": false,
@@ -1254,9 +1255,9 @@
     "on_track": false
   },
   "training_load": {
-    "acute": 48,
+    "acute": 71,
     "chronic": 100,
-    "aerobic_low": 160,
+    "aerobic_low": 178,
     "aerobic_low_min": 95,
     "aerobic_low_max": 260,
     "aerobic_high": 0,
