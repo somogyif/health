@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-05 15:49",
+  "synced_at": "2026-08-05 17:50",
   "garmin": {
     "date": "2026-08-05",
     "resting_hr": 65,
@@ -10,13 +10,13 @@
     "sleep_score": 63,
     "sleep_missing": false,
     "bb_charged": 36,
-    "bb_drained": 23,
-    "bb_current": 18,
-    "steps": 1843,
+    "bb_drained": 27,
+    "bb_current": 14,
+    "steps": 2060,
     "step_goal": 8680,
-    "active_kcal": 414.0,
-    "total_kcal": 1829.0,
-    "avg_stress": 33,
+    "active_kcal": 463.0,
+    "total_kcal": 1964.0,
+    "avg_stress": 35,
     "readiness_score": 42,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
@@ -1109,13 +1109,13 @@
     }
   ],
   "weather": {
-    "temp": 28.1,
-    "description": "Partly cloudy",
+    "temp": 27.4,
+    "description": "Mostly clear",
     "city": "Copenhagen",
     "precip_mm": 0,
     "uv_index": 5.9,
     "solar_mj": 17.4,
-    "wind_kmh": 18.7,
+    "wind_kmh": 22.0,
     "rain": false
   },
   "streaks": {
@@ -1149,15 +1149,15 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "15:49",
+    "generated_at": "17:50",
     "readiness": 42,
-    "bb": 18,
+    "bb": 14,
     "hrv": 43,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 42, battery 18). Keep intensity moderate."
+        "Recovery is low (readiness 42, battery 14). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -1179,10 +1179,10 @@
   },
   "health_matrix": {
     "readiness": 42,
-    "training_signal": 51,
-    "illness_risk": 76,
-    "recovery_debt": 37,
-    "cognitive_load": 55,
+    "training_signal": 50,
+    "illness_risk": 75,
+    "recovery_debt": 35,
+    "cognitive_load": 54,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -1230,11 +1230,11 @@
     },
     {
       "date": "2026-08-05",
-      "val": 18,
-      "drain": 23
+      "val": 21,
+      "drain": 27
     }
   ],
-  "bb_predicted_wake": 49,
+  "bb_predicted_wake": 45,
   "sleep_consistency": 26,
   "late_night_penalty": true,
   "training_warning": false,
