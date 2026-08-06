@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-06 02:32",
+  "synced_at": "2026-08-06 03:41",
   "garmin": {
     "date": "2026-08-06",
     "resting_hr": null,
@@ -1118,13 +1118,13 @@
     }
   ],
   "weather": {
-    "temp": 19.7,
+    "temp": 19.1,
     "description": "Mostly clear",
     "city": "Copenhagen",
     "precip_mm": 0,
     "uv_index": 5.1,
-    "solar_mj": 15.4,
-    "wind_kmh": 12.6,
+    "solar_mj": 15.7,
+    "wind_kmh": 13.3,
     "rain": false
   },
   "streaks": {
@@ -1152,13 +1152,13 @@
       "count": 0
     },
     "no_date": {
-      "count": 0
+      "count": 24
     },
-    "total_open": 0
+    "total_open": 25
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "02:32",
+    "generated_at": "03:41",
     "readiness": 42,
     "bb": 50,
     "hrv": 43,
