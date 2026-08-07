@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-07 11:08",
+  "synced_at": "2026-08-07 12:08",
   "garmin": {
     "date": "2026-08-07",
     "resting_hr": null,
@@ -74,6 +74,63 @@
     "source": "Zepp Life"
   },
   "workouts": [
+    {
+      "id": "c4e75c7c-25b5-443f-9bd4-faba2f44e40a",
+      "title": "Upper 2",
+      "date": "2026-08-07",
+      "start_time": "2026-08-07T09:07:21+00:00",
+      "duration": 60,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
+          "weight": 45,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1596
+        },
+        {
+          "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
+          "weight": 55,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1980
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "template_id": "6A6C31A5",
+          "weight": 60,
+          "sets": 3,
+          "reps": 12,
+          "volume": 2160
+        },
+        {
+          "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
+          "weight": 45,
+          "sets": 3,
+          "reps": 15,
+          "volume": 2025
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
+          "weight": 18,
+          "sets": 3,
+          "reps": 16,
+          "volume": 846
+        },
+        {
+          "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "template_id": "E5988A0A",
+          "weight": 16,
+          "sets": 3,
+          "reps": 15,
+          "volume": 720
+        }
+      ]
+    },
     {
       "id": "1ad125c9-8a6f-4827-9cae-e6569318098c",
       "title": "Lower 1",
@@ -562,58 +619,74 @@
           "volume": 3375
         }
       ]
-    },
-    {
-      "id": "d757de54-6cfd-41e1-81c9-8cf459677a1e",
-      "title": "Upper 1",
-      "date": "2026-07-20",
-      "start_time": "2026-07-20T07:48:27+00:00",
-      "duration": 53,
-      "exercises": [
-        {
-          "name": "Bent Over Row (Dumbbell)",
-          "template_id": "23E92538",
-          "weight": 32,
-          "sets": 3,
-          "reps": 12,
-          "volume": 1152
-        },
-        {
-          "name": "Shoulder Press (Dumbbell)",
-          "template_id": "878CD1D0",
-          "weight": 36,
-          "sets": 3,
-          "reps": 11,
-          "volume": 1152
-        },
-        {
-          "name": "Bench Press (Barbell)",
-          "template_id": "79D0BB3A",
-          "weight": 50,
-          "sets": 3,
-          "reps": 9,
-          "volume": 1400
-        },
-        {
-          "name": "Butterfly (Pec Deck)",
-          "template_id": "9DCE2D64",
-          "weight": 40,
-          "sets": 3,
-          "reps": 12,
-          "volume": 1440
-        },
-        {
-          "name": "Bicep Curl (Dumbbell)",
-          "template_id": "37FCC2BB",
-          "weight": 24,
-          "sets": 3,
-          "reps": 13,
-          "volume": 936
-        }
-      ]
     }
   ],
   "workout_quality": [
+    {
+      "date": "2026-08-07",
+      "title": "Upper 2",
+      "duration": 60,
+      "label": "Full session \u2014 60 min",
+      "score": 66,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
+          "weight": 45,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1596
+        },
+        {
+          "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
+          "weight": 55,
+          "sets": 3,
+          "reps": 12,
+          "volume": 1980
+        },
+        {
+          "name": "Lat Pulldown (Cable)",
+          "template_id": "6A6C31A5",
+          "weight": 60,
+          "sets": 3,
+          "reps": 12,
+          "volume": 2160
+        },
+        {
+          "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
+          "weight": 45,
+          "sets": 3,
+          "reps": 15,
+          "volume": 2025
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
+          "weight": 18,
+          "sets": 3,
+          "reps": 16,
+          "volume": 846
+        },
+        {
+          "name": "Rear Delt Reverse Fly (Dumbbell)",
+          "template_id": "E5988A0A",
+          "weight": 16,
+          "sets": 3,
+          "reps": 15,
+          "volume": 720
+        }
+      ],
+      "overload": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "type": "weight",
+          "from": 40,
+          "to": 45
+        }
+      ]
+    },
     {
       "date": "2026-08-05",
       "title": "Lower 1",
@@ -867,77 +940,6 @@
           "to": 45
         }
       ]
-    },
-    {
-      "date": "2026-07-29",
-      "title": "Lower 1",
-      "duration": 59,
-      "label": "Full session \u2014 59 min",
-      "score": 65,
-      "exercises": [
-        {
-          "name": "Leg Press Horizontal (Machine)",
-          "template_id": "0EB695C9",
-          "weight": 110,
-          "sets": 3,
-          "reps": 11,
-          "volume": 3520
-        },
-        {
-          "name": "Romanian Deadlift (Dumbbell)",
-          "template_id": "72CFFAD5",
-          "weight": 48,
-          "sets": 3,
-          "reps": 12,
-          "volume": 1584
-        },
-        {
-          "name": "Leg Extension (Machine)",
-          "template_id": "75A4F6C4",
-          "weight": 45,
-          "sets": 3,
-          "reps": 15,
-          "volume": 1410
-        },
-        {
-          "name": "Calf Extension (Machine)",
-          "template_id": "47B9DF13",
-          "weight": 130,
-          "sets": 3,
-          "reps": 15,
-          "volume": 5850
-        },
-        {
-          "name": "Cable Crunch",
-          "template_id": "23A48484",
-          "weight": 80,
-          "sets": 3,
-          "reps": 15,
-          "volume": 3600
-        },
-        {
-          "name": "Leg Raise Parallel Bars",
-          "template_id": "0482DA98",
-          "weight": 0,
-          "sets": 3,
-          "reps": 12,
-          "volume": 0
-        }
-      ],
-      "overload": [
-        {
-          "name": "Romanian Deadlift (Dumbbell)",
-          "type": "weight",
-          "from": 40,
-          "to": 48
-        },
-        {
-          "name": "Cable Crunch",
-          "type": "weight",
-          "from": 75,
-          "to": 80
-        }
-      ]
     }
   ],
   "calendar": [
@@ -1114,21 +1116,21 @@
     }
   ],
   "weather": {
-    "temp": 17.8,
+    "temp": 18.4,
     "description": "Partly cloudy",
     "city": "Copenhagen",
     "precip_mm": 0.1,
     "uv_index": 5.8,
-    "solar_mj": 21.0,
-    "wind_kmh": 18.7,
+    "solar_mj": 20.7,
+    "wind_kmh": 20.5,
     "rain": false
   },
   "streaks": {
     "watch_nights": 0,
-    "sessions_this_week": 2,
+    "sessions_this_week": 3,
     "training_weeks_4x": 2,
-    "days_since_session": 2,
-    "last_session_label": "5 Aug \u00b7 Lower 1"
+    "days_since_session": 0,
+    "last_session_label": "7 Aug \u00b7 Upper 2"
   },
   "tasks": {
     "today": {
@@ -1153,8 +1155,8 @@
     "total_open": 25
   },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "11:08",
+    "context": "afternoon",
+    "generated_at": "12:08",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -1245,10 +1247,10 @@
   "training_warning": false,
   "weekly_training": {
     "this_week": {
-      "sessions": 2,
-      "upper": 1,
+      "sessions": 3,
+      "upper": 2,
       "lower": 1,
-      "volume_kg": 26080
+      "volume_kg": 35407
     },
     "last_week": {
       "sessions": 4,
@@ -1256,8 +1258,8 @@
       "lower": 2,
       "volume_kg": 51047
     },
-    "vol_change_pct": -49,
-    "on_track": false
+    "vol_change_pct": -31,
+    "on_track": true
   },
   "training_load": {
     "acute": null,
