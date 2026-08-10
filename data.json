@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-10 14:16",
+  "synced_at": "2026-08-10 19:00",
   "garmin": {
     "date": "2026-08-10",
     "resting_hr": null,
@@ -1103,13 +1103,13 @@
     }
   ],
   "weather": {
-    "temp": 20.3,
-    "description": "Partly cloudy",
+    "temp": 21.3,
+    "description": "Mostly clear",
     "city": "Copenhagen",
     "precip_mm": 0.8,
-    "uv_index": 3.9,
-    "solar_mj": 10.4,
-    "wind_kmh": 14.0,
+    "uv_index": 4.6,
+    "solar_mj": 9.7,
+    "wind_kmh": 18.4,
     "rain": true
   },
   "streaks": {
@@ -1142,8 +1142,8 @@
     "total_open": 19
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "14:16",
+    "context": "evening",
+    "generated_at": "19:00",
     "readiness": 68,
     "bb": 50,
     "hrv": 42,
@@ -1151,7 +1151,8 @@
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure."
+        "Moderate readiness (68/100). Train but don't push to failure.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 0,
