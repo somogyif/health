@@ -766,7 +766,7 @@ function render(d){
               {l:'😴 Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score??0),w:g.readiness_sleep_score??0},
               {l:'💓 HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:((g.readiness_hrv_pct??0)>=75?'var(--teal)':'var(--amber)'),w:g.readiness_hrv_pct??0},
               {l:'🧠 Stress history',v:fmt(g.readiness_stress_pct,'%'),c:scol(g.readiness_stress_pct||32),w:g.readiness_stress_pct||32},
-              {l:'⏱ Recovery time',v:'98%',c:'var(--teal)',w:98},
+              {l:'⏱ Recovery time',v:fmt(g.readiness_recovery_pct??98,'%'),c:'var(--teal)',w:g.readiness_recovery_pct??98},
             ].map(r=>`
               <div class="frow" style="flex-direction:column;align-items:flex-start">
                 <div style="display:flex;justify-content:space-between;width:100%"><span class="fl">${r.l}</span><span class="fv" style="color:${r.c}">${r.v}</span></div>
