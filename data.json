@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-12 19:15",
+  "synced_at": "2026-08-12 21:25",
   "garmin": {
     "date": "2026-08-12",
     "resting_hr": null,
@@ -18,6 +18,11 @@
     "total_kcal": 0,
     "avg_stress": 0,
     "readiness_score": 39,
+    "readiness_level": "LOW",
+    "readiness_sleep_score": 81,
+    "readiness_hrv_pct": 100,
+    "readiness_stress_pct": 37,
+    "readiness_recovery_pct": 67,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
@@ -1128,13 +1133,13 @@
     }
   ],
   "weather": {
-    "temp": 20.9,
-    "description": "Mostly clear",
+    "temp": 18.9,
+    "description": "Partly cloudy",
     "city": "Copenhagen",
     "precip_mm": 0,
     "uv_index": 5.6,
     "solar_mj": 22.8,
-    "wind_kmh": 6.8,
+    "wind_kmh": 3.6,
     "rain": false
   },
   "streaks": {
@@ -1168,7 +1173,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "19:15",
+    "generated_at": "21:25",
     "readiness": 39,
     "bb": 50,
     "hrv": 45,
@@ -1203,7 +1208,7 @@
     "illness_risk": 84,
     "recovery_debt": 52,
     "cognitive_load": 72,
-    "calendar_load": 75
+    "calendar_load": 100
   },
   "illness_risk": {
     "score": 0,
