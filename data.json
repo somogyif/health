@@ -1,14 +1,14 @@
 {
-  "synced_at": "2026-08-12 07:06",
+  "synced_at": "2026-08-12 17:11",
   "garmin": {
     "date": "2026-08-12",
     "resting_hr": null,
     "hrv_weekly": 44,
     "hrv_last_night": 45,
     "hrv_status": "Balanced",
-    "sleep_hours": null,
-    "sleep_score": null,
-    "sleep_missing": true,
+    "sleep_hours": 8.1,
+    "sleep_score": 81,
+    "sleep_missing": false,
     "bb_charged": null,
     "bb_drained": null,
     "bb_current": null,
@@ -49,6 +49,10 @@
       {
         "date": "2026-08-09",
         "score": 87
+      },
+      {
+        "date": "2026-08-10",
+        "score": 76
       },
       {
         "date": "2026-08-11",
@@ -952,15 +956,6 @@
   ],
   "calendar": [
     {
-      "title": "1:1 Sync & Strategic Alignment | Zsombor (Tinder)",
-      "start": "2026-08-18T17:00:00+00:00",
-      "start_date": "2026-08-18",
-      "time": "19:00",
-      "all_day": false,
-      "category": "personal",
-      "calendar": "https://calendar.google.com/calendar/ical/sf.somi%40gmail.com/private-162b5bda4d5d1e03111158c647db68f0/basic.ics"
-    },
-    {
       "title": "DALO Days",
       "start": "2026-08-19",
       "start_date": "2026-08-19",
@@ -1133,13 +1128,13 @@
     }
   ],
   "weather": {
-    "temp": 14.9,
+    "temp": 22.5,
     "description": "Clear",
     "city": "Copenhagen",
     "precip_mm": 0,
     "uv_index": 5.6,
     "solar_mj": 22.8,
-    "wind_kmh": 7.9,
+    "wind_kmh": 8.6,
     "rain": false
   },
   "streaks": {
@@ -1149,10 +1144,31 @@
     "days_since_session": 1,
     "last_session_label": "11 Aug \u00b7 Upper 2"
   },
-  "tasks": null,
+  "tasks": {
+    "today": {
+      "tasks": [],
+      "count": 0,
+      "score": 0,
+      "label": "Clear"
+    },
+    "tomorrow": {
+      "tasks": [],
+      "count": 0,
+      "score": 0,
+      "label": "Clear"
+    },
+    "overdue": {
+      "tasks": [],
+      "count": 0
+    },
+    "no_date": {
+      "count": 21
+    },
+    "total_open": 21
+  },
   "day_plan": {
-    "context": "morning",
-    "generated_at": "07:06",
+    "context": "afternoon",
+    "generated_at": "17:11",
     "readiness": 39,
     "bb": 50,
     "hrv": 45,
@@ -1183,9 +1199,9 @@
   "health_matrix": {
     "readiness": 39,
     "training_signal": 61,
-    "illness_risk": 82,
-    "recovery_debt": 51,
-    "cognitive_load": 68,
+    "illness_risk": 84,
+    "recovery_debt": 52,
+    "cognitive_load": 72,
     "calendar_load": 75
   },
   "illness_risk": {
@@ -1237,7 +1253,7 @@
     }
   ],
   "bb_predicted_wake": 68,
-  "sleep_consistency": 59,
+  "sleep_consistency": 64,
   "late_night_penalty": false,
   "training_warning": false,
   "weekly_training": {
