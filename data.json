@@ -1,12 +1,12 @@
 {
-  "synced_at": "2026-08-11 14:00",
+  "synced_at": "2026-08-12 07:06",
   "garmin": {
-    "date": "2026-08-11",
+    "date": "2026-08-12",
     "resting_hr": null,
-    "hrv_weekly": null,
-    "hrv_last_night": null,
+    "hrv_weekly": 44,
+    "hrv_last_night": 45,
     "hrv_status": "Balanced",
-    "sleep_hours": 0.0,
+    "sleep_hours": null,
     "sleep_score": null,
     "sleep_missing": true,
     "bb_charged": null,
@@ -17,7 +17,7 @@
     "active_kcal": 0,
     "total_kcal": 0,
     "avg_stress": 0,
-    "readiness_score": null,
+    "readiness_score": 39,
     "fitness_age": 25.9,
     "achievable_age": 21.1,
     "chrono_age": 29,
@@ -35,10 +35,6 @@
     "load_feedback": "",
     "sleep_week": [
       {
-        "date": "2026-08-04",
-        "score": 79
-      },
-      {
         "date": "2026-08-05",
         "score": 63
       },
@@ -49,12 +45,20 @@
       {
         "date": "2026-08-07",
         "score": 66
+      },
+      {
+        "date": "2026-08-09",
+        "score": 87
+      },
+      {
+        "date": "2026-08-11",
+        "score": 81
       }
     ],
-    "sleep_avg": 72,
-    "sleep_best": 79,
-    "sleep_best_date": "4 Aug",
-    "sleep_trend": "declining"
+    "sleep_avg": 75,
+    "sleep_best": 87,
+    "sleep_best_date": "9 Aug",
+    "sleep_trend": "improving"
   },
   "body_comp": {
     "fat_pct": 21.6,
@@ -66,6 +70,55 @@
     "source": "Zepp Life"
   },
   "workouts": [
+    {
+      "id": "c6397c18-83d2-4b80-9387-0d1f27e8f404",
+      "title": "Upper 2",
+      "date": "2026-08-11",
+      "start_time": "2026-08-11T12:47:39+00:00",
+      "duration": 45,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
+          "weight": 48,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1536
+        },
+        {
+          "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
+          "weight": 60,
+          "sets": 3,
+          "reps": 11,
+          "volume": 2040
+        },
+        {
+          "name": "Lat Pulldown (Machine)",
+          "template_id": "473CF5B8",
+          "weight": 60,
+          "sets": 3,
+          "reps": 12,
+          "volume": 2160
+        },
+        {
+          "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
+          "weight": 50,
+          "sets": 3,
+          "reps": 14,
+          "volume": 2100
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
+          "weight": 20,
+          "sets": 3,
+          "reps": 15,
+          "volume": 900
+        }
+      ]
+    },
     {
       "id": "c4e75c7c-25b5-443f-9bd4-faba2f44e40a",
       "title": "Upper 2",
@@ -562,58 +615,84 @@
           "volume": 624
         }
       ]
-    },
-    {
-      "id": "98bc38a5-bdb9-498b-a931-8273def87761",
-      "title": "Lower 1",
-      "date": "2026-07-21",
-      "start_time": "2026-07-21T10:12:51+00:00",
-      "duration": 63,
-      "exercises": [
-        {
-          "name": "Leg Press Horizontal (Machine)",
-          "template_id": "0EB695C9",
-          "weight": 110,
-          "sets": 3,
-          "reps": 11,
-          "volume": 3740
-        },
-        {
-          "name": "Romanian Deadlift (Dumbbell)",
-          "template_id": "72CFFAD5",
-          "weight": 40,
-          "sets": 3,
-          "reps": 11,
-          "volume": 1360
-        },
-        {
-          "name": "Leg Extension (Machine)",
-          "template_id": "75A4F6C4",
-          "weight": 55,
-          "sets": 3,
-          "reps": 13,
-          "volume": 1900
-        },
-        {
-          "name": "Calf Extension (Machine)",
-          "template_id": "47B9DF13",
-          "weight": 130,
-          "sets": 3,
-          "reps": 15,
-          "volume": 5700
-        },
-        {
-          "name": "Cable Crunch",
-          "template_id": "23A48484",
-          "weight": 75,
-          "sets": 3,
-          "reps": 15,
-          "volume": 3375
-        }
-      ]
     }
   ],
   "workout_quality": [
+    {
+      "date": "2026-08-11",
+      "title": "Upper 2",
+      "duration": 45,
+      "label": "Full session \u2014 45 min",
+      "score": 51,
+      "exercises": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "template_id": "07B38369",
+          "weight": 48,
+          "sets": 3,
+          "reps": 11,
+          "volume": 1536
+        },
+        {
+          "name": "Seated Cable Row - V Grip (Cable)",
+          "template_id": "0393F233",
+          "weight": 60,
+          "sets": 3,
+          "reps": 11,
+          "volume": 2040
+        },
+        {
+          "name": "Lat Pulldown (Machine)",
+          "template_id": "473CF5B8",
+          "weight": 60,
+          "sets": 3,
+          "reps": 12,
+          "volume": 2160
+        },
+        {
+          "name": "Triceps Pushdown",
+          "template_id": "93A552C6",
+          "weight": 50,
+          "sets": 3,
+          "reps": 14,
+          "volume": 2100
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "template_id": "422B08F1",
+          "weight": 20,
+          "sets": 3,
+          "reps": 15,
+          "volume": 900
+        }
+      ],
+      "overload": [
+        {
+          "name": "Incline Bench Press (Dumbbell)",
+          "type": "weight",
+          "from": 45,
+          "to": 48
+        },
+        {
+          "name": "Seated Cable Row - V Grip (Cable)",
+          "type": "weight",
+          "from": 55,
+          "to": 60
+        },
+        {
+          "name": "Triceps Pushdown",
+          "type": "weight",
+          "from": 45,
+          "to": 50
+        },
+        {
+          "name": "Lateral Raise (Dumbbell)",
+          "type": "weight",
+          "from": 18,
+          "to": 20
+        }
+      ]
+    },
     {
       "date": "2026-08-07",
       "title": "Upper 2",
@@ -869,81 +948,9 @@
         }
       ],
       "overload": []
-    },
-    {
-      "date": "2026-07-31",
-      "title": "Upper 2",
-      "duration": 69,
-      "label": "Full session \u2014 69 min",
-      "score": 70,
-      "exercises": [
-        {
-          "name": "Incline Bench Press (Dumbbell)",
-          "template_id": "07B38369",
-          "weight": 40,
-          "sets": 3,
-          "reps": 12,
-          "volume": 1440
-        },
-        {
-          "name": "Seated Cable Row - V Grip (Cable)",
-          "template_id": "0393F233",
-          "weight": 55,
-          "sets": 3,
-          "reps": 11,
-          "volume": 1870
-        },
-        {
-          "name": "Lat Pulldown (Cable)",
-          "template_id": "6A6C31A5",
-          "weight": 60,
-          "sets": 3,
-          "reps": 11,
-          "volume": 2040
-        },
-        {
-          "name": "Triceps Pushdown",
-          "template_id": "93A552C6",
-          "weight": 45,
-          "sets": 3,
-          "reps": 14,
-          "volume": 1830
-        },
-        {
-          "name": "Lateral Raise (Dumbbell)",
-          "template_id": "422B08F1",
-          "weight": 18,
-          "sets": 3,
-          "reps": 14,
-          "volume": 756
-        }
-      ],
-      "overload": [
-        {
-          "name": "Seated Cable Row - V Grip (Cable)",
-          "type": "weight",
-          "from": 50,
-          "to": 55
-        },
-        {
-          "name": "Triceps Pushdown",
-          "type": "weight",
-          "from": 40,
-          "to": 45
-        }
-      ]
     }
   ],
   "calendar": [
-    {
-      "title": "Foldvari Andras\u2019s 74th Birthday",
-      "start": "2026-08-11",
-      "start_date": "2026-08-11",
-      "time": "",
-      "all_day": true,
-      "category": "social",
-      "calendar": "Notion"
-    },
     {
       "title": "1:1 Sync & Strategic Alignment | Zsombor (Tinder)",
       "start": "2026-08-18T17:00:00+00:00",
@@ -1114,64 +1121,52 @@
       "all_day": true,
       "category": "social",
       "calendar": "Notion"
+    },
+    {
+      "title": "Cafe",
+      "start": "2026-09-11",
+      "start_date": "2026-09-11",
+      "time": "13:30",
+      "all_day": false,
+      "category": "personal",
+      "calendar": "Notion"
     }
   ],
   "weather": {
-    "temp": 20.5,
+    "temp": 14.9,
     "description": "Clear",
     "city": "Copenhagen",
     "precip_mm": 0,
-    "uv_index": 5.5,
-    "solar_mj": 22.6,
-    "wind_kmh": 17.6,
+    "uv_index": 5.6,
+    "solar_mj": 22.8,
+    "wind_kmh": 7.9,
     "rain": false
   },
   "streaks": {
-    "watch_nights": 0,
-    "sessions_this_week": 0,
+    "watch_nights": 1,
+    "sessions_this_week": 1,
     "training_weeks_4x": 0,
-    "days_since_session": 4,
-    "last_session_label": "7 Aug \u00b7 Upper 2"
+    "days_since_session": 1,
+    "last_session_label": "11 Aug \u00b7 Upper 2"
   },
-  "tasks": {
-    "today": {
-      "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Clear"
-    },
-    "tomorrow": {
-      "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Clear"
-    },
-    "overdue": {
-      "tasks": [],
-      "count": 0
-    },
-    "no_date": {
-      "count": 19
-    },
-    "total_open": 19
-  },
+  "tasks": null,
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "14:00",
-    "readiness": 68,
+    "context": "morning",
+    "generated_at": "07:06",
+    "readiness": 39,
     "bb": 50,
-    "hrv": 42,
+    "hrv": 45,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Moderate readiness (68/100). Train but don't push to failure."
+        "Recovery is low (readiness 39, battery 50). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
       "has_gym": false,
       "tasks": [],
-      "recovery": "moderate"
+      "recovery": "low"
     },
     "tomorrow": {
       "label": "Clear",
@@ -1186,10 +1181,10 @@
     }
   },
   "health_matrix": {
-    "readiness": 68,
-    "training_signal": 72,
+    "readiness": 39,
+    "training_signal": 61,
     "illness_risk": 82,
-    "recovery_debt": 62,
+    "recovery_debt": 51,
     "cognitive_load": 68,
     "calendar_load": 75
   },
@@ -1200,11 +1195,6 @@
     ]
   },
   "bb_trend": [
-    {
-      "date": "2026-08-04",
-      "val": 65,
-      "drain": 60
-    },
     {
       "date": "2026-08-05",
       "val": 39,
@@ -1227,30 +1217,35 @@
     },
     {
       "date": "2026-08-09",
-      "val": 7,
-      "drain": 0
+      "val": 60,
+      "drain": 68
     },
     {
       "date": "2026-08-10",
-      "val": null,
-      "drain": null
+      "val": 65,
+      "drain": 71
     },
     {
       "date": "2026-08-11",
+      "val": 27,
+      "drain": 37
+    },
+    {
+      "date": "2026-08-12",
       "val": null,
       "drain": null
     }
   ],
   "bb_predicted_wake": 68,
-  "sleep_consistency": 67,
+  "sleep_consistency": 59,
   "late_night_penalty": false,
   "training_warning": false,
   "weekly_training": {
     "this_week": {
-      "sessions": 0,
-      "upper": 0,
+      "sessions": 1,
+      "upper": 1,
       "lower": 0,
-      "volume_kg": 0
+      "volume_kg": 8736
     },
     "last_week": {
       "sessions": 3,
@@ -1258,7 +1253,7 @@
       "lower": 1,
       "volume_kg": 35407
     },
-    "vol_change_pct": -100,
+    "vol_change_pct": -75,
     "on_track": false
   },
   "training_load": {
