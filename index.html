@@ -261,6 +261,7 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
     <label>GitHub token</label>
     <input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off">
     <button onclick="saveToken()">Connect →</button>
+    <p style="margin-top:1rem;text-align:center"><a href="?demo=1" style="color:var(--teal);text-decoration:none;font-family:var(--m);font-size:12px">Try the live demo → (sample data, no token)</a></p>
   </div>
 </div>
 
@@ -298,10 +299,12 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 <script>
 const REPO='somogyif/health', FILE='data.json';
 const getToken=()=>localStorage.getItem('gh_token')||'';
+const DEMO = new URLSearchParams(location.search).get('demo')==='1';  // ?demo=1 → sample data, no token
 const saveToken=()=>{const t=document.getElementById('ghToken').value.trim();if(!t){alert('Enter your GitHub token');return;}localStorage.setItem('gh_token',t);boot();};
 const clearToken=()=>{localStorage.removeItem('gh_token');location.reload();};
 
 window.addEventListener('DOMContentLoaded',()=>{
+  if(DEMO){document.getElementById('setup').style.display='none';document.getElementById('app').style.display='block';load();return;}
   if(getToken()){document.getElementById('app').style.display='block';load();}
   else{document.getElementById('setup').style.display='flex';}
 });
@@ -321,6 +324,11 @@ function showTab(id,el){
 }
 
 async function fetchData(){
+  if(DEMO){
+    const r=await fetch('demo-data.json',{cache:'no-store'});
+    if(!r.ok) throw new Error(`demo-data ${r.status}`);
+    return r.json();
+  }
   const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
     headers:{'Authorization':'Bearer '+getToken(),'Accept':'application/vnd.github.raw+json'},
     signal:AbortSignal.timeout(10000)
@@ -1403,6 +1411,11 @@ async function load(){
   try{
     const data=await fetchData();
     render(data);
+    if(DEMO && !document.getElementById('demoBadge')){
+      const b=document.createElement('span'); b.id='demoBadge'; b.textContent='DEMO · sample data';
+      b.style.cssText='margin-left:8px;font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(52,201,154,0.15);color:var(--teal);border:1px solid rgba(52,201,154,0.3)';
+      document.querySelector('.logo').appendChild(b);
+    }
   }catch(e){
     eb.innerHTML=`<strong>Could not load data.json</strong> — ${e.message}`;
     eb.style.display='block';
