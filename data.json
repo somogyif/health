@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-13 15:40",
+  "synced_at": "2026-08-13 18:57",
   "garmin": {
     "date": "2026-08-13",
     "resting_hr": 63,
@@ -10,13 +10,13 @@
     "sleep_score": 73,
     "sleep_missing": false,
     "bb_charged": 53,
-    "bb_drained": 40,
-    "bb_current": 22,
-    "steps": 2830,
+    "bb_drained": 52,
+    "bb_current": 10,
+    "steps": 6048,
     "step_goal": 9760,
-    "active_kcal": 609.0,
-    "total_kcal": 2013.0,
-    "avg_stress": 37,
+    "active_kcal": 818.0,
+    "total_kcal": 2536.0,
+    "avg_stress": 42,
     "readiness_score": 30,
     "readiness_level": "LOW",
     "readiness_sleep_score": 73,
@@ -1175,13 +1175,13 @@
     }
   ],
   "weather": {
-    "temp": 23.2,
-    "description": "Partly cloudy",
-    "city": "Copenhagen",
+    "temp": 30.5,
+    "description": "Clear",
+    "city": "Budapest",
     "precip_mm": 0,
-    "uv_index": 5.0,
-    "solar_mj": 20.3,
-    "wind_kmh": 11.2,
+    "uv_index": 6.3,
+    "solar_mj": 24.8,
+    "wind_kmh": 7.6,
     "rain": false
   },
   "streaks": {
@@ -1214,16 +1214,16 @@
     "total_open": 19
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "15:40",
+    "context": "evening",
+    "generated_at": "18:57",
     "readiness": 30,
-    "bb": 22,
+    "bb": 10,
     "hrv": 41,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 30, battery 22). Keep intensity moderate."
+        "Recovery is low (readiness 30, battery 10). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 0,
@@ -1245,17 +1245,17 @@
   },
   "health_matrix": {
     "readiness": 30,
-    "training_signal": 46,
-    "illness_risk": 76,
-    "recovery_debt": 35,
-    "cognitive_load": 60,
+    "training_signal": 42,
+    "illness_risk": 75,
+    "recovery_debt": 31,
+    "cognitive_load": 56,
     "calendar_load": 100
   },
   "illness_risk": {
-    "score": 25,
+    "score": 43,
     "factors": [
       "Sleep < 7h",
-      "Body battery low"
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -1296,11 +1296,11 @@
     },
     {
       "date": "2026-08-13",
-      "val": 34,
-      "drain": 40
+      "val": 44,
+      "drain": 52
     }
   ],
-  "bb_predicted_wake": 67,
+  "bb_predicted_wake": 55,
   "sleep_consistency": 41,
   "late_night_penalty": false,
   "training_warning": false,
