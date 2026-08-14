@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-14 06:14",
+  "synced_at": "2026-08-14 08:52",
   "garmin": {
     "date": "2026-08-14",
     "resting_hr": 63,
@@ -1171,13 +1171,13 @@
     }
   ],
   "weather": {
-    "temp": 17.4,
+    "temp": 23.2,
     "description": "Clear",
-    "city": "Copenhagen",
+    "city": "Budapest",
     "precip_mm": 0,
-    "uv_index": 4.9,
-    "solar_mj": 21.7,
-    "wind_kmh": 7.2,
+    "uv_index": 6.2,
+    "solar_mj": 24.5,
+    "wind_kmh": 10.1,
     "rain": false
   },
   "streaks": {
@@ -1211,7 +1211,7 @@
   },
   "day_plan": {
     "context": "morning",
-    "generated_at": "06:14",
+    "generated_at": "08:52",
     "readiness": 30,
     "bb": 50,
     "hrv": 41,
