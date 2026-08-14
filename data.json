@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-14 20:09",
+  "synced_at": "2026-08-14 23:32",
   "garmin": {
     "date": "2026-08-14",
     "resting_hr": 64,
@@ -1174,7 +1174,16 @@
       "calendar": "Notion"
     }
   ],
-  "weather": {},
+  "weather": {
+    "temp": 21.0,
+    "description": "Cloudy",
+    "city": "Copenhagen",
+    "precip_mm": 0,
+    "uv_index": 4.9,
+    "solar_mj": 21.6,
+    "wind_kmh": 13.0,
+    "rain": false
+  },
   "streaks": {
     "watch_nights": 1,
     "sessions_this_week": 2,
@@ -1206,7 +1215,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "20:09",
+    "generated_at": "23:32",
     "readiness": 1,
     "bb": 5,
     "hrv": 43,
