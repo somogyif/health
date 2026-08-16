@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-15 12:15",
+  "synced_at": "2026-08-15 13:18",
   "garmin": {
     "date": "2026-08-15",
     "resting_hr": 64,
@@ -1189,13 +1189,13 @@
     }
   ],
   "weather": {
-    "temp": 26.2,
+    "temp": 26.3,
     "description": "Partly cloudy",
     "city": "Copenhagen",
     "precip_mm": 0,
     "uv_index": 5.0,
     "solar_mj": 17.8,
-    "wind_kmh": 12.6,
+    "wind_kmh": 14.8,
     "rain": false
   },
   "streaks": {
@@ -1205,31 +1205,10 @@
     "days_since_session": 2,
     "last_session_label": "13 Aug \u00b7 Upper 1"
   },
-  "tasks": {
-    "today": {
-      "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Clear"
-    },
-    "tomorrow": {
-      "tasks": [],
-      "count": 0,
-      "score": 0,
-      "label": "Clear"
-    },
-    "overdue": {
-      "tasks": [],
-      "count": 0
-    },
-    "no_date": {
-      "count": 19
-    },
-    "total_open": 19
-  },
+  "tasks": null,
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "12:15",
+    "generated_at": "13:18",
     "readiness": 1,
     "bb": 50,
     "hrv": 43,
