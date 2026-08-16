@@ -93,17 +93,19 @@
 
 <script>
 const C = {teal:'#34c99a',amber:'#e8993a',red:'#e05252',blue:'#5b9cf6',text3:'#7a7874'};
+const DEMO = new URLSearchParams(location.search).get('demo')==='1';  // ?demo=1 → sample data
 const CAT = {work:C.amber,gym:C.teal,wellness:C.teal,social:C.blue,study:C.blue,travel:C.amber,personal:C.text3,other:C.text3};
 const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const band = (v,hi,mid) => v==null?C.text3 : v>=hi?C.teal : v>=mid?C.amber : C.red;
 
+// Same thresholds/labels as the dashboard's coachingVerdict — the two pages
+// must never disagree about the same score.
 function verdict(r){
   if(r==null) return {h:'No readiness data',p:'Wear your watch to bed for a recovery score.'};
-  if(r>=80) return {h:'Peak recovery',p:'Green light — push hard today if you want to.'};
-  if(r>=65) return {h:'Solid recovery',p:'Train as planned; you are well recovered.'};
-  if(r>=50) return {h:'Moderate recovery',p:'Fine to train, but keep intensity in check.'};
-  if(r>=35) return {h:'Low recovery',p:'Prioritise easy movement and good food today.'};
-  return {h:'Very low recovery',p:'Rest or recovery day — your body needs it.'};
+  if(r>=90) return {h:'Prime condition',p:'All systems go — a great day to push hard.'};
+  if(r>=75) return {h:'Well recovered',p:'Good recovery overnight. A solid session is in order.'};
+  if(r>=60) return {h:'Moderate readiness',p:'Train if you need to, but keep intensity moderate.'};
+  return {h:'Focus on energy',p:'Recovery is low — light movement, good food and sleep will serve you best.'};
 }
 function ring(score,color){
   const R=42,C2=2*Math.PI*R,pct=Math.max(0,Math.min(100,score||0))/100;
@@ -179,7 +181,7 @@ function render(d){
 
   document.getElementById('root').innerHTML = `
     <header>
-      <div class="kicker"><span class="dot"></span><span class="lbl">Morning Brief · ${esc(dateStr)}</span></div>
+      <div class="kicker"><span class="dot"></span><span class="lbl">Morning Brief · ${esc(dateStr)}</span>${DEMO?'<span class="lbl" style="color:var(--teal);border:1px solid rgba(52,201,154,0.3);border-radius:20px;padding:1px 8px">DEMO</span>':''}</div>
       <div class="greet">${greeting()}, Feri.</div>
       <div class="subline">${esc(v.h)} — ${esc(v.p)}</div>
     </header>
@@ -212,7 +214,7 @@ function render(d){
   }).catch(()=>{});
 }
 
-fetch('data.json',{cache:'no-store'})
+fetch(DEMO?'demo-data.json':'data.json',{cache:'no-store'})
   .then(r=>{if(!r.ok)throw new Error('data.json '+r.status);return r.json();})
   .then(render)
   .catch(e=>{document.getElementById('loading').textContent='Could not load data ('+e.message+').';});
