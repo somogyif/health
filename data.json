@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-18 19:23",
+  "synced_at": "2026-08-18 20:23",
   "garmin": {
     "date": "2026-08-18",
     "resting_hr": 63,
@@ -10,13 +10,13 @@
     "sleep_score": 90,
     "sleep_missing": false,
     "bb_charged": 74,
-    "bb_drained": 43,
-    "bb_current": 36,
-    "steps": 2220,
+    "bb_drained": 63,
+    "bb_current": 16,
+    "steps": 5789,
     "step_goal": 9940,
-    "active_kcal": 731.0,
-    "total_kcal": 2236.0,
-    "avg_stress": 29,
+    "active_kcal": 985.0,
+    "total_kcal": 2865.0,
+    "avg_stress": 39,
     "readiness_score": 31,
     "readiness_level": "LOW",
     "readiness_sleep_score": 90,
@@ -1201,13 +1201,13 @@
     }
   ],
   "weather": {
-    "temp": 19.2,
-    "description": "Cloudy",
+    "temp": 18.4,
+    "description": "Partly cloudy",
     "city": "Copenhagen",
     "precip_mm": 0,
     "uv_index": 4.4,
     "solar_mj": 14.7,
-    "wind_kmh": 12.2,
+    "wind_kmh": 11.5,
     "rain": false
   },
   "streaks": {
@@ -1241,15 +1241,15 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "19:23",
+    "generated_at": "20:23",
     "readiness": 31,
-    "bb": 36,
+    "bb": 16,
     "hrv": 48,
     "today": {
       "label": "Clear",
       "lines": [
         "Clear day \u2014 good for deep work or extra recovery.",
-        "Recovery is low (readiness 31, battery 36). Keep intensity moderate.",
+        "Recovery is low (readiness 31, battery 16). Keep intensity moderate.",
         "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
@@ -1272,16 +1272,16 @@
   },
   "health_matrix": {
     "readiness": 31,
-    "training_signal": 57,
-    "illness_risk": 88,
-    "recovery_debt": 45,
-    "cognitive_load": 74,
+    "training_signal": 51,
+    "illness_risk": 85,
+    "recovery_debt": 37,
+    "cognitive_load": 66,
     "calendar_load": 100
   },
   "illness_risk": {
-    "score": 0,
+    "score": 20,
     "factors": [
-      "No significant risk factors today"
+      "Body battery critical"
     ]
   },
   "bb_trend": [
@@ -1322,11 +1322,11 @@
     },
     {
       "date": "2026-08-18",
-      "val": 41,
-      "drain": 43
+      "val": 57,
+      "drain": 63
     }
   ],
-  "bb_predicted_wake": 99,
+  "bb_predicted_wake": 79,
   "sleep_consistency": 35,
   "late_night_penalty": false,
   "training_warning": false,
