@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-19 17:56",
+  "synced_at": "2026-08-19 19:13",
   "garmin": {
     "date": "2026-08-19",
     "resting_hr": 65,
@@ -1210,13 +1210,13 @@
     }
   ],
   "weather": {
-    "temp": 19.5,
+    "temp": 18.3,
     "description": "Partly cloudy",
     "city": "Copenhagen",
     "precip_mm": 1.8,
     "uv_index": 3.7,
     "solar_mj": 6.0,
-    "wind_kmh": 13.0,
+    "wind_kmh": 14.8,
     "rain": true
   },
   "streaks": {
@@ -1249,8 +1249,8 @@
     "total_open": 19
   },
   "day_plan": {
-    "context": "afternoon",
-    "generated_at": "17:56",
+    "context": "evening",
+    "generated_at": "19:13",
     "readiness": 33,
     "bb": 17,
     "hrv": 44,
@@ -1258,7 +1258,8 @@
       "label": "Clear",
       "lines": [
         "Manageable day.",
-        "Recovery is low (readiness 33, battery 17). Keep intensity moderate."
+        "Recovery is low (readiness 33, battery 17). Keep intensity moderate.",
+        "Evening \u2014 wind down now. Set up tomorrow before bed."
       ],
       "task_count": 0,
       "work_shifts": 1,
