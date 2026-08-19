@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-19 15:56",
+  "synced_at": "2026-08-19 16:56",
   "garmin": {
     "date": "2026-08-19",
     "resting_hr": 65,
@@ -10,12 +10,12 @@
     "sleep_score": 71,
     "sleep_missing": false,
     "bb_charged": 51,
-    "bb_drained": 38,
-    "bb_current": 19,
+    "bb_drained": 40,
+    "bb_current": 17,
     "steps": 568,
     "step_goal": 10090,
     "active_kcal": 108.0,
-    "total_kcal": 1590.0,
+    "total_kcal": 1638.0,
     "avg_stress": 40,
     "readiness_score": 33,
     "readiness_level": "LOW",
@@ -1210,13 +1210,13 @@
     }
   ],
   "weather": {
-    "temp": 18.1,
-    "description": "Cloudy",
+    "temp": 19.3,
+    "description": "Partly cloudy",
     "city": "Copenhagen",
     "precip_mm": 3.2,
     "uv_index": 3.7,
     "solar_mj": 5.0,
-    "wind_kmh": 16.9,
+    "wind_kmh": 14.4,
     "rain": true
   },
   "streaks": {
@@ -1250,15 +1250,15 @@
   },
   "day_plan": {
     "context": "afternoon",
-    "generated_at": "15:56",
+    "generated_at": "16:56",
     "readiness": 33,
-    "bb": 19,
+    "bb": 17,
     "hrv": 44,
     "today": {
       "label": "Clear",
       "lines": [
         "Manageable day.",
-        "Recovery is low (readiness 33, battery 19). Keep intensity moderate."
+        "Recovery is low (readiness 33, battery 17). Keep intensity moderate."
       ],
       "task_count": 0,
       "work_shifts": 1,
@@ -1282,7 +1282,7 @@
     "readiness": 33,
     "training_signal": 50,
     "illness_risk": 78,
-    "recovery_debt": 35,
+    "recovery_debt": 34,
     "cognitive_load": 57,
     "calendar_load": 100
   },
@@ -1331,11 +1331,11 @@
     },
     {
       "date": "2026-08-19",
-      "val": 37,
-      "drain": 38
+      "val": 38,
+      "drain": 40
     }
   ],
-  "bb_predicted_wake": 62,
+  "bb_predicted_wake": 60,
   "sleep_consistency": 37,
   "late_night_penalty": false,
   "training_warning": false,
