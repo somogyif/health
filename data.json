@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-08-21 20:07",
+  "synced_at": "2026-08-21 23:51",
   "garmin": {
     "date": "2026-08-21",
     "resting_hr": 63,
@@ -1192,8 +1192,8 @@
     }
   ],
   "weather": {
-    "temp": 19.3,
-    "description": "Partly cloudy",
+    "temp": 16.0,
+    "description": "Cloudy",
     "city": "Slagelse",
     "precip_mm": 2.1,
     "uv_index": 5.2,
@@ -1232,7 +1232,7 @@
   },
   "day_plan": {
     "context": "evening",
-    "generated_at": "20:07",
+    "generated_at": "23:51",
     "readiness": 36,
     "bb": 24,
     "hrv": 39,
