@@ -433,6 +433,20 @@ function deepEscape(v){
 // Rövidítés, ami nem vág ketté egy HTML entitást (pl. "&amp;")
 function trunc(s, n){ s=String(s); if(s.length<=n) return s; let t=s.slice(0,n); const i=t.lastIndexOf('&'); if(i>-1 && !/^&(amp|lt|gt|quot|#39);$/.test(t.slice(i))) t=t.slice(0,i); return t+'…'; }
 
+// A kapott dokumentum épségének ellenőrzése renderelés előtt.
+// Egy csonka/hibás írás (Worker-bug, félbeszakadt feltöltés) félig üres
+// dashboardot adna, ami rosszabb, mint egy őszinte hibaüzenet.
+const SCHEMA_OK = 1;
+function validatePayload(d){
+  if (!d || typeof d !== 'object' || Array.isArray(d)) return 'not an object';
+  if (!d.synced_at) return 'missing synced_at';
+  if (!d.garmin || typeof d.garmin !== 'object') return 'missing garmin block';
+  if (Object.keys(d).length < 8) return `only ${Object.keys(d).length} top-level keys`;
+  if (d.schema_version != null && d.schema_version > SCHEMA_OK)
+    return `schema v${d.schema_version} is newer than this page understands (v${SCHEMA_OK})`;
+  return null;   // rendben
+}
+
 function coachingVerdict(score,level){
   if(score>=90) return {label:'Prime condition',coaching:'All systems are go. Your body is fully charged — this is a great day to push hard.',color:'var(--teal)'};
   if(score>=75) return {label:'Well recovered',coaching:'Good recovery overnight. A solid training session is in order.',color:'var(--teal)'};
@@ -1513,6 +1527,8 @@ async function load(){
   document.getElementById('sub').textContent='syncing...';
   try{
     const data=await fetchData();
+    const bad = validatePayload(data);
+    if (bad) throw new Error(`Data looks incomplete — ${bad}. Not rendering a partial dashboard.`);
     render(data);
     if(DEMO && !document.getElementById('demoBadge')){
       const b=document.createElement('span'); b.id='demoBadge'; b.textContent='DEMO · sample data';

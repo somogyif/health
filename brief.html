@@ -224,15 +224,18 @@ function render(d){
   }
   const api = localStorage.getItem('health_api')||'', key = localStorage.getItem('health_key')||'';
   try {
-    if (DEMO) return render(await (await fetch('demo-data.json',{cache:'no-store'})).json());
+    const ok = x => x && typeof x === 'object' && x.synced_at && x.garmin
+                    && Object.keys(x).length >= 8;
+    const use = x => { if (!ok(x)) throw new Error('data looks incomplete'); return render(x); };
+    if (DEMO) return use(await (await fetch('demo-data.json',{cache:'no-store'})).json());
     if (api && key) {
       const r = await fetch(`${api}/data`, {headers:{'Authorization':'Bearer '+key}, cache:'no-store'});
-      if (r.ok) return render(await r.json());
+      if (r.ok) return use(await r.json());
       console.warn('privát végpont:', r.status, '— publikus fallback');
     }
     const r2 = await fetch('data.json',{cache:'no-store'});
     if (!r2.ok) throw new Error('data.json '+r2.status);
-    render(await r2.json());
+    use(await r2.json());
   } catch (e) {
     document.getElementById('loading').textContent = 'Could not load data ('+e.message+').';
   }
