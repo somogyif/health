@@ -16,7 +16,9 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <!-- defer: 200 KB, és a diagramok csak a DOMContentLoaded-kori bootnál kellenek,
      így nincs ok a HTML-feldolgozás blokkolására (defer megőrzi a sorrendet). -->
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"
+        integrity="sha384-dug+JxfBvklEQdJ4AYuBBAIScUz0bVN73xpy273gcAwHjb3qI0fXmuYNaNfdyYJG"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 :root {
   --bg:       #0c0c0b;
@@ -784,6 +786,7 @@ function render(d){
   }
   document.getElementById('sub').textContent=synced;
 
+
   const rs = g.readiness_score ?? null;
   const rsDisplay = rs !== null ? rs : '—';
   const rv = rs !== null ? coachingVerdict(rs, g.readiness_level||'MOD') : {label:'No sleep data', coaching:'Wear your watch to bed tonight for readiness score.', color:'var(--text3)'};
@@ -799,6 +802,7 @@ function render(d){
 
   // ── TODAY TAB ──────────────────────────────────────────────────────────
   document.getElementById('tab-today').innerHTML=`
+    <div id="staleBanner" style="display:none"></div>
     <div id="weatherStrip" style="display:flex;align-items:center;gap:12px;padding:.6rem 0;border-bottom:.5px solid var(--border);margin-bottom:1.5rem;font-family:var(--m);font-size:11px;color:var(--text3);flex-wrap:wrap"></div>
     <div class="hero">
       <div class="hero-score-row">
@@ -928,6 +932,34 @@ function render(d){
   // Inject calendar into already-rendered Today tab
   const calBodyEl = document.getElementById('calBody');
   if (calBodyEl) calBodyEl.innerHTML = renderCalendar(calEvents, rs);
+
+  // ── Frissesség-jelzés ──────────────────────────────────────────────────────
+  // A backend forrásonként bélyegzi, mikor jött érdemi adat. Ha egy forrás
+  // lemarad a legutóbbi synctől, akkor ott carry-forward működik: a szám valós,
+  // de RÉGI. Egy kis időbélyeget könnyű átnézni, ezért ez látható sávot kap —
+  // különben a dashboard egészségesebbnek látszik, mint amilyen a pipeline.
+  (function(){
+    const el = document.getElementById('staleBanner');
+    if (!el) return;
+    const fr = d.freshness || {};
+    const parse = t => { const x = Date.parse(String(t).replace(' ','T')); return isNaN(x) ? null : x; };
+    const now = parse(d.synced_at) || Date.now();
+    const NEV = {garmin:'recovery', hevy:'training', calendar:'calendar',
+                 weather:'weather', body_comp:'body composition'};
+    const stale = Object.entries(fr)
+      .map(([k,v]) => [k, parse(v)])
+      .filter(([k,t]) => t && (now - t) > 24*3600*1000)
+      .map(([k,t]) => ({name: NEV[k]||k, days: Math.floor((now-t)/86400000), when: fr[k]}));
+    if (!stale.length) { el.style.display='none'; return; }
+    const worst = Math.max(...stale.map(x=>x.days));
+    const col = worst >= 3 ? 'var(--red)' : 'var(--amber)';
+    const bg  = worst >= 3 ? 'rgba(224,82,82,0.12)' : 'rgba(232,153,58,0.12)';
+    el.style.display = 'block';
+    el.innerHTML = `<div style="padding:.55rem .85rem;margin-bottom:1rem;border-radius:8px;
+      background:${bg};border:1px solid ${col};color:${col};font-family:var(--m);font-size:11px">
+      ⚠ Showing older data — ${stale.map(x=>`<b>${x.name}</b> from ${x.when} (${x.days}d)`).join(' · ')}
+      </div>`;
+  })();
 
   // Weather strip
   const wxEl = document.getElementById('weatherStrip');
