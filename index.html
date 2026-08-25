@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Feri — Health Centre</title>
+<!-- PWA / Add to Home Screen -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0c0c0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Health">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<!-- defer: 200 KB, és a diagramok csak a DOMContentLoaded-kori bootnál kellenek,
+     így nincs ok a HTML-feldolgozás blokkolására (defer megőrzi a sorrendet). -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg:       #0c0c0b;
+  --s1:       #1a1a18;
+  --s2:       #272724;
+  --s3:       #313130;
+  --border:   rgba(255,255,255,0.1);
+  --border2:  rgba(255,255,255,0.2);
+  --text:     #f5f2ea;
+  --text2:    #b8b4ac;
+  --text3:    #7a7874;
+  --teal:     #34c99a;
+  --teal-d:   rgba(52,201,154,0.1);
+  --amber:    #e8993a;
+  --amber-d:  rgba(232,153,58,0.1);
+  --red:      #e05252;
+  --red-d:    rgba(224,82,82,0.08);
+  --blue:     #5b9cf6;
+  --blue-d:   rgba(91,156,246,0.1);
+  --r:        14px;
+  --rs:       9px;
+  --f:        'Plus Jakarta Sans', sans-serif;
+  --m:        'DM Mono', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;line-height:1.6;min-height:100vh}
+
+/* ── SETUP ── */
+#setup{display:none;min-height:100vh;align-items:center;justify-content:center;padding:2rem}
+.sc{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:2.5rem;max-width:420px;width:100%}
+.sc h2{font-size:20px;font-weight:600;margin-bottom:4px}
+.sc h2 span{color:var(--teal)}
+.sc p{font-size:13px;color:var(--text2);margin-bottom:2rem;line-height:1.6;font-family:var(--m)}
+.sc label{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:6px}
+.sc input{width:100%;background:var(--s2);border:.5px solid var(--border2);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:var(--m);font-size:13px;outline:none;margin-bottom:1rem}
+.sc input:focus{border-color:var(--teal)}
+.sc button{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:#0c0c0b;font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer}
+
+/* ── APP SHELL ── */
+#app{display:none;max-width:960px;margin:0 auto;padding:0 1.25rem 5rem}
+
+/* ── TOP NAV ── */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0 0}
+.logo{font-size:15px;font-weight:600;letter-spacing:-.2px}
+.logo span{color:var(--teal)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.sync-info{font-family:var(--m);font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:pulse 2.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.btn-sm{display:flex;align-items:center;gap:5px;padding:5px 12px;background:transparent;border:.5px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text2);cursor:pointer;font-family:var(--m);transition:all .15s}
+.btn-sm:hover{background:var(--s2);color:var(--text);border-color:var(--border2)}
+.btn-sm:disabled{opacity:.4;cursor:not-allowed}
+.spin{width:10px;height:10px;border:1.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:2px;padding:.75rem 0;border-bottom:.5px solid var(--border);margin-bottom:2rem}
+.tab{padding:7px 18px;border-radius:20px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;background:transparent;border:none;transition:all .15s;font-family:var(--f)}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--s2);color:var(--text);border:.5px solid var(--border2)}
+
+/* ── HERO ── */
+.hero{padding:2rem 0 1.75rem;border-bottom:.5px solid var(--border);margin-bottom:1.75rem}
+.hero-score-row{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:.75rem}
+.hero-score{font-size:72px;font-weight:300;line-height:1;letter-spacing:-3px}
+.hero-label{font-size:22px;font-weight:600;margin-bottom:4px}
+.hero-coaching{font-size:15px;color:var(--text2);max-width:520px;line-height:1.6;font-weight:300;font-style:italic}
+.hero-ring{flex-shrink:0;position:relative;width:88px;height:88px}
+
+/* ── PILLAR GRID ── */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:2rem}
+@media(max-width:600px){.pillars{grid-template-columns:1fr 1fr}}
+.pillar{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;cursor:pointer;transition:border-color .15s}
+.pillar:hover{border-color:var(--border2)}
+.pillar-label{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem}
+.pillar-value{font-size:28px;font-weight:300;letter-spacing:-1px;line-height:1;margin-bottom:4px}
+.pillar-sub{font-size:12px;color:var(--text2);margin-bottom:.75rem}
+.pillar-coaching{font-size:12px;color:var(--text);opacity:0.75;font-style:italic;line-height:1.5;padding-top:.75rem;border-top:.5px solid var(--border)}
+
+/* ── SECTION ── */
+.sec{margin-bottom:2rem}
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.sec-title{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.sec-line{flex:1;height:.5px;background:var(--border)}
+
+/* ── CARD ── */
+.card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media(max-width:560px){.g2{grid-template-columns:1fr}.g3,.g4{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+
+/* ── MINI METRIC ── */
+.mm{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem}
+.mm-l{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.mm-v{font-size:22px;font-weight:300;letter-spacing:-.5px;line-height:1;margin-bottom:3px}
+.mm-s{font-size:11px;color:var(--text3)}
+.tag{display:inline-block;font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px}
+.tt{background:var(--teal-d);color:var(--teal)}
+.ta{background:var(--amber-d);color:var(--amber)}
+.tr{background:var(--red-d);color:var(--red)}
+.tb{background:var(--blue-d);color:var(--blue)}
+
+/* ── STREAK ── */
+.streak{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.streak-n{font-size:44px;font-weight:300;letter-spacing:-2px;line-height:1;margin-bottom:4px}
+.streak-l{font-size:13px;color:var(--text2);margin-bottom:.75rem}
+.dots{display:flex;gap:4px;margin-bottom:.5rem}
+.dot{width:7px;height:7px;border-radius:50%}
+.don{background:var(--teal)}
+.dof{background:var(--s3)}
+.streak-note{font-family:var(--m);font-size:10px;color:var(--text3)}
+
+/* ── FACTOR ROW ── */
+.frow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid var(--border);font-size:13px}
+.frow:last-child{border-bottom:none}
+.fl{color:var(--text2)}
+.fv{font-family:var(--m);font-size:12px}
+.fbar{margin-top:3px;height:2px;border-radius:1px}
+
+/* ── WQ ROW ── */
+.wqr{display:grid;grid-template-columns:52px 1fr 48px;gap:10px;align-items:center;padding:10px 0;border-bottom:.5px solid var(--border)}
+.wqr:last-child{border-bottom:none}
+.wqd{font-family:var(--m);font-size:10px;color:var(--text3);line-height:1.5}
+.wqn{font-size:13px;font-weight:500;margin-bottom:2px}
+.wqdet{font-family:var(--m);font-size:10px;color:var(--text2)}
+.wqnote{font-size:11px;color:var(--text3);margin-top:2px;font-style:italic}
+.hbar{display:flex;align-items:center;gap:5px;margin-top:3px;font-family:var(--m);font-size:9px;color:var(--text3)}
+.hbg{flex:1;height:2px;background:var(--s3);border-radius:1px;overflow:hidden}
+.hbf{height:100%;border-radius:1px}
+.wqs{text-align:center}
+.wqsn{font-size:26px;font-weight:300;letter-spacing:-1px;line-height:1}
+.wqsl{font-family:var(--m);font-size:9px;color:var(--text3)}
+
+/* ── REC ── */
+.rec{display:flex;gap:10px;padding:12px 0;border-bottom:.5px solid var(--border)}
+.rec:last-child{border-bottom:none}
+.recdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:8px}
+.rect{font-size:13px;font-weight:500;margin-bottom:2px}
+.recb{font-size:12px;color:var(--text2);line-height:1.5}
+
+/* ── READINESS WEEK ── */
+.rw{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.rwc{text-align:center;background:var(--s2);border-radius:var(--rs);padding:10px 4px}
+.rws{font-size:20px;font-weight:300;letter-spacing:-1px}
+.rwd{font-family:var(--m);font-size:9px;color:var(--text3);margin-top:3px;line-height:1.4}
+
+/* ── AGE BAR ── */
+.agebar{position:relative;height:5px;background:var(--s3);border-radius:3px;overflow:visible;margin:1rem 0 1.5rem}
+.agebar-fill{position:absolute;inset:0;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--amber),var(--red))}
+.agemark{position:absolute;border-radius:1px}
+
+/* ── MUSCLE GRID ── */
+.mtile{background:var(--s2);border-radius:var(--rs);padding:10px}
+.mname{font-family:var(--m);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.mbar{height:2px;background:var(--s3);border-radius:1px;overflow:hidden;margin-bottom:4px}
+.mbarf{height:100%;border-radius:1px}
+.mstat{font-size:10px;color:var(--text3)}
+
+/* ── CHART WRAPPER ── */
+.cw{position:relative;width:100%}
+
+/* ── DIVIDER ── */
+hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
+
+.err{background:var(--red-d);border:.5px solid var(--red);border-radius:var(--r);padding:.875rem 1.25rem;font-family:var(--m);font-size:12px;color:var(--red);margin-bottom:1.5rem;line-height:1.7}
+.upd{font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;padding-top:2rem;border-top:.5px solid var(--border)}
+.pf-hero{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:1.5rem;margin-bottom:10px}
+.pf-hero-top{display:flex;align-items:flex-end;gap:1rem;margin-bottom:1rem;border-bottom:.5px solid var(--border);padding-bottom:1rem}
+.pf-hero-num{font-size:64px;font-weight:300;letter-spacing:-3px;line-height:1;flex-shrink:0}
+.pf-hero-meta{}
+.pf-hero-name{font-size:18px;font-weight:500;color:var(--text);margin-bottom:2px}
+.pf-hero-ins{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;letter-spacing:.04em}
+.pf-hero-why{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px}
+.pf-notes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.pf-note{font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border2);color:var(--text2);font-family:var(--mono)}
+.pf-how{font-size:11px;color:var(--text3);font-family:var(--mono);padding-top:12px;border-top:.5px solid var(--border)}
+.pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.wq-row{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:.7rem 1.1rem;border-bottom:.5px solid var(--border)}
+.wq-row:last-child{border-bottom:none}
+.wq-meta{display:none}
+.wq-date{font-size:11px;color:var(--text3);font-family:var(--mono);white-space:nowrap;padding-top:2px}
+.wq-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono);margin-top:2px}
+.wq-body{min-width:0}
+.wq-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.wq-stats{font-size:11px;color:var(--text3);margin-bottom:2px}
+.wq-score{font-size:24px;font-weight:400;letter-spacing:-.5px;text-align:right;white-space:nowrap;line-height:1}
+.ws-row{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:start;padding:.85rem 1.1rem;border-bottom:.5px solid var(--border)}
+.ws-row:last-child{border-bottom:none}
+.ws-left{text-align:right}
+.ws-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono);margin-top:2px}
+.ws-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.ex-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.ex-tag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);white-space:nowrap}
+.muscle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+.muscle-item{background:var(--s2);border-radius:var(--rs);padding:.7rem .8rem}
+.muscle-k{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);margin-bottom:3px}
+.mstat{font-size:11px;color:var(--text2)}
+.pf-card{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem;border:1.5px solid transparent;cursor:pointer;transition:border-color .15s}
+.pf-card.pf-active{background:var(--s1);border-color:var(--border2)}
+.pf-card-num{font-size:28px;font-weight:300;letter-spacing:-1.5px;line-height:1;margin-bottom:3px}
+.pf-card-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.pf-card-mood{font-size:10px;color:var(--text3);margin-bottom:8px}
+.pf-badges{display:flex;gap:5px;flex-wrap:wrap}
+.pf-score{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
+.pf-pick{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono);background:var(--teal-d);color:var(--teal)}
+@media(max-width:560px){.pf-hero{flex-direction:column;gap:1rem}.pf-hero-num{font-size:52px}}
+
+.matrix-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media(max-width:480px){.matrix-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gauge-card{background:var(--s2);border-radius:var(--rs);padding:.9rem 1rem;text-align:center}
+.gauge-val{font-size:32px;font-weight:300;letter-spacing:-1.5px;line-height:1;margin-bottom:2px}
+.gauge-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-family:var(--mono);margin-bottom:6px}
+.gauge-bar{height:3px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.gauge-bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
+.gauge-desc{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.illness-factors{margin-top:8px}
+.illness-factor{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border);font-size:11px;color:var(--text2)}
+.illness-factor:last-child{border-bottom:none}
+.if-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.spotify-rides{margin-top:0}
+.sr-card{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem;margin-bottom:8px}
+.sr-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.sr-title{font-size:13px;font-weight:500;color:var(--text)}
+.sr-time{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.sr-stats{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.sr-stat{text-align:center}
+.sr-stat-v{font-size:16px;font-weight:300;color:var(--teal)}
+.sr-stat-l{font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase}
+.sr-tracks{display:flex;flex-direction:column;gap:4px}
+.sr-track{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:.5px solid var(--border);font-size:11px}
+.sr-track:last-child{border-bottom:none}
+.sr-track-name{color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sr-track-meta{font-family:var(--mono);font-size:10px;color:var(--text3);flex-shrink:0;margin-left:8px}
+
+/* Látható fókusz billentyűzetes navigációnál (WCAG 2.2: min 3:1 kontraszt).
+   Egérrel kattintva nem jelenik meg (:focus-visible), így nem zavaró. */
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px}
+.sc input:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+
+/* Csak képernyőolvasónak — vizuálisan rejtett, de felolvasható. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+  <div class="sc">
+    <h2>Health <span>Centre</span></h2>
+    <p>Enter your GitHub read-only token to connect.<br>github.com/settings/tokens?type=beta → somogyif/health → Contents: Read-only</p>
+    <label>GitHub token</label>
+    <input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off">
+    <button onclick="saveToken()">Connect →</button>
+    <p style="margin-top:1rem;text-align:center"><a href="?demo=1" style="color:var(--teal);text-decoration:none;font-family:var(--m);font-size:12px">Try the live demo → (sample data, no token)</a></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="topnav">
+    <h1 class="logo" style="margin:0">Health <span>Centre</span></h1>
+    <div class="nav-right">
+      <div class="sync-info">
+        <div class="live-dot"></div>
+        <span id="sub">loading</span>
+      </div>
+      <a class="btn-sm" href="brief.html" title="Morning brief">◔ brief</a>
+      <button class="btn-sm" onclick="clearToken()" title="Reset token">⚙</button>
+      <button class="btn-sm" id="rbtn" onclick="load()">
+        <div class="spin" id="spin"></div>
+        <span id="rl">↻ sync</span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Nézetek">
+    <button class="tab active" onclick="showTab('today',this)">Today</button>
+    <button class="tab" onclick="showTab('training',this)">Training</button>
+    <button class="tab" onclick="showTab('trends',this)">Trends</button>
+  </nav>
+
+  <div id="errbox" class="err" style="display:none"></div>
+
+  <div id="tab-today"></div>
+  <div id="tab-training" style="display:none"></div>
+  <div id="tab-trends" style="display:none"></div>
+</div>
+
+<script>
+const REPO='somogyif/health', FILE='data.json';
+const getToken=()=>localStorage.getItem('gh_token')||'';
+const _qs = new URLSearchParams(location.search);
+const DEMO = _qs.get('demo')==='1';
+// Privát adat-végpont (Cloudflare Worker). Egyszeri beállítás:
+//   ?api=https://health-data.<user>.workers.dev&key=<READ_KEY>
+// Az értékek localStorage-ba kerülnek, az URL-ből azonnal eltűnnek (hogy ne
+// ragadjanak bele a böngésző-előzményekbe).
+if (_qs.get('api') && _qs.get('key')) {
+  localStorage.setItem('health_api', _qs.get('api').replace(/\/$/,''));
+  localStorage.setItem('health_key', _qs.get('key'));
+  history.replaceState({}, '', location.pathname + (DEMO ? '?demo=1' : ''));
+}
+const API_URL = localStorage.getItem('health_api')||'';
+const API_KEY = localStorage.getItem('health_key')||'';  // ?demo=1 → sample data, no token
+const saveToken=()=>{const t=document.getElementById('ghToken').value.trim();if(!t){alert('Enter your GitHub token');return;}localStorage.setItem('gh_token',t);boot();};
+const clearToken=()=>{localStorage.removeItem('gh_token');location.reload();};
+
+window.addEventListener('DOMContentLoaded',()=>{
+  if(DEMO){document.getElementById('setup').style.display='none';document.getElementById('app').style.display='block';const bl=document.querySelector('a[href="brief.html"]');if(bl)bl.href='brief.html?demo=1';load();return;}
+  if(getToken() || (API_URL && API_KEY)){document.getElementById('app').style.display='block';load();}
+  else{document.getElementById('setup').style.display='flex';}
+});
+
+function boot(){
+  document.getElementById('setup').style.display='none';
+  document.getElementById('app').style.display='block';
+  load();
+}
+
+function showTab(id,el){
+  ['today','training','trends'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===id?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function fetchData(){
+  if(DEMO){
+    const r=await fetch('demo-data.json',{cache:'no-store'});
+    if(!r.ok) throw new Error(`demo-data ${r.status}`);
+    return r.json();
+  }
+  // 1) privát végpont, ha be van állítva
+  if(API_URL && API_KEY){
+    try{
+      const r=await fetch(`${API_URL}/data`,{headers:{'Authorization':'Bearer '+API_KEY},
+                                             cache:'no-store',signal:AbortSignal.timeout(10000)});
+      if(r.ok){ window.__source='private'; return r.json(); }
+      console.warn('privát végpont:',r.status,'— GitHub fallback');
+    }catch(e){ console.warn('privát végpont elérhetetlen — GitHub fallback:',e.message); }
+  }
+  // 2) GitHub fallback (a migráció lezártáig)
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
+    headers:{'Authorization':'Bearer '+getToken(),'Accept':'application/vnd.github.raw+json'},
+    signal:AbortSignal.timeout(10000)
+  });
+  if(!res.ok) throw new Error(`GitHub ${res.status}`);
+  return res.json();
+}
+
+let CHS=[];
+function killCharts(){CHS.forEach(c=>{try{c.destroy()}catch(e){}});CHS=[];}
+function mkChart(id,cfg){
+  const el=document.getElementById(id); if(!el) return;
+  const c=new Chart(el,cfg); CHS.push(c);
+  // A <canvas> tartalma képernyőolvasóval nem elérhető. Az aria-label csak a
+  // diagram TÉMÁJÁT mondja meg; az ADATOT egy vizuálisan rejtett táblázat adja,
+  // ami valódi szöveges alternatíva.
+  try{
+    const labels=(cfg.data&&cfg.data.labels)||[], sets=(cfg.data&&cfg.data.datasets)||[];
+    if(!labels.length||!sets.length) return;
+    const old=document.getElementById(id+'-table'); if(old) old.remove();
+    const rows=labels.map((l,i)=>
+      `<tr><th scope="row">${escHtml(l)}</th>`+
+      sets.map(ds=>{const v=ds.data[i];return `<td>${v==null?'—':escHtml(typeof v==='number'?Math.round(v*10)/10:v)}</td>`}).join('')+'</tr>').join('');
+    const t=document.createElement('div');
+    t.id=id+'-table'; t.className='sr-only';
+    t.innerHTML=`<table><caption>${escHtml(el.getAttribute('aria-label')||id)} — adatok</caption>`+
+      `<thead><tr><th scope="col">Időpont</th>`+
+      sets.map(ds=>`<th scope="col">${escHtml(ds.label||'érték')}</th>`).join('')+
+      `</tr></thead><tbody>${rows}</tbody></table>`;
+    el.parentNode.insertBefore(t, el.nextSibling);
+  }catch(e){ /* a táblázat kiegészítés, sosem törheti meg a diagramot */ }
+}
+const gc='rgba(255,255,255,0.04)', tc='#3e3d3b';
+const scol=s=>s>=85?'var(--teal)':s>=65?'var(--amber)':'var(--red)';
+const fmt=(v,u='')=>v!=null?`${v}${u}`:'—';
+
+// Coaching copy
+// WMO weather codes → label
+const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm'};
+// Live weather for the VIEWING device's actual location (phone/laptop GPS).
+// Resolves to null if permission denied or geolocation unavailable → caller keeps
+// the synced (home) weather. Follows you wherever you open the dashboard.
+async function deviceWeather(){
+  if(!navigator.geolocation) return null;
+  const pos=await new Promise((ok,no)=>navigator.geolocation.getCurrentPosition(ok,no,{timeout:8000,maximumAge:900000}));
+  const la=pos.coords.latitude, lo=pos.coords.longitude;
+  const wr=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,weather_code&daily=uv_index_max,precipitation_sum&timezone=auto&forecast_days=1`).then(r=>r.json());
+  let city='';
+  try{const g=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${la}&longitude=${lo}&localityLanguage=en`).then(r=>r.json()); city=g.city||g.locality||'';}catch(e){}
+  const c=wr.current||{}, dy=wr.daily||{};
+  return {temp:c.temperature_2m, description:WMO[c.weather_code]||'—', uv_index:(dy.uv_index_max||[])[0], precip_mm:(dy.precipitation_sum||[0])[0], rain:((dy.precipitation_sum||[0])[0]||0)>0.5, city};
+}
+
+// ── XSS védelem ─────────────────────────────────────────────────────────────
+// A data.json tartalma KÜLSŐ eredetű (naptár-események, Hevy edzésnevek, Things
+// feladatnevek, Garmin szövegek, fordított geokód). Ezek template literálokon át
+// innerHTML-be kerülnek, így egy rosszindulatú naptármeghívó címe scriptet tudna
+// futtatni és ellopni a GitHub tokent a localStorage-ból. Ezért a teljes payloadot
+// egyetlen belépési ponton semlegesítjük — így egyetlen render-hely sem maradhat ki.
+const escHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function deepEscape(v){
+  if (typeof v === 'string') return escHtml(v);
+  if (Array.isArray(v)) return v.map(deepEscape);
+  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[k]=deepEscape(v[k]); return o; }
+  return v;
+}
+// Rövidítés, ami nem vág ketté egy HTML entitást (pl. "&amp;")
+function trunc(s, n){ s=String(s); if(s.length<=n) return s; let t=s.slice(0,n); const i=t.lastIndexOf('&'); if(i>-1 && !/^&(amp|lt|gt|quot|#39);$/.test(t.slice(i))) t=t.slice(0,i); return t+'…'; }
+
+function coachingVerdict(score,level){
+  if(score>=90) return {label:'Prime condition',coaching:'All systems are go. Your body is fully charged — this is a great day to push hard.',color:'var(--teal)'};
+  if(score>=75) return {label:'Well recovered',coaching:'Good recovery overnight. A solid training session is in order.',color:'var(--teal)'};
+  if(score>=60) return {label:'Moderate readiness',coaching:'Train if you need to, but keep intensity moderate. Prioritise an early night.',color:'var(--amber)'};
+  return {label:'Focus on energy',coaching:'Recovery is low today. Light movement, good food, and sleep will serve you better than a hard session.',color:'var(--red)'};
+}
+
+function sleepCoaching(h,score){
+  if(!h) return 'No sleep data — make sure your watch is on tonight.';
+  if(h>=8) return 'Excellent sleep. Your body had plenty of time to repair and consolidate.';
+  if(h>=7.5) return 'Good sleep duration. You\'re giving your body what it needs.';
+  if(h>=6.5) return 'Slightly short — aim for 7.5h+ tonight to clear your sleep debt.';
+  return 'Sleep was below target. Prioritise an earlier bedtime tonight.';
+}
+
+function hrCoaching(rhr,avg){
+  if(!rhr) return '—';
+  const diff=rhr-(avg||rhr);
+  if(diff<=-3) return 'Notably lower than your average — a great recovery signal.';
+  if(diff<=1) return 'Tracking close to your normal baseline. Recovery is on track.';
+  return 'Slightly elevated — expected after a hard effort or poor sleep.';
+}
+
+function trainingCoaching(acwr){
+  if(acwr===undefined||acwr===null) return '—';
+  if(acwr<0.05) return 'Training load is very low. Your body is ready for more stimulus.';
+  if(acwr<0.15) return 'Acute load is below your chronic baseline — a good time to build.';
+  if(acwr<0.3) return 'Load is in a productive range. Keep the current frequency.';
+  return 'Load is high. Prioritise recovery before adding more volume.';
+}
+
+function render(d){
+  d = deepEscape(d);   // minden külső szöveg semlegesítve (lásd escHtml fent)
+  killCharts();
+  const g=d.garmin||{}, bc=d.body_comp||{};
+  const sleepCons = d.sleep_consistency;
+  const lateNight = d.late_night_penalty || false;
+  const trainWarn = d.training_warning || false;
+  const goals=(d.goals&&d.goals.length)?d.goals:[
+    {label:'Body fat',current:`${bc.fat_pct??g.body_fat??21}%`,target:'16–17%',pct:Math.min(100,Math.round((21-(bc.fat_pct??21))/(21-16.5)*100)),color:'var(--amber)'},
+    {label:'Lean mass',current:`${bc.lean_kg??g.lean_mass??65.8}kg`,target:'68kg',pct:Math.min(100,Math.round(((bc.lean_kg??65.8)-63)/(68-63)*100)),color:'var(--teal)'},
+    {label:'Vigorous days',current:`${g.vigorous_days??0}/wk`,target:'3/wk',pct:Math.min(100,Math.round(((g.vigorous_days??0)/3)*100)),color:'var(--blue)'},
+    {label:'Watch streak',current:`${(d.streaks||{}).watch_nights??0} nights`,target:'30 nights',pct:Math.min(100,Math.round(((d.streaks||{}).watch_nights??0)/30*100)),color:'var(--teal)'},
+  ];
+  const recs=(d.recs&&d.recs.length)?d.recs:(d.recommendations||[]).length?(d.recommendations||[]):(()=>{
+    const r=[];
+    if(g.sleep_hours&&g.sleep_hours<7.5) r.push({level:'amber',title:'Sleep debt',body:`${g.sleep_hours}h last night — aim for 7.5h+ tonight.`});
+    if(g.bb_current&&g.bb_current<40) r.push({level:'amber',title:'Low body battery',body:`Battery at ${g.bb_current} — rest and recovery today.`});
+    if(g.resting_hr&&g.resting_hr>65) r.push({level:'amber',title:'Elevated resting HR',body:`RHR ${g.resting_hr} bpm — monitor recovery.`});
+    if((d.training_load||{}).feedback==='AEROBIC_HIGH_SHORTAGE') r.push({level:'amber',title:'Aerobic high shortage',body:'Add one high-intensity session this week (HYROX, run, or swim).'});
+    if(!r.length) r.push({level:'teal',title:'All good',body:'No urgent recommendations today.'});
+    return r;
+  })();
+  const _bbtRaw=d.bb_trend||[];
+  const bbt=Array.isArray(_bbtRaw)&&_bbtRaw.length?{
+    labels:_bbtRaw.map(x=>x.date),
+    wake:_bbtRaw.map(x=>x.val),
+    drain:_bbtRaw.map(x=>x.drain)
+  }:{labels:[],wake:[],drain:[]};
+  const rw=d.readiness_week||[];
+  const _bbt=d.bb_trend||[];
+  const sw=_bbt.length?{
+    labels:_bbt.map(x=>{const d=new Date(x.date);return d.toLocaleDateString('en-GB',{weekday:'short'});}),
+    stress:_bbt.map(()=>g.avg_stress||0),
+    bb_charged:_bbt.map(x=>x.val||0)
+  }:(d.stress_week||{labels:[],stress:[],bb_charged:[]});
+  const _sw=g.sleep_week||[];
+  let ss;
+  if(_sw.length){
+    // Build a gap-free axis: one labelled slot per calendar day from the first
+    // to the last recorded night, with null scores where a night is missing.
+    const byDate={}; _sw.forEach(x=>{if(x&&x.date)byDate[x.date]=x.score;});
+    const dts=Object.keys(byDate).sort();
+    const labels=[],scores=[];
+    const cur=new Date(dts[0]+'T00:00:00'), end=new Date(dts[dts.length-1]+'T00:00:00');
+    while(cur<=end){
+      const iso=`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+      labels.push(cur.toLocaleDateString('en-GB',{weekday:'short'}));
+      scores.push(iso in byDate ? byDate[iso] : null);
+      cur.setDate(cur.getDate()+1);
+    }
+    ss={labels,scores,best_date:(_sw.reduce((a,b)=>b.score>a.score?b:a,_sw[0])||{}).date||'—'};
+  } else {
+    ss=(d.sleep_scores||{labels:[],scores:[]});
+  }
+  const tl=d.training_load||{};
+  const str=d.streaks||{};
+  const wq=d.workout_quality||d.workouts_quality||[];
+  const wks=d.workouts||[];
+
+  const synced=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+
+  // Day Plan
+  const dayPlan = d.day_plan || null;
+  const dpEl = document.getElementById('dayPlanBody');
+  const dpSec = document.getElementById('dayPlanSection');
+  const dpLabel = document.getElementById('dayPlanLabel');
+  if (dpEl && dpSec) {
+    if (dayPlan) {
+      dpSec.style.display = '';
+      const ctx = dayPlan.context || 'morning';
+      if (dpLabel) dpLabel.textContent = ctx === 'evening' ? '📋 Tomorrow\'s plan' : ctx === 'morning' ? '📋 Today\'s plan' : '📋 Plan';
+      dpEl.innerHTML = renderDayPlan(dayPlan);
+    } else {
+      dpSec.style.display = 'none';
+    }
+  }
+
+  // Tasks
+  const tasks = d.tasks || null;
+  const tasksEl = document.getElementById('tasksBody');
+  const tasksSec = document.getElementById('tasksSection');
+  if (tasksEl && tasksSec) {
+    if (tasks) {
+      tasksSec.style.display = '';
+      tasksEl.innerHTML = renderTasks(tasks);
+    } else {
+      tasksSec.style.display = 'none';
+    }
+  }
+
+  // Render calendar events
+  const calEvents = d.calendar || [];
+  const calLoad = d.calendar_load_today || 0;
+
+  // Category colours (no emoji — was causing "undefined")
+  const CAT_COLORS = {
+    work: 'var(--amber)', study: 'var(--blue)', deadline: 'var(--red)',
+    gym: 'var(--teal)', wellness: 'var(--teal)', meeting: 'var(--blue)',
+    social: '#a78bfa', personal: 'var(--text3)', other: 'var(--text3)'
+  };
+  const CAT_LABELS = {
+    work: 'work', study: 'study', deadline: 'deadline', gym: 'gym',
+    wellness: 'wellness', meeting: 'meeting', social: 'social',
+    personal: 'personal', other: 'other'
+  };
+
+  function renderDayPlan(plan) {
+    if (!plan) return '';
+    const ctx = plan.context || 'morning';
+    const tod = plan.today || {};
+    const tom = plan.tomorrow || {};
+
+    const loadBadge = l => {
+      const styles = {Clear:'#E1F5EE;color:#0F6E56',Light:'#E1F5EE;color:#0F6E56',Moderate:'#FAEEDA;color:#854F0B',Heavy:'#FAEEDA;color:#854F0B',Packed:'#FCEBEB;color:#A32D2D'};
+      const s = styles[l] || styles.Clear;
+      return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'Clear'}</span>`;
+    };
+    const pill = (icon, text, type) => {
+      const s = {work:'background:#FAEEDA;color:#854F0B;border-color:#FAC775',gym:'background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB',task:'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4',over:'background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1'}[type]||'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4';
+      return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid;${s}"><i class="ti ti-${icon}" aria-hidden="true" style="font-size:12px"></i>${text}</span>`;
+    };
+    const seqBox = (text, cls) => {
+      const s = cls==='first'?'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4':cls==='deep'?'background:#EEEDFE;color:#534AB7;border-color:#CECBF6':'background:var(--card2);color:var(--text2);border-color:var(--border)';
+      return `<span style="font-size:11px;padding:4px 9px;border-radius:6px;border:0.5px solid;white-space:nowrap;flex-shrink:0;${s}">${text}</span>`;
+    };
+    const tlBar = (label, flex, color) => `<div style="flex:${flex};min-width:0"><div style="height:5px;border-radius:3px;background:${color};margin-bottom:3px"></div><div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label}</div></div>`;
+    const recBox = (icon, html) => `<div style="background:var(--card2);border-radius:8px;padding:.55rem .8rem;display:flex;gap:8px;align-items:flex-start;margin-top:.5rem"><i class="ti ti-${icon}" aria-hidden="true" style="font-size:15px;color:var(--text3);margin-top:1px;flex-shrink:0"></i><span style="font-size:12px;color:var(--text2);line-height:1.5">${html}</span></div>`;
+    const secHead = s => `<div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:.4rem">${s}</div>`;
+    const divLine = () => `<div style="height:.5px;background:var(--border);margin:.6rem 0"></div>`;
+
+    const renderBlock = (label, p, isTom) => {
+      if (!p) return '';
+      const tasks = p.tasks || [];
+      const wShifts = p.work_shifts != null ? p.work_shifts : (p.label === 'Heavy' ? 2 : 0);
+
+      let tlHtml = '';
+      if (isTom) {
+        tlHtml = `${secHead('Timeline')}<div style="display:flex;gap:2px;margin-bottom:.85rem">${tlBar('07:00 morning',1.5,'#9FE1CB')}${tlBar('09:15 gym',1,'#5DCAA5')}${tlBar('focus 10:30',2,'#B5D4F4')}${tlBar('13:30 Café',1.5,'#FAC775')}${tlBar('17:00 Café',1.5,'#FAC775')}</div>`;
+      }
+
+      let energyHtml = '';
+      if (!isTom && (plan.bb || plan.readiness)) {
+        const bb = plan.bb || 25, rd = plan.readiness || 68, hrv = plan.hrv || 43;
+        const bar = (v,max,c) => `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
+        const eRow = (lbl,v,max,c,sfx) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:var(--text3);width:62px;flex-shrink:0">${lbl}</span>${bar(v,max,c)}<span style="font-size:10px;color:var(--text2);width:38px;text-align:right">${v}${sfx}</span></div>`;
+        energyHtml = `<div style="margin-bottom:.6rem">${eRow('Body battery',bb,100,bb<30?'#E24B4A':bb<60?'#EF9F27':'#1D9E75','')}${eRow('Readiness',rd,100,rd<50?'#E24B4A':rd<70?'#EF9F27':'#1D9E75','/100')}${eRow('HRV',hrv,80,hrv<35?'#E24B4A':hrv<45?'#EF9F27':'#1D9E75','ms')}</div>`;
+      }
+
+      let commitPills = '';
+      if (wShifts >= 2) commitPills += pill('coffee','Café 13:30','work')+' '+pill('coffee','Café 17:00','work');
+      else if (wShifts === 1) commitPills += pill('coffee','Café shift','work');
+      if (isTom || p.has_gym) commitPills += ' '+pill('barbell','Gym 09:15','gym');
+
+      let taskPills = tasks.slice(0,4).map(t => {
+        const icon = /call|phone/i.test(t.name)?'phone':/send|review/i.test(t.name)?'send':/prep|interview/i.test(t.name)?'briefcase':'check';
+        return pill(icon, trunc(t.name,24), t.overdue?'over':'task');
+      }).join(' ');
+
+      let seqHtml = '';
+      if (tasks.length > 0 || isTom) {
+        const allTasks = isTom ? [
+          {name:'Send to Uffe'}, {name:'SU call'}, {name:'UCplus call'}, {name:'Interview prep'}
+        ] : tasks;
+        const sends = allTasks.filter(t => /send|uffe|review/i.test(t.name));
+        const calls = allTasks.filter(t => /call|phone/i.test(t.name));
+        const deep  = allTasks.filter(t => /prep|interview|plan|write/i.test(t.name));
+        const ordered = [...sends,...calls,...deep].slice(0,4);
+        if (ordered.length > 0) {
+          seqHtml = `${divLine()}${secHead('Recommended sequence')}<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">` +
+            ordered.map((t,i) => {
+              const cls = i===0?'first':/prep|interview/i.test(t.name)?'deep':'';
+              const n = trunc(t.name,18);
+              return (i>0?`<span style="color:var(--text3);font-size:12px">›</span>`:'')+seqBox(n,cls);
+            }).join('') +
+            (wShifts>0||isTom?`<span style="color:var(--text3);font-size:12px">›</span>${seqBox('Café shifts','')}`:'')+
+          `</div>`;
+        }
+      }
+
+      const note = isTom
+        ? recBox('clock','<b style="color:var(--text1)">Focus window 10:30–12:30.</b> Send Uffe first — unblocks someone else. Calls back-to-back at 11:00. Interview prep last, 30 min is enough. All done before 13:30.')
+        : recBox('moon','<b style="color:var(--text1)">Wind down now.</b> Battery is low (25). Prep the Uffe content tonight so morning is execution only. Bed before 23:00.');
+
+      return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text1)">${label}</span>${loadBadge(p.label||'Clear')}</div><div style="background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
+    };
+
+    const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    const todStr = fmt(new Date());
+    const tomStr = fmt(new Date(Date.now()+86400000));
+    const tomP = {...tom, work_shifts:2, has_gym:true};
+    const todP = {...tod, bb:plan.bb, readiness:plan.readiness, hrv:plan.hrv};
+
+    let out = '';
+    if (ctx === 'evening') {
+      out += renderBlock(`Tomorrow · ${tomStr}`, tomP, true);
+      out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
+      out += renderBlock(`Tonight · ${todStr}`, todP, false);
+    } else {
+      out += renderBlock(`Today · ${todStr}`, todP, false);
+      out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
+      out += renderBlock(`Tomorrow · ${tomStr}`, tomP, true);
+    }
+    out += `<div style="font-size:10px;color:var(--text3);text-align:right;margin-top:.3rem">generated ${plan.generated_at||''}</div>`;
+    return out;
+  }
+
+  function renderTasks(tasks) {
+    if (!tasks) return '';
+    const today = tasks.today || {tasks:[], count:0, score:0, label:'Clear'};
+    const tomorrow = tasks.tomorrow || {tasks:[], count:0, score:0, label:'Clear'};
+    const overdue = tasks.overdue || {tasks:[], count:0};
+
+    const scoreColor = s => s === 'Packed' ? 'var(--red)' : s === 'Heavy' ? 'var(--amber)' : s === 'Moderate' ? 'var(--amber)' : 'var(--teal)';
+
+    const taskRow = t => {
+      const name = t.name || '';
+      const proj = t.project ? `<span style="font-size:10px;color:var(--text3);margin-left:4px">${t.project}</span>` : '';
+      const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px">overdue</span>` : '';
+      return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border)">
+        <span style="font-size:14px;opacity:.5">□</span>
+        <span style="font-size:12px;font-family:var(--m);color:var(--text1)">${name}</span>${proj}${over}
+      </div>`;
+    };
+
+    let html = '';
+
+    // Overdue banner
+    if (overdue.count > 0) {
+      html += `<div style="background:var(--red-d);border-radius:8px;padding:.5rem .8rem;margin-bottom:.8rem;font-family:var(--m);font-size:11px;color:var(--red)">
+        ⚠️ ${overdue.count} overdue task${overdue.count>1?'s':''} — handle these first
+      </div>`;
+    }
+
+    // Today tasks
+    if (today.count > 0 || overdue.count > 0) {
+      const allToday = [...(overdue.tasks||[]), ...(today.tasks||[])];
+      html += `<div style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+          <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Today</span>
+          <span style="font-family:var(--m);font-size:11px;color:${scoreColor(today.label)}">${today.label}</span>
+        </div>
+        ${allToday.map(taskRow).join('')}
+      </div>`;
+    } else {
+      html += `<div style="font-family:var(--m);font-size:12px;color:var(--text3);margin-bottom:.8rem">✓ Nothing due today</div>`;
+    }
+
+    // Tomorrow tasks
+    html += `<div style="margin-bottom:.5rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+        <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Tomorrow</span>
+        <span style="font-family:var(--m);font-size:11px;color:${scoreColor(tomorrow.label)}">${tomorrow.count > 0 ? tomorrow.label : '—'}</span>
+      </div>
+      ${tomorrow.count > 0 ? tomorrow.tasks.map(taskRow).join('') : '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">Nothing scheduled</div>'}
+    </div>`;
+
+    // Open without date
+    if (tasks.no_date?.count > 0) {
+      html += `<div style="font-family:var(--m);font-size:11px;color:var(--text3);margin-top:.5rem">
+        + ${tasks.no_date.count} open task${tasks.no_date.count>1?'s':''} without a due date
+      </div>`;
+    }
+
+    return html;
+  }
+
+  function renderCalendar(events, readScore) {
+    if (!events || events.length === 0) return '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events — run sync to load calendar.</div>';
+
+    // Show only today and next 3 days
+    const today = new Date();
+    const cutoff = new Date(today); cutoff.setDate(today.getDate() + 3);
+    const todayStr = today.toLocaleDateString('en-GB', {day:'numeric', month:'short'}).replace(',','');
+
+    // Group by start_date, filter to near future only
+    const groups = {};
+    events.forEach(e => {
+      if (!e.start_date) return;
+      const key = e.start_date;
+      // Try to parse the date to filter
+      try {
+        const parts = e.start.split('T')[0].split('-');
+        const d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+        if (d > cutoff) return; // skip far future
+      } catch(err) {}
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(e);
+    });
+
+    // Load pill
+    let loadPill = '';
+    if (calLoad >= 7) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--red-d);color:var(--red);margin-bottom:1rem">Heavy day — ${calLoad}/10 load</div>`;
+    else if (calLoad >= 4) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--amber-d);color:var(--amber);margin-bottom:1rem">Moderate day — ${calLoad}/10 load</div>`;
+    else if (calLoad > 0) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--teal-d);color:var(--teal);margin-bottom:1rem">Light day — ${calLoad}/10 load · good time to train</div>`;
+
+    const entries = Object.entries(groups);
+    if (entries.length === 0) return loadPill + '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events in the next 3 days.</div>';
+
+    const html = entries.map(([date, evs]) => `
+      <div style="margin-bottom:1.25rem">
+        <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:8px">${date}${date===todayStr?' <span style="color:var(--teal)">· today</span>':''}<span style="flex:1;height:.5px;background:var(--border);display:inline-block"></span></div>
+        ${(evs.some(e => (e.time||e.start_time)) ? evs.filter(e => (e.time||e.start_time)) : evs).map(e => {
+          const col = CAT_COLORS[e.category] || 'var(--text3)';
+          const _t = (e.time || e.start_time || '').trim();
+          const timeStr = (e.all_day || !_t) ? 'all day' : _t;
+          const title = (e.title || '').replace(/\[pending\]/gi,'').trim();
+          return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+            <div style="width:5px;height:5px;border-radius:50%;background:${col};flex-shrink:0;margin-top:7px"></div>
+            <div style="font-family:var(--m);font-size:11px;color:var(--text3);min-width:44px;padding-top:1px">${timeStr}</div>
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.4">${title}</div>
+              <div style="font-family:var(--m);font-size:10px;color:var(--text3);margin-top:2px">${e.calendar||''}</div>
+            </div>
+            <div style="font-family:var(--m);font-size:9px;padding:2px 7px;border-radius:20px;background:var(--s3);color:${col};flex-shrink:0">${CAT_LABELS[e.category]||'other'}</div>
+          </div>`;
+        }).join('')}
+      </div>`).join('');
+
+    return loadPill + html;
+  }
+  document.getElementById('sub').textContent=synced;
+
+  const rs = g.readiness_score ?? null;
+  const rsDisplay = rs !== null ? rs : '—';
+  const rv = rs !== null ? coachingVerdict(rs, g.readiness_level||'MOD') : {label:'No sleep data', coaching:'Wear your watch to bed tonight for readiness score.', color:'var(--text3)'};
+  const _fa=d.fitness_age??g.fitness_age??null;
+  const bioAge=_fa?parseFloat(_fa).toFixed(1):'—';
+  const chronoAge=d.chrono_age??g.chrono_age??29;
+  const _aa=d.achievable_age??g.achievable_age??null;
+  const achieveAge=_aa?parseFloat(_aa).toFixed(1):'—';
+  const ageDiff=_fa?((chronoAge-parseFloat(_fa)).toFixed(1)):'—';
+  const vd=(d.vigorous_days??g.vigorous_days)!=null?parseFloat(d.vigorous_days??g.vigorous_days):0.0;
+  const vt=g.vigorous_target||3;
+  const acwr=(d.training_load||{}).acute&&(d.training_load||{}).chronic?(d.training_load||{}).acute/(d.training_load||{}).chronic:null;
+
+  // ── TODAY TAB ──────────────────────────────────────────────────────────
+  document.getElementById('tab-today').innerHTML=`
+    <div id="weatherStrip" style="display:flex;align-items:center;gap:12px;padding:.6rem 0;border-bottom:.5px solid var(--border);margin-bottom:1.5rem;font-family:var(--m);font-size:11px;color:var(--text3);flex-wrap:wrap"></div>
+    <div class="hero">
+      <div class="hero-score-row">
+        <div>
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem">Today · ${g.date||'—'}</div>
+          <div class="hero-label" style="color:${rv.color}">${rv.label}</div>
+          <div class="hero-coaching">${rv.coaching}</div>
+          ${trainWarn ? `<div style="margin-top:.5rem;padding:.4rem .7rem;background:rgba(224,82,82,0.12);border:1px solid rgba(224,82,82,0.3);border-radius:6px;font-size:12px;color:var(--red)">⚠️ Training tomorrow but BB is low — consider lighter intensity or extra rest tonight.</div>` : ""}
+        </div>
+        <div class="hero-ring">
+          <canvas id="heroRing" width="88" height="88" role="img" aria-label="Readiness ${rs}/100">${rs}/100</canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-label">😴 Sleep</div>
+        <div class="pillar-value" style="color:${(g.sleep_hours||0)>=7.5?'var(--teal)':'var(--amber)'}">${g.sleep_missing?'—':fmt(g.sleep_hours,'h')}</div>
+        <div class="pillar-sub">${g.sleep_missing?'watch not worn':'watch worn to bed ✓'}</div>
+        <div class="pillar-coaching">${sleepCoaching(g.sleep_hours,g.readiness_sleep_score)}</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-label">🔋 Body battery</div>
+        <div class="pillar-value" style="color:${(g.bb_current||0)>=50?'var(--teal)':'var(--amber)'}">${fmt(g.bb_current)}</div>
+        <div class="pillar-sub">charged ${fmt(g.bb_charged)} · −${fmt(g.bb_drained)} drained</div>
+        <div class="pillar-coaching">${(g.bb_current||0)>=60?'Good energy reserves for the day ahead.':((g.bb_current||0)>=35?'Moderate energy. Avoid stacking stress today.':'Low battery. Rest and recovery are the priority.')}</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-label">❤️ Resting HR</div>
+        <div class="pillar-value" style="color:var(--text)">${fmt(g.resting_hr,' bpm')}</div>
+        <div class="pillar-sub">7-day avg · HRV ${fmt(g.hrv_weekly,' ms')}</div>
+        <div class="pillar-coaching">${hrCoaching(g.resting_hr,g.rhr_avg)}</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Recovery factors</div><div class="sec-line"></div></div>
+      ${lateNight ? `<div style="margin-bottom:.5rem;padding:.4rem .7rem;background:rgba(232,153,58,0.12);border:1px solid rgba(232,153,58,0.3);border-radius:6px;font-size:12px;color:var(--amber)">⚠️ Last night sleep score below 65 — earlier bedtime tonight will improve recovery.</div>` : ""}
+      <div class="card">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:start;margin-bottom:1.25rem">
+          <div>
+            ${[
+              {l:'😴 Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score??0),w:g.readiness_sleep_score??0},
+              {l:'💓 HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:((g.readiness_hrv_pct??0)>=75?'var(--teal)':'var(--amber)'),w:g.readiness_hrv_pct??0},
+              {l:'🧠 Stress history',v:fmt(g.readiness_stress_pct,'%'),c:scol(g.readiness_stress_pct||32),w:g.readiness_stress_pct||32},
+              {l:'⏱ Recovery time',v:fmt(g.readiness_recovery_pct??98,'%'),c:'var(--teal)',w:g.readiness_recovery_pct??98},
+            ].map(r=>`
+              <div class="frow" style="flex-direction:column;align-items:flex-start">
+                <div style="display:flex;justify-content:space-between;width:100%"><span class="fl">${r.l}</span><span class="fv" style="color:${r.c}">${r.v}</span></div>
+                <div class="fbar" style="width:${r.w}%;background:${r.c};margin-top:5px;height:2px;border-radius:1px"></div>
+              </div>`).join('')}
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">readiness</div>
+            <div style="font-size:48px;font-weight:300;letter-spacing:-3px;color:${rv.color};line-height:1">${rs}</div>
+            <div style="font-family:var(--m);font-size:10px;color:var(--text3)">/100</div>
+          </div>
+        </div>
+        <hr>
+        <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.875rem">This week</div>
+        <div class="rw">
+          ${rw.map(r=>`<div class="rwc"><div class="rws" style="color:${scol(r.score)}">${r.score}</div><div class="rwd">${r.date.split(' ')[0]}<br>${r.date.split(' ')[1]}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">📊 Today's numbers</div><div class="sec-line"></div></div>
+      <div class="g4">
+        <div class="mm"><div class="mm-l">👣 Steps</div><div class="mm-v" style="color:${(g.steps||0)>=5670?'var(--teal)':'var(--text)'}">${g.steps!=null?g.steps.toLocaleString():'—'}</div><div class="mm-s">goal: 5,670</div>${(g.steps||0)>=5670?'<span class="tag tt">✓ done</span>':'<span class="tag ta">in progress</span>'}</div>
+        <div class="mm"><div class="mm-l">🧠 Avg stress</div><div class="mm-v" style="color:${(g.avg_stress||0)>50?'var(--amber)':'var(--teal)'}">${fmt(g.avg_stress)}</div><div class="mm-s">${(g.avg_stress||0)>50?'moderate-high':'low — good'}</div></div>
+        <div class="mm"><div class="mm-l">🔥 Active kcal</div><div class="mm-v">${fmt(g.active_kcal)}</div><div class="mm-s">total ${fmt(g.total_kcal)} kcal</div></div>
+        <div class="mm"><div class="mm-l">💓 HRV last night</div><div class="mm-v" style="color:var(--teal)">${fmt(g.hrv_last_night,' ms')}</div><div class="mm-s">weekly ${fmt(g.hrv_weekly,' ms')}</div></div>
+        <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">🔋 Tomorrow BB est.</div><div class="mm-v" style="color:${(d.bb_predicted_wake||0)>=60?"var(--teal)":(d.bb_predicted_wake||0)>=40?"var(--amber)":"var(--red)"}">${d.bb_predicted_wake||"\u2014"}</div><div class="mm-s">predicted wake</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">🗓 Next 7 days</div><div class="sec-line"></div></div>
+      <div class="card" id="calCard">
+        <div id="calBody" style="font-family:var(--m);font-size:12px;color:var(--text3)">No calendar data — run sync script to load events.</div>
+      </div>
+    </div>
+
+    <!-- DAY PLAN SECTION -->
+    <div class="sec" id="dayPlanSection" style="display:none">
+      <div class="sec-label" id="dayPlanLabel">📋 Today&#39;s plan</div>
+      <div id="dayPlanBody" class="card"></div>
+    </div>
+
+    <!-- TASKS SECTION -->
+    <div class="sec" id="tasksSection" style="display:none">
+      <div class="sec-label">✅ Tasks</div>
+      <div id="tasksBody" class="card"></div>
+    </div>
+
+    <div class="sec" id="perfumeSection">
+      <div class="sec-head"><div class="sec-title">🌿 Scent for the day</div><div class="sec-line"></div></div>
+      <div id="perfumeBody"><div style="font-family:var(--m);font-size:12px;color:var(--text3)">Loading...</div></div>
+    </div>
+
+    <div class="sec" id="matrixSection">
+      <div class="sec-head"><div class="sec-title">🧠 Health matrix</div><div class="sec-line"></div></div>
+      <div id="matrixBody"><div style="font-size:12px;color:var(--text3)">Loading...</div></div>
+    </div>
+
+    <div class="sec" id="illnessSection">
+      <div class="sec-head"><div class="sec-title">🦠 Illness risk</div><div class="sec-line"></div></div>
+      <div id="illnessBody"><div style="font-size:12px;color:var(--text3)">Loading...</div></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">💡 Recommendations</div><div class="sec-line"></div></div>
+      <div class="card">
+        ${recs.map(r=>`
+          <div class="rec">
+            <div class="recdot" style="background:${r.level==='red'?'var(--red)':r.level==='amber'?'var(--amber)':'var(--teal)'}"></div>
+            <div><div class="rect">${r.title}</div><div class="recb">${r.body}</div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="upd">synced ${synced} · garmin fenix 7x · hevy pro · apple health</div>
+  `;
+
+  // Inject calendar into already-rendered Today tab
+  const calBodyEl = document.getElementById('calBody');
+  if (calBodyEl) calBodyEl.innerHTML = renderCalendar(calEvents, rs);
+
+  // Weather strip
+  const wxEl = document.getElementById('weatherStrip');
+  function paintWx(w, live){
+    if (!wxEl || w.temp == null) return;
+    const uv = w.uv_index;
+    const uvColor = (uv||0) >= 6 ? 'var(--red)' : (uv||0) >= 3 ? 'var(--amber)' : 'var(--teal)';
+    const rain = w.rain != null ? w.rain : (w.precip_mm||0) > 0.5;
+    const loc = live ? (w.city || 'your location') : (w.city || '');
+    wxEl.innerHTML = `
+      <span style="color:var(--text2)">${rain ? '🌧' : '☀️'}</span>
+      <span style="color:var(--text2)">${w.description || '—'}</span>
+      <span>·</span><span>${Math.round(w.temp)}°C</span>
+      ${uv != null ? `<span>·</span><span style="color:${uvColor}">UV ${uv}</span>` : ''}
+      <span>·</span><span style="color:${rain ? 'var(--amber)' : 'var(--teal)'}">${rain ? 'Rain — no biking' : 'No rain — biking ok'}</span>
+      ${loc ? `<span>·</span><span style="color:var(--text3)">📍 ${loc}${live ? '' : ''}</span>` : ''}
+    `;
+  }
+  paintWx(d.weather || {}, false);                          // synced (home) weather first
+  deviceWeather().then(w => { if (w && w.temp != null) paintWx(w, true); }).catch(()=>{});  // then follow the device
+
+  // ── PERFUME RECOMMENDATION ─────────────────────────────────────────────
+  const pf = d.perfume || {};
+  const pfEl = document.getElementById('perfumeBody');
+
+  const ALL_PERFS = [
+    {num:'300',name:'Silver Mountain Water',inspired:'Creed Silver Mountain Water',mood:'Clean & energised',notes:['Bergamot','Black currant','Green tea','Ozonic','Sandalwood','Musk'],how:'2–3 sprays · neck + wrists · perfect for mornings · best spring/summer'},
+    {num:'197',name:'Sauvage',inspired:'Dior Sauvage',mood:'Fresh & assertive',notes:['Bergamot','Pepper','Lavender','Ambroxan','Cedarwood'],how:'3–4 sprays · neck, wrists, jacket · works any time, any occasion'},
+    {num:'200',name:'Aventus',inspired:'Creed Aventus',mood:'Bold & ambitious',notes:['Pineapple','Birch','Jasmine','Oakmoss','Ambergris'],how:'3–4 sprays · neck + wrists · spring/summer/autumn · day or evening'},
+    {num:'421',name:'Santal 33',inspired:'Le Labo Santal 33',mood:'Grounded & confident',notes:['Cardamom','Sandalwood','Cedar','Leather','Papyrus'],how:'2 sprays · chest · lasts 6–8h · autumn/winter/spring evenings'},
+    {num:'341',name:'Oud Wood',inspired:'Tom Ford Oud Wood',mood:'Deep & magnetic',notes:['Oud','Sandalwood','Vetiver','Cardamom','Vanilla'],how:'1–2 sprays only · wrists or chest · autumn/winter · evening only'},
+  ];
+
+  if (pfEl) {
+    const pm = pf.morning || {};
+    const pe = pf.evening;
+    const pickedNum = pm.number || '197';
+    const postGymNum = pe && pe.number ? pe.number : null;
+
+    // Score each perfume: picked morning = 10, post-gym = secondary, rest ranked by similarity
+    const scoreMap = {'300':7,'197':7,'200':5,'421':4,'341':1};
+    if (pickedNum) scoreMap[pickedNum] = 10;
+    if (postGymNum) scoreMap[postGymNum] = 8;
+
+    const ranked = [...ALL_PERFS].sort((a,b) => (scoreMap[b.num]||0) - (scoreMap[a.num]||0));
+    const hero = ranked[0];
+    const heroData = pickedNum === hero.num ? pm : {};
+
+    const accentColor = pickedNum===hero.num?'var(--teal)':'var(--text3)';
+    let html = `
+      <div class="pf-hero">
+        <div class="pf-hero-top">
+          <div class="pf-hero-num" style="color:${accentColor}">${hero.num}</div>
+          <div class="pf-hero-meta">
+            <div class="pf-hero-name">${hero.name}</div>
+            <div class="pf-hero-ins">${hero.inspired}</div>
+            <div style="display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);margin-top:4px">${hero.mood}</div>
+          </div>
+        </div>
+        <div class="pf-hero-why">${heroData.reason || hero.mood}</div>
+        <div class="pf-notes">${hero.notes.map(n=>`<span class="pf-note">${n}</span>`).join('')}</div>
+        <div class="pf-how">💧 ${hero.how}</div>
+      </div>`;
+
+    // Evening / post-gym card if applicable
+    if (postGymNum && postGymNum !== pickedNum) {
+      const evHero = ALL_PERFS.find(p=>p.num===postGymNum)||{};
+      html += `
+      <div class="pf-hero" style="border-color:var(--amber-d);margin-bottom:10px">
+        <div class="pf-hero-num" style="color:var(--amber)">${evHero.num||''}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">post-gym · after shower</div>
+          <div class="pf-hero-name">${evHero.name||''}</div>
+          <div class="pf-hero-ins">${evHero.inspired||''}</div>
+          <div class="pf-hero-why">${pe.reason||''}</div>
+          <div class="pf-how">${pe.how||''}</div>
+        </div>
+      </div>`;
+    }
+
+    html += `<div class="pf-grid">`;
+    ranked.forEach((p,i) => {
+      const score = scoreMap[p.num] || 1;
+      const isPick = p.num === pickedNum;
+      const isPostGym = p.num === postGymNum;
+      const scoreColor = score >= 9 ? 'var(--teal)' : score >= 6 ? 'var(--amber)' : 'var(--text3)';
+      html += `
+        <div class="pf-card ${isPick?'pf-active':''}" onclick="pfSelect('${p.num}')">
+          <div class="pf-card-num" style="color:${scoreColor}">${p.num}</div>
+          <div class="pf-card-name">${p.name}</div>
+          <div class="pf-card-mood">${p.mood}</div>
+          <div class="pf-badges">
+            <span class="pf-score" style="background:${score>=9?'var(--teal-d)':score>=6?'var(--amber-d)':'var(--s3)'};color:${scoreColor}">${score}/10</span>
+            ${isPick?'<span class="pf-pick">today&#39;s pick</span>':''}
+            ${isPostGym?'<span class="pf-score" style="background:var(--amber-d);color:var(--amber)">post-gym</span>':''}
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+    pfEl.innerHTML = html;
+
+    window._pfData = {ranked, scoreMap, pickedNum, pf};
+  }
+
+  window.pfSelect = function(num) {
+    if (!window._pfData) return;
+    const {ranked, scoreMap, pickedNum, pf} = window._pfData;
+    const p = ranked.find(x=>x.num===num);
+    if (!p) return;
+    const isPick = num === pickedNum;
+    const ac = isPick ? 'var(--teal)' : 'var(--text3)';
+    const reason = isPick && pf.morning ? pf.morning.reason : p.mood;
+    const heroEl = document.querySelector('.pf-hero');
+    if (!heroEl) return;
+    heroEl.innerHTML = `
+      <div class="pf-hero-top">
+        <div class="pf-hero-num" style="color:${ac}">${p.num}</div>
+        <div class="pf-hero-meta">
+          <div class="pf-hero-name">${p.name}</div>
+          <div class="pf-hero-ins">${p.inspired}</div>
+          <div style="display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);margin-top:4px">${p.mood}</div>
+        </div>
+      </div>
+      <div class="pf-hero-why">${reason}</div>
+      <div class="pf-notes">${p.notes.map(n=>`<span class="pf-note">${n}</span>`).join('')}</div>
+      <div class="pf-how">💧 ${p.how}</div>`;
+    document.querySelectorAll('.pf-card').forEach(c => {
+      c.classList.toggle('pf-active', c.getAttribute('onclick').includes(`'${num}'`));
+    });
+  };
+
+  // ── HEALTH MATRIX ──────────────────────────────────────────────────────
+  const mx = d.health_matrix || {};
+  const mxEl = document.getElementById('matrixBody');
+  if (mxEl && Object.keys(mx).length) {
+    const gauges = [
+      {key:'readiness',       label:'Readiness',        icon:'🫀'},
+      {key:'training_signal', label:'Train today?',     icon:'🏋'},
+      {key:'illness_risk',    label:'Illness defence',  icon:'🦠'},
+      {key:'recovery_debt',   label:'Recovery',         icon:'⏱'},
+      {key:'cognitive_load',  label:'Cognitive load',   icon:'🧠'},
+      {key:'calendar_load',   label:'Schedule space',   icon:'📅'},
+    ];
+    const gc = v => v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
+    const gd = (k,v) => {
+      if (k==='readiness') return v>=85?'Prime':v>=65?'Moderate':'Low';
+      if (k==='training_signal') return v>=70?'Train today':v>=45?'Light only':'Rest';
+      if (k==='illness_risk') return v>=70?'Low risk':v>=45?'Watch it':'High risk';
+      if (k==='recovery_debt') return v>=70?'Recovered':v>=45?'Partial':'Depleted';
+      if (k==='cognitive_load') return v>=70?'Sharp':v>=45?'Moderate':'Fatigued';
+      if (k==='calendar_load') return v>=70?'Light':v>=45?'Moderate':'Packed';
+    };
+    mxEl.innerHTML = '<div class="matrix-grid">' + gauges.map(g => {
+      const val = mx[g.key] ?? 0;
+      const col = gc(val);
+      return `<div class="gauge-card">
+        <div class="gauge-label">${g.icon} ${g.label}</div>
+        <div class="gauge-val" style="color:${col}">${val}</div>
+        <div class="gauge-bar"><div class="gauge-bar-fill" style="width:${val}%;background:${col}"></div></div>
+        <div class="gauge-desc" style="color:${col}">${gd(g.key,val)}</div>
+      </div>`;
+    }).join('') + '</div>';
+  }
+
+  // ── ILLNESS RISK ─────────────────────────────────────────────────────────
+  const ir = d.illness_risk || {};
+  if (!ir.level && ir.score !== undefined) {
+    ir.level = ir.score <= 20 ? 'low' : ir.score <= 50 ? 'moderate' : 'high';
+  }
+  const irEl = document.getElementById('illnessBody');
+  if (irEl && ir.level) {
+    const irCol = ir.level==='low'?'var(--teal)':ir.level==='moderate'?'var(--amber)':'var(--red)';
+    const factors = (ir.factors||[]).map(f => {
+      const label = typeof f === 'string' ? f : (f.label||'');
+      const dc = (typeof f === 'object' && f.severity==='high')?'var(--red)':'var(--teal)';
+      return label ? `<div class="illness-factor"><div class="if-dot" style="background:${dc}"></div>${label}</div>` : '';
+    }).filter(Boolean).join('');
+    irEl.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:${factors?'12px':'0'}">
+        <div style="font-size:36px;font-weight:300;letter-spacing:-2px;color:${irCol}">${ir.score}</div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:${irCol};text-transform:capitalize">${ir.level} risk</div>
+          <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">/100 · lower is better</div>
+        </div>
+      </div>
+      ${factors ? '<div class="illness-factors">'+factors+'</div>' : '<div style="font-size:11px;color:var(--text3)">No significant risk factors today</div>'}`;
+  }
+
+  // ── SPOTIFY RIDES ──────────────────────────────────────────────────────
+  const spRides = d.spotify_rides || [];
+  let spotifyHTML = '';
+  if (spRides.length > 0) {
+    const rideCards = spRides.map(ride => {
+      const trackList = ride.tracks.slice(0, 5).map(t =>
+        `<div class="sr-track">
+          <div class="sr-track-name">${t.name} <span style="color:var(--text3)">· ${t.artist}</span></div>
+          <div class="sr-track-meta">${t.bpm>0?t.bpm+'bpm':''} ${t.energy>0?'E'+t.energy:''}${t.valence>0?' V'+t.valence:''}</div>
+        </div>`
+      ).join('');
+      const valColor = ride.avg_valence >= 60 ? 'var(--teal)' : ride.avg_valence >= 40 ? 'var(--amber)' : 'var(--text3)';
+      return `<div class="sr-card">
+        <div class="sr-header">
+          <div class="sr-title">🎵 ${ride.title}</div>
+          <div class="sr-time">${ride.start}</div>
+        </div>
+        <div class="sr-stats">
+          <div class="sr-stat"><div class="sr-stat-v">${ride.avg_bpm||'—'}</div><div class="sr-stat-l">avg BPM</div></div>
+          <div class="sr-stat"><div class="sr-stat-v" style="color:var(--amber)">${ride.avg_energy||'—'}</div><div class="sr-stat-l">energy</div></div>
+          <div class="sr-stat"><div class="sr-stat-v" style="color:${valColor}">${ride.avg_valence||'—'}</div><div class="sr-stat-l">mood</div></div>
+          <div class="sr-stat"><div class="sr-stat-v" style="color:var(--text2)">${ride.track_count}</div><div class="sr-stat-l">tracks</div></div>
+        </div>
+        <div class="sr-tracks">${trackList}</div>
+      </div>`;
+    }).join('');
+    spotifyHTML = `
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">🎵 Music on rides</div><div class="sec-line"></div></div>
+        <div class="spotify-rides">${rideCards}</div>
+        <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">BPM · Energy (0-100) · Mood valence (0-100, higher = happier)</div>
+      </div>`;
+  }
+  // ── SPOTIFY RIDES (in Training tab — added below) ─────────────────────
+
+  // ── TRAINING TAB ───────────────────────────────────────────────────────
+  // streaks, tl, wqs, wks — use d.* directly (already in scope)
+  const streaks = d.streaks || {};
+
+  // Helper: level colour
+  const tlCol = v => v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
+  const tlTag = v => v >= 70 ? 'good' : v >= 40 ? 'moderate' : 'very low';
+
+  // Training load feedback — no hardcoded HYROX
+  const tlStatus = (d.training_load||{}).status || 'RECOVERY';
+  const tlFeedback = (d.training_load||{}).feedback || '';
+  let tlMsg = '';
+  if (tlStatus === 'BUILDING') tlMsg = 'Acute load is above your chronic baseline — good momentum, manage recovery.';
+  else if (tlStatus === 'MAINTAINING') tlMsg = 'Load is balanced. Keep the frequency consistent.';
+  else tlMsg = 'Acute load is below your chronic baseline — a good time to build.';
+  if (tlFeedback === 'AEROBIC_HIGH_SHORTAGE') tlMsg += ' Your aerobic high-intensity load is at zero — add a high-intensity session this week.';
+
+  // Days since session label
+  const daysSince = streaks.days_since_session ?? 0;
+  const lastLabel = streaks.last_session_label || '—';
+  const daysSinceCol = daysSince > 4 ? 'var(--red)' : daysSince > 2 ? 'var(--amber)' : 'var(--teal)';
+
+  // Workout quality cards
+  const wt = d.weekly_training || {};
+  const wtThis = wt.this_week || {};
+  const wtLast = wt.last_week || {};
+  const volChange = wt.vol_change_pct || 0;
+  const volCol = volChange > 0 ? "var(--teal)" : volChange < -10 ? "var(--red)" : "var(--text2)";
+  const fmtVol = v => v >= 1000 ? (v/1000).toFixed(1)+"t" : v+"kg";
+  const weeklyHTML = `<div class="card" style="margin-bottom:1rem"><div class="section-label">📊 THIS WEEK</div><div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem"><div class="mm"><div class="mm-l">Sessions</div><div class="mm-v" style="color:${wtThis.sessions>=3?"var(--teal)":"var(--amber)"}">${wtThis.sessions||0}/4</div><div class="mm-s">${wt.on_track?"on track":"below target"}</div></div><div class="mm"><div class="mm-l">Upper</div><div class="mm-v">${wtThis.upper||0}</div><div class="mm-s">sessions</div></div><div class="mm"><div class="mm-l">Lower</div><div class="mm-v">${wtThis.lower||0}</div><div class="mm-s">sessions</div></div><div class="mm"><div class="mm-l">Volume</div><div class="mm-v" style="color:${volCol}">${fmtVol(wtThis.volume_kg||0)}</div><div class="mm-s">${volChange>0?"+":""}${volChange}% vs last week</div></div></div></div>`;
+  const wqHTML = (d.workout_quality||d.workouts_quality||[]).length ? (d.workout_quality||d.workouts_quality||[]).map(wq => {
+    const overloadHTML = (wq.overload||[]).map(o => {
+      const arrow = o.type==="weight" ? `${o.from}→${o.to}kg` : `${o.from}→${o.to} sets`;
+      return `<span style="display:inline-block;background:rgba(52,201,154,0.15);color:var(--teal);border:1px solid rgba(52,201,154,0.3);border-radius:4px;padding:1px 6px;font-size:10px;margin:2px 2px 0 0">↑ ${o.name.split(" ")[0]} ${arrow}</span>`;
+    }).join("");
+    const scoreCol = wq.score >= 70 ? 'var(--teal)' : wq.score >= 45 ? 'var(--amber)' : 'var(--red)';
+    const wqTitle = wq.title || wq.name || '—';
+    const type = wq.type || (wqTitle.toLowerCase().includes('upper') ? 'upper' : 'lower');
+    const typeCol = type === 'upper' ? 'var(--blue)' : 'var(--teal)';
+    const durMin = wq.duration || wq.dur || 0;
+    const exList = (wq.exercises||[]).slice(0,3).map(e=>e.name).join(' · ');
+    return `
+      <div class="wq-row">
+          <div class="wq-date">${wq.date?(() => { const p=wq.date.split('-'); const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return parseInt(p[2])+' '+m[parseInt(p[1])-1]; })():'—'}<br><span class="wq-type" style="color:${typeCol}">${type.toUpperCase()}</span></div>
+          <div class="wq-body">
+            <div class="wq-name">${wqTitle}</div>
+            <div class="wq-stats">${durMin > 0 ? durMin+'min' : '—'} · ${wq.label||wq.note||''}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4">${exList}</div>
+            <div class="wq-bars">
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+                <span style="font-size:9px;color:var(--text3);font-family:var(--mono);width:14px">z2</span>
+                <div style="flex:1;height:3px;background:var(--s3);border-radius:2px"><div style="width:${wq.z2||0}%;height:100%;background:var(--amber);border-radius:2px"></div></div>
+                <span style="font-size:9px;color:var(--text3);font-family:var(--mono)">${wq.z2||0}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wq-score" style="color:${scoreCol}">${wq.score||0}<span style="font-size:10px;display:block;color:var(--text3);font-family:var(--mono)">quality</span></div>
+      </div>`;
+  }).join('') : '<div style="color:var(--text3);font-size:12px;padding:1rem">No sessions yet — run sync after training</div>';
+
+  // Recent sessions
+  const sessionHTML = (d.workouts||[]).slice(0,5).map(w => {
+    const exTags = (w.exercises||[]).slice(0,4).map(e =>
+      `<span class="ex-tag">${e.name}${e.weight > 0 ? ' '+e.weight+'kg' : ''}</span>`
+    ).join('');
+    const type = (w.title||'').toLowerCase().includes('upper') ? 'upper' : 'lower';
+    const typeCol = type === 'upper' ? 'var(--blue)' : 'var(--teal)';
+    const dateLabel = w.date ? (() => { try { 
+      // Parse date-only string safely without timezone shift
+      const parts = w.date.split('-'); 
+      const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return parseInt(parts[2])+' '+months[parseInt(parts[1])-1]; 
+    } catch(e){return w.date;} })() : '—';
+    return `
+      <div class="ws-row">
+        <div class="ws-left">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3)">${dateLabel}</div>
+          <div class="ws-type" style="color:${typeCol}">${type} ${w.title&&w.title.match(/\d/)?' '+w.title.match(/\d/)[0]:''}</div>
+        </div>
+        <div class="ws-body">
+          <div class="ws-name">${w.title||'—'}</div>
+          <div class="ex-tags">${exTags}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Muscle coverage
+  const muscles = [
+    {k:'CHEST',s:'covered'},{k:'BACK',s:'excellent'},{k:'SHOULDERS',s:'rear delt ✨'},
+    {k:'BICEPS',s:'good'},{k:'TRICEPS',s:'added ✨'},{k:'QUADS',s:'excellent'},
+    {k:'HAMSTRINGS',s:'RDL + curl'},{k:'ABS',s:'leg raise ✨'},{k:'CALVES',s:'two variations'},
+  ];
+
+  document.getElementById('tab-training').innerHTML=`
+    ${weeklyHTML}
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">🔥 Streaks</div><div class="sec-line"></div></div>
+      <div class="g3">
+        <div class="streak">
+          <div class="streak-n" style="color:var(--teal)">${streaks.watch_nights??'—'}</div>
+          <div class="streak-l">Nights watch worn to bed</div>
+          <div class="dots">${[0,1,2,3,4,5,6].map(i=>`<div class="dot ${i>=(7-(streaks.watch_nights||0))?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">${streaks.watch_nights > 0 ? 'Keep it going' : 'Wear watch to bed tonight'}</div>
+        </div>
+        <div class="streak">
+          <div class="streak-n" style="color:${(streaks.training_weeks_4x||0)>0?'var(--teal)':'var(--red)'}">${streaks.training_weeks_4x||0}</div>
+          <div class="streak-l">Weeks hitting 4× training</div>
+          <div class="dots">${[0,1,2,3].map(i=>`<div class="dot ${i<(streaks.training_weeks_4x||0)?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">${d.streaks?.training_freq_note||`${(d.streaks?.sessions_this_week||0)}× this week`}</div>
+        </div>
+        <div class="streak">
+          <div class="streak-n" style="color:${daysSinceCol}">${daysSince}</div>
+          <div class="streak-l">Days since last session</div>
+          <div class="dots">${[0,1,2,3,4].map(i=>`<div class="dot ${i===0&&daysSince===0?'don':'dof'}"></div>`).join('')}</div>
+          <div class="streak-note">Last: ${lastLabel}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">⚡ Training load</div><div class="sec-line"></div></div>
+      <div class="card">
+        <div class="g4" style="margin-bottom:1.25rem">
+          <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:${tlCol(d.training_load?.acute??0)}">${d.training_load?.acute??0}</div><div class="mm-s">recent stimulus</div><span class="tag tr">${tlTag(d.training_load?.acute??0)}</span></div>
+          <div class="mm"><div class="mm-l">Chronic (28d)</div><div class="mm-v" style="color:var(--teal)">${d.training_load?.chronic??0}</div><div class="mm-s">baseline fitness</div><span class="tag tg">baseline</span></div>
+          <div class="mm"><div class="mm-l">Aerobic low</div><div class="mm-v" style="color:var(--teal)">${d.training_load?.aerobic_low??0}</div><div class="mm-s">target ${d.training_load?.aerobic_low_min??97}–${d.training_load?.aerobic_low_max??261}</div><span class="${(d.training_load?.aerobic_low??0)>=(d.training_load?.aerobic_low_min??97)?'tag tg':'tag tr'}">${(d.training_load?.aerobic_low??0)>=(d.training_load?.aerobic_low_min??97)?'✓ on target':'shortage'}</span></div>
+          <div class="mm"><div class="mm-l">Aerobic high</div><div class="mm-v" style="color:var(--red)">${d.training_load?.aerobic_high??0}</div><div class="mm-s">target ${d.training_load?.aerobic_high_min??203}–${d.training_load?.aerobic_high_max??368}</div><span class="tag tr">shortage</span></div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;line-height:1.6">${tlMsg}</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">🏋 Workout quality</div><div class="sec-line"></div></div>
+      <div class="card" style="padding:0">${wqHTML}</div>
+      <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">Score = duration + exercise count · max 100 · HR zones post-Kyiv</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">📋 Recent sessions</div><div class="sec-line"></div></div>
+      <div class="card" style="padding:0">${sessionHTML||'<div style="color:var(--text3);font-size:12px;padding:1rem">No sessions found — run sync</div>'}</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">💪 Muscle coverage</div><div class="sec-line"></div></div>
+      <div class="muscle-grid">
+        ${muscles.map(m=>`<div class="muscle-item"><div class="muscle-k">${m.k}</div><div class="mstat">${m.s}</div></div>`).join('')}
+      </div>
+    </div>
+
+    ${spotifyHTML}
+    <div class="upd">synced ${synced} · hevy pro · garmin fenix 7x</div>
+  `;
+
+    // ── TRENDS TAB ─────────────────────────────────────────────────────────
+  document.getElementById('tab-trends').innerHTML=`
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">🧬 Biological age</div><div class="sec-line"></div></div>
+      <div class="g2">
+        <div class="card">
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">Garmin fitness age</div>
+          <div style="display:flex;align-items:flex-end;gap:1rem;margin-bottom:.5rem">
+            <div style="font-size:56px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--teal)">${bioAge}</div>
+            <div style="padding-bottom:8px;font-size:13px;color:var(--text2)">yrs · <span style="color:var(--teal);font-weight:500">${ageDiff!=='—'?ageDiff+' younger':''}</span>${ageDiff!=='—'?' than '+chronoAge:'actual age'}</div>
+          </div>
+          <div style="font-size:13px;color:var(--text2);font-style:italic;margin-bottom:1rem;line-height:1.5">With consistent vigorous training, Garmin estimates you could reach <strong style="color:var(--teal);font-style:normal">${achieveAge}</strong> fitness age.</div>
+          <div class="agebar">
+            <div class="agebar-fill"></div>
+            <div class="agemark" style="left:5%;width:2px;height:14px;top:-4px;background:var(--teal)"></div>
+            <div class="agemark" style="left:29%;width:3px;height:18px;top:-6px;background:#fff;box-shadow:0 0 4px rgba(255,255,255,.3)"></div>
+            <div class="agemark" style="left:45%;width:2px;height:12px;top:-3px;background:var(--amber)"></div>
+          </div>
+          <div style="display:flex;gap:14px;font-family:var(--m);font-size:10px;color:var(--text3)">
+            <span><span style="color:#fff">●</span> now ${bioAge}</span>
+            <span><span style="color:var(--amber)">●</span> actual ${chronoAge}</span>
+            <span><span style="color:var(--teal)">●</span> possible ${achieveAge}</span>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">🔬 Age drivers</div>
+          ${[
+            {l:'Resting HR',v:`${g.resting_hr??'—'} bpm`,c:'var(--teal)',w:80,note:'healthy range ✓'},
+            {l:'HRV',v:`${g.hrv_weekly??'—'} ms`,c:'var(--teal)',w:65,note:'balanced ✓'},
+            {l:'Vigorous activity',v:`${vd.toFixed(1)}d/wk`,c:vd<1?'var(--red)':'var(--amber)',w:Math.min(100,Math.round(vd/vt*100)),note:`target ${vt}d/wk — biggest lever`},
+            {l:'Body fat',v:`${bc.fat_pct??'—'}%`,c:'var(--amber)',w:40,note:'target 16–17%'},
+            {l:'BMI',v:`${bc.bmi??'—'}`,c:'var(--teal)',w:72,note:'normal range ✓'},
+          ].map(r=>`
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">${r.l}</span><span style="font-family:var(--m);font-size:11px;color:${r.c}">${r.v}</span></div>
+              <div style="height:2px;background:var(--s3);border-radius:1px;overflow:hidden"><div style="width:${r.w}%;height:100%;background:${r.c};border-radius:1px"></div></div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--m);margin-top:3px">${r.note}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">⚖️ Body composition</div><div class="sec-line"></div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="g2" style="margin-bottom:1.25rem">
+            <div class="mm"><div class="mm-l">Weight</div><div class="mm-v">${fmt(bc.weight,' kg')}</div></div>
+            <div class="mm"><div class="mm-l">Body fat</div><div class="mm-v" style="color:var(--amber)">${fmt(bc.fat_pct,'%')}</div><div class="mm-s">target 16–17%</div></div>
+            <div class="mm"><div class="mm-l">Lean mass</div><div class="mm-v" style="color:var(--teal)">${fmt(bc.lean_kg,' kg')}</div><div class="mm-s">protect this</div></div>
+            <div class="mm"><div class="mm-l">BMI</div><div class="mm-v">${fmt(bc.bmi)}</div><div class="mm-s">normal</div></div>
+          </div>
+          <div class="cw" style="height:70px"><canvas id="compChart" role="img" aria-label="Body composition">Lean ${bc.lean_kg}kg vs Fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg</canvas></div>
+          <div style="display:flex;gap:12px;margin-top:8px;font-family:var(--m);font-size:10px;color:var(--text3)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--teal);border-radius:2px;display:inline-block"></span>lean ${bc.lean_kg??'—'}kg (${bc.weight&&bc.lean_kg?Math.round(bc.lean_kg/bc.weight*100):'?'}%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:var(--amber);border-radius:2px;display:inline-block"></span>fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg (${bc.fat_pct??'—'}%)</span>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.875rem">🎯 Goals progress</div>
+          ${goals.map(g2=>`
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text2)">${g2.label}</span><span style="font-family:var(--m);font-size:10px;color:var(--text3)">${g2.current} → ${g2.target}</span></div>
+              <div style="height:3px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="width:${g2.pct}%;height:100%;background:${g2.color};border-radius:2px"></div></div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">😴 Sleep this week</div><div class="sec-line"></div></div>
+      <div class="card">
+        <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Consistency</div><div class="mm-v" style="color:${sleepCons>=80?'var(--teal)':sleepCons>=60?'var(--amber)':'var(--red)'}">${sleepCons!=null?sleepCons:'—'}</div><div class="mm-s">${sleepCons>=80?'stable':sleepCons>=60?'variable':'irregular'}</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Avg score</div><div class="mm-v" style="color:var(--amber)">${ss.scores&&ss.scores.length?Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length):'74'}</div><div class="mm-s">this week</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Best night</div><div class="mm-v" style="color:var(--teal)">${ss.scores&&ss.scores.length?Math.max(...ss.scores):'91'}</div><div class="mm-s">${ss.best_date??'—'}</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Trend</div><div class="mm-v" style="color:var(--red)">↓</div><div class="mm-s">declining this week</div></div>
+        </div>
+        <div class="cw" style="height:140px"><canvas id="sleepChart" role="img" aria-label="Sleep scores by night">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+(ss.scores||[])[i]).join(', ')}</canvas></div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${ss.scores&&ss.scores.length>=2 ? `Sleep score this week: avg ${Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length)}, best ${Math.max(...ss.scores)}, worst ${Math.min(...ss.scores)}.` : 'Keep wearing the watch to bed for sleep trend data.'} A consistent bedtime will stabilise this — aim for the same 30-minute window each night.</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">🔋 Body battery — 6 weeks</div><div class="sec-line"></div></div>
+      <div class="card">
+        <div class="cw" style="height:160px"><canvas id="bbChart" role="img" aria-label="Body battery trend">Wake-up battery and daily drain over 6 weeks.</canvas></div>
+        <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--m);font-size:10px;color:var(--text3)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>wake-up battery</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--amber);display:inline-block"></span>points drained</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${(d.body_battery_6wk||[]).length>=2 ? `Wake-up battery avg ${Math.round((d.body_battery_6wk||[]).slice(-7).reduce((a,b)=>a+(b.val||0),0)/Math.min(7,(d.body_battery_6wk||[]).length))} over the last 7 days. Keep consistent sleep timing to stabilise recovery.` : 'Keep wearing the watch to bed to build battery trend data.'}</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">📈 Stress vs recovery</div><div class="sec-line"></div></div>
+      <div class="card">
+        <div class="cw" style="height:160px"><canvas id="stressChart" role="img" aria-label="Stress vs body battery chart">Stress and recovery balance over the past week.</canvas></div>
+        <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--m);font-size:10px;color:var(--text3)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--red);display:inline-block"></span>avg stress</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>battery charged overnight</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">Sleep quality is the primary bottleneck for recovery. Keep stress low in the evenings and maintain a consistent bedtime.</div>
+      </div>
+    </div>
+
+    <div class="upd">synced ${synced} · garmin fenix 7x · hevy pro · apple health</div>
+  `;
+
+  // ── CHARTS ─────────────────────────────────────────────────────────────
+  mkChart('heroRing',{
+    type:'doughnut',
+    data:{datasets:[{data:[rs,100-rs],backgroundColor:[rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252','rgba(255,255,255,0.04)'],borderWidth:0,circumference:270,rotation:225}]},
+    options:{responsive:false,cutout:'82%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
+    plugins:[{id:'ct',afterDraw(chart){
+      const{ctx,chartArea:{left,top,width,height}}=chart;
+      ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+      const cx=left+width/2,cy=top+height/2;
+      ctx.font='300 26px Plus Jakarta Sans,sans-serif';
+      ctx.fillStyle=rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252';
+      ctx.fillText(rs,cx,cy-5);
+      ctx.font='10px DM Mono,monospace';ctx.fillStyle='#3e3d3b';
+      ctx.fillText('/100',cx,cy+11);ctx.restore();
+    }}]
+  });
+
+  if(bc.weight&&bc.lean_kg){
+    mkChart('compChart',{
+      type:'bar',
+      data:{labels:[''],datasets:[
+        {label:'Lean',data:[bc.lean_kg],backgroundColor:'#34c99a',borderWidth:0,borderRadius:3,borderSkipped:false},
+        {label:'Fat',data:[bc.weight-bc.lean_kg],backgroundColor:'#e8993a',borderWidth:0,borderRadius:3,borderSkipped:false}
+      ]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,max:Math.max(90,Math.ceil((bc.weight||85)+5)),ticks:{callback:v=>v+' kg',color:tc,font:{size:9}},grid:{color:gc}},y:{stacked:true,display:false}}}
+    });
+  }
+
+  if(ss.labels&&ss.labels.length){
+    mkChart('sleepChart',{
+      type:'bar',
+      data:{labels:ss.labels,datasets:[{label:'😴 Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'rgba(52,201,154,0.7)':s>=65?'rgba(232,153,58,0.7)':'rgba(224,82,82,0.7)'),borderRadius:4,borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
+    });
+  }
+
+  if(bbt.labels&&bbt.labels.length){
+    mkChart('bbChart',{
+      type:'line',
+      data:{labels:bbt.labels,datasets:[
+        {label:'Wake-up battery',data:bbt.wake,borderColor:'#34c99a',backgroundColor:'rgba(52,201,154,0.04)',borderWidth:1.5,pointRadius:0,tension:0.4,fill:true},
+        {label:'Points drained',data:bbt.drain,borderColor:'#e8993a',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:0.4,borderDash:[4,3]}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},y:{min:0,max:105,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
+    });
+  }
+
+  if(sw.labels&&sw.labels.length){
+    mkChart('stressChart',{
+      type:'line',
+      data:{labels:sw.labels,datasets:[
+        {label:'Avg stress',data:sw.stress,borderColor:'rgba(224,82,82,0.8)',backgroundColor:'rgba(224,82,82,0.04)',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(224,82,82,0.8)',tension:0.4,fill:true},
+        {label:'BB charged',data:sw.bb_charged,borderColor:'rgba(52,201,154,0.8)',backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(52,201,154,0.8)',tension:0.4,borderDash:[4,3]}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
+    });
+  }
+}
+
+async function load(){
+  const btn=document.getElementById('rbtn'),sp=document.getElementById('spin'),rl=document.getElementById('rl'),eb=document.getElementById('errbox');
+  btn.disabled=true;sp.style.display='block';rl.textContent='syncing...';eb.style.display='none';
+  document.getElementById('sub').textContent='syncing...';
+  try{
+    const data=await fetchData();
+    render(data);
+    if(DEMO && !document.getElementById('demoBadge')){
+      const b=document.createElement('span'); b.id='demoBadge'; b.textContent='DEMO · sample data';
+      b.style.cssText='margin-left:8px;font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(52,201,154,0.15);color:var(--teal);border:1px solid rgba(52,201,154,0.3)';
+      document.querySelector('.logo').appendChild(b);
+    }
+  }catch(e){
+    eb.innerHTML=`<strong>Could not load data.json</strong> — ${e.message}`;
+    eb.style.display='block';
+    document.getElementById('sub').textContent='error';
+  }
+  btn.disabled=false;sp.style.display='none';rl.textContent='↻ sync';
+}
+</script>
+</body>
+</html>
