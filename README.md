@@ -142,7 +142,11 @@ had to be deleted and recreated from a clean tree before the old content actuall
 returned 404. The full history is preserved in a private archive and offline.
 
 **Standing posture.** Secrets in environment variables only, never in source. A
-pre-commit hook scans staged content for credential patterns and blocks the commit.
+pre-commit hook scans staged content for credential patterns and blocks the commit. The
+one external script is version-pinned with a Subresource Integrity hash, because it can
+read browser storage and a compromised CDN would otherwise inherit that access. External
+text is length-capped at the ingest layer, and the frontend validates the document's
+shape before rendering rather than displaying a half-empty dashboard.
 Separate read and write keys on the endpoint, so a browser never holds a key that can
 write. Rate limiting and logging on failed authentication. The frontend's token prompt
 is a convenience, not a security boundary — enforcement is server-side, and the code
@@ -164,9 +168,13 @@ secret scanning across published files, the XSS invariant, demo-data cleanliness
 test suite, syntax and JSON validity, live endpoint reachability, and known-exposure
 checks. Non-zero exit blocks the deploy.
 
-**Daily backups.** The KV store is a source of truth, not a backup, and has no export.
-Every successful sync writes a timestamped snapshot to a local, backed-up folder. The
-snapshots also feed the carry-forward guard.
+**Daily backups, and a restore that has actually been run.** The KV store is a source of
+truth, not a backup, and has no export. Every successful sync writes a timestamped
+snapshot to a local, backed-up folder; snapshots older than 90 days are thinned to one a
+month. The snapshots also feed the carry-forward guard. A restore script exists and the
+drill has been performed end to end — an old snapshot was written to the live endpoint,
+read back and compared byte for byte, then the current state was restored. An untested
+backup is a guess.
 
 **Heartbeat monitoring.** The sync pings a dead-man's-switch only after a fully
 successful run. A laptop-hosted schedule has three silent failure modes — lid closed,
