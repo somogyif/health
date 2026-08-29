@@ -95,7 +95,16 @@
 const C = {teal:'#34c99a',amber:'#e8993a',red:'#e05252',blue:'#5b9cf6',text3:'#7a7874'};
 const DEMO = new URLSearchParams(location.search).get('demo')==='1';  // ?demo=1 → sample data
 const CAT = {work:C.amber,gym:C.teal,wellness:C.teal,social:C.blue,study:C.blue,travel:C.amber,personal:C.text3,other:C.text3};
-const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = s => (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// A külső szöveget EGY belépési ponton semlegesítjük, nem helyszínenként. A
+// helyszínenkénti escape-elés egy helyet kihagyott (az esemény ideje), és ez
+// pontosan az a hiba, ami a dashboardon 2026-08-24-én tokent szivárogtatott.
+function deepEscape(v){
+  if (typeof v === 'string') return esc(v);
+  if (Array.isArray(v)) return v.map(deepEscape);
+  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[k]=deepEscape(v[k]); return o; }
+  return v;
+}
 const band = (v,hi,mid) => v==null?C.text3 : v>=hi?C.teal : v>=mid?C.amber : C.red;
 
 // Same thresholds/labels as the dashboard's coachingVerdict — the two pages
@@ -135,13 +144,14 @@ async function deviceWeather(){
 }
 function wxHtml(w, live){
   if(w.temp==null) return '';
-  const loc = live ? ` · 📍 ${esc(w.city||'your location')}` : (w.city ? ` · 📍 ${esc(w.city)}` : '');
-  return `<span>🌡 <b>${Math.round(w.temp)}°C</b> ${esc(w.description||'')}${loc}</span>
+  const loc = live ? ` · 📍 ${w.city||'your location'}` : (w.city ? ` · 📍 ${w.city}` : '');
+  return `<span>🌡 <b>${Math.round(w.temp)}°C</b> ${w.description||''}${loc}</span>
      ${w.uv_index!=null?`<span>☀️ UV <b>${w.uv_index}</b></span>`:''}
      ${w.rain?`<span>🌧 <b>${w.precip_mm??''}mm</b> rain</span>`:''}`;
 }
 
 function render(d){
+  d = deepEscape(d);   // KÖTELEZŐ első lépés — ne mozgasd lejjebb
   const g=d.garmin||{}, dp=(d.day_plan||{}).today||{}, w=d.weather||{}, ir=d.illness_risk||{};
   const today = g.date || (d.synced_at||'').slice(0,10);
   const dObj = today ? new Date(today+'T00:00:00') : new Date();
@@ -156,12 +166,12 @@ function render(d){
     {l:'❤️ Resting HR', v:g.resting_hr??'—', s:'bpm', c:band(g.resting_hr==null?null:(70-g.resting_hr),10,0)},
   ];
   const tilesHTML = tiles.map(t=>`<div class="tile"><div class="lbl">${t.l}</div>
-    <div class="v" style="color:${t.c}">${esc(t.v)}</div><div class="s">${esc(t.s)}</div></div>`).join('');
+    <div class="v" style="color:${t.c}">${t.v}</div><div class="s">${t.s}</div></div>`).join('');
 
   // focus lines
   const lines = (dp.lines||[]).filter(Boolean);
   const focusHTML = lines.length
-    ? `<ul class="focus">${lines.map(l=>`<li><span class="b">›</span><span>${esc(l)}</span></li>`).join('')}</ul>`
+    ? `<ul class="focus">${lines.map(l=>`<li><span class="b">›</span><span>${l}</span></li>`).join('')}</ul>`
     : `<div class="empty">No plan generated for today.</div>`;
 
   // today's events
@@ -171,13 +181,13 @@ function render(d){
     const t=(e.time||'').trim();
     return `<div class="ev"><span class="cat" style="background:${CAT[e.category]||C.text3}"></span>
       <span class="t">${t||'all day'}</span>
-      <span class="ti">${esc((e.title||'').replace(/\[pending\]/gi,'').trim())}</span></div>`;
+      <span class="ti">${(e.title||'').replace(/\[pending\]/gi,'').trim()}</span></div>`;
   }).join('') : `<div class="empty">Nothing scheduled today.</div>`;
 
   // weather + illness strip — wrapped so device geolocation can update it live
   const wx = `<span id="wxLine">${wxHtml(w,false)}</span>`;
   const hasStrip = (w.temp!=null) || (ir.score!=null);
-  const illHTML = (ir.score!=null) ? `<span>🛡 Illness risk <b style="color:${band(100-ir.score,75,50)}">${ir.score}/100</b>${(ir.factors||[]).length?` · ${esc(ir.factors.join(', '))}`:''}</span>` : '';
+  const illHTML = (ir.score!=null) ? `<span>🛡 Illness risk <b style="color:${band(100-ir.score,75,50)}">${ir.score}/100</b>${(ir.factors||[]).length?` · ${ir.factors.join(', ')}`:''}</span>` : '';
 
   document.getElementById('root').innerHTML = `
     <header>
@@ -205,12 +215,12 @@ function render(d){
 
     ${hasStrip?`<div class="strip">${wx}${illHTML}</div>`:''}
 
-    <footer>Generated from Health Centre · synced ${esc(d.synced_at||'—')}</footer>`;
+    <footer>Generated from Health Centre · synced ${d.synced_at||'—'}</footer>`;
 
   // Follow the viewing device's location (phone/laptop GPS) if allowed.
   deviceWeather().then(w2=>{
     const el=document.getElementById('wxLine');
-    if(w2 && w2.temp!=null && el) el.innerHTML = wxHtml(w2, true);
+    if(w2 && w2.temp!=null && el) el.innerHTML = wxHtml(deepEscape(w2), true);  // saját belépési pont
   }).catch(()=>{});
 }
 

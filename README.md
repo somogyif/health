@@ -106,6 +106,34 @@ instead of masquerading as current. Sleep and HRV are deliberately excluded from
 carry-forward — they're night-bound, and showing last night's figure as today's would
 be a lie the freshness stamp doesn't excuse.
 
+**Every function was correct. The output was wrong.** The derived metrics — the daily
+plan, the risk score, the gauges — took their inputs with an `or` fallback: if a field
+was missing, substitute a plausible mid-range constant. The device that supplies those
+fields does not report until it syncs, which on some mornings is after the scheduled
+run. On those days the dashboard rendered a confident plan built on numbers that had
+been invented, sitting next to a raw card showing the real ones. Auditing five months of
+daily snapshots found three days where the two disagreed. Every one had been published.
+
+Three separate mistakes stacked into it. The backfill that repairs missing fields ran
+*after* the builders, so the builders saw the nulls it was there to remove. The nulls
+were then replaced with constants rather than propagated. And the frontend repeated the
+same mistake independently, coercing a missing value to zero and drawing it as a real
+reading in the failure colour — so even after the backend learned to say "unknown", the
+browser would have gone on inventing.
+
+The unit tests could not have caught this. Every function was correct in isolation; they
+were called with the wrong inputs. So the check now runs on the finished document, right
+before it is published: the daily plan and the gauges must agree with the raw fields they
+were derived from, and a critical reading may not vanish from the factor list that is
+supposed to explain it. On contradiction, nothing is published and the previous document
+stands. Replayed against the archive, it flags exactly the three known-bad days and
+nothing else. The same check found the public demo data disagreeing with itself.
+
+The related habit: the heartbeat that detects silent death fired after the closing log
+line, which printed on every path — including the one where a guard had *declined* to
+publish. A monitor that reports success when the pipeline deliberately did nothing is
+worse than no monitor, because it is trusted. It now fires only when data actually left.
+
 **A secret in a fallback path.** The calendar integration looked up a display name per
 event and fell back to the feed URL when it found nothing. The name lives on the
 calendar object, not on individual events, so the lookup always failed — and the feed
@@ -127,6 +155,22 @@ payload as the first statement of the render function rather than patching indiv
 call sites, because one missed site silently reinstates the whole class of bug. A
 regression test executes the payload in Node and asserts it comes back inert, and the
 pre-deploy check fails if the escaping is ever removed from the render entry point.
+
+*Postscript, five days later.* That paragraph was true of the dashboard and false of the
+project. A second page — a printable morning brief — escaped site by site instead, and
+had missed one: the event time, rendered unescaped directly beside a correctly escaped
+title. Same injection path, same page-local credential. The reasoning I had written down
+turned out to be the diagnosis of a bug I hadn't found yet.
+
+Worse was the test. A case named `test_a_brief_is_escapel` asserted that the file
+contained the string `const esc` — that an escaping helper *existed*. It passed
+continuously while the hole was open. A test that checks for the presence of a defence
+rather than its effect is not weak coverage; it is negative coverage, because it
+converts an unexamined file into a green checkmark. It has been replaced with a
+behavioural check that extracts the page's own escaping code, runs a payload through it,
+and asserts the markup comes back inert — and with a structural check that the
+neutralisation is still wired into the render entry point. Both were verified by
+mutation: the fix was removed, the tests went red, the fix was restored.
 
 **A publicly readable data file.** The synced document sat on public static hosting at a
 guessable path. Making the repository private wouldn't have fixed it — the published
@@ -156,7 +200,7 @@ says so.
 
 ## Testing and operations
 
-**31 regression tests**, standard-library `unittest`, no new dependencies. Every test
+**39 regression tests**, standard-library `unittest`, no new dependencies. Every test
 pins a bug that actually occurred: readiness freshness, overload pairing direction,
 template-ID matching, streak logic across partial weeks, the day-plan classifier, the
 publish-churn guard, the carry-forward source, XSS neutralisation, and demo-data

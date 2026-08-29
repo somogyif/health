@@ -1,0 +1,4 @@
+
+# Az egészségadat NEM publikus. A sync a privát Worker-végpontra ír.
+# Ha ide mégis kerül data.json, az véletlenül nyilvánosságra kerülhet.
+data.json

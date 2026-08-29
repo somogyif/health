@@ -1097,9 +1097,9 @@
   "day_plan": {
     "context": "evening",
     "generated_at": "21:30",
-    "readiness": 39,
-    "bb": 50,
-    "hrv": 45,
+    "readiness": 74,
+    "bb": 71,
+    "hrv": 54,
     "today": {
       "label": "Clear",
       "lines": [

@@ -891,7 +891,7 @@ function render(d){
         <div class="mm"><div class="mm-l">🧠 Avg stress</div><div class="mm-v" style="color:${(g.avg_stress||0)>50?'var(--amber)':'var(--teal)'}">${fmt(g.avg_stress)}</div><div class="mm-s">${(g.avg_stress||0)>50?'moderate-high':'low — good'}</div></div>
         <div class="mm"><div class="mm-l">🔥 Active kcal</div><div class="mm-v">${fmt(g.active_kcal)}</div><div class="mm-s">total ${fmt(g.total_kcal)} kcal</div></div>
         <div class="mm"><div class="mm-l">💓 HRV last night</div><div class="mm-v" style="color:var(--teal)">${fmt(g.hrv_last_night,' ms')}</div><div class="mm-s">weekly ${fmt(g.hrv_weekly,' ms')}</div></div>
-        <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">🔋 Tomorrow BB est.</div><div class="mm-v" style="color:${(d.bb_predicted_wake||0)>=60?"var(--teal)":(d.bb_predicted_wake||0)>=40?"var(--amber)":"var(--red)"}">${d.bb_predicted_wake||"\u2014"}</div><div class="mm-s">predicted wake</div></div>
+        <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">🔋 Tomorrow BB est.</div><div class="mm-v" style="color:${d.bb_predicted_wake==null?"var(--text3)":d.bb_predicted_wake>=60?"var(--teal)":d.bb_predicted_wake>=40?"var(--amber)":"var(--red)"}">${d.bb_predicted_wake??"\u2014"}</div><div class="mm-s">predicted wake</div></div>
       </div>
     </div>
 
@@ -1117,8 +1117,11 @@ function render(d){
       {key:'cognitive_load',  label:'Cognitive load',   icon:'🧠'},
       {key:'calendar_load',   label:'Schedule space',   icon:'📅'},
     ];
-    const gc = v => v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
+    const gc = v => v == null ? 'var(--text3)' : v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
     const gd = (k,v) => {
+      // Hiányzó adat nem nulla. A `?? 0` korábban 0-t rajzolt piros "Depleted"
+      // felirattal oda, ahol az óra egyszerűen nem szinkronizált még.
+      if (v == null) return 'No data yet';
       if (k==='readiness') return v>=85?'Prime':v>=65?'Moderate':'Low';
       if (k==='training_signal') return v>=70?'Train today':v>=45?'Light only':'Rest';
       if (k==='illness_risk') return v>=70?'Low risk':v>=45?'Watch it':'High risk';
@@ -1127,12 +1130,12 @@ function render(d){
       if (k==='calendar_load') return v>=70?'Light':v>=45?'Moderate':'Packed';
     };
     mxEl.innerHTML = '<div class="matrix-grid">' + gauges.map(g => {
-      const val = mx[g.key] ?? 0;
+      const val = mx[g.key] ?? null;
       const col = gc(val);
       return `<div class="gauge-card">
         <div class="gauge-label">${g.icon} ${g.label}</div>
-        <div class="gauge-val" style="color:${col}">${val}</div>
-        <div class="gauge-bar"><div class="gauge-bar-fill" style="width:${val}%;background:${col}"></div></div>
+        <div class="gauge-val" style="color:${col}">${val == null ? '\u2014' : val}</div>
+        <div class="gauge-bar"><div class="gauge-bar-fill" style="width:${val == null ? 0 : val}%;background:${col}"></div></div>
         <div class="gauge-desc" style="color:${col}">${gd(g.key,val)}</div>
       </div>`;
     }).join('') + '</div>';
@@ -1140,11 +1143,17 @@ function render(d){
 
   // ── ILLNESS RISK ─────────────────────────────────────────────────────────
   const ir = d.illness_risk || {};
-  if (!ir.level && ir.score !== undefined) {
+  // `null <= 20` JS-ben IGAZ (a null 0-ra konvertálódik), tehát az adathiányból
+  // magabiztos "low risk" lett. Explicit null-ellenőrzés kell.
+  if (!ir.level && ir.score != null) {
     ir.level = ir.score <= 20 ? 'low' : ir.score <= 50 ? 'moderate' : 'high';
   }
   const irEl = document.getElementById('illnessBody');
-  if (irEl && ir.level) {
+  if (irEl && !ir.level && (ir.factors || []).length) {
+    irEl.innerHTML = `<div style="font-size:12px;color:var(--text3)">`
+      + (ir.factors || []).map(f => typeof f === 'string' ? f : (f.label || '')).join(' · ')
+      + `</div>`;
+  } else if (irEl && ir.level) {
     const irCol = ir.level==='low'?'var(--teal)':ir.level==='moderate'?'var(--amber)':'var(--red)';
     const factors = (ir.factors||[]).map(f => {
       const label = typeof f === 'string' ? f : (f.label||'');
