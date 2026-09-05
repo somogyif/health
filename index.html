@@ -270,10 +270,11 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 <div id="setup">
   <div class="sc">
     <h2>Health <span>Centre</span></h2>
-    <p>Enter your GitHub read-only token to connect.<br>github.com/settings/tokens?type=beta → somogyif/health → Contents: Read-only</p>
-    <label>GitHub token</label>
-    <input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off">
-    <button onclick="saveToken()">Connect →</button>
+    <p>This dashboard reads from a private endpoint. Open it once with your
+       setup link to connect this browser:<br>
+       <code style="font-family:var(--m);font-size:11px">…/health/?api=&lt;endpoint&gt;&amp;key=&lt;read key&gt;</code></p>
+    <p style="font-size:12px;color:var(--text3)">The key is stored in this browser only.
+       Never paste a GitHub token here — this dashboard does not use one.</p>
     <p style="margin-top:1rem;text-align:center"><a href="?demo=1" style="color:var(--teal);text-decoration:none;font-family:var(--m);font-size:12px">Try the live demo → (sample data, no token)</a></p>
   </div>
 </div>
@@ -310,27 +311,44 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 </div>
 
 <script>
-const REPO='somogyif/health', FILE='data.json';
-const getToken=()=>localStorage.getItem('gh_token')||'';
+// A GitHub-olvasóút 2026-08-25 óta halott (a data.json nem publikus, 404), és a
+// hozzá kért PAT ugyanabban a localStorage-ban ült, amit egy tárolt XSS már
+// egyszer kiürített. Kivezetve; a régi kulcs takarítása alább.
 const _qs = new URLSearchParams(location.search);
 const DEMO = _qs.get('demo')==='1';
 // Privát adat-végpont (Cloudflare Worker). Egyszeri beállítás:
 //   ?api=https://health-data.<user>.workers.dev&key=<READ_KEY>
 // Az értékek localStorage-ba kerülnek, az URL-ből azonnal eltűnnek (hogy ne
 // ragadjanak bele a böngésző-előzményekbe).
+// Egy elkészített link csendben átirányíthatná a dashboardot egy idegen
+// végpontra (és onnan tetszőleges payloadot szolgálnának ki). Ezért az átvétel
+// megerősítést kér, és megmutatja, MELYIK origin felé állítanánk át.
 if (_qs.get('api') && _qs.get('key')) {
-  localStorage.setItem('health_api', _qs.get('api').replace(/\/$/,''));
-  localStorage.setItem('health_key', _qs.get('key'));
+  let _ok = true, _origin = '';
+  try { _origin = new URL(_qs.get('api')).origin; } catch (e) { _ok = false; }
+  if (_ok && localStorage.getItem('health_api') &&
+      localStorage.getItem('health_api').indexOf(_origin) !== 0) {
+    _ok = confirm('Point this dashboard at a different data source?\n\n' + _origin +
+                  '\n\nOnly continue if you opened your own setup link.');
+  }
+  if (_ok && _origin) {
+    localStorage.setItem('health_api', _qs.get('api').replace(/\/$/,''));
+    localStorage.setItem('health_key', _qs.get('key'));
+  }
   history.replaceState({}, '', location.pathname + (DEMO ? '?demo=1' : ''));
 }
+// Régi GitHub PAT takarítása azoknál, akik a korábbi képernyőn megadták.
+try { localStorage.removeItem('gh_token'); } catch (e) {}
 const API_URL = localStorage.getItem('health_api')||'';
 const API_KEY = localStorage.getItem('health_key')||'';  // ?demo=1 → sample data, no token
-const saveToken=()=>{const t=document.getElementById('ghToken').value.trim();if(!t){alert('Enter your GitHub token');return;}localStorage.setItem('gh_token',t);boot();};
-const clearToken=()=>{localStorage.removeItem('gh_token');location.reload();};
+// A ⚙ gomb a BÖNGÉSZŐBEN tárolt hozzáférést törli (nem a szervert).
+const clearToken=()=>{if(!confirm('Disconnect this browser from the data endpoint?'))return;
+  ['health_api','health_key','gh_token'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  location.reload();};
 
 window.addEventListener('DOMContentLoaded',()=>{
   if(DEMO){document.getElementById('setup').style.display='none';document.getElementById('app').style.display='block';const bl=document.querySelector('a[href="brief.html"]');if(bl)bl.href='brief.html?demo=1';load();return;}
-  if(getToken() || (API_URL && API_KEY)){document.getElementById('app').style.display='block';load();}
+  if(API_URL && API_KEY){document.getElementById('app').style.display='block';load();}
   else{document.getElementById('setup').style.display='flex';}
 });
 
@@ -363,13 +381,9 @@ async function fetchData(){
       console.warn('privát végpont:',r.status,'— GitHub fallback');
     }catch(e){ console.warn('privát végpont elérhetetlen — GitHub fallback:',e.message); }
   }
-  // 2) GitHub fallback (a migráció lezártáig)
-  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
-    headers:{'Authorization':'Bearer '+getToken(),'Accept':'application/vnd.github.raw+json'},
-    signal:AbortSignal.timeout(10000)
-  });
-  if(!res.ok) throw new Error(`GitHub ${res.status}`);
-  return res.json();
+  // A GitHub-fallback megszűnt: a data.json 2026-08-25 óta nem publikus (404),
+  // tehát ez az ág csak egy PAT tárolását indokolta volna egy halott úthoz.
+  throw new Error('No data source configured — open your setup link (?api=…&key=…)');
 }
 
 let CHS=[];
@@ -993,7 +1007,11 @@ function render(d){
     `;
   }
   paintWx(d.weather || {}, false);                          // synced (home) weather first
-  deviceWeather().then(w => { if (w && w.temp != null) paintWx(w, true); }).catch(()=>{});  // then follow the device
+  // Az élő időjárás KÜLÖN belépési pont: nem a render()-en át jön, tehát a
+  // d = deepEscape(d) nem érinti. Saját semlegesítés kell — ugyanaz a mintázat,
+  // mint a brief.html:223-ban. (2026-08-29: pontosan egy ilyen kihagyott
+  // belépési pont volt a tárolt XSS a brief lapon.)
+  deviceWeather().then(w => { if (w && w.temp != null) paintWx(deepEscape(w), true); }).catch(()=>{});
 
   // ── PERFUME RECOMMENDATION ─────────────────────────────────────────────
   const pf = d.perfume || {};
