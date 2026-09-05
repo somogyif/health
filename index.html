@@ -485,11 +485,12 @@ function hrCoaching(rhr,avg){
 }
 
 function trainingCoaching(acwr){
-  if(acwr===undefined||acwr===null) return '—';
-  if(acwr<0.05) return 'Training load is very low. Your body is ready for more stimulus.';
-  if(acwr<0.15) return 'Acute load is below your chronic baseline — a good time to build.';
-  if(acwr<0.3) return 'Load is in a productive range. Keep the current frequency.';
-  return 'Load is high. Prioritise recovery before adding more volume.';
+  // acute:chronic arany. Nincs adat -> nem allitunk semmit (5. szabaly).
+  if(acwr===undefined||acwr===null) return 'No training-load reading from your watch yet.';
+  if(acwr<0.8) return 'Acute load is below your chronic baseline — there is room to build.';
+  if(acwr<=1.3) return 'Load is in a productive range. Keep the current frequency.';
+  if(acwr<=1.5) return 'Acute load is running ahead of your baseline. Hold the volume here.';
+  return 'Acute load is well above your baseline. Prioritise recovery before adding more volume.';
 }
 
 function render(d){
@@ -1232,13 +1233,32 @@ function render(d){
   const tlCol = v => v >= 70 ? 'var(--teal)' : v >= 40 ? 'var(--amber)' : 'var(--red)';
   const tlTag = v => v >= 70 ? 'good' : v >= 40 ? 'moderate' : 'very low';
 
-  // Training load feedback — no hardcoded HYROX
-  const tlStatus = (d.training_load||{}).status || 'RECOVERY';
+  // Training load feedback.
+  // Hiba volt: a `training_load.status` mezo SOHA nem letezett a payloadban
+  // (0/83 mentes), tehat a tlStatus mindig 'RECOVERY' lett, es a kartya mindig
+  // az "a good time to build" agra esett. 39 osszevetheto napbol 13-ban
+  // acute > chronic, es 2026-08-14/16/17/18-an a Garmin explicit
+  // OVERREACHING_4-et mondott, mikozben a dashboard epitest tanacsolt.
+  // A Garmin sajat verdiktje (garmin.training_status) 85/86 mentesben ott van,
+  // es ez a fajl nulla helyen olvasta. Most onnan jon; ha hianyzik, az
+  // acute/chronic aranybol; ha az sincs, nem allitunk semmit.
   const tlFeedback = (d.training_load||{}).feedback || '';
-  let tlMsg = '';
-  if (tlStatus === 'BUILDING') tlMsg = 'Acute load is above your chronic baseline — good momentum, manage recovery.';
-  else if (tlStatus === 'MAINTAINING') tlMsg = 'Load is balanced. Keep the frequency consistent.';
-  else tlMsg = 'Acute load is below your chronic baseline — a good time to build.';
+  const tlGarmin = String(g.training_status || '').toUpperCase();
+  let tlMsg;
+  if (/^(OVERREACHING|STRAINED|UNPRODUCTIVE)/.test(tlGarmin)) {
+    tlMsg = 'Your watch reads this as ' + tlGarmin.replace(/_\d+$/,'').replace(/_/g,' ').toLowerCase() +
+            '. Acute load is running above your baseline — recover before adding volume.';
+  } else if (/^PRODUCTIVE/.test(tlGarmin)) {
+    tlMsg = 'Load is productive. Keep the current frequency and protect recovery between sessions.';
+  } else if (/^MAINTAINING/.test(tlGarmin)) {
+    tlMsg = 'Load is balanced. Keep the frequency consistent.';
+  } else if (/^RECOVERY/.test(tlGarmin)) {
+    tlMsg = 'Your watch has you in recovery. Keep intensity easy until it clears.';
+  } else if (tlGarmin === 'DETRAINING') {
+    tlMsg = 'Load has dropped below your baseline — there is room to build again.';
+  } else {
+    tlMsg = trainingCoaching(acwr);   // tartalek: az acute/chronic arany
+  }
   if (tlFeedback === 'AEROBIC_HIGH_SHORTAGE') tlMsg += ' Your aerobic high-intensity load is at zero — add a high-intensity session this week.';
 
   // Days since session label
@@ -1348,8 +1368,8 @@ function render(d){
       <div class="sec-head"><div class="sec-title">⚡ Training load</div><div class="sec-line"></div></div>
       <div class="card">
         <div class="g4" style="margin-bottom:1.25rem">
-          <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:${tlCol(d.training_load?.acute??0)}">${d.training_load?.acute??0}</div><div class="mm-s">recent stimulus</div><span class="tag tr">${tlTag(d.training_load?.acute??0)}</span></div>
-          <div class="mm"><div class="mm-l">Chronic (28d)</div><div class="mm-v" style="color:var(--teal)">${d.training_load?.chronic??0}</div><div class="mm-s">baseline fitness</div><span class="tag tg">baseline</span></div>
+          <div class="mm"><div class="mm-l">Acute (7d)</div><div class="mm-v" style="color:${d.training_load?.acute!=null?tlCol(d.training_load.acute):'var(--text3)'}">${d.training_load?.acute??'—'}</div><div class="mm-s">recent stimulus</div>${d.training_load?.acute!=null?`<span class="tag tr">${tlTag(d.training_load.acute)}</span>`:''}</div>
+          <div class="mm"><div class="mm-l">Chronic (28d)</div><div class="mm-v" style="color:${d.training_load?.chronic!=null?'var(--teal)':'var(--text3)'}">${d.training_load?.chronic??'—'}</div><div class="mm-s">baseline fitness</div>${d.training_load?.chronic!=null?'<span class="tag tg">baseline</span>':''}</div>
           <div class="mm"><div class="mm-l">Aerobic low</div><div class="mm-v" style="color:var(--teal)">${d.training_load?.aerobic_low??0}</div><div class="mm-s">target ${d.training_load?.aerobic_low_min??97}–${d.training_load?.aerobic_low_max??261}</div><span class="${(d.training_load?.aerobic_low??0)>=(d.training_load?.aerobic_low_min??97)?'tag tg':'tag tr'}">${(d.training_load?.aerobic_low??0)>=(d.training_load?.aerobic_low_min??97)?'✓ on target':'shortage'}</span></div>
           <div class="mm"><div class="mm-l">Aerobic high</div><div class="mm-v" style="color:var(--red)">${d.training_load?.aerobic_high??0}</div><div class="mm-s">target ${d.training_load?.aerobic_high_min??203}–${d.training_load?.aerobic_high_max??368}</div><span class="tag tr">shortage</span></div>
         </div>
