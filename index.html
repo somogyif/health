@@ -477,8 +477,11 @@ function sleepCoaching(h,score){
 }
 
 function hrCoaching(rhr,avg){
-  if(!rhr) return '—';
-  const diff=rhr-(avg||rhr);
+  if(rhr==null||!(rhr>0)) return '—';
+  // Baseline nelkul nincs mihez hasonlitani -> nem allitunk trendet (5. szabaly).
+  if(typeof avg!=='number'||!isFinite(avg))
+    return `${rhr} bpm — no resting-HR baseline in this payload, so no trend call.`;
+  const diff=rhr-avg;
   if(diff<=-3) return 'Notably lower than your average — a great recovery signal.';
   if(diff<=1) return 'Tracking close to your normal baseline. Recovery is on track.';
   return 'Slightly elevated — expected after a hard effort or poor sleep.';
@@ -500,9 +503,14 @@ function render(d){
   const sleepCons = d.sleep_consistency;
   const lateNight = d.late_night_penalty || false;
   const trainWarn = d.training_warning || false;
+  // Hiányzó testösszetétel nem 21% / 65.8kg. A régi fallback 45/87 mentésen
+  // "Body fat 21%"-ot és "Lean mass 65.8kg"-ot írt ki 56%-ig töltött sávval,
+  // miközben a mellette lévő testösszetétel-csempe ugyanaznap "—"-t mutatott.
+  const _fatPct = bc.fat_pct ?? null, _leanKg = bc.lean_kg ?? null;
+  const _clamp = v => Math.max(0, Math.min(100, Math.round(v)));
   const goals=(d.goals&&d.goals.length)?d.goals:[
-    {label:'Body fat',current:`${bc.fat_pct??g.body_fat??21}%`,target:'16–17%',pct:Math.min(100,Math.round((21-(bc.fat_pct??21))/(21-16.5)*100)),color:'var(--amber)'},
-    {label:'Lean mass',current:`${bc.lean_kg??g.lean_mass??65.8}kg`,target:'68kg',pct:Math.min(100,Math.round(((bc.lean_kg??65.8)-63)/(68-63)*100)),color:'var(--teal)'},
+    {label:'Body fat',current:_fatPct==null?'—':`${_fatPct}%`,target:'16–17%',pct:_fatPct==null?0:_clamp((21-_fatPct)/(21-16.5)*100),color:'var(--amber)'},
+    {label:'Lean mass',current:_leanKg==null?'—':`${_leanKg}kg`,target:'68kg',pct:_leanKg==null?0:_clamp((_leanKg-63)/(68-63)*100),color:'var(--teal)'},
     {label:'Vigorous days',current:`${g.vigorous_days??0}/wk`,target:'3/wk',pct:Math.min(100,Math.round(((g.vigorous_days??0)/3)*100)),color:'var(--blue)'},
     {label:'Watch streak',current:`${(d.streaks||{}).watch_nights??0} nights`,target:'30 nights',pct:Math.min(100,Math.round(((d.streaks||{}).watch_nights??0)/30*100)),color:'var(--teal)'},
   ];
@@ -525,8 +533,16 @@ function render(d){
   const _bbt=d.bb_trend||[];
   const sw=_bbt.length?{
     labels:_bbt.map(x=>{const d=new Date(x.date);return d.toLocaleDateString('en-GB',{weekday:'short'});}),
-    stress:_bbt.map(()=>g.avg_stress||0),
-    bb_charged:_bbt.map(x=>x.val||0)
+    // Egyetlen valós stressz-értékünk van (garmin.avg_stress, a mai napra). Korábban
+    // ezt ismételtük meg minden bb_trend-napon → 8 pontnyi kitalált „történelem", amit
+    // az mkChart rejtett táblázata szó szerint felolvasott. Most csak a saját napjára
+    // kerül; a többi null → rés a vonalon és „—" a táblázatban. A 0 nem valódi mérés
+    // (a sync `or 0`-val írja, ha hiányzik), ezért az is null.
+    stress:_bbt.map(x=>(x.date===g.date&&g.avg_stress)?g.avg_stress:null),
+    // A null „nincs mérés", nem nulla testakku. A `||0` hat egymást követő napon is
+    // 0-t rajzolt (2026-06-11), miközben a szomszédos bbChart ugyanezt a mezőt nyersen
+    // kapja és résként mutatja. Egy konvenció legyen a fájlban: null → rés és „—".
+    bb_charged:_bbt.map(x=>x.val??null)
   }:(d.stress_week||{labels:[],stress:[],bb_charged:[]});
   const _sw=g.sleep_week||[];
   let ss;
@@ -588,15 +604,17 @@ function render(d){
   const calLoad = d.calendar_load_today || 0;
 
   // Category colours (no emoji — was causing "undefined")
+  // A `travel` kategóriát a health_sync.py Notion-ága valóban kiadja (repülő,
+  // busz, város-nevek), de itt hiányzott — 'other'-ként, szürkén jelent meg.
   const CAT_COLORS = {
     work: 'var(--amber)', study: 'var(--blue)', deadline: 'var(--red)',
     gym: 'var(--teal)', wellness: 'var(--teal)', meeting: 'var(--blue)',
-    social: '#a78bfa', personal: 'var(--text3)', other: 'var(--text3)'
+    social: '#a78bfa', travel: '#38bdf8', personal: 'var(--text3)', other: 'var(--text3)'
   };
   const CAT_LABELS = {
     work: 'work', study: 'study', deadline: 'deadline', gym: 'gym',
     wellness: 'wellness', meeting: 'meeting', social: 'social',
-    personal: 'personal', other: 'other'
+    travel: 'travel', personal: 'personal', other: 'other'
   };
 
   function renderDayPlan(plan) {
@@ -629,22 +647,34 @@ function render(d){
       const wShifts = p.work_shifts != null ? p.work_shifts : (p.label === 'Heavy' ? 2 : 0);
 
       let tlHtml = '';
-      if (isTom) {
-        tlHtml = `${secHead('Timeline')}<div style="display:flex;gap:2px;margin-bottom:.85rem">${tlBar('07:00 morning',1.5,'#9FE1CB')}${tlBar('09:15 gym',1,'#5DCAA5')}${tlBar('focus 10:30',2,'#B5D4F4')}${tlBar('13:30 Café',1.5,'#FAC775')}${tlBar('17:00 Café',1.5,'#FAC775')}</div>`;
-      }
+      // Idővonal eltávolítva: a day_plan payload nem hordoz időpontot, csak
+      // darabszámot. A korábbi fix sáv (07:00 / 09:15 gym / 13:30+17:00 Café)
+      // 86/86 mentésen kitalált volt, és a valós naptár-időpontokkal
+      // (08:00, 09:00, 10:00, 11:00, 13:30, 16:30, 17:00, 18:00) egy napon
+      // sem egyezett. Amit nem tudunk, azt nem rajzoljuk.
 
       let energyHtml = '';
-      if (!isTom && (plan.bb || plan.readiness)) {
-        const bb = plan.bb || 25, rd = plan.readiness || 68, hrv = plan.hrv || 43;
-        const bar = (v,max,c) => `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
-        const eRow = (lbl,v,max,c,sfx) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:var(--text3);width:62px;flex-shrink:0">${lbl}</span>${bar(v,max,c)}<span style="font-size:10px;color:var(--text2);width:38px;text-align:right">${v}${sfx}</span></div>`;
-        energyHtml = `<div style="margin-bottom:.6rem">${eRow('Body battery',bb,100,bb<30?'#E24B4A':bb<60?'#EF9F27':'#1D9E75','')}${eRow('Readiness',rd,100,rd<50?'#E24B4A':rd<70?'#EF9F27':'#1D9E75','/100')}${eRow('HRV',hrv,80,hrv<35?'#E24B4A':hrv<45?'#EF9F27':'#1D9E75','ms')}</div>`;
+      // Nullish-nullázás megszüntetve: hiányzó érték → szürke gondolatjel és üres
+      // sáv, nem kitalált 25/68/43. A színküszöb is null-biztos (JS-ben null<30 IGAZ).
+      // A kapu != null-t néz, hogy a valós 0 se tüntesse el a blokkot.
+      if (!isTom && (plan.bb != null || plan.readiness != null || plan.hrv != null)) {
+        const bb = plan.bb, rd = plan.readiness, hrv = plan.hrv;
+        const eCol = (v,lo,mid) => v == null ? 'var(--border)' : v < lo ? '#E24B4A' : v < mid ? '#EF9F27' : '#1D9E75';
+        const bar = (v,max,c) => v == null
+          ? `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px"></div>`
+          : `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
+        const eRow = (lbl,v,max,c,sfx) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:var(--text3);width:62px;flex-shrink:0">${lbl}</span>${bar(v,max,c)}<span style="font-size:10px;color:${v == null ? 'var(--text3)' : 'var(--text2)'};width:38px;text-align:right">${v == null ? '—' : v + sfx}</span></div>`;
+        energyHtml = `<div style="margin-bottom:.6rem">${eRow('Body battery',bb,100,eCol(bb,30,60),'')}${eRow('Readiness',rd,100,eCol(rd,50,70),'/100')}${eRow('HRV',hrv,80,eCol(hrv,35,45),'ms')}</div>`;
       }
 
       let commitPills = '';
-      if (wShifts >= 2) commitPills += pill('coffee','Café 13:30','work')+' '+pill('coffee','Café 17:00','work');
-      else if (wShifts === 1) commitPills += pill('coffee','Café shift','work');
-      if (isTom || p.has_gym) commitPills += ' '+pill('barbell','Gym 09:15','gym');
+      // Időpont nélkül: a day_plan payload csak darabszámot hordoz. A korábbi
+      // fix 13:30 / 17:00 / 09:15 5, illetve 4 napon rajzolt kitalált időpontot,
+      // a valós naptár egyszer sem ezeket mondta. Az `isTom ||` is kiesik:
+      // a holnapi gym-pill 84/86 napon has_gym=false mellett jelent meg.
+      if (wShifts >= 2) commitPills += pill('coffee',`Work shifts ×${wShifts}`,'work');
+      else if (wShifts === 1) commitPills += pill('coffee','Work shift','work');
+      if (p.has_gym) commitPills += (commitPills ? ' ' : '') + pill('barbell','Gym','gym');
 
       let taskPills = tasks.slice(0,4).map(t => {
         const icon = /call|phone/i.test(t.name)?'phone':/send|review/i.test(t.name)?'send':/prep|interview/i.test(t.name)?'briefcase':'check';
@@ -652,10 +682,11 @@ function render(d){
       }).join(' ');
 
       let seqHtml = '';
-      if (tasks.length > 0 || isTom) {
-        const allTasks = isTom ? [
-          {name:'Send to Uffe'}, {name:'SU call'}, {name:'UCplus call'}, {name:'Interview prep'}
-        ] : tasks;
+      // Csak a payloadból dolgozunk. A korábbi `isTom ? [négy beégetett név]`
+      // 86/86 mentésen kitalált szekvenciát rajzolt, miközben a
+      // tomorrow.tasks mind a 86 napon üres volt.
+      if (tasks.length > 0) {
+        const allTasks = tasks;
         const sends = allTasks.filter(t => /send|uffe|review/i.test(t.name));
         const calls = allTasks.filter(t => /call|phone/i.test(t.name));
         const deep  = allTasks.filter(t => /prep|interview|plan|write/i.test(t.name));
@@ -667,14 +698,20 @@ function render(d){
               const n = trunc(t.name,18);
               return (i>0?`<span style="color:var(--text3);font-size:12px">›</span>`:'')+seqBox(n,cls);
             }).join('') +
-            (wShifts>0||isTom?`<span style="color:var(--text3);font-size:12px">›</span>${seqBox('Café shifts','')}`:'')+
+            (wShifts>0?`<span style="color:var(--text3);font-size:12px">›</span>${seqBox('Work shifts','')}`:'')+
           `</div>`;
         }
       }
 
-      const note = isTom
-        ? recBox('clock','<b style="color:var(--text1)">Focus window 10:30–12:30.</b> Send Uffe first — unblocks someone else. Calls back-to-back at 11:00. Interview prep last, 30 min is enough. All done before 13:30.')
-        : recBox('moon','<b style="color:var(--text1)">Wind down now.</b> Battery is low (25). Prep the Uffe content tonight so morning is execution only. Bed before 23:00.');
+      // A sync már megírta a napi tanácsot (build_day_plan → lines[]), és az a
+      // valós readiness/bb/naptár alapján készül. A korábbi két beégetett
+      // szöveg 86/86 mentésen ment ki; a 'Battery is low (25)' állítás 85/86
+      // napon hamis volt (a valós bb 7 és 69 között mozgott). A `lines` már
+      // átment a deepEscape-en (render() első lépése), a <br> a saját markupunk.
+      const noteLines = (p.lines || []).filter(Boolean);
+      const note = noteLines.length
+        ? recBox(isTom ? 'clock' : 'moon', noteLines.join('<br>'))
+        : '';
 
       return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text1)">${label}</span>${loadBadge(p.label||'Clear')}</div><div style="background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
     };
@@ -682,7 +719,9 @@ function render(d){
     const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
     const todStr = fmt(new Date());
     const tomStr = fmt(new Date(Date.now()+86400000));
-    const tomP = {...tom, work_shifts:2, has_gym:true};
+    // A payload értéke a forrás. A korábbi {...tom, work_shifts:2, has_gym:true}
+    // 86/86 mentésen felülírta a syncet: 84 napon hamis Café x2 + Gym pillt rajzolt.
+    const tomP = {...tom};
     const todP = {...tod, bb:plan.bb, readiness:plan.readiness, hrv:plan.hrv};
 
     let out = '';
@@ -762,10 +801,16 @@ function render(d){
   function renderCalendar(events, readScore) {
     if (!events || events.length === 0) return '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events — run sync to load calendar.</div>';
 
-    // Show only today and next 3 days
+    // A fejléc hét napot ígér (914. sor: "Next 7 days"), tehát hét napot mutatunk:
+    // ma + 6, a hetedik nap VÉGÉIG (a `cutoff` korábban a mai napszakot vitte
+    // tovább, és három napra vágott — 87 esemény esett kívülre 36 napon).
     const today = new Date();
-    const cutoff = new Date(today); cutoff.setDate(today.getDate() + 3);
-    const todayStr = today.toLocaleDateString('en-GB', {day:'numeric', month:'short'}).replace(',','');
+    const cutoff = new Date(today); cutoff.setHours(23,59,59,999); cutoff.setDate(cutoff.getDate() + 6);
+    // A csoportkulcs a nyers `start_date`, ami mindig ISO ('YYYY-MM-DD').
+    // A korábbi 'en-GB' rövid formátum ('5 Sep') ezzel soha nem egyezett, ezért a
+    // "· today" jelölés egyetlen napon sem jelent meg. Helyi dátum, nem UTC.
+    const _p2 = n => String(n).padStart(2, '0');
+    const todayStr = `${today.getFullYear()}-${_p2(today.getMonth() + 1)}-${_p2(today.getDate())}`;
 
     // Group by start_date, filter to near future only
     const groups = {};
@@ -783,18 +828,26 @@ function render(d){
     });
 
     // Load pill
+    // A `d.calendar_load_today` mező SOHA nem létezett (87/87 mentésben hiányzik),
+    // a `|| 0` némán 0-t csinált belőle, ezért ez a pill egyetlen napon sem jelent
+    // meg. A valódi forrás a health_matrix.calendar_load: 0–100, és FORDÍTOTT
+    // irányú — a magasabb érték a SZABADABB nap (ugyanaz, amit a "Schedule space"
+    // csempe használ). Hiányzó érték = nincs pill, nem "Light day".
+    const calSpace = (d.health_matrix || {}).calendar_load ?? null;
+    const _loadBox = (bg, fg, txt) => `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:${bg};color:${fg};margin-bottom:1rem">${txt}</div>`;
     let loadPill = '';
-    if (calLoad >= 7) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--red-d);color:var(--red);margin-bottom:1rem">Heavy day — ${calLoad}/10 load</div>`;
-    else if (calLoad >= 4) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--amber-d);color:var(--amber);margin-bottom:1rem">Moderate day — ${calLoad}/10 load</div>`;
-    else if (calLoad > 0) loadPill = `<div style="display:inline-flex;align-items:center;gap:5px;font-family:var(--m);font-size:10px;padding:3px 10px;border-radius:20px;background:var(--teal-d);color:var(--teal);margin-bottom:1rem">Light day — ${calLoad}/10 load · good time to train</div>`;
+    if (calSpace == null) loadPill = '';
+    else if (calSpace < 45) loadPill = _loadBox('var(--red-d)', 'var(--red)', `Packed day — schedule space ${calSpace}/100`);
+    else if (calSpace < 70) loadPill = _loadBox('var(--amber-d)', 'var(--amber)', `Moderate day — schedule space ${calSpace}/100`);
+    else loadPill = _loadBox('var(--teal-d)', 'var(--teal)', `Light day — schedule space ${calSpace}/100 · good time to train`);
 
     const entries = Object.entries(groups);
-    if (entries.length === 0) return loadPill + '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events in the next 3 days.</div>';
+    if (entries.length === 0) return loadPill + '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">No events in the next 7 days.</div>';
 
     const html = entries.map(([date, evs]) => `
       <div style="margin-bottom:1.25rem">
         <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:8px">${date}${date===todayStr?' <span style="color:var(--teal)">· today</span>':''}<span style="flex:1;height:.5px;background:var(--border);display:inline-block"></span></div>
-        ${(evs.some(e => (e.time||e.start_time)) ? evs.filter(e => (e.time||e.start_time)) : evs).map(e => {
+        ${evs.map(e => {
           const col = CAT_COLORS[e.category] || 'var(--text3)';
           const _t = (e.time || e.start_time || '').trim();
           const timeStr = (e.all_day || !_t) ? 'all day' : _t;
@@ -842,7 +895,7 @@ function render(d){
           ${trainWarn ? `<div style="margin-top:.5rem;padding:.4rem .7rem;background:rgba(224,82,82,0.12);border:1px solid rgba(224,82,82,0.3);border-radius:6px;font-size:12px;color:var(--red)">⚠️ Training tomorrow but BB is low — consider lighter intensity or extra rest tonight.</div>` : ""}
         </div>
         <div class="hero-ring">
-          <canvas id="heroRing" width="88" height="88" role="img" aria-label="Readiness ${rs}/100">${rs}/100</canvas>
+          <canvas id="heroRing" width="88" height="88" role="img" aria-label="${rs===null?'Readiness unknown — no reading':'Readiness '+rs+'/100'}">${rsDisplay}/100</canvas>
         </div>
       </div>
     </div>
@@ -852,13 +905,13 @@ function render(d){
         <div class="pillar-label">😴 Sleep</div>
         <div class="pillar-value" style="color:${(g.sleep_hours||0)>=7.5?'var(--teal)':'var(--amber)'}">${g.sleep_missing?'—':fmt(g.sleep_hours,'h')}</div>
         <div class="pillar-sub">${g.sleep_missing?'watch not worn':'watch worn to bed ✓'}</div>
-        <div class="pillar-coaching">${sleepCoaching(g.sleep_hours,g.readiness_sleep_score)}</div>
+        <div class="pillar-coaching">${g.sleep_missing?'No sleep data — the watch was not worn last night.':sleepCoaching(g.sleep_hours,g.readiness_sleep_score)}</div>
       </div>
       <div class="pillar">
         <div class="pillar-label">🔋 Body battery</div>
         <div class="pillar-value" style="color:${(g.bb_current||0)>=50?'var(--teal)':'var(--amber)'}">${fmt(g.bb_current)}</div>
         <div class="pillar-sub">charged ${fmt(g.bb_charged)} · −${fmt(g.bb_drained)} drained</div>
-        <div class="pillar-coaching">${(g.bb_current||0)>=60?'Good energy reserves for the day ahead.':((g.bb_current||0)>=35?'Moderate energy. Avoid stacking stress today.':'Low battery. Rest and recovery are the priority.')}</div>
+        <div class="pillar-coaching">${g.bb_current==null?'No body-battery reading from your watch yet.':(g.bb_current>=60?'Good energy reserves for the day ahead.':(g.bb_current>=35?'Moderate energy. Avoid stacking stress today.':'Low battery. Rest and recovery are the priority.'))}</div>
       </div>
       <div class="pillar">
         <div class="pillar-label">❤️ Resting HR</div>
@@ -877,8 +930,8 @@ function render(d){
             ${[
               {l:'😴 Sleep score',v:fmt(g.readiness_sleep_score,'/100'),c:scol(g.readiness_sleep_score??0),w:g.readiness_sleep_score??0},
               {l:'💓 HRV factor',v:fmt(g.readiness_hrv_pct,'%'),c:((g.readiness_hrv_pct??0)>=75?'var(--teal)':'var(--amber)'),w:g.readiness_hrv_pct??0},
-              {l:'🧠 Stress history',v:fmt(g.readiness_stress_pct,'%'),c:scol(g.readiness_stress_pct||32),w:g.readiness_stress_pct||32},
-              {l:'⏱ Recovery time',v:fmt(g.readiness_recovery_pct??98,'%'),c:'var(--teal)',w:g.readiness_recovery_pct??98},
+              {l:'🧠 Stress history',v:fmt(g.readiness_stress_pct,'%'),c:g.readiness_stress_pct==null?'var(--text3)':scol(g.readiness_stress_pct),w:g.readiness_stress_pct??0},
+              {l:'⏱ Recovery time',v:fmt(g.readiness_recovery_pct,'%'),c:g.readiness_recovery_pct==null?'var(--text3)':scol(g.readiness_recovery_pct),w:g.readiness_recovery_pct??0},
             ].map(r=>`
               <div class="frow" style="flex-direction:column;align-items:flex-start">
                 <div style="display:flex;justify-content:space-between;width:100%"><span class="fl">${r.l}</span><span class="fv" style="color:${r.c}">${r.v}</span></div>
@@ -887,15 +940,15 @@ function render(d){
           </div>
           <div style="text-align:right">
             <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">readiness</div>
-            <div style="font-size:48px;font-weight:300;letter-spacing:-3px;color:${rv.color};line-height:1">${rs}</div>
+            <div style="font-size:48px;font-weight:300;letter-spacing:-3px;color:${rv.color};line-height:1">${rsDisplay}</div>
             <div style="font-family:var(--m);font-size:10px;color:var(--text3)">/100</div>
           </div>
         </div>
-        <hr>
+        ${rw.length ? `<hr>
         <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.875rem">This week</div>
         <div class="rw">
-          ${rw.map(r=>`<div class="rwc"><div class="rws" style="color:${scol(r.score)}">${r.score}</div><div class="rwd">${r.date.split(' ')[0]}<br>${r.date.split(' ')[1]}</div></div>`).join('')}
-        </div>
+          ${rw.map(r=>`<div class="rwc"><div class="rws" style="color:${scol(r.score)}">${r.score}</div><div class="rwd">${String(r.date||'').split(' ')[0]||'—'}<br>${String(r.date||'').split(' ')[1]||''}</div></div>`).join('')}
+        </div>` : ''}
       </div>
     </div>
 
@@ -1026,10 +1079,16 @@ function render(d){
     {num:'341',name:'Oud Wood',inspired:'Tom Ford Oud Wood',mood:'Deep & magnetic',notes:['Oud','Sandalwood','Vetiver','Cardamom','Vanilla'],how:'1–2 sprays only · wrists or chest · autumn/winter · evening only'},
   ];
 
-  if (pfEl) {
+  // Az illat-motor félkész: a `d.perfume` mező 0/87 mentésben létezett, ezért a
+  // `pm.number || '197'` fallback mind a 87 napon ugyanazt a kitalált ajánlást
+  // rajzolta ki (197 Sauvage, teal = "kiválasztva"). Adat nélkül a blokk rejtve.
+  const pfSec = document.getElementById('perfumeSection');
+  const pfHasData = !!(pf && pf.morning && pf.morning.number);
+  if (pfSec) pfSec.style.display = pfHasData ? '' : 'none';
+  if (pfEl && pfHasData) {
     const pm = pf.morning || {};
     const pe = pf.evening;
-    const pickedNum = pm.number || '197';
+    const pickedNum = pm.number;
     const postGymNum = pe && pe.number ? pe.number : null;
 
     // Score each perfume: picked morning = 10, post-gym = secondary, rest ranked by similarity
@@ -1262,9 +1321,12 @@ function render(d){
   if (tlFeedback === 'AEROBIC_HIGH_SHORTAGE') tlMsg += ' Your aerobic high-intensity load is at zero — add a high-intensity session this week.';
 
   // Days since session label
-  const daysSince = streaks.days_since_session ?? 0;
+  // A `?? 0` 2/87 mentésen (2026-05-19, 2026-08-17) teal "0 nap az utolsó edzés
+  // óta"-t írt ki olyan napon, amikor a syncnek egyáltalán nem volt edzésadata.
+  const _dss = streaks.days_since_session;
+  const daysSince = _dss == null ? '—' : _dss;
   const lastLabel = streaks.last_session_label || '—';
-  const daysSinceCol = daysSince > 4 ? 'var(--red)' : daysSince > 2 ? 'var(--amber)' : 'var(--teal)';
+  const daysSinceCol = _dss == null ? 'var(--text3)' : _dss > 4 ? 'var(--red)' : _dss > 2 ? 'var(--amber)' : 'var(--teal)';
 
   // Workout quality cards
   const wt = d.weekly_training || {};
@@ -1293,11 +1355,7 @@ function render(d){
             <div class="wq-stats">${durMin > 0 ? durMin+'min' : '—'} · ${wq.label||wq.note||''}</div>
             <div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4">${exList}</div>
             <div class="wq-bars">
-              <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
-                <span style="font-size:9px;color:var(--text3);font-family:var(--mono);width:14px">z2</span>
-                <div style="flex:1;height:3px;background:var(--s3);border-radius:2px"><div style="width:${wq.z2||0}%;height:100%;background:var(--amber);border-radius:2px"></div></div>
-                <span style="font-size:9px;color:var(--text3);font-family:var(--mono)">${wq.z2||0}%</span>
-              </div>
+              ${typeof wq.z2==='number' ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px"><span style="font-size:9px;color:var(--text3);font-family:var(--mono);width:14px">z2</span><div style="flex:1;height:3px;background:var(--s3);border-radius:2px"><div style="width:'+wq.z2+'%;height:100%;background:var(--amber);border-radius:2px"></div></div><span style="font-size:9px;color:var(--text3);font-family:var(--mono)">'+wq.z2+'%</span></div>' : '<div style="display:flex;align-items:center;gap:6px;margin-top:4px"><span style="font-size:9px;color:var(--text3);font-family:var(--mono);width:14px">z2</span><span style="font-size:9px;color:var(--text3);font-family:var(--mono)">— nincs pulzuszóna-adat</span></div>'}
             </div>
           </div>
         </div>
@@ -1449,7 +1507,7 @@ function render(d){
             <div class="mm"><div class="mm-l">Weight</div><div class="mm-v">${fmt(bc.weight,' kg')}</div></div>
             <div class="mm"><div class="mm-l">Body fat</div><div class="mm-v" style="color:var(--amber)">${fmt(bc.fat_pct,'%')}</div><div class="mm-s">target 16–17%</div></div>
             <div class="mm"><div class="mm-l">Lean mass</div><div class="mm-v" style="color:var(--teal)">${fmt(bc.lean_kg,' kg')}</div><div class="mm-s">protect this</div></div>
-            <div class="mm"><div class="mm-l">BMI</div><div class="mm-v">${fmt(bc.bmi)}</div><div class="mm-s">normal</div></div>
+            <div class="mm"><div class="mm-l">BMI</div><div class="mm-v">${fmt(bc.bmi)}</div><div class="mm-s">${bc.bmi==null?'no measurement':bc.bmi<18.5?'underweight':bc.bmi<25?'normal':bc.bmi<30?'overweight':'obese'}</div></div>
           </div>
           <div class="cw" style="height:70px"><canvas id="compChart" role="img" aria-label="Body composition">Lean ${bc.lean_kg}kg vs Fat ${bc.weight&&bc.lean_kg?(bc.weight-bc.lean_kg).toFixed(1):'?'}kg</canvas></div>
           <div style="display:flex;gap:12px;margin-top:8px;font-family:var(--m);font-size:10px;color:var(--text3)">
@@ -1473,12 +1531,12 @@ function render(d){
       <div class="card">
         <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
           <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Consistency</div><div class="mm-v" style="color:${sleepCons>=80?'var(--teal)':sleepCons>=60?'var(--amber)':'var(--red)'}">${sleepCons!=null?sleepCons:'—'}</div><div class="mm-s">${sleepCons>=80?'stable':sleepCons>=60?'variable':'irregular'}</div></div>
-          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Avg score</div><div class="mm-v" style="color:var(--amber)">${ss.scores&&ss.scores.length?Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length):'74'}</div><div class="mm-s">this week</div></div>
-          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Best night</div><div class="mm-v" style="color:var(--teal)">${ss.scores&&ss.scores.length?Math.max(...ss.scores):'91'}</div><div class="mm-s">${ss.best_date??'—'}</div></div>
-          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Trend</div><div class="mm-v" style="color:var(--red)">↓</div><div class="mm-s">declining this week</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Avg score</div><div class="mm-v" style="color:${g.sleep_avg!=null?'var(--amber)':'var(--text3)'}">${g.sleep_avg??'—'}</div><div class="mm-s">this week</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Best night</div><div class="mm-v" style="color:${g.sleep_best!=null?'var(--teal)':'var(--text3)'}">${g.sleep_best??'—'}</div><div class="mm-s">${g.sleep_best_date??'—'}</div></div>
+          <div class="mm" style="flex:1;min-width:120px"><div class="mm-l">Trend</div><div class="mm-v" style="color:${g.sleep_trend==='improving'?'var(--teal)':g.sleep_trend==='declining'?'var(--red)':'var(--text3)'}">${g.sleep_trend==='improving'?'↑':g.sleep_trend==='declining'?'↓':'—'}</div><div class="mm-s">${g.sleep_trend?g.sleep_trend+' this week':'—'}</div></div>
         </div>
         <div class="cw" style="height:140px"><canvas id="sleepChart" role="img" aria-label="Sleep scores by night">Sleep scores: ${(ss.labels||[]).map((l,i)=>l+' '+(ss.scores||[])[i]).join(', ')}</canvas></div>
-        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${ss.scores&&ss.scores.length>=2 ? `Sleep score this week: avg ${Math.round(ss.scores.reduce((a,b)=>a+b,0)/ss.scores.length)}, best ${Math.max(...ss.scores)}, worst ${Math.min(...ss.scores)}.` : 'Keep wearing the watch to bed for sleep trend data.'} A consistent bedtime will stabilise this — aim for the same 30-minute window each night.</div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">${g.sleep_avg!=null ? `Sleep score this week: avg ${g.sleep_avg}, best ${g.sleep_best??'—'}, worst ${(ss.scores||[]).some(s=>s!=null)?Math.min(...(ss.scores||[]).filter(s=>s!=null)):'—'}.` : 'Keep wearing the watch to bed for sleep trend data.'} A consistent bedtime will stabilise this — aim for the same 30-minute window each night.</div>
       </div>
     </div>
 
@@ -1500,7 +1558,7 @@ function render(d){
         <div class="cw" style="height:160px"><canvas id="stressChart" role="img" aria-label="Stress vs body battery chart">Stress and recovery balance over the past week.</canvas></div>
         <div style="display:flex;gap:14px;margin-top:10px;font-family:var(--m);font-size:10px;color:var(--text3)">
           <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--red);display:inline-block"></span>avg stress</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>battery charged overnight</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:2px;background:var(--teal);display:inline-block"></span>wake-up battery level</span>
         </div>
         <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:1rem;line-height:1.5">Sleep quality is the primary bottleneck for recovery. Keep stress low in the evenings and maintain a consistent bedtime.</div>
       </div>
@@ -1512,15 +1570,15 @@ function render(d){
   // ── CHARTS ─────────────────────────────────────────────────────────────
   mkChart('heroRing',{
     type:'doughnut',
-    data:{datasets:[{data:[rs,100-rs],backgroundColor:[rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252','rgba(255,255,255,0.04)'],borderWidth:0,circumference:270,rotation:225}]},
+    data:{datasets:[{data:[rs===null?0:rs,rs===null?100:100-rs],backgroundColor:[rs===null?'rgba(255,255,255,0.10)':rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252','rgba(255,255,255,0.04)'],borderWidth:0,circumference:270,rotation:225}]},
     options:{responsive:false,cutout:'82%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
     plugins:[{id:'ct',afterDraw(chart){
       const{ctx,chartArea:{left,top,width,height}}=chart;
       ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
       const cx=left+width/2,cy=top+height/2;
       ctx.font='300 26px Plus Jakarta Sans,sans-serif';
-      ctx.fillStyle=rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252';
-      ctx.fillText(rs,cx,cy-5);
+      ctx.fillStyle=rs===null?'#3e3d3b':rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252';
+      ctx.fillText(rs===null?'—':String(rs),cx,cy-5);
       ctx.font='10px DM Mono,monospace';ctx.fillStyle='#3e3d3b';
       ctx.fillText('/100',cx,cy+11);ctx.restore();
     }}]
@@ -1561,7 +1619,7 @@ function render(d){
       type:'line',
       data:{labels:sw.labels,datasets:[
         {label:'Avg stress',data:sw.stress,borderColor:'rgba(224,82,82,0.8)',backgroundColor:'rgba(224,82,82,0.04)',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(224,82,82,0.8)',tension:0.4,fill:true},
-        {label:'BB charged',data:sw.bb_charged,borderColor:'rgba(52,201,154,0.8)',backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(52,201,154,0.8)',tension:0.4,borderDash:[4,3]}
+        {label:'Wake-up battery',data:sw.bb_charged,borderColor:'rgba(52,201,154,0.8)',backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(52,201,154,0.8)',tension:0.4,borderDash:[4,3]}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
