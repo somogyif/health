@@ -76,6 +76,9 @@
 
   .pill{display:inline-block;font-family:var(--m);font-size:10px;padding:2px 9px;border-radius:20px;margin-left:8px}
   .stale{font-family:var(--m);font-size:11px;padding:.55rem .85rem;margin-bottom:1rem;border:1px solid;border-radius:8px}
+  /* A párosító link visszajelzése (pairing.js, csak textContent). */
+  .pair-note{max-width:640px;margin:0 auto 1.25rem;padding:.65rem 1rem;background:var(--s2);border-radius:12px;
+             font-family:var(--m);font-size:12px;color:var(--text2);word-break:break-word;overflow-wrap:anywhere}
 
   @media print{
     body{background:#fff;color:#141414;padding:0}
@@ -84,17 +87,19 @@
     .greet,.hero-txt h2,.tile .v,.ev .ti,.focus li{color:#141414}
     .subline,.tile .s,.sec .lbl,.ev .t,.strip,.empty{color:#555}
     footer{color:#999}
-    .dot{display:none}
+    .dot,.pair-note{display:none}
     @page{margin:1.4cm}
   }
 </style>
 </head>
 <body>
+<div id="pairNote" class="pair-note" role="status" hidden></div>
 <div class="wrap" id="root">
   <p class="lbl" id="loading">Loading today's brief…</p>
 </div>
 
 <script src="freshness.js"></script>
+<script src="pairing.js"></script>
 <script>
 const C = {teal:'#34c99a',amber:'#e8993a',red:'#e05252',blue:'#5b9cf6',text3:'#7a7874'};
 const DEMO = new URLSearchParams(location.search).get('demo')==='1';  // ?demo=1 → sample data
@@ -240,13 +245,10 @@ function render(d){
 
 // Adatforrás: demó → privát végpont (Worker) → publikus data.json (fallback).
 (async () => {
-  const qs = new URLSearchParams(location.search);
-  if (qs.get('api') && qs.get('key')) {          // egyszeri beállítás URL-ből
-    localStorage.setItem('health_api', qs.get('api').replace(/\/$/,''));
-    localStorage.setItem('health_key', qs.get('key'));
-    history.replaceState({}, '', location.pathname + (DEMO ? '?demo=1' : ''));
-  }
-  const api = localStorage.getItem('health_api')||'', key = localStorage.getItem('health_key')||'';
+  // Párosító link (…/health/brief.html#api=…&key=…) és a tárolt beállítás: a
+  // dashboarddal közös, őrzött kezelő (pairing.js). Korábban itt kérdés és
+  // séma-ellenőrzés nélkül íródott a localStorage (B1).
+  const {api, key} = HealthPairing.run();
   try {
     const ok = x => x && typeof x === 'object' && x.synced_at && x.garmin
                     && Object.keys(x).length >= 8;

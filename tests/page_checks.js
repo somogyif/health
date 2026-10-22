@@ -233,8 +233,112 @@ check('B9+B2: brief.html ismeretlen freshness-kulcs a figyelmeztetésben sem les
   must(!/<img\b/i.test(html), 'nyers <img> a brief figyelmeztetésében');
 });
 
+// ── B1+B6: a párosító link (api + kulcs) őrzött átvétele, mindkét lapon ─────────
+// A kulcs csak a # utáni részből jöhet (a fragment nem megy el a szerverre); csak
+// https végpont; idegen (vagy első) végpont csak kifejezett megerősítéssel.
+const BASE = 'https://somogyif.github.io/health/';
+const EVIL = 'https://evil.example';
+const KEY2 = 'fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210';  // kitalált
+const PAGES = ['index.html', 'brief.html'];
+const link = (file, api, key, form) => form === 'query'
+  ? `${BASE}${file}?api=${encodeURIComponent(api)}&key=${encodeURIComponent(key)}`
+  : `${BASE}${file}#api=${encodeURIComponent(api)}&key=${encodeURIComponent(key)}`;
+const saved = p => ({api: p.store.get('health_api') || null, key: p.store.get('health_key') || null});
+
+for (const file of PAGES) {
+  for (const form of ['query', 'hash']) {
+    check(`B1: ${file} (${form}) párosított böngészőben idegen végpontra csak megerősítéssel`, () => {
+      const p = page(file, {url: link(file, EVIL, KEY2, form), storage: PAIRED, confirm: false});
+      const s = saved(p);
+      must(s.api === API && s.key === KEY, `átírta megerősítés nélkül: ${JSON.stringify(s)}`);
+    });
+    check(`B1: ${file} (${form}) friss böngészőben sem fogad el végpontot megerősítés nélkül`, () => {
+      const p = page(file, {url: link(file, EVIL, KEY2, form), confirm: false});
+      must(!saved(p).api && !saved(p).key, `elmentette kérdezés nélkül: ${JSON.stringify(saved(p))}`);
+    });
+    check(`B1: ${file} (${form}) csak https végpont — megerősítéssel sem más`, () => {
+      for (const bad of ['http://evil.example', 'data:application/json,{}#', 'javascript:alert(1)',
+                         'https://user:pw@evil.example', 'nem egy url']) {
+        const p = page(file, {url: link(file, bad, KEY2, form), confirm: true});
+        must(!saved(p).api, `elfogadta: ${bad} → ${saved(p).api}`);
+      }
+    });
+    check(`B6: ${file} (${form}) a kulcs nem marad a címsorban`, () => {
+      const p = page(file, {url: link(file, API, KEY2, form) , confirm: true});
+      must(!p.loc.href.includes(KEY2) && !/[?#&]key=/.test(p.loc.href), `a címsor: ${p.loc.href}`);
+    });
+  }
+  check(`B1: ${file} előtag-egyezés nem "ugyanaz a végpont" (…workers.dev ↔ …work)`, () => {
+    // kitalált hostpár (a valódi Worker-host nem kerülhet a publikus repóba)
+    const stored = {health_api: 'https://health-data.example.workers.dev', health_key: KEY};
+    const p = page(file, {url: link(file, 'https://health-data.example.work', KEY2, 'hash'), storage: stored, confirm: false});
+    must(saved(p).api === stored.health_api, `átírta: ${saved(p).api}`);
+    must(p.calls.confirm.length === 1, `nem kérdezett (${p.calls.confirm.length} megerősítés)`);
+  });
+  check(`B6: ${file} a kulcsot a query stringből NEM veszi át (megerősítéssel sem)`, () => {
+    const p = page(file, {url: link(file, API, KEY2, 'query'), confirm: true});
+    must(!saved(p).key, `a query-ből vett kulcs mentve: ${saved(p).key}`);
+    must(p.el('pairNote').textContent.includes('#api='), 'nem mondja meg, hogyan kell helyesen (#api=…)');
+  });
+  check(`B6: ${file} párosítás a # utáni részből: megerősítés a host nevével, mentés, ?demo=1 marad`, () => {
+    const p = page(file, {url: link(file, API + '/', KEY2, 'hash').replace(file, `${file}?demo=1`), confirm: true});
+    must(saved(p).api === API && saved(p).key === KEY2, `nem párosított: ${JSON.stringify(saved(p))}`);
+    must(p.calls.confirm.length === 1 && p.calls.confirm[0].includes('api.example.test'), `a megerősítés: ${p.calls.confirm}`);
+    must(p.loc.search === '?demo=1' && !p.loc.hash, `a címsor: ${p.loc.href}`);
+    must(p.el('pairNote').textContent.includes('api.example.test'), 'nincs visszajelzés a párosításról');
+  });
+  // A host kitalálható: ha a kulcscsere kérdés nélkül menne, egy link csendben
+  // elronthatná a működő párosítást. Ezért minden VÁLTOZÁS megerősítést kér.
+  check(`B1: ${file} kulcscsere ugyanarra a végpontra is csak megerősítéssel (nem-re a régi marad)`, () => {
+    const no = page(file, {url: link(file, API, KEY2, 'hash'), storage: PAIRED, confirm: false});
+    must(saved(no).api === API && saved(no).key === KEY && no.calls.confirm.length === 1 &&
+         no.calls.confirm[0].includes('api.example.test'), `nem-re: ${JSON.stringify(saved(no))}, ${no.calls.confirm}`);
+    const yes = page(file, {url: link(file, API, KEY2, 'hash'), storage: PAIRED, confirm: true});
+    must(saved(yes).key === KEY2, `igen-re nem cserélt: ${JSON.stringify(saved(yes))}`);
+  });
+  check(`B1: ${file} ugyanaz a link újra (azonos végpont és kulcs): nincs kérdés, nincs változás`, () => {
+    const p = page(file, {url: link(file, API, KEY, 'hash'), storage: PAIRED, confirm: false});
+    must(saved(p).api === API && saved(p).key === KEY && !p.calls.confirm.length && !p.loc.hash,
+         `${JSON.stringify(saved(p))}, ${p.calls.confirm.length} megerősítés, ${p.loc.href}`);
+  });
+  check(`B1: ${file} hibás kulcsot (szóköz, vezérlőjel) nem ment`, () => {
+    for (const k of ['abc def', 'abc\ndef', '']) {
+      const p = page(file, {url: link(file, API, k, 'hash'), confirm: true});
+      must(!saved(p).key, `elfogadta: ${JSON.stringify(k)}`);
+    }
+  });
+  check(`B1: ${file} a korábban tárolt nem-https végpontot nem használja`, async () => {
+    const p = page(file, {storage: {health_api: 'data:application/json,{}#', health_key: KEY}});
+    p.fire('DOMContentLoaded');
+    await settle();
+    const off = p.calls.fetch.map(f => f.url).filter(u => /^[a-z]+:/i.test(u) && !u.startsWith('https://'));
+    must(!off.length, `lekérte: ${off}`);
+  });
+  check(`B1: ${file} egy már nyitott lapon a # módosítása újratölt (a link feldolgozódjon)`, () => {
+    const p = page(file, {storage: PAIRED});
+    p.loc.hash = `#api=${encodeURIComponent(API)}&key=${KEY2}`;
+    p.fire('hashchange');
+    must(p.calls.reload === 1, `újratöltés: ${p.calls.reload}`);
+  });
+  check(`B1: ${file} a meglévő párosítás változatlanul működik (lekérés Bearer-kulccsal)`, async () => {
+    const p = page(file, {storage: PAIRED, fetch: () => json(aged(1 / 24))});
+    p.fire('DOMContentLoaded');
+    await settle();
+    const f = p.calls.fetch.find(x => x.url === `${API}/data`);
+    must(f && (f.init.headers || {}).Authorization === `Bearer ${KEY}`, `lekérések: ${JSON.stringify(p.calls.fetch.map(x => x.url))}`);
+  });
+}
+check('B1: egyetlen író — a lapok maguk nem írják a localStorage-t, mindkettő a pairing.js-t tölti', () => {
+  for (const file of PAGES) {
+    const html = read(file);
+    must(!/localStorage\.setItem\s*\(/.test(html), `${file}: saját localStorage.setItem`);
+    must(/<script\s+src=["']pairing\.js["']\s*><\/script>/.test(html), `${file}: nincs <script src="pairing.js">`);
+  }
+});
+
 // ── futtatás ────────────────────────────────────────────────────────────────────
-(async () => {
+module.exports = {page, settle, demo, json};   // egyedi próbákhoz: require('./page_checks')
+if (require.main === module) (async () => {
   const only = process.argv[2];
   let bad = 0, ran = 0;
   for (const c of checks) {
