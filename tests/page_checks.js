@@ -164,6 +164,18 @@ check('B3: index.html hibadoboz: a válasz szövege nem lesz elem', async () => 
   must(!/<svg\b/i.test(eb.innerHTML), `nyers <svg> a hibadoboz innerHTML-jében: ${eb.innerHTML.slice(0, 200)}`);
 });
 
+// ── B12: a keresők kizárása a LAPON (a /health/robots.txt hatástalan) ───────────
+// A keresők csak a host gyökerében keresik a robots.txt-t (somogyif.github.io/robots.txt),
+// a /health/robots.txt-t nem olvassák. A kizárás egyetlen működő módja itt a meta tag.
+for (const file of ['index.html', 'brief.html']) {
+  check(`B12: ${file} <head>-jében robots noindex`, () => {
+    const head = (/<head\b[^>]*>([\s\S]*?)<\/head>/i.exec(read(file)) || [])[1] || '';
+    const metas = head.match(/<meta\b[^>]*>/gi) || [];
+    const ok = metas.some(m => /\bname\s*=\s*["']?robots["']?/i.test(m) && /\bcontent\s*=\s*["'][^"']*\bnoindex\b/i.test(m));
+    must(ok, `nincs <meta name="robots" content="noindex"> a <head>-ben (${metas.length} meta tag)`);
+  });
+}
+
 // ── futtatás ────────────────────────────────────────────────────────────────────
 (async () => {
   const only = process.argv[2];

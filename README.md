@@ -32,7 +32,8 @@ index.html            the whole dashboard: HTML + CSS + vanilla JS in one file, 
 brief.html            self-contained printable one-page brief
 demo-data.json        anonymised sample data powering ?demo=1
 manifest.webmanifest  PWA — installs to an iPhone home screen
-robots.txt            crawlers excluded
+robots.txt            no effect here: crawlers only read the host root's robots.txt;
+                      both pages carry <meta name="robots" content="noindex"> instead
 ```
 
 ## Architecture

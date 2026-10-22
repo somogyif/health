@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- A keresők a robots.txt-t csak a host gyökerében keresik (somogyif.github.io/robots.txt
+     → 404); a /health/robots.txt-t nem olvassák. A kizárás itt, a lapon működik (B12). -->
+<meta name="robots" content="noindex">
 <title>Feri — Health Centre</title>
 <!-- PWA / Add to Home Screen -->
 <link rel="manifest" href="manifest.webmanifest">
