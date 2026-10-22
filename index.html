@@ -438,10 +438,13 @@ async function deviceWeather(){
 // futtatni és ellopni a GitHub tokent a localStorage-ból. Ezért a teljes payloadot
 // egyetlen belépési ponton semlegesítjük — így egyetlen render-hely sem maradhat ki.
 const escHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// A KULCS is külső szöveg: az elavultság-sáv a freshness kulcsát írja ki, és egy
+// ismeretlen kulcs (<img onerror> a nevében) nyersen ment az innerHTML-be (B2).
+// Az escape injektív (a & is escape-elt), két kulcs nem eshet egybe.
 function deepEscape(v){
   if (typeof v === 'string') return escHtml(v);
   if (Array.isArray(v)) return v.map(deepEscape);
-  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[k]=deepEscape(v[k]); return o; }
+  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[escHtml(k)]=deepEscape(v[k]); return o; }
   return v;
 }
 // Rövidítés, ami nem vág ketté egy HTML entitást (pl. "&amp;")

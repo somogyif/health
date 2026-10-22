@@ -99,10 +99,11 @@ const esc = s => (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 // A külső szöveget EGY belépési ponton semlegesítjük, nem helyszínenként. A
 // helyszínenkénti escape-elés egy helyet kihagyott (az esemény ideje), és ez
 // pontosan az a hiba, ami a dashboardon 2026-08-24-én tokent szivárogtatott.
+// A kulcs is külső szöveg (B2): ugyanúgy semlegesítjük, mint az értéket.
 function deepEscape(v){
   if (typeof v === 'string') return esc(v);
   if (Array.isArray(v)) return v.map(deepEscape);
-  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[k]=deepEscape(v[k]); return o; }
+  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[esc(k)]=deepEscape(v[k]); return o; }
   return v;
 }
 const band = (v,hi,mid) => v==null?C.text3 : v>=hi?C.teal : v>=mid?C.amber : C.red;
