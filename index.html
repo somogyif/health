@@ -1644,7 +1644,9 @@ async function load(){
       document.querySelector('.logo').appendChild(b);
     }
   }catch(e){
-    eb.innerHTML=`<strong>Could not load data.json</strong> — ${e.message}`;
+    // A hibaüzenet KÜLSŐ szöveget idézhet: a Chrome JSON-hibája szó szerint hozza a
+    // rövid választörzset ("<svg onload=…>"). Ezért csak szövegként mehet ki (B3).
+    eb.textContent=`Could not load data.json — ${(e&&e.message)||e}`;
     eb.style.display='block';
     document.getElementById('sub').textContent='error';
   }

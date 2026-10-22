@@ -148,6 +148,22 @@ check('B2: index.html elavultság-sáv: ismeretlen freshness-kulcs nem lesz elem
   must(html.includes(esc(HOSTILE)), 'a forrás neve nem semlegesítve jelenik meg');
 });
 
+// ── B3: a hibadoboz a hibaüzenetet SZÖVEGKÉNT írja ki ───────────────────────────
+// A Chrome (V8) JSON-hibaüzenete a rövid választörzset szó szerint idézi: egy nem-JSON
+// válasz (<svg onload=…>) így a hibaüzeneten át jutott el az innerHTML-ig.
+check('B3: index.html hibadoboz: a válasz szövege nem lesz elem', async () => {
+  const body = '<svg onload=f()>';
+  const p = page('index.html', {url: 'https://somogyif.github.io/health/index.html?demo=1',
+                                fetch: () => new Response(body, {status: 200})});
+  p.fire('DOMContentLoaded');
+  await settle();
+  const eb = p.el('errbox');
+  // előfeltétel: a próba eljutott a dobozig (akár jelölőként, akár szövegként)
+  must(eb.style.display === 'block' && (eb.innerHTML + eb.textContent).includes('svg onload'),
+       `a hibadoboz nem a próbát mutatja (nem bizonyít): ${eb.innerHTML.slice(0, 160)}`);
+  must(!/<svg\b/i.test(eb.innerHTML), `nyers <svg> a hibadoboz innerHTML-jében: ${eb.innerHTML.slice(0, 200)}`);
+});
+
 // ── futtatás ────────────────────────────────────────────────────────────────────
 (async () => {
   const only = process.argv[2];
