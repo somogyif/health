@@ -75,6 +75,7 @@
   footer{margin-top:2.5rem;font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;letter-spacing:.06em}
 
   .pill{display:inline-block;font-family:var(--m);font-size:10px;padding:2px 9px;border-radius:20px;margin-left:8px}
+  .stale{font-family:var(--m);font-size:11px;padding:.55rem .85rem;margin-bottom:1rem;border:1px solid;border-radius:8px}
 
   @media print{
     body{background:#fff;color:#141414;padding:0}
@@ -93,6 +94,7 @@
   <p class="lbl" id="loading">Loading today's brief…</p>
 </div>
 
+<script src="freshness.js"></script>
 <script>
 const C = {teal:'#34c99a',amber:'#e8993a',red:'#e05252',blue:'#5b9cf6',text3:'#7a7874'};
 const DEMO = new URLSearchParams(location.search).get('demo')==='1';  // ?demo=1 → sample data
@@ -192,12 +194,21 @@ function render(d){
   const hasStrip = (w.temp!=null) || (ir.score!=null);
   const illHTML = (ir.score!=null) ? `<span>🛡 Illness risk <b style="color:${band(100-ir.score,75,50)}">${ir.score}/100</b>${(ir.factors||[]).length?` · ${ir.factors.join(', ')}`:''}</span>` : '';
 
+  // Elavultság (B9): ugyanaz a számítás és küszöb, mint a dashboard sávjáé
+  // (freshness.js), a MOSTANI időhöz mérve. Korábban a brief egyáltalán nem jelzett.
+  const stale = HealthFreshness.stale(d.freshness, Date.now());
+  const red = stale.length && Math.max(...stale.map(x=>x.days)) >= HealthFreshness.RED_DAYS;
+  const staleHTML = stale.length
+    ? `<div class="stale" style="color:var(${red?'--red':'--amber'});background:${red?'rgba(224,82,82,0.12)':'rgba(232,153,58,0.12)'}">⚠ Showing older data — ${stale.map(x=>`<b>${x.name}</b> from ${x.when} (${x.days}d)`).join(' · ')}</div>`
+    : '';
+
   document.getElementById('root').innerHTML = `
     <header>
       <div class="kicker"><span class="dot"></span><span class="lbl">Morning Brief · ${esc(dateStr)}</span>${DEMO?'<span class="lbl" style="color:var(--teal);border:1px solid rgba(52,201,154,0.3);border-radius:20px;padding:1px 8px">DEMO</span>':''}</div>
       <div class="greet">${greeting()}, Feri.</div>
       <div class="subline">${esc(v.h)} — ${esc(v.p)}</div>
     </header>
+    ${staleHTML}
 
     <div class="hero">
       ${ring(r, band(r,65,45))}

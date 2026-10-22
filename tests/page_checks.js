@@ -176,6 +176,63 @@ for (const file of ['index.html', 'brief.html']) {
   });
 }
 
+// ── B9: az elavultság a MOSTANI időhöz mérve, mindkét lapon ─────────────────────
+// Egy teljesen leállt pipeline-ban a synced_at és minden freshness-bélyeg egyformán
+// régi: a synced_at-hez mérve semmi nem "régebbi", tehát nem volt figyelmeztetés.
+const API = 'https://api.example.test';                                   // kitalált végpont
+const KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'; // kitalált kulcs
+const PAIRED = {health_api: API, health_key: KEY};
+const DAY = 86400000;
+const stamp = ms => { const d = new Date(ms), p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+// ±1 óra (nyári időszámítás) se vigye át a napszámot: x.5 napos bélyegek
+function aged(days, extra = {}) {
+  const d = demo(), t = stamp(Date.now() - days * DAY);
+  delete d._demo;
+  d.synced_at = t;
+  d.freshness = {garmin: t, hevy: t, calendar: t, weather: t, body_comp: t, ...extra};
+  return d;
+}
+async function indexWith(payload) {
+  const p = page('index.html', {storage: PAIRED, fetch: () => json(payload)});
+  p.fire('DOMContentLoaded');
+  await settle();
+  return p;
+}
+async function briefWith(payload) {
+  const p = page('brief.html', {storage: PAIRED, fetch: () => json(payload)});
+  await settle();
+  return p;
+}
+
+check('B9: index.html leállt pipeline (minden bélyeg 5,5 napos) → piros sáv, 5d', async () => {
+  const p = await indexWith(aged(5.5));
+  must(p.calls.fetch.length && p.calls.fetch[0].url === `${API}/data`, 'a privát végpontot nem kérdezte le');
+  const el = p.el('staleBanner'), html = el.innerHTML;
+  must(el.style.display === 'block', `nincs figyelmeztetés (display=${el.style.display})`);
+  must(html.includes('(5d)') && html.includes('var(--red)'), `nem 5 napos/piros: ${html.replace(/\s+/g, ' ').slice(0, 200)}`);
+});
+check('B9: index.html a küszöbök maradnak: 2,5 nap → sárga 2d · 20 óra → nincs sáv', async () => {
+  const a = await indexWith(aged(2.5)), h = a.el('staleBanner').innerHTML;
+  must(a.el('staleBanner').style.display === 'block' && h.includes('(2d)') && h.includes('var(--amber)') && !h.includes('var(--red)'),
+       `2,5 napnál nem sárga 2d: ${h.replace(/\s+/g, ' ').slice(0, 200)}`);
+  const f = await indexWith(aged(20 / 24));
+  must(f.el('staleBanner').style.display === 'none', '20 órás adatnál is figyelmeztet');
+});
+check('B9: brief.html leállt pipeline → figyelmeztetés, 5d', async () => {
+  const html = (await briefWith(aged(5.5))).el('root').innerHTML;
+  must(/older data/i.test(html) && html.includes('(5d)'), `a brief nem figyelmeztet: ${html.replace(/\s+/g, ' ').slice(0, 160)}`);
+});
+check('B9: brief.html friss adat (1 óra) → nincs figyelmeztetés', async () => {
+  const html = (await briefWith(aged(1 / 24))).el('root').innerHTML;
+  must(html.includes('Readiness') && !/older data/i.test(html), 'friss adatnál is figyelmeztet, vagy nem rajzolt');
+});
+check('B9+B2: brief.html ismeretlen freshness-kulcs a figyelmeztetésben sem lesz elem', async () => {
+  const html = (await briefWith(aged(1 / 24, {[HOSTILE]: stamp(Date.now() - 5.5 * DAY)}))).el('root').innerHTML;
+  must(/older data/i.test(html) && html.includes('onerror'), 'a próba nem jelent meg (nem bizonyít)');
+  must(!/<img\b/i.test(html), 'nyers <img> a brief figyelmeztetésében');
+});
+
 // ── futtatás ────────────────────────────────────────────────────────────────────
 (async () => {
   const only = process.argv[2];

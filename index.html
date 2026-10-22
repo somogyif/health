@@ -313,6 +313,7 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
   <div id="tab-trends" style="display:none"></div>
 </div>
 
+<script src="freshness.js"></script>
 <script>
 // A GitHub-olvasóút 2026-08-25 óta halott (a data.json nem publikus, 404), és a
 // hozzá kért PAT ugyanabban a localStorage-ban ült, amit egy tárolt XSS már
@@ -1026,22 +1027,15 @@ function render(d){
   // lemarad a legutóbbi synctől, akkor ott carry-forward működik: a szám valós,
   // de RÉGI. Egy kis időbélyeget könnyű átnézni, ezért ez látható sávot kap —
   // különben a dashboard egészségesebbnek látszik, mint amilyen a pipeline.
+  // A MOSTANI időhöz mér (B9), a brieffel közös számítással (freshness.js).
   (function(){
     const el = document.getElementById('staleBanner');
     if (!el) return;
-    const fr = d.freshness || {};
-    const parse = t => { const x = Date.parse(String(t).replace(' ','T')); return isNaN(x) ? null : x; };
-    const now = parse(d.synced_at) || Date.now();
-    const NEV = {garmin:'recovery', hevy:'training', calendar:'calendar',
-                 weather:'weather', body_comp:'body composition'};
-    const stale = Object.entries(fr)
-      .map(([k,v]) => [k, parse(v)])
-      .filter(([k,t]) => t && (now - t) > 24*3600*1000)
-      .map(([k,t]) => ({name: NEV[k]||k, days: Math.floor((now-t)/86400000), when: fr[k]}));
+    const stale = HealthFreshness.stale(d.freshness, Date.now());
     if (!stale.length) { el.style.display='none'; return; }
     const worst = Math.max(...stale.map(x=>x.days));
-    const col = worst >= 3 ? 'var(--red)' : 'var(--amber)';
-    const bg  = worst >= 3 ? 'rgba(224,82,82,0.12)' : 'rgba(232,153,58,0.12)';
+    const col = worst >= HealthFreshness.RED_DAYS ? 'var(--red)' : 'var(--amber)';
+    const bg  = worst >= HealthFreshness.RED_DAYS ? 'rgba(224,82,82,0.12)' : 'rgba(232,153,58,0.12)';
     el.style.display = 'block';
     el.innerHTML = `<div style="padding:.55rem .85rem;margin-bottom:1rem;border-radius:8px;
       background:${bg};border:1px solid ${col};color:${col};font-family:var(--m);font-size:11px">

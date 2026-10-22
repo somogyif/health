@@ -29,8 +29,10 @@ outside it, because the sync runs on a personal machine and the data must not be
 
 ```
 index.html            the whole dashboard: HTML + CSS + vanilla JS in one file, no build
-brief.html            self-contained printable one-page brief
+brief.html            printable one-page brief
+freshness.js          shared by both pages: which source is stale, measured against now
 demo-data.json        anonymised sample data powering ?demo=1
+tests/page_checks.js  runs both pages' own scripts in Node against hostile/stale input
 manifest.webmanifest  PWA — installs to an iPhone home screen
 robots.txt            no effect here: crawlers only read the host root's robots.txt;
                       both pages carry <meta name="robots" content="noindex"> instead
@@ -103,7 +105,10 @@ last good document in place; a partial failure backfills the missing fields from
 snapshots, searching backwards rather than one step, because a run of degraded syncs
 had already washed out the last good values; and every source carries its own freshness
 timestamp, so a carried-forward value displays with the time it was actually measured
-instead of masquerading as current. Sleep and HRV are deliberately excluded from
+instead of masquerading as current. Both pages compare those stamps with the current
+time and warn once a source is more than a day old. They first compared them with the
+document's own sync time — so a pipeline that had stopped entirely, where every stamp is
+equally old, looked perfectly fresh. Sleep and HRV are deliberately excluded from
 carry-forward — they're night-bound, and showing last night's figure as today's would
 be a lie the freshness stamp doesn't excuse.
 
