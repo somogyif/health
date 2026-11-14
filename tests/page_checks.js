@@ -233,6 +233,35 @@ check('napi terv: az ismert címkék stílusa változatlan (Clear zöld, Heavy s
   }
 });
 
+// ── Tasks kártya: az ismeretlen címke itt sem lehet zöld ────────────────────────
+// scoreColor: minden, ami nem Packed/Heavy/Moderate, var(--teal) volt — az "Unknown" is.
+const taskLabelColor = (html, label) => {
+  const m = new RegExp(`<span style="[^"]*color:([^;"]+)[^"]*">${label}</span>`).exec(html);
+  return m && m[1];
+};
+const withTaskLabel = label => {
+  const d = demo();
+  d.tasks.today = {tasks: [{name: 'Demo task'}], count: 1, score: 1, label};
+  const p = page('index.html');
+  p.ctx.render(d);
+  return taskLabelColor(p.el('tasksBody').innerHTML, label);
+};
+check('tasks: az "Unknown" és az ismeretlen címke semleges színű, nem zöld', () => {
+  for (const label of ['Unknown', 'Valami-uj-cimke', 'constructor']) {
+    const c = withTaskLabel(label);
+    must(c, `a(z) "${label}" címke nem jelent meg (nem bizonyít)`);
+    must(c !== 'var(--teal)', `a(z) "${label}" címke zöld (var(--teal))`);
+    must(c === 'var(--text3)', `a(z) "${label}" címke színe nem a semleges: ${c}`);
+  }
+});
+check('tasks: az ismert címkék színe változatlan (Clear/Light zöld, Moderate/Heavy sárga, Packed piros)', () => {
+  for (const [label, want] of [['Clear', 'var(--teal)'], ['Light', 'var(--teal)'], ['Moderate', 'var(--amber)'],
+                               ['Heavy', 'var(--amber)'], ['Packed', 'var(--red)']]) {
+    const c = withTaskLabel(label);
+    must(c === want, `${label}: ${c} (várt: ${want})`);
+  }
+});
+
 // ── B3: a hibadoboz a hibaüzenetet SZÖVEGKÉNT írja ki ───────────────────────────
 // A Chrome (V8) JSON-hibaüzenete a rövid választörzset szó szerint idézi: egy nem-JSON
 // válasz (<svg onload=…>) így a hibaüzeneten át jutott el az innerHTML-ig.

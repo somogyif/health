@@ -712,7 +712,9 @@ function render(d){
     const tomorrow = tasks.tomorrow || {tasks:[], count:0, score:0, label:'Clear'};
     const overdue = tasks.overdue || {tasks:[], count:0};
 
-    const scoreColor = s => s === 'Packed' ? 'var(--red)' : s === 'Heavy' ? 'var(--amber)' : s === 'Moderate' ? 'var(--amber)' : 'var(--teal)';
+    // Csak az ismert címke kap színt. Az ismeretlen ("Unknown": a sync nem tudta beolvasni
+    // a feladatlistát) semleges szürke — korábban minden más zöld volt.
+    const scoreColor = s => s === 'Packed' ? 'var(--red)' : (s === 'Heavy' || s === 'Moderate') ? 'var(--amber)' : (s === 'Clear' || s === 'Light') ? 'var(--teal)' : 'var(--text3)';
 
     const taskRow = t => {
       const name = t.name || '';
