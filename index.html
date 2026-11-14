@@ -586,6 +586,10 @@ function render(d){
     travel: 'travel', personal: 'personal', other: 'other'
   };
 
+  // A feladatlista tételei: csak az objektumok. Egy null vagy szöveg tétel korábban
+  // kivételt dobott (t.name), és a render() hátralevő részét is magával vitte.
+  function taskItems(a) { return Array.isArray(a) ? a.filter(t => t && typeof t === 'object') : []; }
+
   // A terv egy napjának címe (off: 0 = a terv napja, 1 = a rákövetkező nap).
   // A DÁTUM a dokumentumból jön: a sync a day_plan-t és a synced_at-et ugyanabból a
   // pillanatból írja. A NAPSZÓ (Today/Tonight/Tomorrow/Yesterday) viszont a NÉZŐ helyi
@@ -643,7 +647,7 @@ function render(d){
 
     const renderBlock = (label, p, isTom) => {
       if (!p) return '';
-      const tasks = p.tasks || [];
+      const tasks = taskItems(p.tasks).filter(t => t.name);
       const wShifts = p.work_shifts != null ? p.work_shifts : (p.label === 'Heavy' ? 2 : 0);
 
       let tlHtml = '';
@@ -766,7 +770,7 @@ function render(d){
 
     // Today tasks
     if (today.count > 0 || overdue.count > 0) {
-      const allToday = [...(overdue.tasks||[]), ...(today.tasks||[])];
+      const allToday = [...taskItems(overdue.tasks), ...taskItems(today.tasks)];
       html += `<div style="margin-bottom:1rem">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
           <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Today</span>
@@ -784,7 +788,7 @@ function render(d){
         <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Tomorrow</span>
         <span style="font-family:var(--m);font-size:11px;color:${scoreColor(tomorrow.label)}">${tomorrow.count > 0 ? tomorrow.label : '—'}</span>
       </div>
-      ${tomorrow.count > 0 ? tomorrow.tasks.map(taskRow).join('') : '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">Nothing scheduled</div>'}
+      ${tomorrow.count > 0 ? taskItems(tomorrow.tasks).map(taskRow).join('') : '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">Nothing scheduled</div>'}
     </div>`;
 
     // Open without date
@@ -1026,12 +1030,19 @@ function render(d){
   if (dpEl && dpSec) {
     if (dayPlan) {
       dpSec.style.display = '';
-      const ctx = dayPlan.context || 'morning';
-      // A fejléc a terv FŐ napjáról szól (esti tervnél a rákövetkező nap), a néző mai
-      // napjához mérve; dátum nélküli dokumentumnál a terv saját kontextusa szerint.
-      const head = planDayLabel(ctx === 'evening' ? 1 : 0, ctx === 'evening').head;
-      if (dpLabel) dpLabel.textContent = '📋 ' + (head || (ctx === 'evening' ? 'Tomorrow\'s plan' : ctx === 'morning' ? 'Today\'s plan' : 'Plan'));
-      dpEl.innerHTML = renderDayPlan(dayPlan);
+      // Egy hibás terv csak a saját szakaszát tüntetheti el: a kitöltés a render()
+      // közepén fut, utána jön az elavultság-sáv és a másik két fül.
+      try {
+        const ctx = dayPlan.context || 'morning';
+        // A fejléc a terv FŐ napjáról szól (esti tervnél a rákövetkező nap), a néző mai
+        // napjához mérve; dátum nélküli dokumentumnál a terv saját kontextusa szerint.
+        const head = planDayLabel(ctx === 'evening' ? 1 : 0, ctx === 'evening').head;
+        if (dpLabel) dpLabel.textContent = '📋 ' + (head || (ctx === 'evening' ? 'Tomorrow\'s plan' : ctx === 'morning' ? 'Today\'s plan' : 'Plan'));
+        dpEl.innerHTML = renderDayPlan(dayPlan);
+      } catch (e) {
+        console.warn('Day plan card not rendered:', e && e.message);
+        dpSec.style.display = 'none';
+      }
     } else {
       dpSec.style.display = 'none';
     }
@@ -1044,7 +1055,12 @@ function render(d){
   if (tasksEl && tasksSec) {
     if (tasks) {
       tasksSec.style.display = '';
-      tasksEl.innerHTML = renderTasks(tasks);
+      try {
+        tasksEl.innerHTML = renderTasks(tasks);
+      } catch (e) {
+        console.warn('Tasks card not rendered:', e && e.message);
+        tasksSec.style.display = 'none';
+      }
     } else {
       tasksSec.style.display = 'none';
     }

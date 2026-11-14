@@ -570,6 +570,56 @@ check('B1: egyetlen író — a lapok maguk nem írják a localStorage-t, mindke
   }
 });
 
+// ── F2: a két kártya hibája nem viheti magával a lap többi részét ───────────────
+// A kitöltés a render() közepén fut (a sablon után): egy null tétel a feladatok között
+// kivételt dobott, és elmaradt az elavultság-sáv, a Training és a Trends fül is.
+const restRendered = (p, hol) => {
+  must(p.el('staleBanner').style.display === 'block', `${hol}: az elavultság-sáv nem jelent meg`);
+  for (const tab of ['tab-training', 'tab-trends'])
+    must(p.el(tab).innerHTML.length > 200, `${hol}: a(z) ${tab} üres maradt`);
+};
+const renderOf = d => {
+  const p = page('index.html');
+  let err = null;
+  try { p.ctx.render(d); } catch (e) { err = e; }
+  return {p, err};
+};
+check('F2: null és nem-objektum tétel a feladatok között → kimarad, a többi és a lap megmarad', () => {
+  for (const [hol, mut] of [
+    ['day_plan.today.tasks', d => { d.day_plan.today.tasks = [null, 'szöveg', 7, {name: 'Call the bank'}]; }],
+    ['day_plan.tomorrow.tasks', d => { d.day_plan.tomorrow.tasks = [null, {name: 'Call the bank'}]; }],
+    ['tasks.today.tasks', d => { d.tasks.today = {tasks: [null, 'szöveg', {name: 'Call the bank'}], count: 1, score: 1, label: 'Light'}; }],
+    ['tasks.tomorrow.tasks', d => { d.tasks.tomorrow = {tasks: [null, {name: 'Call the bank'}], count: 1, score: 1, label: 'Light'}; }],
+    ['tasks.overdue.tasks', d => { d.tasks.overdue = {tasks: [null, {name: 'Call the bank', overdue: true}], count: 1}; }],
+    ['tasks.tomorrow.tasks nem tömb', d => { d.tasks.tomorrow = {tasks: 5, count: 1, label: 'Light'}; }],
+  ]) {
+    const d = aged(5.5); mut(d);
+    const {p, err} = renderOf(d);
+    must(!err, `${hol}: a render() kivételt dobott: ${err && err.message}`);
+    restRendered(p, hol);
+    must(p.el('dayPlanSection').style.display !== 'none' && p.el('tasksSection').style.display !== 'none', `${hol}: egy kártya eltűnt`);
+    if (!/nem tömb/.test(hol))
+      must((p.el('dayPlanBody').textContent + p.el('tasksBody').textContent).includes('Call the bank'), `${hol}: a jó tétel is eltűnt`);
+    must(!/undefined|null/.test(p.el('dayPlanBody').textContent + p.el('tasksBody').textContent), `${hol}: "undefined"/"null" a kártyán`);
+  }
+});
+check('F2: ha egy kártya kitöltése mégis elhasal, csak az a szakasz tűnik el — és kiírja, miért', () => {
+  const d = aged(5.5);
+  d.day_plan.today.lines = 5;                     // (5).filter → TypeError a renderDayPlan-ben
+  const {p, err} = renderOf(d);
+  must(!err, `a render() kivételt dobott: ${err && err.message}`);
+  must(p.el('dayPlanSection').style.display === 'none', 'a hibás Day plan szakasz nem lett elrejtve');
+  must(p.el('tasksSection').style.display !== 'none' && p.el('tasksBody').textContent.includes('19 open tasks'), 'a Tasks kártya is eltűnt');
+  restRendered(p, 'hibás day_plan');
+  must(p.calls.warn.some(w => /day plan/i.test(w)), `a hiba nincs kiírva (console.warn): ${JSON.stringify(p.calls.warn)}`);
+  // a Tasks kitöltése ugyanígy védett (a forrásban: mindkét kitöltés try { … } catch-ben áll)
+  const src = read('index.html');
+  for (const call of ['dpEl.innerHTML = renderDayPlan(dayPlan);', 'tasksEl.innerHTML = renderTasks(tasks);']) {
+    const i = src.indexOf(call), elotte = src.slice(Math.max(0, i - 900), i), utana = src.slice(i, i + 400);
+    must(i > 0 && /try\s*\{[^}]*$/.test(elotte) && /\}\s*catch\s*\(/.test(utana), `nincs try/catch körülötte: ${call}`);
+  }
+});
+
 // ── futtatás ────────────────────────────────────────────────────────────────────
 module.exports = {page, settle, demo, json};   // egyedi próbákhoz: require('./page_checks')
 if (require.main === module) (async () => {
