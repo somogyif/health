@@ -250,6 +250,31 @@ check('napi terv: hiányzó label → semleges "—" jelvény; a valódi "Clear"
   }
 });
 
+// ── Napi terv: a terv NAPJA a dokumentumból jön, nem a böngésző mai napjából ────
+// A sync a day_plan-t és a synced_at-et ugyanabból a pillanatból írja; a kártya mégis
+// new Date()-et rajzolt — régi adatnál a mai dátum állt egy korábbi nap terve fölött.
+const planText = mut => {
+  const d = demo(); mut(d);
+  const p = page('index.html');
+  p.ctx.render(d);
+  return p.el('dayPlanBody').textContent.replace(/\s+/g, ' ');
+};
+check('napi terv: a dátum a synced_at napja (demó: 17 Mar / 18 Mar), nem a mai nap', () => {
+  const este = planText(() => {});
+  must(este.includes('Tomorrow · 18 Mar') && este.includes('Tonight · 17 Mar'), `esti terv: ${este.slice(0, 120)}`);
+  const reggel = planText(d => { d.day_plan.context = 'morning'; });
+  must(reggel.includes('Today · 17 Mar') && reggel.includes('Tomorrow · 18 Mar'), `reggeli terv: ${reggel.slice(0, 120)}`);
+  const honapveg = planText(d => { d.synced_at = '2026-01-31 21:30'; });
+  must(honapveg.includes('Tomorrow · 1 Feb') && honapveg.includes('Tonight · 31 Jan'), `hónapvég: ${honapveg.slice(0, 120)}`);
+});
+check('napi terv: synced_at nélkül (vagy hibás dátummal) nincs kitalált dátum', () => {
+  for (const mut of [d => { delete d.synced_at; }, d => { d.synced_at = 'nem dátum'; }, d => { d.synced_at = '2026-13-45 07:00'; }]) {
+    const t = planText(mut);
+    must(t.includes('Tomorrow') && t.includes('Tonight'), `a terv nem rajzolódott ki (nem bizonyít): ${t.slice(0, 80)}`);
+    must(!/(Tomorrow|Tonight|Today) · /.test(t), `dátum áll a címben, pedig a dokumentumban nincs: ${t.slice(0, 120)}`);
+  }
+});
+
 // ── Tasks kártya: az ismeretlen címke itt sem lehet zöld ────────────────────────
 // scoreColor: minden, ami nem Packed/Heavy/Moderate, var(--teal) volt — az "Unknown" is.
 const taskLabelColor = (html, label) => {

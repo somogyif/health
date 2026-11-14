@@ -686,8 +686,16 @@ function render(d){
     };
 
     const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    const todStr = fmt(new Date());
-    const tomStr = fmt(new Date(Date.now()+86400000));
+    // A terv napja a DOKUMENTUMBÓL jön: a sync a day_plan-t és a synced_at-et ugyanabból
+    // a pillanatból írja. Korábban new Date() állt itt — régi (carry-forward, leállt sync)
+    // adatnál a böngésző mai napja került egy korábbi nap terve fölé. Ha a synced_at
+    // hiányzik vagy nem dátum, nem találunk ki dátumot: a cím dátum nélkül jelenik meg.
+    const sm = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d.synced_at || ''));
+    const planDay = sm ? new Date(+sm[1], +sm[2]-1, +sm[3]) : null;
+    const planOk = planDay && planDay.getMonth() === +sm[2]-1 && planDay.getDate() === +sm[3];
+    const dayStr = off => planOk ? ` · ${fmt(new Date(planDay.getFullYear(), planDay.getMonth(), planDay.getDate()+off))}` : '';
+    const todStr = dayStr(0);
+    const tomStr = dayStr(1);
     // A payload értéke a forrás. A korábbi {...tom, work_shifts:2, has_gym:true}
     // 86/86 mentésen felülírta a syncet: 84 napon hamis Café x2 + Gym pillt rajzolt.
     const tomP = {...tom};
@@ -695,13 +703,13 @@ function render(d){
 
     let out = '';
     if (ctx === 'evening') {
-      out += renderBlock(`Tomorrow · ${tomStr}`, tomP, true);
+      out += renderBlock(`Tomorrow${tomStr}`, tomP, true);
       out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
-      out += renderBlock(`Tonight · ${todStr}`, todP, false);
+      out += renderBlock(`Tonight${todStr}`, todP, false);
     } else {
-      out += renderBlock(`Today · ${todStr}`, todP, false);
+      out += renderBlock(`Today${todStr}`, todP, false);
       out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
-      out += renderBlock(`Tomorrow · ${tomStr}`, tomP, true);
+      out += renderBlock(`Tomorrow${tomStr}`, tomP, true);
     }
     out += `<div style="font-size:10px;color:var(--text3);text-align:right;margin-top:.3rem">generated ${plan.generated_at||''}</div>`;
     return out;
