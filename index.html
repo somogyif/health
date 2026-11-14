@@ -564,35 +564,6 @@ function render(d){
 
   const synced=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
 
-  // Day Plan
-  const dayPlan = d.day_plan || null;
-  const dpEl = document.getElementById('dayPlanBody');
-  const dpSec = document.getElementById('dayPlanSection');
-  const dpLabel = document.getElementById('dayPlanLabel');
-  if (dpEl && dpSec) {
-    if (dayPlan) {
-      dpSec.style.display = '';
-      const ctx = dayPlan.context || 'morning';
-      if (dpLabel) dpLabel.textContent = ctx === 'evening' ? '📋 Tomorrow\'s plan' : ctx === 'morning' ? '📋 Today\'s plan' : '📋 Plan';
-      dpEl.innerHTML = renderDayPlan(dayPlan);
-    } else {
-      dpSec.style.display = 'none';
-    }
-  }
-
-  // Tasks
-  const tasks = d.tasks || null;
-  const tasksEl = document.getElementById('tasksBody');
-  const tasksSec = document.getElementById('tasksSection');
-  if (tasksEl && tasksSec) {
-    if (tasks) {
-      tasksSec.style.display = '';
-      tasksEl.innerHTML = renderTasks(tasks);
-    } else {
-      tasksSec.style.display = 'none';
-    }
-  }
-
   // Render calendar events
   const calEvents = d.calendar || [];
   const calLoad = d.calendar_load_today || 0;
@@ -1008,6 +979,39 @@ function render(d){
   // Inject calendar into already-rendered Today tab
   const calBodyEl = document.getElementById('calBody');
   if (calBodyEl) calBodyEl.innerHTML = renderCalendar(calEvents, rs);
+
+  // A Day plan és a Tasks kitöltése a sablon kiírása UTÁN történik: korábban a sablon
+  // (tab-today.innerHTML=) előtt futott, a sablon pedig rejtve és üresen hozta létre
+  // újra a két szakaszt — a kártyák sosem látszottak. A `d` itt is a deepEscape-en
+  // átment adat (render() első lépése).
+  // Day Plan
+  const dayPlan = d.day_plan || null;
+  const dpEl = document.getElementById('dayPlanBody');
+  const dpSec = document.getElementById('dayPlanSection');
+  const dpLabel = document.getElementById('dayPlanLabel');
+  if (dpEl && dpSec) {
+    if (dayPlan) {
+      dpSec.style.display = '';
+      const ctx = dayPlan.context || 'morning';
+      if (dpLabel) dpLabel.textContent = ctx === 'evening' ? '📋 Tomorrow\'s plan' : ctx === 'morning' ? '📋 Today\'s plan' : '📋 Plan';
+      dpEl.innerHTML = renderDayPlan(dayPlan);
+    } else {
+      dpSec.style.display = 'none';
+    }
+  }
+
+  // Tasks
+  const tasks = d.tasks || null;
+  const tasksEl = document.getElementById('tasksBody');
+  const tasksSec = document.getElementById('tasksSection');
+  if (tasksEl && tasksSec) {
+    if (tasks) {
+      tasksSec.style.display = '';
+      tasksEl.innerHTML = renderTasks(tasks);
+    } else {
+      tasksSec.style.display = 'none';
+    }
+  }
 
   // ── Frissesség-jelzés ──────────────────────────────────────────────────────
   // A backend forrásonként bélyegzi, mikor jött érdemi adat. Ha egy forrás

@@ -35,7 +35,10 @@ class El {
     this.hidden = false; this._html = ''; this._text = ''; this.parentNode = null;
     this.classList = {add() {}, remove() {}, toggle() {}, contains: () => false};
   }
-  set innerHTML(h) { this._html = String(h); this._text = this._html.replace(/<[^>]*>/g, ''); }
+  set innerHTML(h) {
+    this._html = String(h); this._text = this._html.replace(/<[^>]*>/g, '');
+    if (this._recreate) this._recreate(this._html);
+  }
   get innerHTML() { return this._html; }
   set textContent(t) { this._text = String(t); this._html = esc(this._text); }
   get textContent() { return this._text; }
@@ -62,8 +65,20 @@ function page(file, opt = {}) {
   };
   setLoc(opt.url || `https://somogyif.github.io/health/${file}`);
   const els = new Map(), body = new El('body'), listeners = {};
+  // Az innerHTML-be írt jelölő a benne lévő id-jű elemeket ÚJRA létrehozza, ahogy a
+  // böngésző: a korábbi (már kitöltött) elem elvész, az új a jelölő szerinti induló
+  // állapotban áll (inline display, üres tartalom). Enélkül az ál-DOM megőrizné azt,
+  // amit a render() a sablon kiírása ELŐTT töltött ki — a böngésző nem őrzi meg.
+  const recreate = html => {
+    for (const m of html.matchAll(/<[a-z][^>]*\bid="([^"]+)"[^>]*>/gi)) {
+      const e = mk(m[1]), disp = /\bstyle="[^"]*\bdisplay:\s*([a-z-]+)/i.exec(m[0]);
+      if (disp) e.style.display = disp[1];
+      els.set(m[1], e);
+    }
+  };
+  const mk = id => { const e = new El(id); e.parentNode = body; e._recreate = recreate; return e; };
   const byId = id => {
-    if (!els.has(id)) { const e = new El(id); e.parentNode = body; els.set(id, e); }
+    if (!els.has(id)) els.set(id, mk(id));
     return els.get(id);
   };
   const document = {
@@ -146,6 +161,45 @@ check('B2: index.html elavultság-sáv: ismeretlen freshness-kulcs nem lesz elem
   must(el.style.display === 'block' && html.includes('onerror'), `a sáv nem jelent meg: ${html.slice(0, 120)}`);
   must(!/<img\b/i.test(html), `nyers <img> a sáv innerHTML-jében: …${html.slice(html.indexOf('<b>'), html.indexOf('<b>') + 60)}…`);
   must(html.includes(esc(HOSTILE)), 'a forrás neve nem semlegesítve jelenik meg');
+});
+
+// ── Napi terv + Feladatok: a kártyák a sablon kiírása UTÁN legyenek kitöltve ────
+// A render() a #dayPlanBody / #tasksBody elemet a tab-today.innerHTML= ELŐTT töltötte ki;
+// a sablon utána rejtve és üresen hozta létre őket újra — a két kártya sosem látszott.
+check('napi terv: a demó adattal a Day plan és a Tasks kártya látszik, és nem üres', () => {
+  const d = demo();
+  must(d.day_plan && d.tasks, 'a demó adatban nincs day_plan / tasks (nem bizonyít)');
+  const p = page('index.html');
+  p.ctx.render(d);
+  // előfeltétel: a sablon kiíródott, és benne van a két (induláskor rejtett) szakasz
+  must(/id="dayPlanSection"/.test(p.el('tab-today').innerHTML) && /id="tasksSection"/.test(p.el('tab-today').innerHTML),
+       'a tab-today sablonban nincs meg a két szakasz (nem bizonyít)');
+  for (const [sec, body, szo] of [['dayPlanSection', 'dayPlanBody', 'Clear day — good for deep work'],
+                                  ['tasksSection', 'tasksBody', '19 open tasks']]) {
+    must(p.el(sec).style.display !== 'none', `${sec} rejtve maradt (display=${p.el(sec).style.display})`);
+    must(p.el(body).textContent.includes(szo), `${body} nem a demó tartalmát mutatja: "${p.el(body).textContent.replace(/\s+/g, ' ').slice(0, 80)}"`);
+  }
+  must(p.el('dayPlanLabel').textContent.includes('Tomorrow'), `a címke nem az esti kontextusé: ${p.el('dayPlanLabel').textContent}`);
+});
+check('napi terv: day_plan / tasks nélkül a két szakasz rejtve marad', () => {
+  const d = demo(); delete d.day_plan; delete d.tasks;
+  const p = page('index.html');
+  p.ctx.render(d);
+  must(p.el('dayPlanSection').style.display === 'none' && p.el('tasksSection').style.display === 'none',
+       `üres adatnál is látszik: ${p.el('dayPlanSection').style.display} / ${p.el('tasksSection').style.display}`);
+});
+check('napi terv: ellenséges szöveg a tervben és a feladatokban nem lesz elem (2. szabály)', () => {
+  const d = demo();
+  d.day_plan.tomorrow.lines = [HOSTILE];
+  d.day_plan.today.tasks = [{name: HOSTILE}];
+  d.tasks.tomorrow = {tasks: [{name: HOSTILE, project: HOSTILE}], count: 1, score: 1, label: 'Light'};
+  const p = page('index.html');
+  p.ctx.render(d);
+  for (const body of ['dayPlanBody', 'tasksBody']) {
+    const html = p.el(body).innerHTML;
+    must(html.includes('onerror'), `${body}: a próba nem jelent meg (nem bizonyít)`);
+    must(!/<img\b/i.test(html), `${body}: nyers <img> az innerHTML-ben`);
+  }
 });
 
 // ── B3: a hibadoboz a hibaüzenetet SZÖVEGKÉNT írja ki ───────────────────────────
