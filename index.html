@@ -623,11 +623,13 @@ function render(d){
 
     const loadBadge = l => {
       const styles = {Clear:'#E1F5EE;color:#0F6E56',Light:'#E1F5EE;color:#0F6E56',Moderate:'#FAEEDA;color:#854F0B',Heavy:'#FAEEDA;color:#854F0B',Packed:'#FCEBEB;color:#A32D2D'};
+      // A semleges jelvény LÉTEZŐ változókat használ (--s2 / --text2): a korábbi --card2
+      // nincs definiálva, a jelvény háttér nélküli szöveg volt.
       // Hiányzó címke → semleges "—" (nem kitalált zöld "Clear").
       // Ismeretlen címke ("Unknown": a sync nem tudta beolvasni a feladatlistát, vagy
       // bármi, amit nem ismerünk) semleges szürke jelvényt kap — nem a zöld "Clear"-t.
       // Saját kulcs kell (hasOwnProperty): a styles['constructor'] függvény lenne.
-      const s = Object.prototype.hasOwnProperty.call(styles, l) ? styles[l] : 'var(--card2);color:var(--text2)';
+      const s = Object.prototype.hasOwnProperty.call(styles, l) ? styles[l] : 'var(--s2);color:var(--text2)';
       return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'—'}</span>`;
     };
     // Emoji ikonok, mint a lap többi részén. A korábbi `ti ti-…` ikonokhoz egyik lap sem
@@ -640,11 +642,11 @@ function render(d){
       return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid;${s}">${ico(icon,12)}${text}</span>`;
     };
     const seqBox = (text, cls) => {
-      const s = cls==='first'?'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4':cls==='deep'?'background:#EEEDFE;color:#534AB7;border-color:#CECBF6':'background:var(--card2);color:var(--text2);border-color:var(--border)';
+      const s = cls==='first'?'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4':cls==='deep'?'background:#EEEDFE;color:#534AB7;border-color:#CECBF6':'background:var(--s2);color:var(--text2);border-color:var(--border)';
       return `<span style="font-size:11px;padding:4px 9px;border-radius:6px;border:0.5px solid;white-space:nowrap;flex-shrink:0;${s}">${text}</span>`;
     };
     const tlBar = (label, flex, color) => `<div style="flex:${flex};min-width:0"><div style="height:5px;border-radius:3px;background:${color};margin-bottom:3px"></div><div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label}</div></div>`;
-    const recBox = (icon, html) => `<div style="background:var(--card2);border-radius:8px;padding:.55rem .8rem;display:flex;gap:8px;align-items:flex-start;margin-top:.5rem">${ico(icon,15,'margin-top:1px;flex-shrink:0')}<span style="font-size:12px;color:var(--text2);line-height:1.5">${html}</span></div>`;
+    const recBox = (icon, html) => `<div style="background:var(--s2);border-radius:8px;padding:.55rem .8rem;display:flex;gap:8px;align-items:flex-start;margin-top:.5rem">${ico(icon,15,'margin-top:1px;flex-shrink:0')}<span style="font-size:12px;color:var(--text2);line-height:1.5">${html}</span></div>`;
     const secHead = s => `<div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:.4rem">${s}</div>`;
     const divLine = () => `<div style="height:.5px;background:var(--border);margin:.6rem 0"></div>`;
 
@@ -668,8 +670,8 @@ function render(d){
         const bb = plan.bb, rd = plan.readiness, hrv = plan.hrv;
         const eCol = (v,lo,mid) => v == null ? 'var(--border)' : v < lo ? '#E24B4A' : v < mid ? '#EF9F27' : '#1D9E75';
         const bar = (v,max,c) => v == null
-          ? `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px"></div>`
-          : `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
+          ? `<div style="flex:1;height:5px;background:var(--s2);border-radius:3px"></div>`
+          : `<div style="flex:1;height:5px;background:var(--s2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
         const eRow = (lbl,v,max,c,sfx) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:var(--text3);width:62px;flex-shrink:0">${lbl}</span>${bar(v,max,c)}<span style="font-size:10px;color:${v == null ? 'var(--text3)' : 'var(--text2)'};width:38px;text-align:right">${v == null ? '—' : v + sfx}</span></div>`;
         energyHtml = `<div style="margin-bottom:.6rem">${eRow('Body battery',bb,100,eCol(bb,30,60),'')}${eRow('Readiness',rd,100,eCol(rd,50,70),'/100')}${eRow('HRV',hrv,80,eCol(hrv,35,45),'ms')}</div>`;
       }
@@ -720,7 +722,7 @@ function render(d){
         ? recBox(isTom ? 'clock' : 'moon', noteLines.join('<br>'))
         : '';
 
-      return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text1)">${label}</span>${loadBadge(p.label)}</div><div style="background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text)">${label}</span>${loadBadge(p.label)}</div><div style="background:var(--s1);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
     };
 
     // A payload értéke a forrás. A korábbi {...tom, work_shifts:2, has_gym:true}
@@ -758,7 +760,7 @@ function render(d){
       const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px">overdue</span>` : '';
       return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border)">
         <span style="font-size:14px;opacity:.5">□</span>
-        <span style="font-size:12px;font-family:var(--m);color:var(--text1);min-width:0">${name}</span>${proj}${over}
+        <span style="font-size:12px;font-family:var(--m);color:var(--text);min-width:0">${name}</span>${proj}${over}
       </div>`;
     };
 

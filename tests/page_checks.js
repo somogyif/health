@@ -224,7 +224,7 @@ check('napi terv: az "Unknown" és az ismeretlen címke semleges jelvényt kap, 
     const st = badgeOf(p.el('dayPlanBody').innerHTML, label);
     must(st, `a(z) "${label}" jelvény nem jelent meg (nem bizonyít)`);
     must(!GREEN.test(st), `a(z) "${label}" címke zöld "Clear" stílust kapott: ${st}`);
-    must(/var\(--card2\)/.test(st) && /var\(--text2\)/.test(st), `a(z) "${label}" jelvénye nem a semleges stílus: ${st}`);
+    must(/background:var\(--s2\)/.test(st) && /color:var\(--text2\)/.test(st), `a(z) "${label}" jelvénye nem a semleges stílus: ${st}`);
   }
 });
 check('napi terv: az ismert címkék stílusa változatlan (Clear zöld, Heavy sárga, Packed piros)', () => {
@@ -248,7 +248,7 @@ check('napi terv: hiányzó label → semleges "—" jelvény; a valódi "Clear"
     const html = p.el('dayPlanBody').innerHTML;
     const st = badgeOf(html, '—');
     must(st, `label=${JSON.stringify(hiany)}: nincs "—" jelvény (a jelvények: ${JSON.stringify(html.match(/border-radius:20px[^>]*>[^<]*/g))})`);
-    must(!GREEN.test(st) && /var\(--card2\)/.test(st), `label=${JSON.stringify(hiany)}: a "—" jelvény nem semleges: ${st}`);
+    must(!GREEN.test(st) && /background:var\(--s2\)/.test(st), `label=${JSON.stringify(hiany)}: a "—" jelvény nem semleges: ${st}`);
     // a holnapi blokk címkéje a demóban valódi "Clear": az zöld marad, és csak egy van belőle
     must(GREEN.test(badgeOf(html, 'Clear') || ''), 'a valódi "Clear" jelvény eltűnt vagy nem zöld');
     must((html.match(/>Clear<\/span>/g) || []).length === 1, 'a hiányzó címke helyén is "Clear" áll');
@@ -633,6 +633,27 @@ check('F3: a két kártya törzse bárhol törhet (overflow-wrap:anywhere), a fe
   const m = new RegExp(`<span style="([^"]*)">${nev}</span>`).exec(p.el('tasksBody').innerHTML);
   must(m, 'a feladat neve nem jelent meg (nem bizonyít)');
   must(/(^|;)min-width:0(;|$)/.test(m[1]), `a feladatnév elemén nincs min-width:0: ${m[1]}`);
+});
+
+// ── A két kártya csak LÉTEZŐ CSS-változót használjon ───────────────────────────
+// A --card2, --card, --text1 az index.html-ben nincs definiálva: a "semleges" jelvény
+// háttér nélküli szürke szöveg volt, nem szürke pirula (és a dobozoknak sem volt háttere).
+check('napi terv + tasks: a kártyák minden var(--…) változója definiálva van a :root-ban', () => {
+  const root = (/:root\s*\{([^}]*)\}/.exec(read('index.html')) || [])[1] || '';
+  const defined = new Set([...root.matchAll(/(--[a-z0-9-]+)\s*:/g)].map(m => m[1]));
+  must(defined.has('--s2') && defined.has('--text2'), 'a :root változói nem olvashatók (nem bizonyít)');
+  const d = demo();
+  Object.assign(d.day_plan.today, {label: 'Unknown', work_shifts: 2, has_gym: true,
+                                   tasks: [{name: 'Send review'}, {name: 'Call the bank'}, {name: 'Prep interview'}, {name: 'Water plants'}]});
+  d.tasks.today = {tasks: [{name: 'Call the bank', project: 'Admin'}], count: 1, score: 1, label: 'Unknown'};
+  d.tasks.overdue = {tasks: [{name: 'Old one', overdue: true}], count: 1};
+  const p = page('index.html');
+  p.ctx.render(d);
+  const html = p.el('dayPlanBody').innerHTML + p.el('tasksBody').innerHTML;
+  const used = [...new Set([...html.matchAll(/var\((--[a-z0-9-]+)\)/g)].map(m => m[1]))];
+  must(used.length >= 4, `túl kevés változó a kártyákon (nem bizonyít): ${used}`);
+  const undef = used.filter(v => !defined.has(v));
+  must(!undef.length, `nem definiált CSS-változó a kártyákon: ${undef.join(', ')}`);
 });
 
 // ── futtatás ────────────────────────────────────────────────────────────────────
