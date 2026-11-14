@@ -656,6 +656,23 @@ check('napi terv + tasks: a kártyák minden var(--…) változója definiálva 
   must(!undef.length, `nem definiált CSS-változó a kártyákon: ${undef.join(', ')}`);
 });
 
+// ── Tasks kártya: hiányzó címke → "—", nem "undefined" ─────────────────────────
+check('tasks: hiányzó label (count > 0) mellett "—" áll, nem "undefined"/"null"', () => {
+  for (const hiany of [undefined, null, '']) {
+    const d = demo();
+    d.tasks.today = {tasks: [{name: 'Call the bank'}], count: 1, score: 1};
+    d.tasks.tomorrow = {tasks: [{name: 'Send review'}], count: 1, score: 1};
+    if (hiany !== undefined) { d.tasks.today.label = hiany; d.tasks.tomorrow.label = hiany; }
+    const p = page('index.html');
+    p.ctx.render(d);
+    const t = p.el('tasksBody').textContent.replace(/\s+/g, ' ');
+    must(t.includes('Call the bank') && t.includes('Send review'), `a feladatok nem jelentek meg (nem bizonyít): ${t.slice(0, 100)}`);
+    must(!/undefined|null/.test(t), `label=${JSON.stringify(hiany)}: "${(/undefined|null/.exec(t) || [])[0]}" a kártyán: ${t.slice(0, 100)}`);
+    must(/Today\s*—/.test(t) && /Tomorrow\s*—/.test(t), `label=${JSON.stringify(hiany)}: nincs "—" a címke helyén: ${t.slice(0, 100)}`);
+    must(taskLabelColor(p.el('tasksBody').innerHTML, '—') === 'var(--text3)', 'a "—" nem semleges színű');
+  }
+});
+
 // ── futtatás ────────────────────────────────────────────────────────────────────
 module.exports = {page, settle, demo, json};   // egyedi próbákhoz: require('./page_checks')
 if (require.main === module) (async () => {
