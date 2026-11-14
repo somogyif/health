@@ -321,7 +321,7 @@ check('napi terv: synced_at nélkül (vagy hibás dátummal) nincs kitalált dá
 // (üres hely a szöveg előtt). Új külső forrást nem veszünk fel: emoji, mint a lap többi részén.
 const cssRule = sel => {
   const css = (/<style\b[^>]*>([\s\S]*?)<\/style>/i.exec(read('index.html')) || [])[1] || '';
-  const m = new RegExp(`(?:^|[}\\s])${sel.replace(/[.:]/g, '\\$&')}\\{([^}]*)\\}`).exec(css);
+  const m = new RegExp(`(?:^|[}\\s])${sel.replace(/[.:#,]/g, '\\$&')}\\{([^}]*)\\}`).exec(css);
   return m ? m[1].split(';').map(x => x.trim()).filter(Boolean) : null;
 };
 check('napi terv: a .sec-label szakaszcím ugyanazt a stílust kapja, mint a többi szakaszcím (CSS)', () => {
@@ -618,6 +618,21 @@ check('F2: ha egy kártya kitöltése mégis elhasal, csak az a szakasz tűnik e
     const i = src.indexOf(call), elotte = src.slice(Math.max(0, i - 900), i), utana = src.slice(i, i + 400);
     must(i > 0 && /try\s*\{[^}]*$/.test(elotte) && /\}\s*catch\s*\(/.test(utana), `nincs try/catch körülötte: ${call}`);
   }
+});
+
+// ── F3: hosszú, törhetetlen szó (e-mail-cím) ne lógjon ki 375 px-en ─────────────
+// A tényleges mérés böngészőben történik (scrollWidth 375 px-es keretben: 397 → 375);
+// itt azt rögzítjük, ami a törést lehetővé teszi (10. szabály: Safari Mobile).
+check('F3: a két kártya törzse bárhol törhet (overflow-wrap:anywhere), a feladatnév zsugorodhat (min-width:0)', () => {
+  const rule = cssRule('#dayPlanBody,#tasksBody');
+  must(rule && rule.includes('overflow-wrap:anywhere'), `nincs #dayPlanBody,#tasksBody{overflow-wrap:anywhere}: ${rule}`);
+  const d = demo(), nev = 'Email kristofer.johannessen@nordiskakonsulter.se re contract';
+  d.tasks.today = {tasks: [{name: nev, project: 'Admin'}], count: 1, score: 1, label: 'Light'};
+  const p = page('index.html');
+  p.ctx.render(d);
+  const m = new RegExp(`<span style="([^"]*)">${nev}</span>`).exec(p.el('tasksBody').innerHTML);
+  must(m, 'a feladat neve nem jelent meg (nem bizonyít)');
+  must(/(^|;)min-width:0(;|$)/.test(m[1]), `a feladatnév elemén nincs min-width:0: ${m[1]}`);
 });
 
 // ── futtatás ────────────────────────────────────────────────────────────────────

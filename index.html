@@ -110,6 +110,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
    sec-head + sec-title + sec-line hármasé — a vonalat a ::after rajzolja. */
 .sec-label{display:flex;align-items:center;gap:10px;margin-bottom:1rem;font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
 .sec-label::after{content:"";flex:1;height:.5px;background:var(--border)}
+/* Hosszú, törhetetlen szó (e-mail-cím, URL nélküli azonosító) a két kártyán ne lógjon
+   ki 375 px-en: a szöveg bárhol törhet. */
+#dayPlanBody,#tasksBody{overflow-wrap:anywhere}
 
 /* ── CARD ── */
 .card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
@@ -755,7 +758,7 @@ function render(d){
       const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px">overdue</span>` : '';
       return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border)">
         <span style="font-size:14px;opacity:.5">□</span>
-        <span style="font-size:12px;font-family:var(--m);color:var(--text1)">${name}</span>${proj}${over}
+        <span style="font-size:12px;font-family:var(--m);color:var(--text1);min-width:0">${name}</span>${proj}${over}
       </div>`;
     };
 
