@@ -108,6 +108,11 @@ function page(file, opt = {}) {
   };
   ctx.window = ctx; ctx.self = ctx;
   vm.createContext(ctx);
+  // opt.now (ms): a lap "mostja" — a néző órája. Csak az argumentum nélküli new Date()
+  // és a Date.now() változik; a dátumszámítás (helyi időzóna) a valódi.
+  if (opt.now != null) vm.runInContext(`(() => { const R = Date, NOW = ${Number(opt.now)};
+    globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a); else super(NOW); } static now() { return NOW; } };
+  })()`, ctx);
   for (const s of scriptsOf(file)) vm.runInContext(s.code, ctx, {filename: s.name});
   return {
     ctx, calls, store, loc, el: byId,
@@ -169,7 +174,7 @@ check('B2: index.html elavultság-sáv: ismeretlen freshness-kulcs nem lesz elem
 check('napi terv: a demó adattal a Day plan és a Tasks kártya látszik, és nem üres', () => {
   const d = demo();
   must(d.day_plan && d.tasks, 'a demó adatban nincs day_plan / tasks (nem bizonyít)');
-  const p = page('index.html');
+  const p = page('index.html', {now: at(2026, 3, 17, 22)});   // a néző órája a demó sync-napján (2026-03-17) áll
   p.ctx.render(d);
   // előfeltétel: a sablon kiíródott, és benne van a két (induláskor rejtett) szakasz
   must(/id="dayPlanSection"/.test(p.el('tab-today').innerHTML) && /id="tasksSection"/.test(p.el('tab-today').innerHTML),
@@ -253,25 +258,60 @@ check('napi terv: hiányzó label → semleges "—" jelvény; a valódi "Clear"
 // ── Napi terv: a terv NAPJA a dokumentumból jön, nem a böngésző mai napjából ────
 // A sync a day_plan-t és a synced_at-et ugyanabból a pillanatból írja; a kártya mégis
 // new Date()-et rajzolt — régi adatnál a mai dátum állt egy korábbi nap terve fölött.
-const planText = mut => {
+const at = (y, mo, d, h = 12, mi = 0) => new Date(y, mo - 1, d, h, mi).getTime();   // a néző helyi ideje
+const planView = (now, mut) => {
   const d = demo(); mut(d);
-  const p = page('index.html');
+  const p = page('index.html', {now});
   p.ctx.render(d);
-  return p.el('dayPlanBody').textContent.replace(/\s+/g, ' ');
+  return {text: p.el('dayPlanBody').textContent.replace(/\s+/g, ' '), head: p.el('dayPlanLabel').textContent};
 };
-check('napi terv: a dátum a synced_at napja (demó: 17 Mar / 18 Mar), nem a mai nap', () => {
-  const este = planText(() => {});
-  must(este.includes('Tomorrow · 18 Mar') && este.includes('Tonight · 17 Mar'), `esti terv: ${este.slice(0, 120)}`);
-  const reggel = planText(d => { d.day_plan.context = 'morning'; });
-  must(reggel.includes('Today · 17 Mar') && reggel.includes('Tomorrow · 18 Mar'), `reggeli terv: ${reggel.slice(0, 120)}`);
-  const honapveg = planText(d => { d.synced_at = '2026-01-31 21:30'; });
-  must(honapveg.includes('Tomorrow · 1 Feb') && honapveg.includes('Tonight · 31 Jan'), `hónapvég: ${honapveg.slice(0, 120)}`);
+const syncAt = (stampStr, context) => d => { d.synced_at = stampStr; d.day_plan.context = context; };
+check('napi terv: a dátum a synced_at napja; ugyanazon a napon nézve Today/Tonight/Tomorrow', () => {
+  // a demó synced_at-je 2026-03-17; a néző órája ugyanaz a nap
+  const este = planView(at(2026, 3, 17, 22), () => {});
+  must(este.text.includes('Tomorrow · 18 Mar') && este.text.includes('Tonight · 17 Mar'), `esti terv: ${este.text.slice(0, 120)}`);
+  must(este.head === "📋 Tomorrow's plan", `esti fejléc: ${este.head}`);
+  const reggel = planView(at(2026, 3, 17, 8), d => { d.day_plan.context = 'morning'; });
+  must(reggel.text.includes('Today · 17 Mar') && reggel.text.includes('Tomorrow · 18 Mar'), `reggeli terv: ${reggel.text.slice(0, 120)}`);
+  must(reggel.head === "📋 Today's plan", `reggeli fejléc: ${reggel.head}`);
+  const honapveg = planView(at(2026, 1, 31, 22), syncAt('2026-01-31 21:30', 'evening'));
+  must(honapveg.text.includes('Tomorrow · 1 Feb') && honapveg.text.includes('Tonight · 31 Jan'), `hónapvég: ${honapveg.text.slice(0, 120)}`);
+});
+// F1: a napszó a NÉZŐ mai napjához igazodik. A sync 07:00-kor és 12:00-kor fut: éjfél és
+// reggel 7 között (és 24 óránál fiatalabb régi adatnál, sáv nélkül) "Today · 14 Nov" állt 15-én.
+check('napi terv F1: esti terv éjfél után nézve → a holnapi blokk "Today", a tegnapi "Yesterday"', () => {
+  const v = planView(at(2026, 11, 15, 6, 30), syncAt('2026-11-14 21:30', 'evening'));
+  must(v.text.includes('Today · 15 Nov') && v.text.includes('Yesterday · 14 Nov'), `a kártya: ${v.text.slice(0, 140)}`);
+  must(!/Tomorrow|Tonight/.test(v.text), `hamis napszó maradt: ${v.text.slice(0, 140)}`);
+  must(v.head === "📋 Today's plan", `fejléc: ${v.head}`);
+});
+check('napi terv F1: reggeli (és délutáni) terv másnap reggel nézve → "Yesterday" + "Today"', () => {
+  for (const ctx of ['morning', 'afternoon']) {
+    const v = planView(at(2026, 11, 15, 6, 30), syncAt('2026-11-14 12:00', ctx));
+    must(v.text.includes('Yesterday · 14 Nov') && v.text.includes('Today · 15 Nov'), `${ctx}: ${v.text.slice(0, 140)}`);
+    must(!/Tomorrow|Tonight|Today · 14/.test(v.text), `${ctx}: hamis napszó: ${v.text.slice(0, 140)}`);
+    must(v.head === "📋 Yesterday's plan", `${ctx} fejléc: ${v.head}`);
+  }
+});
+check('napi terv F1: hónapvégi esti terv éjfél után; régi terv → "Plan from"; előrébb járó sync → "Tomorrow"', () => {
+  const hv = planView(at(2026, 12, 1, 0, 30), syncAt('2026-11-30 21:30', 'evening'));
+  must(hv.text.includes('Today · 1 Dec') && hv.text.includes('Yesterday · 30 Nov') && hv.head === "📋 Today's plan",
+       `hónapvég: ${hv.head} / ${hv.text.slice(0, 140)}`);
+  const regi = planView(at(2026, 11, 15, 9), syncAt('2026-11-10 07:00', 'morning'));
+  must(regi.text.includes('Plan from 10 Nov') && regi.text.includes('Plan from 11 Nov') && !/Today|Tomorrow|Tonight|Yesterday/.test(regi.text),
+       `régi terv: ${regi.text.slice(0, 140)}`);
+  must(regi.head === '📋 Plan from 10 Nov', `régi fejléc: ${regi.head}`);
+  // a néző órája a sync mögött jár (pl. más időzóna): a terv napja a néző holnapja
+  const elol = planView(at(2026, 11, 14, 23), syncAt('2026-11-15 07:00', 'morning'));
+  must(elol.text.includes('Tomorrow · 15 Nov') && elol.text.includes('Plan from 16 Nov') && elol.head === "📋 Tomorrow's plan",
+       `előrébb járó sync: ${elol.head} / ${elol.text.slice(0, 140)}`);
 });
 check('napi terv: synced_at nélkül (vagy hibás dátummal) nincs kitalált dátum', () => {
   for (const mut of [d => { delete d.synced_at; }, d => { d.synced_at = 'nem dátum'; }, d => { d.synced_at = '2026-13-45 07:00'; }]) {
-    const t = planText(mut);
-    must(t.includes('Tomorrow') && t.includes('Tonight'), `a terv nem rajzolódott ki (nem bizonyít): ${t.slice(0, 80)}`);
-    must(!/(Tomorrow|Tonight|Today) · /.test(t), `dátum áll a címben, pedig a dokumentumban nincs: ${t.slice(0, 120)}`);
+    const v = planView(at(2026, 11, 15, 6, 30), mut);
+    must(v.text.includes('Tomorrow') && v.text.includes('Tonight'), `a terv nem rajzolódott ki (nem bizonyít): ${v.text.slice(0, 80)}`);
+    must(!/(Tomorrow|Tonight|Today|Yesterday) · /.test(v.text) && !/Plan from/.test(v.text + v.head),
+         `dátum áll a címben, pedig a dokumentumban nincs: ${v.head} / ${v.text.slice(0, 120)}`);
   }
 });
 

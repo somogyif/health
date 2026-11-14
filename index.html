@@ -586,6 +586,28 @@ function render(d){
     travel: 'travel', personal: 'personal', other: 'other'
   };
 
+  // A terv egy napjának címe (off: 0 = a terv napja, 1 = a rákövetkező nap).
+  // A DÁTUM a dokumentumból jön: a sync a day_plan-t és a synced_at-et ugyanabból a
+  // pillanatból írja. A NAPSZÓ (Today/Tonight/Tomorrow/Yesterday) viszont a NÉZŐ helyi
+  // mai napjához mért: a sync 07:00-kor és 12:00-kor fut, tehát éjfél után a tegnapi
+  // terv "Today"-e már nem ma van. Ami nem tegnap/ma/holnap: "Plan from <dátum>".
+  // Ha a synced_at hiányzik vagy nem dátum, nem találunk ki dátumot (a cím dátum
+  // nélküli, a terv saját kontextusa szerint), és head = null.
+  function planDayLabel(off, evening) {
+    const sm = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d.synced_at || ''));
+    const base = sm ? new Date(+sm[1], +sm[2]-1, +sm[3]) : null;
+    if (!base || base.getMonth() !== +sm[2]-1 || base.getDate() !== +sm[3])
+      return {title: off ? 'Tomorrow' : evening ? 'Tonight' : 'Today', head: null};
+    const day = new Date(base.getFullYear(), base.getMonth(), base.getDate()+off);
+    const n = new Date(), today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    const rel = Math.round((day - today) / 86400000);   // kerekítve: az óraátállítás napján is egész
+    const date = day.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    if (rel === 0) return {title: `${off === 0 && evening ? 'Tonight' : 'Today'} · ${date}`, head: "Today's plan"};
+    if (rel === 1) return {title: `Tomorrow · ${date}`, head: "Tomorrow's plan"};
+    if (rel === -1) return {title: `Yesterday · ${date}`, head: "Yesterday's plan"};
+    return {title: `Plan from ${date}`, head: `Plan from ${date}`};
+  }
+
   function renderDayPlan(plan) {
     if (!plan) return '';
     const ctx = plan.context || 'morning';
@@ -694,17 +716,6 @@ function render(d){
       return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text1)">${label}</span>${loadBadge(p.label)}</div><div style="background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
     };
 
-    const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    // A terv napja a DOKUMENTUMBÓL jön: a sync a day_plan-t és a synced_at-et ugyanabból
-    // a pillanatból írja. Korábban new Date() állt itt — régi (carry-forward, leállt sync)
-    // adatnál a böngésző mai napja került egy korábbi nap terve fölé. Ha a synced_at
-    // hiányzik vagy nem dátum, nem találunk ki dátumot: a cím dátum nélkül jelenik meg.
-    const sm = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d.synced_at || ''));
-    const planDay = sm ? new Date(+sm[1], +sm[2]-1, +sm[3]) : null;
-    const planOk = planDay && planDay.getMonth() === +sm[2]-1 && planDay.getDate() === +sm[3];
-    const dayStr = off => planOk ? ` · ${fmt(new Date(planDay.getFullYear(), planDay.getMonth(), planDay.getDate()+off))}` : '';
-    const todStr = dayStr(0);
-    const tomStr = dayStr(1);
     // A payload értéke a forrás. A korábbi {...tom, work_shifts:2, has_gym:true}
     // 86/86 mentésen felülírta a syncet: 84 napon hamis Café x2 + Gym pillt rajzolt.
     const tomP = {...tom};
@@ -712,13 +723,13 @@ function render(d){
 
     let out = '';
     if (ctx === 'evening') {
-      out += renderBlock(`Tomorrow${tomStr}`, tomP, true);
+      out += renderBlock(planDayLabel(1, ctx === 'evening').title, tomP, true);
       out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
-      out += renderBlock(`Tonight${todStr}`, todP, false);
+      out += renderBlock(planDayLabel(0, true).title, todP, false);
     } else {
-      out += renderBlock(`Today${todStr}`, todP, false);
+      out += renderBlock(planDayLabel(0, false).title, todP, false);
       out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
-      out += renderBlock(`Tomorrow${tomStr}`, tomP, true);
+      out += renderBlock(planDayLabel(1, ctx === 'evening').title, tomP, true);
     }
     out += `<div style="font-size:10px;color:var(--text3);text-align:right;margin-top:.3rem">generated ${plan.generated_at||''}</div>`;
     return out;
@@ -1016,7 +1027,10 @@ function render(d){
     if (dayPlan) {
       dpSec.style.display = '';
       const ctx = dayPlan.context || 'morning';
-      if (dpLabel) dpLabel.textContent = ctx === 'evening' ? '📋 Tomorrow\'s plan' : ctx === 'morning' ? '📋 Today\'s plan' : '📋 Plan';
+      // A fejléc a terv FŐ napjáról szól (esti tervnél a rákövetkező nap), a néző mai
+      // napjához mérve; dátum nélküli dokumentumnál a terv saját kontextusa szerint.
+      const head = planDayLabel(ctx === 'evening' ? 1 : 0, ctx === 'evening').head;
+      if (dpLabel) dpLabel.textContent = '📋 ' + (head || (ctx === 'evening' ? 'Tomorrow\'s plan' : ctx === 'morning' ? 'Today\'s plan' : 'Plan'));
       dpEl.innerHTML = renderDayPlan(dayPlan);
     } else {
       dpSec.style.display = 'none';
