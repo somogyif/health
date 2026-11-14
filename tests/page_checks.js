@@ -275,6 +275,44 @@ check('napi terv: synced_at nélkül (vagy hibás dátummal) nincs kitalált dá
   }
 });
 
+// ── Napi terv + Tasks: a két szakaszcím és az ikonok (most látszanak először) ───
+// A sec-label osztálynak nem volt CSS-e (a cím stílus nélkül, a többi szakaszcímtől
+// eltérően jelent meg), a `ti ti-…` ikonokhoz pedig egyik lap sem tölt be ikon-betűkészletet
+// (üres hely a szöveg előtt). Új külső forrást nem veszünk fel: emoji, mint a lap többi részén.
+const cssRule = sel => {
+  const css = (/<style\b[^>]*>([\s\S]*?)<\/style>/i.exec(read('index.html')) || [])[1] || '';
+  const m = new RegExp(`(?:^|[}\\s])${sel.replace(/[.:]/g, '\\$&')}\\{([^}]*)\\}`).exec(css);
+  return m ? m[1].split(';').map(x => x.trim()).filter(Boolean) : null;
+};
+check('napi terv: a .sec-label szakaszcím ugyanazt a stílust kapja, mint a többi szakaszcím (CSS)', () => {
+  const head = cssRule('.sec-head'), title = cssRule('.sec-title'), line = cssRule('.sec-line');
+  must(head && title && line, 'a mérce (.sec-head/.sec-title/.sec-line) nincs meg (nem bizonyít)');
+  const label = cssRule('.sec-label'), after = cssRule('.sec-label::after');
+  must(label, 'nincs .sec-label CSS-szabály — a két szakaszcím stílus nélküli');
+  const hiany = [...head, ...title].filter(x => !label.includes(x));
+  must(!hiany.length, `a .sec-label-ből hiányzik: ${hiany.join('; ')}`);
+  must(after && line.every(x => after.includes(x)) && after.some(x => /^content:/.test(x)),
+       `a .sec-label::after nem rajzolja meg a vonalat: ${after}`);
+  // a jelölő nem változott: a két cím továbbra is sec-label
+  must(/class="sec-label" id="dayPlanLabel"/.test(read('index.html')), 'a dayPlanLabel már nem sec-label');
+});
+check('napi terv: nincs betöltetlen ikon-betűkészletre mutató ikon; emoji van helyette; nincs új külső forrás', () => {
+  const src = read('index.html');
+  must(!/class="ti\b/.test(src), 'az index.html-ben még van `ti ti-…` ikon (a betűkészlet nincs betöltve)');
+  const hosts = [...new Set([...src.matchAll(/(?:src|href)=["']https?:\/\/([^\/"']+)/g)].map(m => m[1]))].sort();
+  must(hosts.join(',') === 'cdnjs.cloudflare.com,fonts.googleapis.com', `a külső források megváltoztak: ${hosts}`);
+  const d = demo();
+  Object.assign(d.day_plan.today, {work_shifts: 2, has_gym: true, task_count: 2,
+                                   tasks: [{name: 'Call the bank'}, {name: 'Send review'}, {name: 'Prep interview'}, {name: 'Water plants'}]});
+  const p = page('index.html');
+  p.ctx.render(d);
+  const html = p.el('dayPlanBody').innerHTML;
+  must(html.includes('Work shifts ×2') && html.includes('Call the bank'), 'a pillek nem jelentek meg (nem bizonyít)');
+  must(!/<i\b/.test(html), 'a kirajzolt tervben még <i> ikon-elem van');
+  for (const e of ['☕', '🏋', '📞', '✉', '💼', '✓', '🌙', '⏱'])
+    must(html.includes(e), `hiányzik az ikon: ${e}`);
+});
+
 // ── Tasks kártya: az ismeretlen címke itt sem lehet zöld ────────────────────────
 // scoreColor: minden, ami nem Packed/Heavy/Moderate, var(--teal) volt — az "Unknown" is.
 const taskLabelColor = (html, label) => {

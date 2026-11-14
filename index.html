@@ -106,6 +106,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
 .sec-title{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
 .sec-line{flex:1;height:.5px;background:var(--border)}
+/* A Day plan és a Tasks szakasz címe (sec-label): ugyanaz a megjelenés, mint a
+   sec-head + sec-title + sec-line hármasé — a vonalat a ::after rajzolja. */
+.sec-label{display:flex;align-items:center;gap:10px;margin-bottom:1rem;font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.sec-label::after{content:"";flex:1;height:.5px;background:var(--border)}
 
 /* ── CARD ── */
 .card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
@@ -597,16 +601,21 @@ function render(d){
       const s = Object.prototype.hasOwnProperty.call(styles, l) ? styles[l] : 'var(--card2);color:var(--text2)';
       return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'—'}</span>`;
     };
+    // Emoji ikonok, mint a lap többi részén. A korábbi `ti ti-…` ikonokhoz egyik lap sem
+    // tölt be ikon-betűkészletet (üres hely maradt), új külső forrást pedig nem veszünk fel.
+    const ICONS = {coffee:'☕', barbell:'🏋', phone:'📞', send:'✉️', briefcase:'💼', check:'✓', clock:'⏱', moon:'🌙'};
+    const ico = (name, size, extra) => Object.prototype.hasOwnProperty.call(ICONS, name)
+      ? `<span aria-hidden="true" style="font-size:${size}px;line-height:1;${extra||''}">${ICONS[name]}</span>` : '';
     const pill = (icon, text, type) => {
       const s = {work:'background:#FAEEDA;color:#854F0B;border-color:#FAC775',gym:'background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB',task:'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4',over:'background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1'}[type]||'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4';
-      return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid;${s}"><i class="ti ti-${icon}" aria-hidden="true" style="font-size:12px"></i>${text}</span>`;
+      return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid;${s}">${ico(icon,12)}${text}</span>`;
     };
     const seqBox = (text, cls) => {
       const s = cls==='first'?'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4':cls==='deep'?'background:#EEEDFE;color:#534AB7;border-color:#CECBF6':'background:var(--card2);color:var(--text2);border-color:var(--border)';
       return `<span style="font-size:11px;padding:4px 9px;border-radius:6px;border:0.5px solid;white-space:nowrap;flex-shrink:0;${s}">${text}</span>`;
     };
     const tlBar = (label, flex, color) => `<div style="flex:${flex};min-width:0"><div style="height:5px;border-radius:3px;background:${color};margin-bottom:3px"></div><div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label}</div></div>`;
-    const recBox = (icon, html) => `<div style="background:var(--card2);border-radius:8px;padding:.55rem .8rem;display:flex;gap:8px;align-items:flex-start;margin-top:.5rem"><i class="ti ti-${icon}" aria-hidden="true" style="font-size:15px;color:var(--text3);margin-top:1px;flex-shrink:0"></i><span style="font-size:12px;color:var(--text2);line-height:1.5">${html}</span></div>`;
+    const recBox = (icon, html) => `<div style="background:var(--card2);border-radius:8px;padding:.55rem .8rem;display:flex;gap:8px;align-items:flex-start;margin-top:.5rem">${ico(icon,15,'margin-top:1px;flex-shrink:0')}<span style="font-size:12px;color:var(--text2);line-height:1.5">${html}</span></div>`;
     const secHead = s => `<div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:.4rem">${s}</div>`;
     const divLine = () => `<div style="height:.5px;background:var(--border);margin:.6rem 0"></div>`;
 
