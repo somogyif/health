@@ -590,11 +590,12 @@ function render(d){
 
     const loadBadge = l => {
       const styles = {Clear:'#E1F5EE;color:#0F6E56',Light:'#E1F5EE;color:#0F6E56',Moderate:'#FAEEDA;color:#854F0B',Heavy:'#FAEEDA;color:#854F0B',Packed:'#FCEBEB;color:#A32D2D'};
+      // Hiányzó címke → semleges "—" (nem kitalált zöld "Clear").
       // Ismeretlen címke ("Unknown": a sync nem tudta beolvasni a feladatlistát, vagy
       // bármi, amit nem ismerünk) semleges szürke jelvényt kap — nem a zöld "Clear"-t.
       // Saját kulcs kell (hasOwnProperty): a styles['constructor'] függvény lenne.
       const s = Object.prototype.hasOwnProperty.call(styles, l) ? styles[l] : 'var(--card2);color:var(--text2)';
-      return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'Clear'}</span>`;
+      return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'—'}</span>`;
     };
     const pill = (icon, text, type) => {
       const s = {work:'background:#FAEEDA;color:#854F0B;border-color:#FAC775',gym:'background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB',task:'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4',over:'background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1'}[type]||'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4';
@@ -681,7 +682,7 @@ function render(d){
         ? recBox(isTom ? 'clock' : 'moon', noteLines.join('<br>'))
         : '';
 
-      return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text1)">${label}</span>${loadBadge(p.label||'Clear')}</div><div style="background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text1)">${label}</span>${loadBadge(p.label)}</div><div style="background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
     };
 
     const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});

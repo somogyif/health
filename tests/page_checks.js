@@ -233,6 +233,23 @@ check('napi terv: az ismert címkék stílusa változatlan (Clear zöld, Heavy s
   }
 });
 
+// ── Napi terv: hiányzó címke → semleges "—", nem kitalált zöld "Clear" ──────────
+check('napi terv: hiányzó label → semleges "—" jelvény; a valódi "Clear" zöld marad', () => {
+  for (const hiany of [undefined, null, '']) {
+    const d = demo();
+    if (hiany === undefined) delete d.day_plan.today.label; else d.day_plan.today.label = hiany;
+    const p = page('index.html');
+    p.ctx.render(d);
+    const html = p.el('dayPlanBody').innerHTML;
+    const st = badgeOf(html, '—');
+    must(st, `label=${JSON.stringify(hiany)}: nincs "—" jelvény (a jelvények: ${JSON.stringify(html.match(/border-radius:20px[^>]*>[^<]*/g))})`);
+    must(!GREEN.test(st) && /var\(--card2\)/.test(st), `label=${JSON.stringify(hiany)}: a "—" jelvény nem semleges: ${st}`);
+    // a holnapi blokk címkéje a demóban valódi "Clear": az zöld marad, és csak egy van belőle
+    must(GREEN.test(badgeOf(html, 'Clear') || ''), 'a valódi "Clear" jelvény eltűnt vagy nem zöld');
+    must((html.match(/>Clear<\/span>/g) || []).length === 1, 'a hiányzó címke helyén is "Clear" áll');
+  }
+});
+
 // ── Tasks kártya: az ismeretlen címke itt sem lehet zöld ────────────────────────
 // scoreColor: minden, ami nem Packed/Heavy/Moderate, var(--teal) volt — az "Unknown" is.
 const taskLabelColor = (html, label) => {
