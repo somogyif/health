@@ -590,7 +590,10 @@ function render(d){
 
     const loadBadge = l => {
       const styles = {Clear:'#E1F5EE;color:#0F6E56',Light:'#E1F5EE;color:#0F6E56',Moderate:'#FAEEDA;color:#854F0B',Heavy:'#FAEEDA;color:#854F0B',Packed:'#FCEBEB;color:#A32D2D'};
-      const s = styles[l] || styles.Clear;
+      // Ismeretlen címke ("Unknown": a sync nem tudta beolvasni a feladatlistát, vagy
+      // bármi, amit nem ismerünk) semleges szürke jelvényt kap — nem a zöld "Clear"-t.
+      // Saját kulcs kell (hasOwnProperty): a styles['constructor'] függvény lenne.
+      const s = Object.prototype.hasOwnProperty.call(styles, l) ? styles[l] : 'var(--card2);color:var(--text2)';
       return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'Clear'}</span>`;
     };
     const pill = (icon, text, type) => {

@@ -202,6 +202,37 @@ check('napi terv: ellenséges szöveg a tervben és a feladatokban nem lesz elem
   }
 });
 
+// ── Napi terv: az ismeretlen terhelés-címke NEM kaphat zöld "Clear" stílust ─────
+// A sync "Unknown"-t küld, ha a feladatlistát nem tudta beolvasni. A jelvény stílusa
+// styles[l] || styles.Clear volt: az "Unknown" zölden, "minden rendben" színnel jelent meg.
+const badgeOf = (html, label) => {
+  const m = new RegExp(`<span style="([^"]*border-radius:20px[^"]*)">${label}</span>`).exec(html);
+  return m && m[1];
+};
+const GREEN = /#E1F5EE|#0F6E56/i;
+check('napi terv: az "Unknown" és az ismeretlen címke semleges jelvényt kap, nem zöldet', () => {
+  for (const label of ['Unknown', 'Valami-uj-cimke', 'constructor']) {
+    const d = demo();
+    d.day_plan.today.label = label;
+    const p = page('index.html');
+    p.ctx.render(d);
+    const st = badgeOf(p.el('dayPlanBody').innerHTML, label);
+    must(st, `a(z) "${label}" jelvény nem jelent meg (nem bizonyít)`);
+    must(!GREEN.test(st), `a(z) "${label}" címke zöld "Clear" stílust kapott: ${st}`);
+    must(/var\(--card2\)/.test(st) && /var\(--text2\)/.test(st), `a(z) "${label}" jelvénye nem a semleges stílus: ${st}`);
+  }
+});
+check('napi terv: az ismert címkék stílusa változatlan (Clear zöld, Heavy sárga, Packed piros)', () => {
+  for (const [label, re] of [['Clear', GREEN], ['Light', GREEN], ['Moderate', /#FAEEDA/], ['Heavy', /#FAEEDA/], ['Packed', /#FCEBEB/]]) {
+    const d = demo();
+    d.day_plan.today.label = label; d.day_plan.tomorrow.label = label;
+    const p = page('index.html');
+    p.ctx.render(d);
+    const st = badgeOf(p.el('dayPlanBody').innerHTML, label);
+    must(st && re.test(st), `${label}: ${st}`);
+  }
+});
+
 // ── B3: a hibadoboz a hibaüzenetet SZÖVEGKÉNT írja ki ───────────────────────────
 // A Chrome (V8) JSON-hibaüzenete a rövid választörzset szó szerint idézi: egy nem-JSON
 // válasz (<svg onload=…>) így a hibaüzeneten át jutott el az innerHTML-ig.
