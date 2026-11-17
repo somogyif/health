@@ -321,6 +321,14 @@ check('Parancsok, „ertesites”: értesítés a mai állapotról, és a felolv
   must(!rec.set && !rec.presented.length, 'értesítés helyett widgetet rajzolt');
 });
 
+check('Parancsok paraméter nélkül (az újabb iOS csak fájlt enged a mezőbe): magától értesít', async () => {
+  const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: jo(), config: {runsInWidget: false, runsInApp: false}});
+  await api.main();
+  must(rec.notes.length === 1 && rec.notes[0].title === 'Jó reggelt — közepes nap', `értesítés: ${JSON.stringify(rec.notes)}`);
+  must(typeof rec.output === 'string' && rec.output.startsWith('Jó reggelt!'), `kimenet: ${rec.output}`);
+  must(!rec.set && !rec.presented.length && !rec.alerts.length, 'menüt vagy widgetet rajzolt a Parancsokban');
+});
+
 check('az appban: menü — előnézet minden méretben, értesítés-próba', async () => {
   for (const [pont, meret, szoveg] of [['Kicsi — következő', 'small', 'KÖVETKEZŐ'], ['Nagy', 'large', 'TEENDŐK'], ['Közepes', 'medium', 'Könnyű edzés']]) {
     const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: jo(), config: {runsInApp: true},
