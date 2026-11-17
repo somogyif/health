@@ -414,7 +414,10 @@ const fmt=(v,u='')=>v!=null?`${v}${u}`:'—';
 
 // Coaching copy
 // WMO weather codes → label
-const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm'};
+// A teljes Open-Meteo-lista (open-meteo.com/en/docs, "WMO Weather interpretation codes").
+// A listán kívüli vagy hiányzó kód címkéje null — a sáv "—"-t vagy semmit ír, nem kitalált szót.
+const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Snow',73:'Snow',75:'Snow',77:'Snow grains',80:'Showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm',97:'Heavy thunderstorm',99:'Thunderstorm with hail'};
+const wmoLabel=c=>(typeof c==='number'&&Object.prototype.hasOwnProperty.call(WMO,c))?WMO[c]:null;
 // Live weather for the VIEWING device's actual location (phone/laptop GPS).
 // Resolves to null if permission denied or geolocation unavailable → caller keeps
 // the synced (home) weather. Follows you wherever you open the dashboard.
@@ -430,7 +433,7 @@ async function deviceWeather(){
   // null ("nem tudjuk"), nem 0 mm / "nem esik". A valódi 0 marad 0.
   const first=a=>{ const v=Array.isArray(a)?a[0]:null; return typeof v==='number'&&isFinite(v)?v:null; };
   const precip=first(dy.precipitation_sum);
-  return {temp:c.temperature_2m, description:WMO[c.weather_code]||'—', uv_index:first(dy.uv_index_max), precip_mm:precip, rain:precip==null?null:precip>0.5, city};
+  return {temp:c.temperature_2m, description:wmoLabel(c.weather_code), uv_index:first(dy.uv_index_max), precip_mm:precip, rain:precip==null?null:precip>0.5, city};
 }
 
 // ── XSS védelem ─────────────────────────────────────────────────────────────

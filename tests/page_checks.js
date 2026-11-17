@@ -929,6 +929,46 @@ check('időjárás: brief.html — eső ismeretlen mennyiséggel nem ír "mm"-t 
   must(/🌧 3\.2mm rain/.test(wx({temp: 5, rain: true, precip_mm: 3.2})), `eső (őrző): ${wx({temp: 5, rain: true, precip_mm: 3.2})}`);
 });
 
+// ── Időjárás: a WMO-kódtábla teljes; a listán kívüli kód nem kap kitalált címkét ──
+// Forrás: open-meteo.com/en/docs, "WMO Weather interpretation codes (WW)" (2026-11-17-én
+// olvasva). A 97 ("Heavy thunderstorm") is ott áll: a jégeső-előrejelzés nélküli modellek
+// 95-öt és 97-et adnak. A lapok táblájából hiányzott: 56, 57, 66, 67, 77, 85, 86, 97, 99 —
+// hózáporban, ónos esőben az élő sáv címke nélkül ("—") maradt.
+const WMO_CODES = [0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 97, 99];
+for (const file of ['index.html', 'brief.html']) {
+  check(`időjárás WMO: ${file} táblája a teljes Open-Meteo-lista, se több, se kevesebb`, () => {
+    const t = page(file).run('WMO');
+    const hiany = WMO_CODES.filter(c => typeof t[c] !== 'string' || !t[c].trim() || t[c] === '—');
+    must(!hiany.length, `hiányzó kód: ${hiany.join(', ')}`);
+    const tobb = Object.keys(t).filter(k => !WMO_CODES.includes(+k));
+    must(!tobb.length, `a listán kívüli kód a táblában: ${tobb.join(', ')}`);
+    for (const [c, re] of [[56, /freezing/i], [66, /freezing/i], [77, /snow/i], [85, /snow/i], [86, /snow/i], [97, /thunder/i], [99, /thunder/i]])
+      must(re.test(t[c]), `${c}: félrevezető címke: ${t[c]}`);
+  });
+  check(`időjárás WMO: ${file} deviceWeather — új kód címkét kap; ismeretlen vagy hiányzó kód → null, nem kitalált címke`, async () => {
+    const d86 = (await liveWx(file, {current: {temperature_2m: -2, weather_code: 86}, daily: {}})).w;
+    must(/snow/i.test(d86.description || ''), `86 (hózápor): ${d86.description}`);
+    for (const code of [4, 100, -1, null, undefined, 'constructor', '__proto__', 'toString']) {
+      const w = (await liveWx(file, {current: {temperature_2m: 5, weather_code: code}, daily: {}})).w;
+      must(w.temp === 5, 'nem adott időjárást (nem bizonyít)');
+      must(w.description === null, `kód=${JSON.stringify(code)}: a leírás ${JSON.stringify(String(w.description).slice(0, 40))}, nem null`);
+    }
+  });
+}
+check('időjárás WMO: a két lap táblája szóról szóra azonos', () => {
+  const a = page('index.html').run('WMO'), b = page('brief.html').run('WMO');
+  must(JSON.stringify(a) === JSON.stringify(b), 'az index.html és a brief.html WMO-táblája eltér');
+});
+check('időjárás WMO: ismeretlen kódnál az élő sáv "—"-t (index) / semmit (brief) ír, nem címkét', async () => {
+  const {p} = await liveWx('index.html', {current: {temperature_2m: 7, weather_code: 4}, daily: {precipitation_sum: [0]}});
+  p.ctx.render(demo());
+  await settle();
+  const t = p.el('weatherStrip').textContent.replace(/\s+/g, ' ').trim();
+  must(t.includes('7°C') && /☀️ — ·/.test(t) && !/null|undefined|Cloudy/.test(t), `index: ${t}`);
+  const b = page('brief.html').run('wxHtml')({temp: 7, description: null, city: 'Teszt'}, true).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  must(b === '🌡 7°C · 📍 Teszt', `brief: ${b}`);
+});
+
 // ── Tasks kártya: hiányzó címke → "—", nem "undefined" ─────────────────────────
 check('tasks: hiányzó label (count > 0) mellett "—" áll, nem "undefined"/"null"', () => {
   for (const hiany of [undefined, null, '']) {
