@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- A /health/robots.txt hatástalan (a keresők a host gyökerét nézik) — B12. -->
+<meta name="robots" content="noindex">
 <title>Morning Brief — Health Centre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
@@ -23,7 +25,7 @@
 
   /* Header */
   header{margin-bottom:2rem}
-  .kicker{display:flex;align-items:center;gap:8px;margin-bottom:.9rem}
+  .kicker{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-bottom:.9rem}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--teal)}
   .greet{font-size:30px;font-weight:300;letter-spacing:-.5px;line-height:1.15;margin-bottom:.35rem}
   .subline{font-family:var(--m);font-size:12px;color:var(--text2)}
@@ -73,6 +75,10 @@
   footer{margin-top:2.5rem;font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;letter-spacing:.06em}
 
   .pill{display:inline-block;font-family:var(--m);font-size:10px;padding:2px 9px;border-radius:20px;margin-left:8px}
+  .stale{font-family:var(--m);font-size:11px;padding:.55rem .85rem;margin-bottom:1rem;border:1px solid;border-radius:8px}
+  /* A párosító link visszajelzése (pairing.js, csak textContent). */
+  .pair-note{max-width:640px;margin:0 auto 1.25rem;padding:.65rem 1rem;background:var(--s2);border-radius:12px;
+             font-family:var(--m);font-size:12px;color:var(--text2);word-break:break-word;overflow-wrap:anywhere}
 
   @media print{
     body{background:#fff;color:#141414;padding:0}
@@ -81,16 +87,19 @@
     .greet,.hero-txt h2,.tile .v,.ev .ti,.focus li{color:#141414}
     .subline,.tile .s,.sec .lbl,.ev .t,.strip,.empty{color:#555}
     footer{color:#999}
-    .dot{display:none}
+    .dot,.pair-note{display:none}
     @page{margin:1.4cm}
   }
 </style>
 </head>
 <body>
+<div id="pairNote" class="pair-note" role="status" hidden></div>
 <div class="wrap" id="root">
-  <p class="lbl" id="loading">Loading today's brief…</p>
+  <p class="lbl" id="loading">Loading brief…</p>
 </div>
 
+<script src="freshness.js"></script>
+<script src="pairing.js"></script>
 <script>
 const C = {teal:'#34c99a',amber:'#e8993a',red:'#e05252',blue:'#5b9cf6',text3:'#7a7874'};
 const DEMO = new URLSearchParams(location.search).get('demo')==='1';  // ?demo=1 → sample data
@@ -99,10 +108,11 @@ const esc = s => (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 // A külső szöveget EGY belépési ponton semlegesítjük, nem helyszínenként. A
 // helyszínenkénti escape-elés egy helyet kihagyott (az esemény ideje), és ez
 // pontosan az a hiba, ami a dashboardon 2026-08-24-én tokent szivárogtatott.
+// A kulcs is külső szöveg (B2): ugyanúgy semlegesítjük, mint az értéket.
 function deepEscape(v){
   if (typeof v === 'string') return esc(v);
   if (Array.isArray(v)) return v.map(deepEscape);
-  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[k]=deepEscape(v[k]); return o; }
+  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[esc(k)]=deepEscape(v[k]); return o; }
   return v;
 }
 const band = (v,hi,mid) => v==null?C.text3 : v>=hi?C.teal : v>=mid?C.amber : C.red;
@@ -130,7 +140,10 @@ function greeting(){
   return h<12?'Good morning':h<18?'Good afternoon':'Good evening';
 }
 
-const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm'};
+// A teljes Open-Meteo-lista (open-meteo.com/en/docs, "WMO Weather interpretation codes").
+// A listán kívüli vagy hiányzó kód címkéje null — a sáv "—"-t vagy semmit ír, nem kitalált szót.
+const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Snow',73:'Snow',75:'Snow',77:'Snow grains',80:'Showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm',97:'Heavy thunderstorm',99:'Thunderstorm with hail'};
+const wmoLabel=c=>(typeof c==='number'&&Object.prototype.hasOwnProperty.call(WMO,c))?WMO[c]:null;
 // Live weather for the viewing device's actual location (phone/laptop GPS).
 async function deviceWeather(){
   if(!navigator.geolocation) return null;
@@ -140,22 +153,41 @@ async function deviceWeather(){
   let city='';
   try{const g=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${la}&longitude=${lo}&localityLanguage=en`).then(r=>r.json()); city=g.city||g.locality||'';}catch(e){}
   const c=wr.current||{}, dy=wr.daily||{};
-  return {temp:c.temperature_2m, description:WMO[c.weather_code]||'—', uv_index:(dy.uv_index_max||[])[0], precip_mm:(dy.precipitation_sum||[0])[0], rain:((dy.precipitation_sum||[0])[0]||0)>0.5, city};
+  // Hiányzó adatból nem lesz állítás: ha nincs csapadék-érték, a precip_mm és a rain
+  // null ("nem tudjuk"), nem 0 mm / "nem esik". A valódi 0 marad 0.
+  const first=a=>{ const v=Array.isArray(a)?a[0]:null; return typeof v==='number'&&isFinite(v)?v:null; };
+  const precip=first(dy.precipitation_sum);
+  return {temp:c.temperature_2m, description:wmoLabel(c.weather_code), uv_index:first(dy.uv_index_max), precip_mm:precip, rain:precip==null?null:precip>0.5, city};
 }
 function wxHtml(w, live){
   if(w.temp==null) return '';
   const loc = live ? ` · 📍 ${w.city||'your location'}` : (w.city ? ` · 📍 ${w.city}` : '');
   return `<span>🌡 <b>${Math.round(w.temp)}°C</b> ${w.description||''}${loc}</span>
      ${w.uv_index!=null?`<span>☀️ UV <b>${w.uv_index}</b></span>`:''}
-     ${w.rain?`<span>🌧 <b>${w.precip_mm??''}mm</b> rain</span>`:''}`;
+     ${w.rain?`<span>🌧 ${w.precip_mm!=null?`<b>${w.precip_mm}mm</b> `:''}rain</span>`:''}`;
 }
 
 function render(d){
   d = deepEscape(d);   // KÖTELEZŐ első lépés — ne mozgasd lejjebb
   const g=d.garmin||{}, dp=(d.day_plan||{}).today||{}, w=d.weather||{}, ir=d.illness_risk||{};
-  const today = g.date || (d.synced_at||'').slice(0,10);
-  const dObj = today ? new Date(today+'T00:00:00') : new Date();
-  const dateStr = dObj.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  // A terv NAPJA a dokumentumból jön (synced_at — a sync a day_plan-t ugyanabból a
+  // pillanatból írja), a NAPSZÓ viszont a NÉZŐ helyi mai napjához mért, ugyanúgy, mint az
+  // index.html planDayLabel-jében: 15-én reggel a 14-i terv nem "Today's focus".
+  // Ha a synced_at hiányzik vagy nem dátum, nem találunk ki dátumot (rel = null).
+  // Minden itt kiírt dátum a lap saját toLocaleDateString-je, nem a payload szövege.
+  const sm = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d.synced_at||''));
+  let planDay = sm ? new Date(+sm[1], +sm[2]-1, +sm[3]) : null;       // számokból (Safari)
+  if (planDay && (planDay.getMonth() !== +sm[2]-1 || planDay.getDate() !== +sm[3])) planDay = null;
+  const planIso = planDay ? `${sm[1]}-${sm[2]}-${sm[3]}` : null;
+  const n0 = new Date(), today0 = new Date(n0.getFullYear(), n0.getMonth(), n0.getDate());
+  const rel = planDay ? Math.round((planDay - today0) / 86400000) : null;   // kerekítve: óraátállításkor is egész
+  const longDate = planDay ? planDay.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}) : '';
+  const shortDate = planDay ? planDay.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+  const W = rel === null ? {kicker:'Morning Brief', focus:'Focus', noPlan:'No plan generated.', noEv:'No date in the data — schedule not shown.'}
+    : rel === 0  ? {kicker:`Morning Brief · ${longDate}`, focus:"Today's focus", noPlan:'No plan generated for today.', noEv:'Nothing scheduled today.'}
+    : rel === -1 ? {kicker:`Morning Brief · Yesterday · ${longDate}`, focus:"Yesterday's focus", noPlan:'No plan from yesterday.', noEv:'Nothing was scheduled yesterday.'}
+    : rel === 1  ? {kicker:`Morning Brief · Tomorrow · ${longDate}`, focus:"Tomorrow's focus", noPlan:'No plan generated for tomorrow.', noEv:'Nothing scheduled tomorrow.'}
+    :              {kicker:`Morning Brief · Plan from ${longDate}`, focus:`Plan from ${shortDate}`, noPlan:`No plan from ${shortDate}.`, noEv:`Nothing scheduled on ${shortDate}.`};
   const r=g.readiness_score, v=verdict(r);
 
   // stat tiles
@@ -172,29 +204,38 @@ function render(d){
   const lines = (dp.lines||[]).filter(Boolean);
   const focusHTML = lines.length
     ? `<ul class="focus">${lines.map(l=>`<li><span class="b">›</span><span>${l}</span></li>`).join('')}</ul>`
-    : `<div class="empty">No plan generated for today.</div>`;
+    : `<div class="empty">${W.noPlan}</div>`;
 
-  // today's events
-  const evs = (d.calendar||[]).filter(e=>e.start_date===today)
+  // a terv napjának eseményei (a cím mondja meg, melyik nap az); dátum nélkül egy sem
+  const evs = (planIso ? (d.calendar||[]) : []).filter(e=>e && e.start_date===planIso)
     .sort((a,b)=>((a.time||'~')>(b.time||'~')?1:-1));
   const evHTML = evs.length ? evs.map(e=>{
     const t=(e.time||'').trim();
     return `<div class="ev"><span class="cat" style="background:${CAT[e.category]||C.text3}"></span>
       <span class="t">${t||'all day'}</span>
       <span class="ti">${(e.title||'').replace(/\[pending\]/gi,'').trim()}</span></div>`;
-  }).join('') : `<div class="empty">Nothing scheduled today.</div>`;
+  }).join('') : `<div class="empty">${W.noEv}</div>`;
 
   // weather + illness strip — wrapped so device geolocation can update it live
   const wx = `<span id="wxLine">${wxHtml(w,false)}</span>`;
   const hasStrip = (w.temp!=null) || (ir.score!=null);
   const illHTML = (ir.score!=null) ? `<span>🛡 Illness risk <b style="color:${band(100-ir.score,75,50)}">${ir.score}/100</b>${(ir.factors||[]).length?` · ${ir.factors.join(', ')}`:''}</span>` : '';
 
+  // Elavultság (B9): ugyanaz a számítás és küszöb, mint a dashboard sávjáé
+  // (freshness.js), a MOSTANI időhöz mérve. Korábban a brief egyáltalán nem jelzett.
+  const stale = HealthFreshness.stale(d.freshness, Date.now());
+  const red = stale.length && Math.max(...stale.map(x=>x.days)) >= HealthFreshness.RED_DAYS;
+  const staleHTML = stale.length
+    ? `<div class="stale" style="color:var(${red?'--red':'--amber'});background:${red?'rgba(224,82,82,0.12)':'rgba(232,153,58,0.12)'}">⚠ Showing older data — ${stale.map(x=>`<b>${x.name}</b> from ${x.when} (${x.days}d)`).join(' · ')}</div>`
+    : '';
+
   document.getElementById('root').innerHTML = `
     <header>
-      <div class="kicker"><span class="dot"></span><span class="lbl">Morning Brief · ${esc(dateStr)}</span>${DEMO?'<span class="lbl" style="color:var(--teal);border:1px solid rgba(52,201,154,0.3);border-radius:20px;padding:1px 8px">DEMO</span>':''}</div>
+      <div class="kicker"><span class="dot"></span><span class="lbl">${esc(W.kicker)}</span>${DEMO?'<span class="lbl" style="color:var(--teal);border:1px solid rgba(52,201,154,0.3);border-radius:20px;padding:1px 8px">DEMO</span>':''}</div>
       <div class="greet">${greeting()}, Feri.</div>
       <div class="subline">${esc(v.h)} — ${esc(v.p)}</div>
     </header>
+    ${staleHTML}
 
     <div class="hero">
       ${ring(r, band(r,65,45))}
@@ -204,7 +245,7 @@ function render(d){
     <div class="tiles">${tilesHTML}</div>
 
     <section>
-      <div class="sec-head"><span class="lbl">Today's focus</span><span class="line"></span></div>
+      <div class="sec-head"><span class="lbl">${esc(W.focus)}</span><span class="line"></span></div>
       <div class="card">${focusHTML}</div>
     </section>
 
@@ -226,13 +267,10 @@ function render(d){
 
 // Adatforrás: demó → privát végpont (Worker) → publikus data.json (fallback).
 (async () => {
-  const qs = new URLSearchParams(location.search);
-  if (qs.get('api') && qs.get('key')) {          // egyszeri beállítás URL-ből
-    localStorage.setItem('health_api', qs.get('api').replace(/\/$/,''));
-    localStorage.setItem('health_key', qs.get('key'));
-    history.replaceState({}, '', location.pathname + (DEMO ? '?demo=1' : ''));
-  }
-  const api = localStorage.getItem('health_api')||'', key = localStorage.getItem('health_key')||'';
+  // Párosító link (…/health/brief.html#api=…&key=…) és a tárolt beállítás: a
+  // dashboarddal közös, őrzött kezelő (pairing.js). Korábban itt kérdés és
+  // séma-ellenőrzés nélkül íródott a localStorage (B1).
+  const {api, key} = HealthPairing.run();
   try {
     const ok = x => x && typeof x === 'object' && x.synced_at && x.garmin
                     && Object.keys(x).length >= 8;

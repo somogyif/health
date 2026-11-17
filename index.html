@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- A keresők a robots.txt-t csak a host gyökerében keresik (somogyif.github.io/robots.txt
+     → 404); a /health/robots.txt-t nem olvassák. A kizárás itt, a lapon működik (B12). -->
+<meta name="robots" content="noindex">
 <title>Feri — Health Centre</title>
 <!-- PWA / Add to Home Screen -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -103,6 +106,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
 .sec-title{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
 .sec-line{flex:1;height:.5px;background:var(--border)}
+/* A Day plan és a Tasks szakasz címe (sec-label): ugyanaz a megjelenés, mint a
+   sec-head + sec-title + sec-line hármasé — a vonalat a ::after rajzolja. */
+.sec-label{display:flex;align-items:center;gap:10px;margin-bottom:1rem;font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.sec-label::after{content:"";flex:1;height:.5px;background:var(--border)}
+/* Hosszú, törhetetlen szó (e-mail-cím, URL nélküli azonosító) a két kártyán ne lógjon
+   ki 375 px-en: a szöveg bárhol törhet. */
+#dayPlanBody,#tasksBody{overflow-wrap:anywhere}
 
 /* ── CARD ── */
 .card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
@@ -185,37 +195,39 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 
 .err{background:var(--red-d);border:.5px solid var(--red);border-radius:var(--r);padding:.875rem 1.25rem;font-family:var(--m);font-size:12px;color:var(--red);margin-bottom:1.5rem;line-height:1.7}
+/* A párosító link visszajelzése (pairing.js, csak textContent). */
+.pair-note{width:calc(100% - 2.5rem);max-width:920px;margin:1rem auto 0;padding:.65rem 1rem;background:var(--s1);border:.5px solid var(--border2);border-radius:var(--rs);font-family:var(--m);font-size:12px;color:var(--text2);line-height:1.6;word-break:break-word;overflow-wrap:anywhere}
 .upd{font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;padding-top:2rem;border-top:.5px solid var(--border)}
 .pf-hero{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:1.5rem;margin-bottom:10px}
 .pf-hero-top{display:flex;align-items:flex-end;gap:1rem;margin-bottom:1rem;border-bottom:.5px solid var(--border);padding-bottom:1rem}
 .pf-hero-num{font-size:64px;font-weight:300;letter-spacing:-3px;line-height:1;flex-shrink:0}
 .pf-hero-meta{}
 .pf-hero-name{font-size:18px;font-weight:500;color:var(--text);margin-bottom:2px}
-.pf-hero-ins{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;letter-spacing:.04em}
+.pf-hero-ins{font-size:11px;color:var(--text3);font-family:var(--m);margin-bottom:10px;letter-spacing:.04em}
 .pf-hero-why{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px}
 .pf-notes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.pf-note{font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border2);color:var(--text2);font-family:var(--mono)}
-.pf-how{font-size:11px;color:var(--text3);font-family:var(--mono);padding-top:12px;border-top:.5px solid var(--border)}
+.pf-note{font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid var(--border2);color:var(--text2);font-family:var(--m)}
+.pf-how{font-size:11px;color:var(--text3);font-family:var(--m);padding-top:12px;border-top:.5px solid var(--border)}
 .pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
 .wq-row{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:.7rem 1.1rem;border-bottom:.5px solid var(--border)}
 .wq-row:last-child{border-bottom:none}
 .wq-meta{display:none}
-.wq-date{font-size:11px;color:var(--text3);font-family:var(--mono);white-space:nowrap;padding-top:2px}
-.wq-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono);margin-top:2px}
+.wq-date{font-size:11px;color:var(--text3);font-family:var(--m);white-space:nowrap;padding-top:2px}
+.wq-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--m);margin-top:2px}
 .wq-body{min-width:0}
 .wq-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
 .wq-stats{font-size:11px;color:var(--text3);margin-bottom:2px}
 .wq-score{font-size:24px;font-weight:400;letter-spacing:-.5px;text-align:right;white-space:nowrap;line-height:1}
-.ws-row{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:start;padding:.85rem 1.1rem;border-bottom:.5px solid var(--border)}
+.ws-row{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:start;padding:.85rem 1.1rem;border-bottom:.5px solid var(--border)}
 .ws-row:last-child{border-bottom:none}
 .ws-left{text-align:right}
-.ws-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono);margin-top:2px}
+.ws-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--m);margin-top:2px}
 .ws-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
 .ex-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
-.ex-tag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);white-space:nowrap}
+.ex-tag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--m);overflow-wrap:anywhere}
 .muscle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
 .muscle-item{background:var(--s2);border-radius:var(--rs);padding:.7rem .8rem}
-.muscle-k{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);margin-bottom:3px}
+.muscle-k{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:var(--m);margin-bottom:3px}
 .mstat{font-size:11px;color:var(--text2)}
 .pf-card{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem;border:1.5px solid transparent;cursor:pointer;transition:border-color .15s}
 .pf-card.pf-active{background:var(--s1);border-color:var(--border2)}
@@ -223,18 +235,18 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 .pf-card-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
 .pf-card-mood{font-size:10px;color:var(--text3);margin-bottom:8px}
 .pf-badges{display:flex;gap:5px;flex-wrap:wrap}
-.pf-score{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
-.pf-pick{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono);background:var(--teal-d);color:var(--teal)}
+.pf-score{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--m)}
+.pf-pick{font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--m);background:var(--teal-d);color:var(--teal)}
 @media(max-width:560px){.pf-hero{flex-direction:column;gap:1rem}.pf-hero-num{font-size:52px}}
 
 .matrix-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 @media(max-width:480px){.matrix-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .gauge-card{background:var(--s2);border-radius:var(--rs);padding:.9rem 1rem;text-align:center}
 .gauge-val{font-size:32px;font-weight:300;letter-spacing:-1.5px;line-height:1;margin-bottom:2px}
-.gauge-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-family:var(--mono);margin-bottom:6px}
+.gauge-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-family:var(--m);margin-bottom:6px}
 .gauge-bar{height:3px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:6px}
 .gauge-bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
-.gauge-desc{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.gauge-desc{font-size:10px;color:var(--text3);font-family:var(--m)}
 .illness-factors{margin-top:8px}
 .illness-factor{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border);font-size:11px;color:var(--text2)}
 .illness-factor:last-child{border-bottom:none}
@@ -243,16 +255,16 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 .sr-card{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem;margin-bottom:8px}
 .sr-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
 .sr-title{font-size:13px;font-weight:500;color:var(--text)}
-.sr-time{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.sr-time{font-size:10px;color:var(--text3);font-family:var(--m)}
 .sr-stats{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
 .sr-stat{text-align:center}
 .sr-stat-v{font-size:16px;font-weight:300;color:var(--teal)}
-.sr-stat-l{font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase}
+.sr-stat-l{font-size:9px;color:var(--text3);font-family:var(--m);text-transform:uppercase}
 .sr-tracks{display:flex;flex-direction:column;gap:4px}
 .sr-track{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:.5px solid var(--border);font-size:11px}
 .sr-track:last-child{border-bottom:none}
 .sr-track-name{color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sr-track-meta{font-family:var(--mono);font-size:10px;color:var(--text3);flex-shrink:0;margin-left:8px}
+.sr-track-meta{font-family:var(--m);font-size:10px;color:var(--text3);flex-shrink:0;margin-left:8px}
 
 /* Látható fókusz billentyűzetes navigációnál (WCAG 2.2: min 3:1 kontraszt).
    Egérrel kattintva nem jelenik meg (:focus-visible), így nem zavaró. */
@@ -266,13 +278,15 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 </head>
 <body>
 
+<div id="pairNote" class="pair-note" role="status" hidden></div>
+
 <!-- SETUP -->
 <div id="setup">
   <div class="sc">
     <h2>Health <span>Centre</span></h2>
     <p>This dashboard reads from a private endpoint. Open it once with your
        setup link to connect this browser:<br>
-       <code style="font-family:var(--m);font-size:11px">…/health/?api=&lt;endpoint&gt;&amp;key=&lt;read key&gt;</code></p>
+       <code style="font-family:var(--m);font-size:11px">…/health/#api=&lt;endpoint&gt;&amp;key=&lt;read key&gt;</code></p>
     <p style="font-size:12px;color:var(--text3)">The key is stored in this browser only.
        Never paste a GitHub token here — this dashboard does not use one.</p>
     <p style="margin-top:1rem;text-align:center"><a href="?demo=1" style="color:var(--teal);text-decoration:none;font-family:var(--m);font-size:12px">Try the live demo → (sample data, no token)</a></p>
@@ -310,37 +324,21 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
   <div id="tab-trends" style="display:none"></div>
 </div>
 
+<script src="freshness.js"></script>
+<script src="pairing.js"></script>
 <script>
 // A GitHub-olvasóút 2026-08-25 óta halott (a data.json nem publikus, 404), és a
 // hozzá kért PAT ugyanabban a localStorage-ban ült, amit egy tárolt XSS már
 // egyszer kiürített. Kivezetve; a régi kulcs takarítása alább.
 const _qs = new URLSearchParams(location.search);
 const DEMO = _qs.get('demo')==='1';
-// Privát adat-végpont (Cloudflare Worker). Egyszeri beállítás:
-//   ?api=https://health-data.<user>.workers.dev&key=<READ_KEY>
-// Az értékek localStorage-ba kerülnek, az URL-ből azonnal eltűnnek (hogy ne
-// ragadjanak bele a böngésző-előzményekbe).
-// Egy elkészített link csendben átirányíthatná a dashboardot egy idegen
-// végpontra (és onnan tetszőleges payloadot szolgálnának ki). Ezért az átvétel
-// megerősítést kér, és megmutatja, MELYIK origin felé állítanánk át.
-if (_qs.get('api') && _qs.get('key')) {
-  let _ok = true, _origin = '';
-  try { _origin = new URL(_qs.get('api')).origin; } catch (e) { _ok = false; }
-  if (_ok && localStorage.getItem('health_api') &&
-      localStorage.getItem('health_api').indexOf(_origin) !== 0) {
-    _ok = confirm('Point this dashboard at a different data source?\n\n' + _origin +
-                  '\n\nOnly continue if you opened your own setup link.');
-  }
-  if (_ok && _origin) {
-    localStorage.setItem('health_api', _qs.get('api').replace(/\/$/,''));
-    localStorage.setItem('health_key', _qs.get('key'));
-  }
-  history.replaceState({}, '', location.pathname + (DEMO ? '?demo=1' : ''));
-}
+// Privát adat-végpont (Cloudflare Worker). A párosító link (…/health/#api=…&key=…)
+// feldolgozása és a tárolt beállítás ellenőrzött olvasása a pairing.js-ben van,
+// a brieffel közösen: csak https, minden változás csak megerősítéssel, a kulcs csak
+// a # utáni részből (B1+B6). Ide csak a használható beállítás jut el.
+const {api: API_URL, key: API_KEY} = HealthPairing.run();  // ?demo=1 → sample data, no key
 // Régi GitHub PAT takarítása azoknál, akik a korábbi képernyőn megadták.
 try { localStorage.removeItem('gh_token'); } catch (e) {}
-const API_URL = localStorage.getItem('health_api')||'';
-const API_KEY = localStorage.getItem('health_key')||'';  // ?demo=1 → sample data, no token
 // A ⚙ gomb a BÖNGÉSZŐBEN tárolt hozzáférést törli (nem a szervert).
 const clearToken=()=>{if(!confirm('Disconnect this browser from the data endpoint?'))return;
   ['health_api','health_key','gh_token'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
@@ -383,7 +381,7 @@ async function fetchData(){
   }
   // A GitHub-fallback megszűnt: a data.json 2026-08-25 óta nem publikus (404),
   // tehát ez az ág csak egy PAT tárolását indokolta volna egy halott úthoz.
-  throw new Error('No data source configured — open your setup link (?api=…&key=…)');
+  throw new Error('No data source configured — open your setup link (…/health/#api=…&key=…)');
 }
 
 let CHS=[];
@@ -416,7 +414,10 @@ const fmt=(v,u='')=>v!=null?`${v}${u}`:'—';
 
 // Coaching copy
 // WMO weather codes → label
-const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm'};
+// A teljes Open-Meteo-lista (open-meteo.com/en/docs, "WMO Weather interpretation codes").
+// A listán kívüli vagy hiányzó kód címkéje null — a sáv "—"-t vagy semmit ír, nem kitalált szót.
+const WMO={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Snow',73:'Snow',75:'Snow',77:'Snow grains',80:'Showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm',97:'Heavy thunderstorm',99:'Thunderstorm with hail'};
+const wmoLabel=c=>(typeof c==='number'&&Object.prototype.hasOwnProperty.call(WMO,c))?WMO[c]:null;
 // Live weather for the VIEWING device's actual location (phone/laptop GPS).
 // Resolves to null if permission denied or geolocation unavailable → caller keeps
 // the synced (home) weather. Follows you wherever you open the dashboard.
@@ -428,7 +429,11 @@ async function deviceWeather(){
   let city='';
   try{const g=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${la}&longitude=${lo}&localityLanguage=en`).then(r=>r.json()); city=g.city||g.locality||'';}catch(e){}
   const c=wr.current||{}, dy=wr.daily||{};
-  return {temp:c.temperature_2m, description:WMO[c.weather_code]||'—', uv_index:(dy.uv_index_max||[])[0], precip_mm:(dy.precipitation_sum||[0])[0], rain:((dy.precipitation_sum||[0])[0]||0)>0.5, city};
+  // Hiányzó adatból nem lesz állítás: ha nincs csapadék-érték, a precip_mm és a rain
+  // null ("nem tudjuk"), nem 0 mm / "nem esik". A valódi 0 marad 0.
+  const first=a=>{ const v=Array.isArray(a)?a[0]:null; return typeof v==='number'&&isFinite(v)?v:null; };
+  const precip=first(dy.precipitation_sum);
+  return {temp:c.temperature_2m, description:wmoLabel(c.weather_code), uv_index:first(dy.uv_index_max), precip_mm:precip, rain:precip==null?null:precip>0.5, city};
 }
 
 // ── XSS védelem ─────────────────────────────────────────────────────────────
@@ -438,10 +443,13 @@ async function deviceWeather(){
 // futtatni és ellopni a GitHub tokent a localStorage-ból. Ezért a teljes payloadot
 // egyetlen belépési ponton semlegesítjük — így egyetlen render-hely sem maradhat ki.
 const escHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// A KULCS is külső szöveg: az elavultság-sáv a freshness kulcsát írja ki, és egy
+// ismeretlen kulcs (<img onerror> a nevében) nyersen ment az innerHTML-be (B2).
+// Az escape injektív (a & is escape-elt), két kulcs nem eshet egybe.
 function deepEscape(v){
   if (typeof v === 'string') return escHtml(v);
   if (Array.isArray(v)) return v.map(deepEscape);
-  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[k]=deepEscape(v[k]); return o; }
+  if (v && typeof v === 'object'){ const o={}; for(const k in v) o[escHtml(k)]=deepEscape(v[k]); return o; }
   return v;
 }
 // Rövidítés, ami nem vág ketté egy HTML entitást (pl. "&amp;")
@@ -568,36 +576,11 @@ function render(d){
   const wq=d.workout_quality||d.workouts_quality||[];
   const wks=d.workouts||[];
 
-  const synced=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
-
-  // Day Plan
-  const dayPlan = d.day_plan || null;
-  const dpEl = document.getElementById('dayPlanBody');
-  const dpSec = document.getElementById('dayPlanSection');
-  const dpLabel = document.getElementById('dayPlanLabel');
-  if (dpEl && dpSec) {
-    if (dayPlan) {
-      dpSec.style.display = '';
-      const ctx = dayPlan.context || 'morning';
-      if (dpLabel) dpLabel.textContent = ctx === 'evening' ? '📋 Tomorrow\'s plan' : ctx === 'morning' ? '📋 Today\'s plan' : '📋 Plan';
-      dpEl.innerHTML = renderDayPlan(dayPlan);
-    } else {
-      dpSec.style.display = 'none';
-    }
-  }
-
-  // Tasks
-  const tasks = d.tasks || null;
-  const tasksEl = document.getElementById('tasksBody');
-  const tasksSec = document.getElementById('tasksSection');
-  if (tasksEl && tasksSec) {
-    if (tasks) {
-      tasksSec.style.display = '';
-      tasksEl.innerHTML = renderTasks(tasks);
-    } else {
-      tasksSec.style.display = 'none';
-    }
-  }
+  // A synced_at helyi, időzóna nélküli "ÉÉÉÉ-HH-NN óó:pp": számokból építjük, mert a Safari a
+  // szóközös alakot nem érti (new Date(...) → "synced Invalid Date" a láblécben).
+  const _sm=/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(String(d.synced_at||''));
+  const _sd=_sm?new Date(+_sm[1],+_sm[2]-1,+_sm[3],+_sm[4],+_sm[5]):null;
+  const synced=_sd&&!isNaN(_sd)?_sd.toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
 
   // Render calendar events
   const calEvents = d.calendar || [];
@@ -617,6 +600,33 @@ function render(d){
     travel: 'travel', personal: 'personal', other: 'other'
   };
 
+  // A feladatlista tételei: csak az objektumok. Egy null vagy szöveg tétel korábban
+  // kivételt dobott (t.name), és a render() hátralevő részét is magával vitte.
+  function taskItems(a) { return Array.isArray(a) ? a.filter(t => t && typeof t === 'object') : []; }
+
+  // A terv egy napjának címe (off: 0 = a terv napja, 1 = a rákövetkező nap).
+  // A DÁTUM a dokumentumból jön: a sync a day_plan-t és a synced_at-et ugyanabból a
+  // pillanatból írja. A NAPSZÓ (Today/Tonight/Tomorrow/Yesterday) viszont a NÉZŐ helyi
+  // mai napjához mért: a sync 07:00-kor és 12:00-kor fut, tehát éjfél után a tegnapi
+  // terv "Today"-e már nem ma van. Ami nem tegnap/ma/holnap: "Plan from <dátum>".
+  // Ha a synced_at hiányzik vagy nem dátum, nem találunk ki dátumot (a cím dátum
+  // nélküli, a terv saját kontextusa szerint), és head = null, rel = null.
+  // rel: a nap távolsága a néző mai napjától, napokban (0 = ma) — a Tasks kártya használja.
+  function planDayLabel(off, evening) {
+    const sm = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d.synced_at || ''));
+    const base = sm ? new Date(+sm[1], +sm[2]-1, +sm[3]) : null;
+    if (!base || base.getMonth() !== +sm[2]-1 || base.getDate() !== +sm[3])
+      return {title: off ? 'Tomorrow' : evening ? 'Tonight' : 'Today', head: null, rel: null};
+    const day = new Date(base.getFullYear(), base.getMonth(), base.getDate()+off);
+    const n = new Date(), today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    const rel = Math.round((day - today) / 86400000);   // kerekítve: az óraátállítás napján is egész
+    const date = day.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    if (rel === 0) return {title: `${off === 0 && evening ? 'Tonight' : 'Today'} · ${date}`, head: "Today's plan", rel};
+    if (rel === 1) return {title: `Tomorrow · ${date}`, head: "Tomorrow's plan", rel};
+    if (rel === -1) return {title: `Yesterday · ${date}`, head: "Yesterday's plan", rel};
+    return {title: `Plan from ${date}`, head: `Plan from ${date}`, rel};
+  }
+
   function renderDayPlan(plan) {
     if (!plan) return '';
     const ctx = plan.context || 'morning';
@@ -625,25 +635,36 @@ function render(d){
 
     const loadBadge = l => {
       const styles = {Clear:'#E1F5EE;color:#0F6E56',Light:'#E1F5EE;color:#0F6E56',Moderate:'#FAEEDA;color:#854F0B',Heavy:'#FAEEDA;color:#854F0B',Packed:'#FCEBEB;color:#A32D2D'};
-      const s = styles[l] || styles.Clear;
-      return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'Clear'}</span>`;
+      // A semleges jelvény LÉTEZŐ változókat használ (--s2 / --text2): a korábbi --card2
+      // nincs definiálva, a jelvény háttér nélküli szöveg volt.
+      // Hiányzó címke → semleges "—" (nem kitalált zöld "Clear").
+      // Ismeretlen címke ("Unknown": a sync nem tudta beolvasni a feladatlistát, vagy
+      // bármi, amit nem ismerünk) semleges szürke jelvényt kap — nem a zöld "Clear"-t.
+      // Saját kulcs kell (hasOwnProperty): a styles['constructor'] függvény lenne.
+      const s = Object.prototype.hasOwnProperty.call(styles, l) ? styles[l] : 'var(--s2);color:var(--text2)';
+      return `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${s.split(';')[0]};${s.split(';').slice(1).join(';')}">${l||'—'}</span>`;
     };
+    // Emoji ikonok, mint a lap többi részén. A korábbi `ti ti-…` ikonokhoz egyik lap sem
+    // tölt be ikon-betűkészletet (üres hely maradt), új külső forrást pedig nem veszünk fel.
+    const ICONS = {coffee:'☕', barbell:'🏋', phone:'📞', send:'✉️', briefcase:'💼', check:'✓', clock:'⏱', moon:'🌙'};
+    const ico = (name, size, extra) => Object.prototype.hasOwnProperty.call(ICONS, name)
+      ? `<span aria-hidden="true" style="font-size:${size}px;line-height:1;${extra||''}">${ICONS[name]}</span>` : '';
     const pill = (icon, text, type) => {
       const s = {work:'background:#FAEEDA;color:#854F0B;border-color:#FAC775',gym:'background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB',task:'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4',over:'background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1'}[type]||'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4';
-      return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid;${s}"><i class="ti ti-${icon}" aria-hidden="true" style="font-size:12px"></i>${text}</span>`;
+      return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid;${s}">${ico(icon,12)}${text}</span>`;
     };
     const seqBox = (text, cls) => {
-      const s = cls==='first'?'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4':cls==='deep'?'background:#EEEDFE;color:#534AB7;border-color:#CECBF6':'background:var(--card2);color:var(--text2);border-color:var(--border)';
+      const s = cls==='first'?'background:#E6F1FB;color:#185FA5;border-color:#B5D4F4':cls==='deep'?'background:#EEEDFE;color:#534AB7;border-color:#CECBF6':'background:var(--s2);color:var(--text2);border-color:var(--border)';
       return `<span style="font-size:11px;padding:4px 9px;border-radius:6px;border:0.5px solid;white-space:nowrap;flex-shrink:0;${s}">${text}</span>`;
     };
     const tlBar = (label, flex, color) => `<div style="flex:${flex};min-width:0"><div style="height:5px;border-radius:3px;background:${color};margin-bottom:3px"></div><div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label}</div></div>`;
-    const recBox = (icon, html) => `<div style="background:var(--card2);border-radius:8px;padding:.55rem .8rem;display:flex;gap:8px;align-items:flex-start;margin-top:.5rem"><i class="ti ti-${icon}" aria-hidden="true" style="font-size:15px;color:var(--text3);margin-top:1px;flex-shrink:0"></i><span style="font-size:12px;color:var(--text2);line-height:1.5">${html}</span></div>`;
+    const recBox = (icon, html) => `<div style="background:var(--s2);border-radius:8px;padding:.55rem .8rem;display:flex;gap:8px;align-items:flex-start;margin-top:.5rem">${ico(icon,15,'margin-top:1px;flex-shrink:0')}<span style="font-size:12px;color:var(--text2);line-height:1.5">${html}</span></div>`;
     const secHead = s => `<div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:.4rem">${s}</div>`;
     const divLine = () => `<div style="height:.5px;background:var(--border);margin:.6rem 0"></div>`;
 
     const renderBlock = (label, p, isTom) => {
       if (!p) return '';
-      const tasks = p.tasks || [];
+      const tasks = taskItems(p.tasks).filter(t => t.name);
       const wShifts = p.work_shifts != null ? p.work_shifts : (p.label === 'Heavy' ? 2 : 0);
 
       let tlHtml = '';
@@ -661,8 +682,8 @@ function render(d){
         const bb = plan.bb, rd = plan.readiness, hrv = plan.hrv;
         const eCol = (v,lo,mid) => v == null ? 'var(--border)' : v < lo ? '#E24B4A' : v < mid ? '#EF9F27' : '#1D9E75';
         const bar = (v,max,c) => v == null
-          ? `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px"></div>`
-          : `<div style="flex:1;height:5px;background:var(--card2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
+          ? `<div style="flex:1;height:5px;background:var(--s2);border-radius:3px"></div>`
+          : `<div style="flex:1;height:5px;background:var(--s2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
         const eRow = (lbl,v,max,c,sfx) => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:10px;color:var(--text3);width:62px;flex-shrink:0">${lbl}</span>${bar(v,max,c)}<span style="font-size:10px;color:${v == null ? 'var(--text3)' : 'var(--text2)'};width:38px;text-align:right">${v == null ? '—' : v + sfx}</span></div>`;
         energyHtml = `<div style="margin-bottom:.6rem">${eRow('Body battery',bb,100,eCol(bb,30,60),'')}${eRow('Readiness',rd,100,eCol(rd,50,70),'/100')}${eRow('HRV',hrv,80,eCol(hrv,35,45),'ms')}</div>`;
       }
@@ -713,12 +734,9 @@ function render(d){
         ? recBox(isTom ? 'clock' : 'moon', noteLines.join('<br>'))
         : '';
 
-      return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text1)">${label}</span>${loadBadge(p.label||'Clear')}</div><div style="background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem"><span style="font-size:13px;font-weight:500;color:var(--text)">${label}</span>${loadBadge(p.label)}</div><div style="background:var(--s1);border:.5px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.65rem">${tlHtml}${energyHtml}${commitPills?`${secHead('Committed time')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${commitPills}</div>`:''  }${taskPills?`${secHead('Tasks due')}<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.65rem">${taskPills}</div>`:''}${seqHtml}${note}</div>`;
     };
 
-    const fmt = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    const todStr = fmt(new Date());
-    const tomStr = fmt(new Date(Date.now()+86400000));
     // A payload értéke a forrás. A korábbi {...tom, work_shifts:2, has_gym:true}
     // 86/86 mentésen felülírta a syncet: 84 napon hamis Café x2 + Gym pillt rajzolt.
     const tomP = {...tom};
@@ -726,13 +744,13 @@ function render(d){
 
     let out = '';
     if (ctx === 'evening') {
-      out += renderBlock(`Tomorrow · ${tomStr}`, tomP, true);
+      out += renderBlock(planDayLabel(1, ctx === 'evening').title, tomP, true);
       out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
-      out += renderBlock(`Tonight · ${todStr}`, todP, false);
+      out += renderBlock(planDayLabel(0, true).title, todP, false);
     } else {
-      out += renderBlock(`Today · ${todStr}`, todP, false);
+      out += renderBlock(planDayLabel(0, false).title, todP, false);
       out += `<div style="height:.5px;background:var(--border);margin:.3rem 0 .7rem"></div>`;
-      out += renderBlock(`Tomorrow · ${tomStr}`, tomP, true);
+      out += renderBlock(planDayLabel(1, ctx === 'evening').title, tomP, true);
     }
     out += `<div style="font-size:10px;color:var(--text3);text-align:right;margin-top:.3rem">generated ${plan.generated_at||''}</div>`;
     return out;
@@ -744,7 +762,9 @@ function render(d){
     const tomorrow = tasks.tomorrow || {tasks:[], count:0, score:0, label:'Clear'};
     const overdue = tasks.overdue || {tasks:[], count:0};
 
-    const scoreColor = s => s === 'Packed' ? 'var(--red)' : s === 'Heavy' ? 'var(--amber)' : s === 'Moderate' ? 'var(--amber)' : 'var(--teal)';
+    // Csak az ismert címke kap színt. Az ismeretlen ("Unknown": a sync nem tudta beolvasni
+    // a feladatlistát) semleges szürke — korábban minden más zöld volt.
+    const scoreColor = s => s === 'Packed' ? 'var(--red)' : (s === 'Heavy' || s === 'Moderate') ? 'var(--amber)' : (s === 'Clear' || s === 'Light') ? 'var(--teal)' : 'var(--text3)';
 
     const taskRow = t => {
       const name = t.name || '';
@@ -752,9 +772,16 @@ function render(d){
       const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px">overdue</span>` : '';
       return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border)">
         <span style="font-size:14px;opacity:.5">□</span>
-        <span style="font-size:12px;font-family:var(--m);color:var(--text1)">${name}</span>${proj}${over}
+        <span style="font-size:12px;font-family:var(--m);color:var(--text);min-width:0">${name}</span>${proj}${over}
       </div>`;
     };
+
+    // A tasks.today / tasks.tomorrow a SYNC napjához képest értendő, ezért a két fejléc
+    // szava a néző mai napjához mért (planDayLabel, mint a Day plan kártyán): 15-én reggel
+    // a 14-i adat "tomorrow" blokkja a mai nap. A szöveg a lap sajátja, nem külső adat.
+    const dayA = planDayLabel(0, false), dayB = planDayLabel(1, false);
+    const headL = 'font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;min-width:0';
+    const headR = c => `font-family:var(--m);font-size:11px;color:${c};flex-shrink:0;white-space:nowrap`;
 
     let html = '';
 
@@ -767,25 +794,25 @@ function render(d){
 
     // Today tasks
     if (today.count > 0 || overdue.count > 0) {
-      const allToday = [...(overdue.tasks||[]), ...(today.tasks||[])];
+      const allToday = [...taskItems(overdue.tasks), ...taskItems(today.tasks)];
       html += `<div style="margin-bottom:1rem">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
-          <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Today</span>
-          <span style="font-family:var(--m);font-size:11px;color:${scoreColor(today.label)}">${today.label}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:.4rem">
+          <span style="${headL}">${dayA.title}</span>
+          <span style="${headR(scoreColor(today.label))}">${today.label || '—'}</span>
         </div>
         ${allToday.map(taskRow).join('')}
       </div>`;
     } else {
-      html += `<div style="font-family:var(--m);font-size:12px;color:var(--text3);margin-bottom:.8rem">✓ Nothing due today</div>`;
+      html += `<div style="font-family:var(--m);font-size:12px;color:var(--text3);margin-bottom:.8rem">✓ ${dayA.rel === 0 || dayA.rel === null ? 'Nothing due today' : 'Nothing due · ' + dayA.title}</div>`;
     }
 
     // Tomorrow tasks
     html += `<div style="margin-bottom:.5rem">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
-        <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Tomorrow</span>
-        <span style="font-family:var(--m);font-size:11px;color:${scoreColor(tomorrow.label)}">${tomorrow.count > 0 ? tomorrow.label : '—'}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:.4rem">
+        <span style="${headL}">${dayB.title}</span>
+        <span style="${headR(scoreColor(tomorrow.label))}">${tomorrow.count > 0 ? (tomorrow.label || '—') : '—'}</span>
       </div>
-      ${tomorrow.count > 0 ? tomorrow.tasks.map(taskRow).join('') : '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">Nothing scheduled</div>'}
+      ${tomorrow.count > 0 ? taskItems(tomorrow.tasks).map(taskRow).join('') : '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">Nothing scheduled</div>'}
     </div>`;
 
     // Open without date
@@ -806,6 +833,7 @@ function render(d){
     // tovább, és három napra vágott — 87 esemény esett kívülre 36 napon).
     const today = new Date();
     const cutoff = new Date(today); cutoff.setHours(23,59,59,999); cutoff.setDate(cutoff.getDate() + 6);
+    const todayStart = new Date(today); todayStart.setHours(0,0,0,0);
     // A csoportkulcs a nyers `start_date`, ami mindig ISO ('YYYY-MM-DD').
     // A korábbi 'en-GB' rövid formátum ('5 Sep') ezzel soha nem egyezett, ezért a
     // "· today" jelölés egyetlen napon sem jelent meg. Helyi dátum, nem UTC.
@@ -815,14 +843,19 @@ function render(d){
     // Group by start_date, filter to near future only
     const groups = {};
     events.forEach(e => {
-      if (!e.start_date) return;
+      if (!e || !e.start_date) return;
       const key = e.start_date;
-      // Try to parse the date to filter
-      try {
-        const parts = e.start.split('T')[0].split('-');
-        const d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-        if (d > cutoff) return; // skip far future
-      } catch(err) {}
+      // A szűrés UGYANABBÓL a mezőből megy, mint a csoportosítás: a `start_date`-ből
+      // (helyi nap). A `start` az iCal-úton nyers UTC — abból számolva a 8. nap éjfél
+      // utáni eseménye még a 7. napnak látszott, és 8. nap-fejléc lett belőle; hiányzó
+      // `start`-nál pedig az elnyelt kivétel miatt bármilyen távoli esemény bekerült.
+      // Számokból épített helyi dátum (Safari). Ami nem valódi ISO nap, azt nem rajzoljuk ki.
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(key));
+      if (!m) return;
+      const day = new Date(+m[1], +m[2]-1, +m[3]);     // helyi éjfél
+      if (day.getMonth() !== +m[2]-1 || day.getDate() !== +m[3]) return;
+      if (day > cutoff) return; // skip far future
+      if (day < todayStart) return; // régi adat: a néző mai napja előtti nap nem "Next 7 days"
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
@@ -1015,27 +1048,68 @@ function render(d){
   const calBodyEl = document.getElementById('calBody');
   if (calBodyEl) calBodyEl.innerHTML = renderCalendar(calEvents, rs);
 
+  // A Day plan és a Tasks kitöltése a sablon kiírása UTÁN történik: korábban a sablon
+  // (tab-today.innerHTML=) előtt futott, a sablon pedig rejtve és üresen hozta létre
+  // újra a két szakaszt — a kártyák sosem látszottak. A `d` itt is a deepEscape-en
+  // átment adat (render() első lépése).
+  // Day Plan
+  const dayPlan = d.day_plan || null;
+  const dpEl = document.getElementById('dayPlanBody');
+  const dpSec = document.getElementById('dayPlanSection');
+  const dpLabel = document.getElementById('dayPlanLabel');
+  if (dpEl && dpSec) {
+    if (dayPlan) {
+      dpSec.style.display = '';
+      // Egy hibás terv csak a saját szakaszát tüntetheti el: a kitöltés a render()
+      // közepén fut, utána jön az elavultság-sáv és a másik két fül.
+      try {
+        const ctx = dayPlan.context || 'morning';
+        // A fejléc a terv FŐ napjáról szól (esti tervnél a rákövetkező nap), a néző mai
+        // napjához mérve; dátum nélküli dokumentumnál a terv saját kontextusa szerint.
+        const head = planDayLabel(ctx === 'evening' ? 1 : 0, ctx === 'evening').head;
+        if (dpLabel) dpLabel.textContent = '📋 ' + (head || (ctx === 'evening' ? 'Tomorrow\'s plan' : ctx === 'morning' ? 'Today\'s plan' : 'Plan'));
+        dpEl.innerHTML = renderDayPlan(dayPlan);
+      } catch (e) {
+        console.warn('Day plan card not rendered:', e && e.message);
+        dpSec.style.display = 'none';
+      }
+    } else {
+      dpSec.style.display = 'none';
+    }
+  }
+
+  // Tasks
+  const tasks = d.tasks || null;
+  const tasksEl = document.getElementById('tasksBody');
+  const tasksSec = document.getElementById('tasksSection');
+  if (tasksEl && tasksSec) {
+    if (tasks) {
+      tasksSec.style.display = '';
+      try {
+        tasksEl.innerHTML = renderTasks(tasks);
+      } catch (e) {
+        console.warn('Tasks card not rendered:', e && e.message);
+        tasksSec.style.display = 'none';
+      }
+    } else {
+      tasksSec.style.display = 'none';
+    }
+  }
+
   // ── Frissesség-jelzés ──────────────────────────────────────────────────────
   // A backend forrásonként bélyegzi, mikor jött érdemi adat. Ha egy forrás
   // lemarad a legutóbbi synctől, akkor ott carry-forward működik: a szám valós,
   // de RÉGI. Egy kis időbélyeget könnyű átnézni, ezért ez látható sávot kap —
   // különben a dashboard egészségesebbnek látszik, mint amilyen a pipeline.
+  // A MOSTANI időhöz mér (B9), a brieffel közös számítással (freshness.js).
   (function(){
     const el = document.getElementById('staleBanner');
     if (!el) return;
-    const fr = d.freshness || {};
-    const parse = t => { const x = Date.parse(String(t).replace(' ','T')); return isNaN(x) ? null : x; };
-    const now = parse(d.synced_at) || Date.now();
-    const NEV = {garmin:'recovery', hevy:'training', calendar:'calendar',
-                 weather:'weather', body_comp:'body composition'};
-    const stale = Object.entries(fr)
-      .map(([k,v]) => [k, parse(v)])
-      .filter(([k,t]) => t && (now - t) > 24*3600*1000)
-      .map(([k,t]) => ({name: NEV[k]||k, days: Math.floor((now-t)/86400000), when: fr[k]}));
+    const stale = HealthFreshness.stale(d.freshness, Date.now());
     if (!stale.length) { el.style.display='none'; return; }
     const worst = Math.max(...stale.map(x=>x.days));
-    const col = worst >= 3 ? 'var(--red)' : 'var(--amber)';
-    const bg  = worst >= 3 ? 'rgba(224,82,82,0.12)' : 'rgba(232,153,58,0.12)';
+    const col = worst >= HealthFreshness.RED_DAYS ? 'var(--red)' : 'var(--amber)';
+    const bg  = worst >= HealthFreshness.RED_DAYS ? 'rgba(224,82,82,0.12)' : 'rgba(232,153,58,0.12)';
     el.style.display = 'block';
     el.innerHTML = `<div style="padding:.55rem .85rem;margin-bottom:1rem;border-radius:8px;
       background:${bg};border:1px solid ${col};color:${col};font-family:var(--m);font-size:11px">
@@ -1049,21 +1123,24 @@ function render(d){
     if (!wxEl || w.temp == null) return;
     const uv = w.uv_index;
     const uvColor = (uv||0) >= 6 ? 'var(--red)' : (uv||0) >= 3 ? 'var(--amber)' : 'var(--teal)';
-    const rain = w.rain != null ? w.rain : (w.precip_mm||0) > 0.5;
+    // Eső: három állapot — esik / nem esik / NEM TUDJUK (null). Ismeretlennél nincs
+    // ikon és nincs biciklis tanács: korábban a hiány zöld "No rain — biking ok" lett.
+    const rain = w.rain != null ? !!w.rain : (typeof w.precip_mm === 'number' ? w.precip_mm > 0.5 : null);
     const loc = live ? (w.city || 'your location') : (w.city || '');
-    wxEl.innerHTML = `
-      <span style="color:var(--text2)">${rain ? '🌧' : '☀️'}</span>
-      <span style="color:var(--text2)">${w.description || '—'}</span>
-      <span>·</span><span>${Math.round(w.temp)}°C</span>
-      ${uv != null ? `<span>·</span><span style="color:${uvColor}">UV ${uv}</span>` : ''}
-      <span>·</span><span style="color:${rain ? 'var(--amber)' : 'var(--teal)'}">${rain ? 'Rain — no biking' : 'No rain — biking ok'}</span>
-      ${loc ? `<span>·</span><span style="color:var(--text3)">📍 ${loc}${live ? '' : ''}</span>` : ''}
-    `;
+    const dot = '<span>·</span>';
+    wxEl.innerHTML = [
+      rain == null ? '' : `<span style="color:var(--text2)">${rain ? '🌧' : '☀️'}</span>`,
+      `<span style="color:var(--text2)">${w.description || '—'}</span>`,
+      `${dot}<span>${Math.round(w.temp)}°C</span>`,
+      uv != null ? `${dot}<span style="color:${uvColor}">UV ${uv}</span>` : '',
+      rain == null ? '' : `${dot}<span style="color:${rain ? 'var(--amber)' : 'var(--teal)'}">${rain ? 'Rain — no biking' : 'No rain — biking ok'}</span>`,
+      loc ? `${dot}<span style="color:var(--text3)">📍 ${loc}</span>` : '',
+    ].join('\n');
   }
   paintWx(d.weather || {}, false);                          // synced (home) weather first
   // Az élő időjárás KÜLÖN belépési pont: nem a render()-en át jön, tehát a
   // d = deepEscape(d) nem érinti. Saját semlegesítés kell — ugyanaz a mintázat,
-  // mint a brief.html:223-ban. (2026-08-29: pontosan egy ilyen kihagyott
+  // mint a brief.html élő-időjárás ágában (wxHtml(deepEscape(w2))). (2026-08-29: pontosan egy ilyen kihagyott
   // belépési pont volt a tárolt XSS a brief lapon.)
   deviceWeather().then(w => { if (w && w.temp != null) paintWx(deepEscape(w), true); }).catch(()=>{});
 
@@ -1108,7 +1185,7 @@ function render(d){
           <div class="pf-hero-meta">
             <div class="pf-hero-name">${hero.name}</div>
             <div class="pf-hero-ins">${hero.inspired}</div>
-            <div style="display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);margin-top:4px">${hero.mood}</div>
+            <div style="display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--m);margin-top:4px">${hero.mood}</div>
           </div>
         </div>
         <div class="pf-hero-why">${heroData.reason || hero.mood}</div>
@@ -1123,7 +1200,7 @@ function render(d){
       <div class="pf-hero" style="border-color:var(--amber-d);margin-bottom:10px">
         <div class="pf-hero-num" style="color:var(--amber)">${evHero.num||''}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">post-gym · after shower</div>
+          <div style="font-family:var(--m);font-size:10px;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">post-gym · after shower</div>
           <div class="pf-hero-name">${evHero.name||''}</div>
           <div class="pf-hero-ins">${evHero.inspired||''}</div>
           <div class="pf-hero-why">${pe.reason||''}</div>
@@ -1172,7 +1249,7 @@ function render(d){
         <div class="pf-hero-meta">
           <div class="pf-hero-name">${p.name}</div>
           <div class="pf-hero-ins">${p.inspired}</div>
-          <div style="display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--mono);margin-top:4px">${p.mood}</div>
+          <div style="display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;background:var(--s3);color:var(--text2);font-family:var(--m);margin-top:4px">${p.mood}</div>
         </div>
       </div>
       <div class="pf-hero-why">${reason}</div>
@@ -1243,7 +1320,7 @@ function render(d){
         <div style="font-size:36px;font-weight:300;letter-spacing:-2px;color:${irCol}">${ir.score}</div>
         <div>
           <div style="font-size:13px;font-weight:500;color:${irCol};text-transform:capitalize">${ir.level} risk</div>
-          <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">/100 · lower is better</div>
+          <div style="font-size:11px;color:var(--text3);font-family:var(--m)">/100 · lower is better</div>
         </div>
       </div>
       ${factors ? '<div class="illness-factors">'+factors+'</div>' : '<div style="font-size:11px;color:var(--text3)">No significant risk factors today</div>'}`;
@@ -1279,7 +1356,7 @@ function render(d){
       <div class="sec">
         <div class="sec-head"><div class="sec-title">🎵 Music on rides</div><div class="sec-line"></div></div>
         <div class="spotify-rides">${rideCards}</div>
-        <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">BPM · Energy (0-100) · Mood valence (0-100, higher = happier)</div>
+        <div style="font-size:10px;color:var(--text3);font-family:var(--m);margin-top:6px">BPM · Energy (0-100) · Mood valence (0-100, higher = happier)</div>
       </div>`;
   }
   // ── SPOTIFY RIDES (in Training tab — added below) ─────────────────────
@@ -1355,11 +1432,11 @@ function render(d){
             <div class="wq-stats">${durMin > 0 ? durMin+'min' : '—'} · ${wq.label||wq.note||''}</div>
             <div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4">${exList}</div>
             <div class="wq-bars">
-              ${typeof wq.z2==='number' ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px"><span style="font-size:9px;color:var(--text3);font-family:var(--mono);width:14px">z2</span><div style="flex:1;height:3px;background:var(--s3);border-radius:2px"><div style="width:'+wq.z2+'%;height:100%;background:var(--amber);border-radius:2px"></div></div><span style="font-size:9px;color:var(--text3);font-family:var(--mono)">'+wq.z2+'%</span></div>' : '<div style="display:flex;align-items:center;gap:6px;margin-top:4px"><span style="font-size:9px;color:var(--text3);font-family:var(--mono);width:14px">z2</span><span style="font-size:9px;color:var(--text3);font-family:var(--mono)">— nincs pulzuszóna-adat</span></div>'}
+              ${typeof wq.z2==='number' ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px"><span style="font-size:9px;color:var(--text3);font-family:var(--m);width:14px">z2</span><div style="flex:1;height:3px;background:var(--s3);border-radius:2px"><div style="width:'+wq.z2+'%;height:100%;background:var(--amber);border-radius:2px"></div></div><span style="font-size:9px;color:var(--text3);font-family:var(--m)">'+wq.z2+'%</span></div>' : '<div style="display:flex;align-items:center;gap:6px;margin-top:4px"><span style="font-size:9px;color:var(--text3);font-family:var(--m);width:14px">z2</span><span style="font-size:9px;color:var(--text3);font-family:var(--m)">— nincs pulzuszóna-adat</span></div>'}
             </div>
           </div>
         </div>
-        <div class="wq-score" style="color:${scoreCol}">${wq.score||0}<span style="font-size:10px;display:block;color:var(--text3);font-family:var(--mono)">quality</span></div>
+        <div class="wq-score" style="color:${scoreCol}">${wq.score||0}<span style="font-size:10px;display:block;color:var(--text3);font-family:var(--m)">quality</span></div>
       </div>`;
   }).join('') : '<div style="color:var(--text3);font-size:12px;padding:1rem">No sessions yet — run sync after training</div>';
 
@@ -1379,7 +1456,7 @@ function render(d){
     return `
       <div class="ws-row">
         <div class="ws-left">
-          <div style="font-family:var(--mono);font-size:10px;color:var(--text3)">${dateLabel}</div>
+          <div style="font-family:var(--m);font-size:10px;color:var(--text3)">${dateLabel}</div>
           <div class="ws-type" style="color:${typeCol}">${type} ${w.title&&w.title.match(/\d/)?' '+w.title.match(/\d/)[0]:''}</div>
         </div>
         <div class="ws-body">
@@ -1438,7 +1515,7 @@ function render(d){
     <div class="sec">
       <div class="sec-head"><div class="sec-title">🏋 Workout quality</div><div class="sec-line"></div></div>
       <div class="card" style="padding:0">${wqHTML}</div>
-      <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">Score = duration + exercise count · max 100 · HR zones post-Kyiv</div>
+      <div style="font-size:10px;color:var(--text3);font-family:var(--m);margin-top:6px">Score = duration + exercise count · max 100 · HR zones post-Kyiv</div>
     </div>
 
     <div class="sec">
@@ -1641,7 +1718,9 @@ async function load(){
       document.querySelector('.logo').appendChild(b);
     }
   }catch(e){
-    eb.innerHTML=`<strong>Could not load data.json</strong> — ${e.message}`;
+    // A hibaüzenet KÜLSŐ szöveget idézhet: a Chrome JSON-hibája szó szerint hozza a
+    // rövid választörzset ("<svg onload=…>"). Ezért csak szövegként mehet ki (B3).
+    eb.textContent=`Could not load data.json — ${(e&&e.message)||e}`;
     eb.style.display='block';
     document.getElementById('sub').textContent='error';
   }

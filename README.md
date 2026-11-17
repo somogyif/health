@@ -29,10 +29,14 @@ outside it, because the sync runs on a personal machine and the data must not be
 
 ```
 index.html            the whole dashboard: HTML + CSS + vanilla JS in one file, no build
-brief.html            self-contained printable one-page brief
+brief.html            printable one-page brief
+freshness.js          shared by both pages: which source is stale, measured against now
+pairing.js            shared by both pages: the guarded setup link (see "Connecting a browser")
 demo-data.json        anonymised sample data powering ?demo=1
+tests/page_checks.js  runs both pages' own scripts in Node against hostile/stale input
 manifest.webmanifest  PWA — installs to an iPhone home screen
-robots.txt            crawlers excluded
+robots.txt            no effect here: crawlers only read the host root's robots.txt;
+                      both pages carry <meta name="robots" content="noindex"> instead
 ```
 
 ## Architecture
@@ -102,7 +106,10 @@ last good document in place; a partial failure backfills the missing fields from
 snapshots, searching backwards rather than one step, because a run of degraded syncs
 had already washed out the last good values; and every source carries its own freshness
 timestamp, so a carried-forward value displays with the time it was actually measured
-instead of masquerading as current. Sleep and HRV are deliberately excluded from
+instead of masquerading as current. Both pages compare those stamps with the current
+time and warn once a source is more than a day old. They first compared them with the
+document's own sync time — so a pipeline that had stopped entirely, where every stamp is
+equally old, looked perfectly fresh. Sleep and HRV are deliberately excluded from
 carry-forward — they're night-bound, and showing last night's figure as today's would
 be a lie the freshness stamp doesn't excuse.
 
@@ -195,6 +202,27 @@ Separate read and write keys on the endpoint, so a browser never holds a key tha
 write. Rate limiting and logging on failed authentication. The frontend's token prompt
 is a convenience, not a security boundary — enforcement is server-side, and the code
 says so.
+
+**Connecting a browser.** A browser is paired once, with a setup link that carries the
+endpoint and the read key *after the `#`*:
+
+```
+https://somogyif.github.io/health/#api=https://<worker-host>&key=<read key>
+https://somogyif.github.io/health/brief.html#api=https://<worker-host>&key=<read key>
+```
+
+The fragment is never sent to the server, so the key stays out of the hosting provider's
+request logs, and the page removes it from the address bar before doing anything else.
+Both pages hand the link to one shared handler (`pairing.js`). It accepts only an
+`https://` endpoint, never `data:`, `http:` or anything else. Any change asks first and
+shows the host — a first endpoint, a different one, or a new key for the same one
+(the host is guessable, so a link must not be able to swap the key silently). Opening
+the same link again changes nothing. The older
+`?api=…&key=…` form is refused, because by the time the page sees it the key has
+already gone to the server; the page says to use `#` instead of `?`. Browsers that are
+already paired keep working with nothing to do. Before this, the brief accepted any link
+without asking, and the dashboard compared endpoints by string prefix, so a crafted link
+could point a fresh browser at a `data:` URL holding its own payload.
 
 ---
 
