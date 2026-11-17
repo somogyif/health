@@ -1362,6 +1362,21 @@ check('kamra hiányzó adat: tápérték nélküli terméknél "—" áll (nem 0
   must(/legalább 24 g/.test(t) && /legalább 0 g/.test(t) && /legalább 0,5 g/.test(t), `a hiányos makrók nem "legalább"-bal állnak: ${t}`);
   must(/Rejtély[^]*?—/.test(t), 'a hiányos tétel sorában nincs "—"');
 });
+check('kamra hiányzó adat: ha egy makróra EGY tételnek sincs adata, az összeg "—" (nem "legalább 0"), cél mellett sáv és maradék nélkül', async () => {
+  const unk = {id: 'l_u1', code: null, name: 'Ismeretlen leves', grams: 300, kcal: null, protein: null, carbs: null, fat: null, time: '12:00'};
+  const half = {id: 'l_u2', code: null, name: 'Fél adat', grams: 100, kcal: 150, protein: null, carbs: null, fat: 0, time: '12:30'};
+  const a = await kamra({...emptyDoc(), log: {[KDAY]: [unk]}});
+  must(!/legalább/.test(a.txt('todayBody')) && !/\b0 (kcal|g)\b/.test(a.txt('todayBody').replace(/300 g/, '')), `cél nélkül: ${a.txt('todayBody')}`);
+  must((a.txt('todayBody').match(/—/g) || []).length >= 8, 'nincs "—" az összegben');
+  const b = await kamra({...emptyDoc(), targets: TG, log: {[KDAY]: [unk, half]}});
+  const t = b.txt('todayBody');
+  must(/legalább 150 \/ 2400 kcal/.test(t) && /legfeljebb 2250 kcal maradt/.test(t), `ismert rész: ${t}`);
+  must(/Fehérje\s*— \/ 165 g/.test(t) && /Szénhidrát\s*— \/ 280 g/.test(t) && !/legalább 0 \/ (165|280)/.test(t), `ismeretlen makró: ${t}`);
+  must(/Zsír\s*legalább 0 \/ 75 g/.test(t), `a valódi (ismert) 0 nem maradhat ki: ${t}`);
+  must(bars(b.html('todayBody')) === 2, `sávok (kcal, zsír): ${bars(b.html('todayBody'))}`);
+  const tt = a.K.totals([unk, half]);
+  must(tt.protein.known === 0 && tt.kcal.known === 1 && tt.fat.known === 1 && tt.fat.sum === 0, JSON.stringify(tt));
+});
 check('kamra keresés: ismeretlen vonalkód → kézi űrlap a vonalkóddal, hálózati hiba → szintén, más szöveggel', async () => {
   const miss = await kamra();
   await miss.K.lookup('5990000000001');

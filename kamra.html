@@ -358,13 +358,14 @@ function macros(per100, grams) {
   for (const k of MACROS) { const v = isObj(per100) ? fin(per100[k]) : null; o[k] = v == null ? null : r1(grams * v / 100); }
   return o;
 }
-// Összeg a meglévő értékekből; incomplete, ha bármelyik tételnél hiányzik az adat.
+// Összeg a meglévő értékekből; incomplete, ha bármelyik tételnél hiányzik az adat; known =
+// hány tételnek VAN adata (ha egynek sincs, az összeg nem "legalább 0", hanem ismeretlen).
 function totals(entries) {
   const t = {};
-  for (const k of MACROS) t[k] = {sum: 0, incomplete: false};
+  for (const k of MACROS) t[k] = {sum: 0, incomplete: false, known: 0};
   for (const e of Array.isArray(entries) ? entries : []) {
     if (!isObj(e)) continue;
-    for (const k of MACROS) { const v = fin(e[k]); if (v == null) t[k].incomplete = true; else t[k].sum = r1(t[k].sum + v); }
+    for (const k of MACROS) { const v = fin(e[k]); if (v == null) t[k].incomplete = true; else { t[k].sum = r1(t[k].sum + v); t[k].known++; } }
   }
   return t;
 }
@@ -464,18 +465,23 @@ function render(d) {
     <div class="row" style="margin:0 0 .9rem"><button type="button" class="ghost" data-act="week-maintenance" style="flex:1 1 0">Egész hét fenntartó</button>
       ${manual ? '<button type="button" class="ghost" data-act="day-auto" style="flex:1 1 0">Vissza a heti rendhez</button>' : ''}</div>`;
   const rows = MACROS.map(k => {
-    const u = UNITS[k], t = tot[k], least = t.incomplete ? 'legalább ' : '';
+    const u = UNITS[k], t = tot[k];
+    // Ha van tétel, de egynek sincs adata erre a makróra: az összeg ismeretlen ("—"), nem "legalább 0".
+    const none = t.incomplete && t.known === 0;
+    const sum = none ? '—' : (t.incomplete ? 'legalább ' : '') + nf(t.sum);
     const goal = set ? fin(set[k === 'kcal' ? 'kcal' : k + '_g']) : null;
-    if (!set) return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${least}${nf(t.sum)} ${u}</span></div></div>`;
-    if (goal == null || goal < 0) return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${least}${nf(t.sum)} ${u} · cél: —</span></div></div>`;
+    if (!set) return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${sum}${none ? '' : ' ' + u}</span></div></div>`;
+    if (goal == null || goal < 0) return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${sum}${none ? '' : ' ' + u} · cél: —</span></div></div>`;
+    if (none) return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">— / ${nf(goal)} ${u}</span></div><div class="mrem">nincs adat a mai tételekben</div></div>`;
     const left = r1(goal - t.sum), pct = goal > 0 ? Math.min(100, Math.max(0, Math.round(t.sum / goal * 100))) : null;
     const rem = left < 0 ? `túl: ${nf(-left)} ${u}` : t.incomplete ? `legfeljebb ${nf(left)} ${u} maradt` : `még ${nf(left)} ${u}`;
-    return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${least}${nf(t.sum)} / ${nf(goal)} ${u}</span></div>
+    return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${sum} / ${nf(goal)} ${u}</span></div>
       ${pct == null ? '' : `<div class="bar"><i${left < 0 ? ' class="over"' : ''} style="width:${pct}%"></i></div>`}<div class="mrem">${rem}</div></div>`;
   }).join('');
   const goalNote = !tg ? 'nincs cél beállítva' : !set ? 'erre a naptípusra nincs cél' : 'napi cél';
-  const incompleteNote = MACROS.some(k => tot[k].incomplete)
-    ? '<p class="empty" style="margin-bottom:.6rem">Van tétel hiányzó tápértékkel — az összeg ezért „legalább”.</p>' : '';
+  const incompleteNote = !MACROS.some(k => tot[k].incomplete) ? ''
+    : `<p class="empty" style="margin-bottom:.6rem">Van tétel hiányzó tápértékkel — ${MACROS.some(k => tot[k].incomplete && tot[k].known > 0)
+        ? 'az összeg ezért „legalább”' : 'az összeg ezért ismeretlen'}.</p>`;
   const list = entries.length ? entries.map(e => {
     const del = edit && idAttr(e.id) ? `<div class="act"><button type="button" class="sq ghost" data-act="log-del"${idAttr(e.id)} aria-label="Tétel törlése">×</button></div>` : '';
     return `<div class="item"><div class="txt"><div class="nm">${text(e.name) || '—'}</div>
