@@ -107,6 +107,9 @@ function page(file, opt = {}) {
     removeEventListener() {},
   };
   ctx.window = ctx; ctx.self = ctx;
+  // opt.globals: a lap szkriptjei ELŐTT beállított globálisok (pl. matchMedia, getComputedStyle,
+  // egy rögzítő Chart) — az arculat-ellenőrzések használják; alapból nincs ilyen.
+  if (opt.globals) Object.assign(ctx, opt.globals);
   vm.createContext(ctx);
   // opt.now (ms): a lap "mostja" — a néző órája. Csak az argumentum nélküli new Date()
   // és a Date.now() változik; a dátumszámítás (helyi időzóna) a valódi.
@@ -883,6 +886,196 @@ check('tasks (g): ellenséges forrás, név és bélyeg nem kerül nyersen a ká
   must(html.includes('&lt;img src=x onerror=alert(3)&gt;'), 'a név nem jelent meg semlegesítve (nem bizonyít)');
   must(!/<img/i.test(html), `nyers tag a kártyán: ${html.slice(0, 300)}`);
   must(!/alert\(1\)|alert\(2\)/.test(html), 'a bélyeg vagy a forrás szövege kiíródott');
+});
+
+// ── Arculat: nappal világos, éjjel sötét (prefers-color-scheme, 2026-11-17) ─────────────
+// A sötét az alap :root, a világosat a @media (prefers-color-scheme: light) :root írja felül.
+// A színeket a CSS-ből olvassuk ki — a kontraszt így a VALÓDI palettán számolódik.
+function paletta(file) {
+  const css = (/<style>([\s\S]*?)<\/style>/i.exec(read(file)) || [])[1] || '';
+  const tokenek = t => Object.fromEntries([...String(t || '').matchAll(/--([\w-]+)\s*:\s*([^;]+);/g)].map(m => [m[1], m[2].trim()]));
+  const sotet = /:root\s*\{([^}]*)\}/.exec(css);
+  const vilagos = /@media\s*\(prefers-color-scheme:\s*light\)\s*\{\s*:root\s*\{([^}]*)\}/.exec(css);
+  return {sotet: tokenek(sotet && sotet[1]), vilagos: vilagos ? tokenek(vilagos[1]) : null};
+}
+const luminancia = hex => {
+  const m = /^#([0-9a-f]{6})$/i.exec(String(hex || '').trim());
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  return [n >> 16, (n >> 8) & 255, n & 255].map(c => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; })
+    .reduce((a, c, i) => a + c * [0.2126, 0.7152, 0.0722][i], 0);
+};
+const kontraszt = (a, b) => {
+  const x = luminancia(a), y = luminancia(b);
+  if (x == null || y == null) return null;
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+};
+const LAPOK = ['index.html', 'brief.html', 'kamra.html'];
+const temak = p => [['sötét', p.sotet], ['világos', Object.assign({}, p.sotet, p.vilagos || {})]];
+
+check('arculat: minden szöveg-szín legalább 4.5:1 a --bg/--s1/--s2 háttéren, mindkét témában, mindhárom lapon', () => {
+  for (const file of LAPOK) {
+    const p = paletta(file);
+    must(p.vilagos, `${file}: nincs @media (prefers-color-scheme: light) :root blokk`);
+    for (const [tema, t] of temak(p)) {
+      const szovegek = ['text', 'text2', 'text3', 'teal', 'amber', 'red', 'blue', 'violet', 'sky'].filter(k => k in t);
+      must(szovegek.length >= 7, `${file} ${tema}: hiányzó szöveg-tokenek (nem bizonyít): ${szovegek}`);
+      for (const sz of szovegek) for (const h of ['bg', 's1', 's2']) {
+        const c = kontraszt(t[sz], t[h]);
+        must(c != null, `${file} ${tema}: --${sz} (${t[sz]}) vagy --${h} (${t[h]}) nem #rrggbb`);
+        must(c >= 4.5, `${file} ${tema}: --${sz} ${t[sz]} a --${h} ${t[h]} háttéren ${c.toFixed(2)}:1 (< 4.5)`);
+      }
+      must(kontraszt(t['on-teal'], t.teal) >= 4.5, `${file} ${tema}: a gombszöveg (--on-teal ${t['on-teal']}) a --teal-en kevés`);
+    }
+  }
+});
+check('arculat: a világos blokk minden szín-tokent felülír, és a három lap palettája azonos', () => {
+  const szin = v => /^(#[0-9a-f]{3,8}|rgba?\()/i.test(v);
+  const lapok = Object.fromEntries(LAPOK.map(f => [f, paletta(f)]));
+  for (const [file, p] of Object.entries(lapok)) {
+    const hianyzik = Object.keys(p.sotet).filter(k => szin(p.sotet[k]) && !(k in (p.vilagos || {})));
+    must(!hianyzik.length, `${file}: a világos téma nem írja felül: ${hianyzik.join(', ')} — a sötét érték átszivárogna`);
+  }
+  for (const [tema, kulcs] of [['sötét', 'sotet'], ['világos', 'vilagos']])
+    for (const k of ['bg', 's1', 's2', 's3', 'border', 'border2', 'text', 'text2', 'text3', 'teal', 'amber', 'red', 'blue', 'on-teal']) {
+      const ertekek = LAPOK.map(f => [f, (lapok[f][kulcs] || {})[k]]).filter(([, v]) => v != null);
+      must(ertekek.length === LAPOK.length, `--${k} (${tema}) nincs meg mindhárom lapon: ${ertekek.map(([f]) => f)}`);
+      must(new Set(ertekek.map(([, v]) => v.toLowerCase().replace(/\s/g, ''))).size === 1,
+           `--${k} (${tema}) eltér a lapok közt: ${ertekek.map(([f, v]) => f + '=' + v).join(', ')}`);
+    }
+});
+check('arculat: a három lap jelzi a két témát (color-scheme), és mindkét téma-szín a saját --bg-je', () => {
+  for (const file of LAPOK) {
+    const html = read(file), p = paletta(file);
+    must(/<meta name="color-scheme" content="light dark">/.test(html), `${file}: nincs color-scheme meta`);
+    must(/color-scheme:\s*light dark/.test(html), `${file}: a :root-ban nincs color-scheme: light dark`);
+    must(html.includes(`<meta name="theme-color" media="(prefers-color-scheme: light)" content="${p.vilagos.bg}">`), `${file}: a világos theme-color nem a világos --bg`);
+    must(html.includes(`<meta name="theme-color" media="(prefers-color-scheme: dark)" content="${p.sotet.bg}">`), `${file}: a sötét theme-color nem a sötét --bg`);
+    must(!/<meta name="theme-color" content=/.test(html), `${file}: maradt média nélküli (egytémás) theme-color`);
+  }
+  must(/<meta name="apple-mobile-web-app-status-bar-style" content="default">/.test(read('index.html')) &&
+       !/<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">/.test(read('index.html')),
+       'index: a black-translucent állapotsor fehér órát írna a világos lapra');
+});
+check('arculat: a gombok szövege a témához igazodik (--on-teal), nem beégetett fekete', () => {
+  for (const [file, sel] of [['index.html', '.sc button'], ['kamra.html', 'button.pri'], ['kamra.html', 'button[aria-pressed="true"]']]) {
+    const css = (/<style>([\s\S]*?)<\/style>/i.exec(read(file)) || [])[1] || '';
+    const i = css.indexOf(sel + '{');
+    must(i >= 0, `${file}: nincs ${sel} szabály (nem bizonyít)`);
+    const szabaly = css.slice(i, css.indexOf('}', i));
+    must(/color:var\(--on-teal\)/.test(szabaly) && !/color:#0c0c0b/.test(szabaly), `${file} ${sel}: ${szabaly}`);
+  }
+});
+// A grafikonok a canvasra rajzolnak, ami nem érti a var()-t: a színeket rajzoláskor a számolt
+// stílusból kell kiolvasni. Az ál-böngészőnek itt adunk getComputedStyle-t és egy rögzítő Chartot.
+const arculatLap = (temaFn, extra = {}) => {
+  const cfgs = [], P = paletta('index.html');
+  const vil = Object.assign({}, P.sotet, P.vilagos);
+  const p = page('index.html', {url: 'https://somogyif.github.io/health/index.html?demo=1', fetch: () => json(demo()),
+    globals: Object.assign({
+      getComputedStyle: () => ({getPropertyValue: n => ((temaFn() === 'light' ? vil : P.sotet)[n.replace(/^--/, '')] || '')}),
+      Chart: class { constructor(el, cfg) { cfgs.push(cfg); } destroy() {} },
+    }, extra)});
+  return {p, cfgs, vil, sotet: P.sotet};
+};
+const rgbaOf = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+check('arculat: nappal a grafikonok a világos paletta színeit kapják, nem a beégetett sötétet', async () => {
+  const {p, cfgs, vil} = arculatLap(() => 'light');
+  p.fire('DOMContentLoaded'); await settle();
+  must(cfgs.some(c => c.type === 'doughnut') && cfgs.length >= 3, `kevés grafikon (nem bizonyít): ${cfgs.map(c => c.type)}`);
+  const szinek = JSON.stringify(cfgs.map(c => [c.data && c.data.datasets, c.options && c.options.scales]));
+  must(szinek.includes(vil.teal) && szinek.includes(vil.amber), `a világos kiemelő színek hiányoznak: ${szinek.slice(0, 300)}`);
+  must(szinek.includes(vil.text3) && szinek.includes(vil.grid), 'a tengelyfelirat vagy a rács nem a világos színt kapta');
+  must(szinek.includes(rgbaOf(vil.teal, 0.7)) || szinek.includes(rgbaOf(vil.amber, 0.7)) || szinek.includes(rgbaOf(vil.red, 0.7)),
+       'az alvás-oszlopok áttetsző színe nem a világos palettából jön');
+  must(!/#34c99a|#e8993a|#e05252|#eb6b6b|#3e3d3b|rgba\(52,201,154|rgba\(255,255,255/i.test(szinek),
+       `sötét szín maradt a világos témájú grafikonokban: ${(szinek.match(/#34c99a|#e8993a|#e05252|#eb6b6b|#3e3d3b|rgba\(52,201,154[^)]*\)|rgba\(255,255,255[^)]*\)/i) || [])[0]}`);
+});
+check('arculat: témaváltáskor az index az utolsó adattal újrarajzol, és az új grafikonok az új színeket kapják', async () => {
+  let tema = 'dark', valto = null;
+  const {p, cfgs, vil, sotet} = arculatLap(() => tema, {
+    matchMedia: q => ({media: q, matches: false, addEventListener: (t, f) => { if (t === 'change') valto = f; }})});
+  p.fire('DOMContentLoaded'); await settle();
+  must(valto, 'a lap nem iratkozott fel a prefers-color-scheme változására');
+  const elotte = cfgs.length;
+  must(elotte >= 3 && JSON.stringify(cfgs).includes(sotet.teal), `előtte nem a sötét színekkel rajzolt (nem bizonyít): ${elotte}`);
+  tema = 'light'; valto({matches: true, media: '(prefers-color-scheme: light)'});
+  must(cfgs.length > elotte, 'témaváltás után nem rajzolt újra');
+  const uj = JSON.stringify(cfgs.slice(elotte));
+  must(uj.includes(vil.teal) && !uj.includes(sotet.teal), `az újrarajzolt grafikonok nem a világos színt kapták: ${uj.slice(0, 200)}`);
+  must(p.el('tasksBody').innerHTML.length > 0, 'az újrarajzolás után üres a lap');
+});
+check('arculat: a brief gyűrűje és csempéi a témából kapják a színt (var), nincs beégetett hex', async () => {
+  const {html} = await briefAt(at(2026, 3, 17, 8));
+  must(/<svg\b/.test(html) && /style="stroke:var\(--track\)"/.test(html), `nincs témás gyűrű-sáv (nem bizonyít): ${html.slice(0, 200)}`);
+  must(/style="stroke:var\(--(teal|amber|red|text3)\)"/.test(html), 'a gyűrű íve nem témás színt kapott');
+  must(!/stroke="#|#34c99a|#e8993a|#e05252|#5b9cf6|#7a7874|#313130/i.test(html), `beégetett szín a briefben: ${(html.match(/stroke="#[^"]*"|#34c99a|#e8993a|#e05252|#5b9cf6|#7a7874|#313130/i) || [])[0]}`);
+});
+
+// ── Arculat: tipográfia, kártyák, mozgás (Grok „Refined Warm Data" részletei, 2026-11-17) ──
+// Plus Jakarta minden szövegre, DM Mono csak a számokra és a kis nagybetűs címkékre; a vékony
+// (300) súly nincs betöltve; kártya: 1 px keret + árnyék; csökkentett mozgásnál nincs animáció.
+const cssOf = file => (/<style>([\s\S]*?)<\/style>/i.exec(read(file)) || [])[1] || '';
+const szabaly = (css, sel) => { const i = css.indexOf(sel + '{'); return i < 0 ? null : css.slice(i + sel.length + 1, css.indexOf('}', i)); };
+check('arculat: a betűsúlyok — Plus Jakarta 400–700 (vékony 300 nélkül), DM Mono 400/500, mindhárom lapon', () => {
+  for (const file of LAPOK) {
+    const m = /fonts\.googleapis\.com\/css2\?([^"]+)"/.exec(read(file));
+    must(m, `${file}: nincs Google Fonts link (nem bizonyít)`);
+    const jakarta = (/family=Plus\+Jakarta\+Sans:ital,wght@([^&]+)/.exec(m[1]) || [])[1] || '';
+    const mono = (/family=DM\+Mono:ital,wght@([^&]+)/.exec(m[1]) || [])[1] || '';
+    must(jakarta && !/(^|;)[01],300(;|$)/.test(jakarta), `${file}: a Plus Jakarta 300-as (vékony) súlya be van töltve: ${jakarta}`);
+    must(/0,600/.test(jakarta) && /0,700/.test(jakarta), `${file}: hiányzik a Plus Jakarta 600/700: ${jakarta}`);
+    must(/0,400/.test(mono) && /0,500/.test(mono), `${file}: hiányzik a DM Mono 400/500: ${mono}`);
+  }
+});
+check('arculat: a nagy számok DM Mono 500-zal (a mono számjegyek egymás alá igazodnak)', () => {
+  const ix = cssOf('index.html'), br = cssOf('brief.html');
+  for (const [css, sel] of [[ix, '.pillar-value'], [ix, '.mm-v'], [ix, '.pf-hero-num'], [ix, '.pf-card-num'], [ix, '.gauge-val'],
+                            [ix, '.sr-stat-v'], [br, '  .tile .v'], [br, '  .ring .num b']]) {
+    const r = szabaly(css, sel);
+    must(r != null, `nincs ${sel.trim()} szabály (nem bizonyít)`);
+    must(/font-family:var\(--m\)/.test(r) && /font-weight:500/.test(r), `${sel.trim()}: ${r}`);
+  }
+  must(/ctx\.font='500 26px DM Mono,monospace'/.test(read('index.html')), 'a readiness-gyűrű közepe nem DM Mono');
+});
+check('arculat: a szakaszcímek és a feladatnevek Plus Jakartával (nem DM Mono)', async () => {
+  const ix = cssOf('index.html');
+  for (const sel of ['.sec-title', '.sec-label'])
+    must(/font-family:var\(--f\)/.test(szabaly(ix, sel) || '') && /font-weight:600/.test(szabaly(ix, sel) || ''), `index ${sel}: ${szabaly(ix, sel)}`);
+  for (const file of ['brief.html', 'kamra.html']) {
+    const r = szabaly(cssOf(file), '.sec-head .lbl');
+    must(r && /font-family:var\(--sans\)/.test(r) && /font-weight:600/.test(r), `${file} .sec-head .lbl: ${r}`);
+  }
+  const d = demo(); googleTasks('ok')(d);
+  const p = page('index.html', {now: at(2026, 3, 17, 8)});
+  p.ctx.render(d);
+  const m = /<span style="([^"]*)">Call the bank<\/span>/.exec(p.el('tasksBody').innerHTML);
+  must(m, 'nincs feladatnév a kártyán (nem bizonyít)');
+  must(/font-family:var\(--f\)/.test(m[1]) && !/var\(--m\)/.test(m[1]), `a feladatnév nem Plus Jakarta: ${m[1]}`);
+});
+check('arculat: a kártyák 1 px kerettel és árnyékkal; az árnyék mindkét témában definiálva', () => {
+  for (const [file, sels] of [['index.html', ['.card', '.pillar', '.streak']], ['brief.html', ['  .card', '  .hero']], ['kamra.html', ['.card']]]) {
+    const css = cssOf(file);
+    for (const sel of sels) {
+      const r = szabaly(css, sel);
+      must(r && /border:1px solid var\(--border\)/.test(r) && /box-shadow:var\(--shadow\)/.test(r), `${file} ${sel.trim()}: ${r}`);
+    }
+    const p = paletta(file);
+    must(p.sotet.shadow && p.vilagos.shadow && p.sotet.shadow !== p.vilagos.shadow, `${file}: a --shadow nincs meg mindkét témában: ${p.sotet.shadow} / ${p.vilagos && p.vilagos.shadow}`);
+  }
+});
+check('arculat: csökkentett mozgásnál nincs animáció — a CSS-ben mindhárom lapon, és a grafikonoknál is', async () => {
+  for (const file of LAPOK)
+    must(/@media \(prefers-reduced-motion: reduce\)\{\s*\*,\*::before,\*::after\{animation:none!important;transition:none!important/.test(cssOf(file)),
+         `${file}: nincs prefers-reduced-motion szabály`);
+  for (const csokkentett of [true, false]) {
+    const {p, cfgs} = arculatLap(() => 'dark', {
+      matchMedia: q => ({media: q, matches: csokkentett && /reduced-motion/.test(q), addEventListener() {}})});
+    p.fire('DOMContentLoaded'); await settle();
+    must(cfgs.length >= 3, 'kevés grafikon (nem bizonyít)');
+    const ki = cfgs.filter(c => c.options && c.options.animation === false).length;
+    must(csokkentett ? ki === cfgs.length : ki === 0, `${csokkentett ? 'csökkentett' : 'normál'} mozgás: ${ki}/${cfgs.length} grafikon animáció nélkül`);
+  }
 });
 
 // ── (b) brief.html: a napszavak a NÉZŐ mai napjához igazodnak (mint az index, bb254a0) ──
