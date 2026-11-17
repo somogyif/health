@@ -426,7 +426,11 @@ async function deviceWeather(){
   let city='';
   try{const g=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${la}&longitude=${lo}&localityLanguage=en`).then(r=>r.json()); city=g.city||g.locality||'';}catch(e){}
   const c=wr.current||{}, dy=wr.daily||{};
-  return {temp:c.temperature_2m, description:WMO[c.weather_code]||'—', uv_index:(dy.uv_index_max||[])[0], precip_mm:(dy.precipitation_sum||[0])[0], rain:((dy.precipitation_sum||[0])[0]||0)>0.5, city};
+  // Hiányzó adatból nem lesz állítás: ha nincs csapadék-érték, a precip_mm és a rain
+  // null ("nem tudjuk"), nem 0 mm / "nem esik". A valódi 0 marad 0.
+  const first=a=>{ const v=Array.isArray(a)?a[0]:null; return typeof v==='number'&&isFinite(v)?v:null; };
+  const precip=first(dy.precipitation_sum);
+  return {temp:c.temperature_2m, description:WMO[c.weather_code]||'—', uv_index:first(dy.uv_index_max), precip_mm:precip, rain:precip==null?null:precip>0.5, city};
 }
 
 // ── XSS védelem ─────────────────────────────────────────────────────────────
@@ -1110,16 +1114,19 @@ function render(d){
     if (!wxEl || w.temp == null) return;
     const uv = w.uv_index;
     const uvColor = (uv||0) >= 6 ? 'var(--red)' : (uv||0) >= 3 ? 'var(--amber)' : 'var(--teal)';
-    const rain = w.rain != null ? w.rain : (w.precip_mm||0) > 0.5;
+    // Eső: három állapot — esik / nem esik / NEM TUDJUK (null). Ismeretlennél nincs
+    // ikon és nincs biciklis tanács: korábban a hiány zöld "No rain — biking ok" lett.
+    const rain = w.rain != null ? !!w.rain : (typeof w.precip_mm === 'number' ? w.precip_mm > 0.5 : null);
     const loc = live ? (w.city || 'your location') : (w.city || '');
-    wxEl.innerHTML = `
-      <span style="color:var(--text2)">${rain ? '🌧' : '☀️'}</span>
-      <span style="color:var(--text2)">${w.description || '—'}</span>
-      <span>·</span><span>${Math.round(w.temp)}°C</span>
-      ${uv != null ? `<span>·</span><span style="color:${uvColor}">UV ${uv}</span>` : ''}
-      <span>·</span><span style="color:${rain ? 'var(--amber)' : 'var(--teal)'}">${rain ? 'Rain — no biking' : 'No rain — biking ok'}</span>
-      ${loc ? `<span>·</span><span style="color:var(--text3)">📍 ${loc}${live ? '' : ''}</span>` : ''}
-    `;
+    const dot = '<span>·</span>';
+    wxEl.innerHTML = [
+      rain == null ? '' : `<span style="color:var(--text2)">${rain ? '🌧' : '☀️'}</span>`,
+      `<span style="color:var(--text2)">${w.description || '—'}</span>`,
+      `${dot}<span>${Math.round(w.temp)}°C</span>`,
+      uv != null ? `${dot}<span style="color:${uvColor}">UV ${uv}</span>` : '',
+      rain == null ? '' : `${dot}<span style="color:${rain ? 'var(--amber)' : 'var(--teal)'}">${rain ? 'Rain — no biking' : 'No rain — biking ok'}</span>`,
+      loc ? `${dot}<span style="color:var(--text3)">📍 ${loc}</span>` : '',
+    ].join('\n');
   }
   paintWx(d.weather || {}, false);                          // synced (home) weather first
   // Az élő időjárás KÜLÖN belépési pont: nem a render()-en át jön, tehát a

@@ -855,6 +855,80 @@ check('brief (b): a hosszabb fejléc 375 px-en törhet (.kicker flex-wrap), a be
   must(!/Loading today/.test(src), 'a betöltő szöveg: "Loading today\'s brief…"');
 });
 
+// ── Időjárás: a hiány nem lehet állítás ("No rain — biking ok", 0 mm) ───────────
+// A sync mostantól null-t küld, ha a csapadék ismeretlen (rain, precip_mm) vagy a kód
+// ismeretlen (description). A sáv hiányzó esőnél is ☀️-t és zöld "No rain — biking ok"-t
+// írt; a deviceWeather pedig a böngészőben találta ki ugyanezt: (precipitation_sum||[0])[0].
+const wxStrip = mut => {
+  const d = demo(); mut(d.weather);
+  const p = page('index.html');
+  p.ctx.render(d);
+  return p.el('weatherStrip').textContent.replace(/\s+/g, ' ').trim();
+};
+check('időjárás: ismeretlen eső (rain: null, precip_mm: null) → nincs biciklis tanács és nincs nap/eső ikon', () => {
+  for (const mut of [w => { w.rain = null; w.precip_mm = null; }, w => { delete w.rain; delete w.precip_mm; }]) {
+    const t = wxStrip(mut);
+    must(t.includes('12°C') && t.includes('Partly cloudy'), `a sáv nem rajzolódott ki (nem bizonyít): ${t}`);
+    must(!/biking|No rain|Rain/.test(t), `tanács adat nélkül: ${t}`);
+    must(!/☀️|🌧/.test(t), `ikon adat nélkül: ${t}`);
+    must(!/undefined|null|NaN/.test(t) && !/· ·|^·|·$/.test(t), `csonka sáv: ${t}`);
+  }
+});
+check('időjárás őrző: ismeretlen leírás (description: null) → "—", nem kitalált címke', () => {
+  const t = wxStrip(w => { w.description = null; });
+  must(/☀️ — ·\s*12°C/.test(t) && !/Cloudy|Clear|null/.test(t), `a sáv: ${t}`);
+});
+check('időjárás őrző: a valódi érték marad — száraz nap, eső, valódi 0 mm, rain nélkül a precip_mm-ből', () => {
+  must(/☀️.*No rain — biking ok/.test(wxStrip(() => {})), `demó (rain: false): ${wxStrip(() => {})}`);
+  must(/🌧.*Rain — no biking/.test(wxStrip(w => { w.rain = true; w.precip_mm = 4.2; })), 'rain: true');
+  must(/No rain — biking ok/.test(wxStrip(w => { delete w.rain; w.precip_mm = 0; })), 'rain nélkül, precip_mm: 0');
+  must(/Rain — no biking/.test(wxStrip(w => { delete w.rain; w.precip_mm = 3; })), 'rain nélkül, precip_mm: 3');
+  must(/UV 0\b/.test(wxStrip(w => { w.uv_index = 0; })), 'a valódi UV 0 eltűnt');
+});
+// Az élő (eszköz-) időjárás: a deviceWeather a lap saját függvénye, ál-helymeghatározással
+// és ál-válasszal futtatjuk (hálózat nincs).
+const liveWx = async (file, meteo) => {
+  const p = page(file, {fetch: u => /open-meteo/.test(u) ? json(meteo) : json({city: 'Teszt'})});
+  p.ctx.navigator.geolocation = {getCurrentPosition: ok => ok({coords: {latitude: 1, longitude: 2}})};
+  return {p, w: await p.run('deviceWeather')()};
+};
+for (const file of ['index.html', 'brief.html']) {
+  check(`időjárás: ${file} deviceWeather — hiányzó csapadék → precip_mm és rain null, nem 0 / false`, async () => {
+    for (const daily of [{}, {precipitation_sum: []}, {precipitation_sum: [null]}, {precipitation_sum: null}, undefined]) {
+      const {w} = await liveWx(file, {current: {temperature_2m: 5, weather_code: 3}, daily});
+      must(w && w.temp === 5, `nem adott időjárást (nem bizonyít): ${JSON.stringify(w)}`);
+      must(w.precip_mm == null && w.rain == null, `daily=${JSON.stringify(daily)}: kitalált érték: precip_mm=${w.precip_mm}, rain=${w.rain}`);
+      must(w.uv_index == null, `kitalált UV: ${w.uv_index}`);
+    }
+  });
+  check(`időjárás őrző: ${file} deviceWeather — a valódi 0 mm száraz nap, a 2 mm eső`, async () => {
+    const dry = (await liveWx(file, {current: {temperature_2m: 5, weather_code: 0}, daily: {precipitation_sum: [0], uv_index_max: [0]}})).w;
+    must(dry.precip_mm === 0 && dry.rain === false && dry.uv_index === 0 && dry.description === 'Clear', `száraz: ${JSON.stringify(dry)}`);
+    const wet = (await liveWx(file, {current: {temperature_2m: 5, weather_code: 61}, daily: {precipitation_sum: [2]}})).w;
+    must(wet.precip_mm === 2 && wet.rain === true, `eső: ${JSON.stringify(wet)}`);
+  });
+  check(`időjárás: ${file} forrásában nincs "||[0]" kitalált alapérték`, () => {
+    const hits = read(file).match(/\|\|\s*\[0\]/g) || [];
+    must(!hits.length, `${hits.length} találat: ||[0]`);
+  });
+}
+check('időjárás: index.html élő sáv hiányzó csapadékkal → nincs biciklis tanács', async () => {
+  const {p} = await liveWx('index.html', {current: {temperature_2m: 7, weather_code: 3}, daily: {}});
+  p.ctx.render(demo());
+  await settle();
+  const t = p.el('weatherStrip').textContent.replace(/\s+/g, ' ').trim();
+  must(t.includes('7°C') && t.includes('Teszt'), `az élő időjárás nem jelent meg (nem bizonyít): ${t}`);
+  must(!/biking|☀️|🌧/.test(t), `tanács/ikon adat nélkül: ${t}`);
+});
+check('időjárás: brief.html — eső ismeretlen mennyiséggel nem ír "mm"-t szám nélkül; ismeretlen eső → nincs eső-rész', () => {
+  const p = page('brief.html');
+  const wx = w => p.run('wxHtml')(w, false).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  must(!/rain|mm|🌧/.test(wx({temp: 5, description: null, rain: null, precip_mm: null, uv_index: null})), `ismeretlen eső: ${wx({temp: 5, rain: null})}`);
+  must(!/null|undefined|UV/.test(wx({temp: 5, description: null, rain: null, precip_mm: null, uv_index: null})), 'null a sávban');
+  must(/🌧 rain/.test(wx({temp: 5, rain: true, precip_mm: null})) && !/\bmm/.test(wx({temp: 5, rain: true, precip_mm: null})), `eső mm nélkül: ${wx({temp: 5, rain: true, precip_mm: null})}`);
+  must(/🌧 3\.2mm rain/.test(wx({temp: 5, rain: true, precip_mm: 3.2})), `eső (őrző): ${wx({temp: 5, rain: true, precip_mm: 3.2})}`);
+});
+
 // ── Tasks kártya: hiányzó címke → "—", nem "undefined" ─────────────────────────
 check('tasks: hiányzó label (count > 0) mellett "—" áll, nem "undefined"/"null"', () => {
   for (const hiany of [undefined, null, '']) {
