@@ -77,10 +77,14 @@ function env(opt = {}) {
   return {ctx, rec};
 }
 
+// A szkript tesztelt függvényei. A hiányzó név undefined lesz (nem ReferenceError), így egy
+// hiányzó függvény csak a saját ellenőrzéseit buktatja, nem az összeset.
+const EXPORTS = ['model', 'reggeliUzenet', 'parseLink', 'teendok', 'esemenyek', 'frissesseg', 'widget', 'main', 'kimondIdo',
+                 'lejarok', 'kamraSor', 'ertesites'];
 async function load(opt) {
   const {ctx, rec} = env(opt);
-  const api = await vm.runInContext(`(async () => {\n${SRC}\nreturn {model, reggeliUzenet, parseLink, teendok, esemenyek, frissesseg, widget, main, kimondIdo};\n})()`,
-                                    ctx, {filename: 'widget/egeszseg.js'});
+  const ki = EXPORTS.map(n => `${n}: typeof ${n} === 'undefined' ? undefined : ${n}`).join(', ');
+  const api = await vm.runInContext(`(async () => {\n${SRC}\nreturn {${ki}};\n})()`, ctx, {filename: 'widget/egeszseg.js'});
   return {api, rec, ctx};
 }
 
@@ -343,6 +347,128 @@ check('az appban: menü — előnézet minden méretben, értesítés-próba', a
   must(rec.notes.length === 1, 'az értesítés-próba nem küldött');
 });
 
+// ── Kamra a reggeli értesítésben ─────────────────────────────────────────────
+// A 7:15-ös értesítés végén egy sor: a 3 napon belül lejáró és a már lejárt kamra-tételek —
+// ugyanazzal a szabállyal, mint a kamra.html „Hamarosan lejár”-ja (a kettőt a
+// tests/page_checks.js veti össze). A widget képe NEM változik.
+const termek = (name, extra = {}) => Object.assign({name, brand: null, per100: {kcal: null, protein: null, carbs: null, fat: null},
+  pack_g: null, serving_g: null, source: 'off', added: '2026-11-10'}, extra);
+const tetel = (name, code, extra = {}) => Object.assign({id: `p_${name}`, code, name, qty: 1, unit: 'pack', added: '2026-11-10'}, extra);
+const TERMEKEK = {
+  tej: termek('Friss tej 2,8%'),                         // a neve szerint friss tej: felbontva 3 nap
+  joghurt: termek('Valami', {kind: 'yogurt'}),           // a tárolt fajta szerint: 3 nap
+  rejtely: termek('Rejtély'),                            // ismeretlen fajta: nincs általános szám
+  felirat: termek('Rejtély szósz', {open_days: 1}),      // a csomag felirata: 1 nap
+  pend: termek('Ismeretlen termék', {source: 'pending'}),
+};
+const kamraDoc = (pantry, products = TERMEKEK) => ({version: 1, rev: 4, targets: null, products, pantry, log: {}, days: {}});
+const NEGY = [   // MA = 2026-11-17: −2, 0, +1 (felbontva, a felirat szerint), +3 — és ami NEM kerül be
+  tetel('Távoli', 'tej', {expires: '2026-11-21'}),
+  tetel('Harmadnapi', 'tej', {expires: '2026-11-20'}),
+  tetel('Mai', 'tej', {expires: '2026-11-17'}),
+  tetel('Bontott rejtély', 'rejtely', {opened: '2026-11-01'}),
+  tetel('Régi', 'tej', {expires: '2026-11-15'}),
+  tetel('Feliratos', 'felirat', {opened: '2026-11-17', expires: '2026-11-30'}),
+  tetel('Rossz dátum', 'tej', {expires: '2026-02-30'}),
+  tetel('Dátum nélkül', 'tej'),
+  null, 'szöveg', {id: 'x'},
+];
+const KAMRA_SZOVEG = 'Kamra — lejárt: Régi (2 napja); hamarosan lejár: Mai (ma), Feliratos (holnap, felbontva), Harmadnapi (3 nap múlva).';
+const KAMRA_BESZED = 'A kamrában lejárt: Régi. Hamarosan lejár: Mai ma, Feliratos holnap, Harmadnapi 3 nap múlva.';
+const REGGEL_SZOVEG = 'Readiness 74 · alvás 7.8 óra · body battery 71. Közepes nap: könnyű edzés, és kezdd a lejárt teendővel. Első esemény: 10:00 Meeting.';
+const KAMRA_OK = {status: 200, body: kamraDoc(NEGY)};
+const utvonal = (data, nutr) => req => (req.url.endsWith('/nutrition') ? nutr : data);
+
+check('kamra-sor: a 3 napon belül lejáró és a már lejárt tételek, dátum szerint — a lap szabályával', async () => {
+  const {api} = await load();
+  const l = api.lejarok(kamraDoc(NEGY), MA);
+  must(l.map(x => `${x.nev}|${x.datum}|${x.n}|${x.felbontva}`).join(',') ===
+       'Régi|2026-11-15|-2|false,Mai|2026-11-17|0|false,Feliratos|2026-11-18|1|true,Harmadnapi|2026-11-20|3|false', JSON.stringify(l));
+  // felbontás + irányelv (a név, ill. a tárolt fajta szerint); a felirat felülír; a korábbi dátum nyer
+  const egy = it => api.lejarok(kamraDoc([it]), MA).map(x => `${x.datum}|${x.felbontva}`).join();
+  must(egy(tetel('B', 'tej', {opened: '2026-11-16'})) === '2026-11-19|true', `bontott tej: ${egy(tetel('B', 'tej', {opened: '2026-11-16'}))}`);
+  must(egy(tetel('B', 'joghurt', {opened: '2026-11-15'})) === '2026-11-18|true', 'a tárolt fajta nem számított');
+  must(egy(tetel('B', 'joghurt', {opened: '2026-11-10', expires: '2026-11-25'})) === '2026-11-13|true', 'a lejárt bontott joghurt kimaradt');
+  must(egy(tetel('B', 'tej', {opened: '2026-11-16', expires: '2026-11-18'})) === '2026-11-18|false', 'a korábbi csomag-dátum nem nyert');
+  must(egy(tetel('B', 'pend', {expires: '2026-11-18'})) === '2026-11-18|false', 'a Rendezendő tétel kimaradt');
+  must(egy(tetel('B', 'nincs_ilyen', {expires: '2026-11-18'})) === '2026-11-18|false', 'termék nélküli tétel: a csomag dátuma számít');
+  must(egy(tetel('B', 'nincs_ilyen', {opened: '2026-11-17'})) === '', 'termék nélkül kitalált felbontási napot');
+  must(api.lejarok(kamraDoc([]), MA).length === 0 && api.lejarok({}, MA).length === 0, 'üres dokumentum');
+});
+
+check('kamra-sor: szöveg és felolvasás; sok tételnél az első 4 és „és még N”; a hosszú név szóhatáron rövidül', async () => {
+  const {api} = await load();
+  const s = api.kamraSor({doc: kamraDoc(NEGY), hiba: null}, MA);
+  must(s && s.szoveg === KAMRA_SZOVEG, `szöveg: ${s && s.szoveg}`);
+  must(s.beszed === KAMRA_BESZED, `felolvasás: ${s.beszed}`);
+  const csakHamar = api.kamraSor({doc: kamraDoc([tetel('Mai', 'tej', {expires: '2026-11-17'})])}, MA);
+  must(csakHamar.szoveg === 'Kamra — hamarosan lejár: Mai (ma).' && csakHamar.beszed === 'A kamrában hamarosan lejár: Mai ma.', JSON.stringify(csakHamar));
+  const hat = ['A', 'B', 'C', 'D', 'E', 'F'].map((n, i) => tetel(n, 'tej', {expires: `2026-11-1${i}`}));   // 11-10 … 11-15: mind lejárt
+  const sok = api.kamraSor({doc: kamraDoc(hat)}, MA);
+  must(sok.szoveg === 'Kamra — lejárt: A (7 napja), B (6 napja), C (5 napja), D (4 napja) — és még 2 tétel.', sok.szoveg);
+  must(sok.beszed === 'A kamrában lejárt: A, B, C, D. És még 2 tétel.', sok.beszed);
+  const hosszu = api.kamraSor({doc: kamraDoc([tetel('Nagyon hosszú nevű\n bio  zabital barista kiadás 1 l', 'tej', {expires: '2026-11-18'})])}, MA);
+  must(hosszu.szoveg === 'Kamra — hamarosan lejár: Nagyon hosszú nevű bio… (holnap).', hosszu.szoveg);
+});
+
+check('kamra-sor: ha a kamra nem olvasható, kimondja; ha semmi nem jár le, nincs sor (nem talál ki)', async () => {
+  const {api} = await load();
+  const h = api.kamraSor({doc: null, hiba: 'a végpont 503 választ adott'}, MA);
+  must(h && h.szoveg === 'Kamra: most nem olvasható (a végpont 503 választ adott).' && h.beszed === 'A kamra most nem olvasható.', JSON.stringify(h));
+  must(api.kamraSor({doc: kamraDoc([tetel('Távoli', 'tej', {expires: '2026-11-21'})])}, MA) === null, 'semmi nem jár le, mégis lett sor');
+  must(api.kamraSor({doc: kamraDoc([])}, MA) === null && api.kamraSor(null, MA) === null, 'üres kamra / nem kért kamra');
+});
+
+check('7:15-ös értesítés: a /data és a /nutrition ugyanazzal a kulccsal; a kamra-sor a szöveg végén, új sorban, és a felolvasásban', async () => {
+  const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: utvonal(jo(), KAMRA_OK)});
+  await api.main();
+  must(rec.requests.map(r => r.url).sort().join(',') === `${API}/data,${API}/nutrition`, `kérések: ${rec.requests.map(r => r.url)}`);
+  must(rec.requests.every(r => r.headers && r.headers.Authorization === `Bearer ${KEY}` && r.timeoutInterval > 0 && r.timeoutInterval <= 20), 'fejléc vagy timeout');
+  must(rec.notes.length === 1 && rec.notes[0].title === 'Jó reggelt — közepes nap', JSON.stringify(rec.notes));
+  must(rec.notes[0].body === `${REGGEL_SZOVEG}\n${KAMRA_SZOVEG}`, `törzs: ${rec.notes[0].body}`);
+  must(typeof rec.output === 'string' && rec.output.startsWith('Jó reggelt! Readiness 74') && rec.output.endsWith(` ${KAMRA_BESZED}`), `felolvasás: ${rec.output}`);
+});
+
+check('7:15-ös értesítés: ha a kamra nem olvasható (hálózat, 401, hibás dokumentum), kiírja — a reggeli rész ettől még megy', async () => {
+  for (const [nutr, miert] of [[new Error('offline'), 'offline'], [{status: 401, body: {error: 'unauthorized'}}, 'a végpont 401 választ adott'],
+                               [{status: 200, body: {version: 2, rev: 1}}, 'hibás kamra-dokumentum'], [{status: 200, body: adat()}, 'hibás kamra-dokumentum'],
+                               [{status: 200, body: {...kamraDoc([]), pantry: 'x'}}, 'hibás kamra-dokumentum']]) {
+    const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: utvonal(jo(), nutr)});
+    await api.main();
+    const b = rec.notes.length ? rec.notes[0].body : '';
+    must(b === `${REGGEL_SZOVEG}\nKamra: most nem olvasható (${miert}).`, `${miert}: ${b}`);
+    must(String(rec.output).endsWith(' A kamra most nem olvasható.'), `felolvasás: ${rec.output}`);
+  }
+  // a /data nem jön, a kamra igen: a kamra-sor akkor is ott van
+  const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: utvonal(new Error('offline'), KAMRA_OK)});
+  await api.main();
+  must(rec.notes.length === 1 && rec.notes[0].body === `Az adat most nem érhető el (offline).\n${KAMRA_SZOVEG}`, `törzs: ${JSON.stringify(rec.notes)}`);
+});
+
+check('7:15-ös értesítés: ha semmi nem jár le, nincs kamra-sor (a szöveg a régi)', async () => {
+  const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: utvonal(jo(), {status: 200, body: kamraDoc([tetel('Távoli', 'tej', {expires: '2026-11-21'})])})});
+  await api.main();
+  must(rec.notes.length === 1 && rec.notes[0].body === REGGEL_SZOVEG, `törzs: ${JSON.stringify(rec.notes)}`);
+  must(!/[Kk]amr/.test(String(rec.output)), `felolvasás: ${rec.output}`);
+});
+
+check('a widget képe NEM változik: widgetként nem kéri a /nutrition-t, és nincs rajta kamra-sor', async () => {
+  for (const fam of ['small', 'medium', 'large', 'accessoryRectangular']) {
+    const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: utvonal(jo(), KAMRA_OK), config: {runsInWidget: true, widgetFamily: fam}});
+    await api.main();
+    must(rec.requests.length === 1 && rec.requests[0].url === `${API}/data`, `${fam}: kérések: ${rec.requests.map(r => r.url)}`);
+    must(rec.set && !/Kamra|lejár:|Régi/.test(szovegek(rec.set).join(' | ')) && !rec.notes.length, `${fam}: kamra a widgeten`);
+  }
+});
+
+check('az appban az „Értesítés próba” ugyanazt küldi, mint a 7:15-ös (a kamra-sorral együtt)', async () => {
+  const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: utvonal(jo(), KAMRA_OK), config: {runsInApp: true},
+                                  sheet: a => a.actions.indexOf('Értesítés próba')});
+  await api.main();
+  must(rec.notes.length === 1 && rec.notes[0].body === `${REGGEL_SZOVEG}\n${KAMRA_SZOVEG}`, JSON.stringify(rec.notes));
+  must(rec.requests.some(r => r.url === `${API}/nutrition`), 'az értesítés-próba nem kérte a kamrát');
+});
+
 check('a szkriptben nincs titok és nincs végpont-cím (nyilvános repóban él)', async () => {
   must(!/workers\.dev|[0-9a-f]{32,}|Bearer [A-Za-z0-9]/.test(SRC.replace('Bearer ${cfg.key}', '')), 'titok-gyanús szöveg a szkriptben');
   must(/Keychain\.get\(KC_KEY\)/.test(SRC), 'a kulcs nem a kulcskarikából jön');
@@ -362,6 +488,14 @@ check('a valódi adatalak (demo-data.json): minden méret hiba nélkül kirajzol
 
 // ── Futtatás ─────────────────────────────────────────────────────────────────
 (async () => {
+  // Ha egy ellenőrzés Promise-a sosem dől el, a Node az összesítő NÉLKÜL, 0-val lépne ki —
+  // ez csendes zöld lenne. Ezért: aki nem ért a végére, az piros.
+  let kesz = false;
+  process.on('exit', () => {
+    if (kesz) return;
+    console.log('BEFEJEZETLEN: egy ellenőrzés nem tért vissza (függő Promise) — ez hiba, nem zöld.');
+    process.exitCode = 1;
+  });
   const szuro = process.argv[2] || '';
   let jo = 0, rossz = 0;
   for (const c of checks.filter(c => c.name.includes(szuro))) {
@@ -369,5 +503,6 @@ check('a valódi adatalak (demo-data.json): minden méret hiba nélkül kirajzol
     catch (e) { rossz++; console.log(`  ✗ ${c.name}\n      ${e && e.stack ? e.stack.split('\n').slice(0, 3).join('\n      ') : e}`); }
   }
   console.log(rossz ? `BUKÓ: ${rossz}/${jo + rossz}` : `OK: ${jo}/${jo + rossz}`);
+  kesz = true;
   process.exit(rossz ? 1 : 0);
 })();

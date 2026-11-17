@@ -2927,6 +2927,44 @@ check('kamra Rendezendő: a kitöltés (OFF-ból vagy kézzel) a függő termék
 
 // Böngészőben mérve (375 px-es keret, demó adat): a kamra-linkkel a fejléc scrollWidth-je
 // 375 → 388 lett — a .topnav és a .nav-right egy sorba kényszerítette az öt elemet.
+// ── a 7:15-ös értesítés (widget/egeszseg.js) ugyanazt a „Hamarosan lejár”-t mondja, mint a lap ──
+// A szabály és a táblázat két helyen él (a lap és a Scriptable-szkript nem tölthet közös fájlt),
+// ezért ez az ellenőrzés tartja őket együtt: a táblázat sorról sorra, és egy nagy mátrix, amit a
+// lap TÉNYLEGESEN kirajzol, összevetve azzal, amit a widget az értesítésbe felsorol.
+const widgetKamra = () => vm.runInContext(`(async () => {\n${read('widget/egeszseg.js')}\nreturn {lejarok, SHELF};\n})()`,
+                                          vm.createContext({__WIDGET_TEST__: true}), {filename: 'widget/egeszseg.js'});
+check('kamra ↔ 7:15-ös értesítés: a widget ugyanazokat a tételeket, ugyanabban a sorrendben, ugyanazzal a lejárattal sorolja, mint a lap „Hamarosan lejár”-ja', async () => {
+  const W = await widgetKamra();
+  const {K} = await kamra();
+  must(K.SHELF.length >= 20 && W.SHELF.length === K.SHELF.length, `táblázat-hossz: lap ${K.SHELF.length}, widget ${W.SHELF.length}`);
+  K.SHELF.forEach((r, i) => {
+    const sor = x => [x.kind, x.hu, x.days, x.tags.join(' '), x.re.source, x.re.flags].join(' | ');
+    must(sor(W.SHELF[i]) === sor(r), `SHELF[${i}] eltér:\n  lap:    ${sor(r)}\n  widget: ${sor(W.SHELF[i])}`);
+  });
+  const nap = n => { const x = new Date(2026, 10, 17 + n), p = v => String(v).padStart(2, '0'); return `${x.getFullYear()}-${p(x.getMonth() + 1)}-${p(x.getDate())}`; };
+  const products = {}, pantry = [null, 'szöveg'];
+  K.SHELF.forEach(r => { products[`k_${r.kind}`] = {...MILK, name: 'Rejtély', kind: r.kind}; });
+  ['Oat Barista', 'Zabital', 'Friss tej 2,8%', 'Tej', 'Tejföl 20%', 'Habtejszín', 'Görög joghurt 2%', 'Kefir', 'Túró Rudi', 'Mozzarella',
+   'Trappista sajt', 'Parmezán', 'Vaj', 'Pulykamell sonka', 'Csirkemell filé', 'Lazac', 'Kókusztej', 'Hummusz', 'Narancslé', 'Passata',
+   'Toast kenyér', 'Ketchup', 'Málnalekvár', 'Zabpehely', 'Tejcsokoládé', 'Rejtély'].forEach((name, i) => { products[`n_${i}`] = {...MILK, name}; });
+  Object.assign(products, {f_rejtely: {...MILK, name: 'Rejtély', open_days: 2}, f_tej: {...MILK, open_days: 10}, pend: pend()});
+  const esetek = [{}, {expires: nap(-3)}, {expires: nap(0)}, {expires: nap(3)}, {expires: nap(4)}, {opened: nap(0)}, {opened: nap(-2)},
+                  {opened: nap(-30)}, {opened: nap(-1), expires: nap(1)}, {opened: nap(0), expires: nap(40)}, {expires: '2026-02-30'}, {opened: 'tegnap'}];
+  for (const code of [...Object.keys(products), 'nincs_ilyen'])
+    for (const e of esetek) pantry.push(pit(`p${pantry.length}`, code, {name: `T${String(pantry.length).padStart(3, '0')}`, ...e}));
+  const {html} = await kamra({...emptyDoc(), products, pantry});
+  const lap = [...html('soonBody').matchAll(/<div class="nm">([^<]*)<\/div>\s*<div class="sub[^"]*">([^<]*)<\/div>/g)].map(m => {
+    const [mikor, datum] = m[2].split(' · ');
+    return `${m[1]} | ${mikor} | ${String(datum).replace(/^(\d{4})\. (\d{2})\. (\d{2})\.$/, '$1-$2-$3')} | ${/felbontva/.test(m[2])}`;
+  });
+  const whenText = n => (n < 0 ? `lejárt ${-n} napja` : n === 0 ? 'ma lejár' : n === 1 ? 'holnap lejár' : `${n} nap múlva`);   // a lapé
+  const widget = W.lejarok({products, pantry}, new Date(2026, 10, 17, 7, 15)).map(x => `${x.nev} | ${whenText(x.n)} | ${x.datum} | ${x.felbontva}`);
+  must(lap.length >= 100, `kevés lejáró tétel a lapon (nem bizonyít): ${lap.length}`);
+  const elso = lap.findIndex((s, i) => s !== widget[i]);
+  must(lap.length === widget.length && elso < 0,
+       `eltérés (lap ${lap.length}, widget ${widget.length} tétel), először a(z) ${elso}. sorban:\n  lap:    ${lap[elso]}\n  widget: ${widget[elso]}`);
+});
+
 check('kamra-link (index) 375 px: a fejléc törhet (.topnav és .nav-right flex-wrap), nem tolja ki a lapot', () => {
   const css = read('index.html');
   const rule = sel => (new RegExp(sel.replace('.', '\\.') + '\\{([^}]*)\\}').exec(css) || [])[1] || '';
