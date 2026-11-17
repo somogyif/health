@@ -303,6 +303,7 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
         <span id="sub">loading</span>
       </div>
       <a class="btn-sm" href="brief.html" title="Morning brief">◔ brief</a>
+      <a class="btn-sm" href="kamra.html" title="Kamra — pantry &amp; macros">▤ kamra</a>
       <button class="btn-sm" onclick="clearToken()" title="Reset token">⚙</button>
       <button class="btn-sm" id="rbtn" onclick="load()">
         <div class="spin" id="spin"></div>
@@ -341,11 +342,11 @@ const {api: API_URL, key: API_KEY} = HealthPairing.run();  // ?demo=1 → sample
 try { localStorage.removeItem('gh_token'); } catch (e) {}
 // A ⚙ gomb a BÖNGÉSZŐBEN tárolt hozzáférést törli (nem a szervert).
 const clearToken=()=>{if(!confirm('Disconnect this browser from the data endpoint?'))return;
-  ['health_api','health_key','gh_token'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  ['health_api','health_key','health_nkey','gh_token'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
   location.reload();};
 
 window.addEventListener('DOMContentLoaded',()=>{
-  if(DEMO){document.getElementById('setup').style.display='none';document.getElementById('app').style.display='block';const bl=document.querySelector('a[href="brief.html"]');if(bl)bl.href='brief.html?demo=1';load();return;}
+  if(DEMO){document.getElementById('setup').style.display='none';document.getElementById('app').style.display='block';const bl=document.querySelector('a[href="brief.html"]');if(bl)bl.href='brief.html?demo=1';const kl=document.querySelector('a[href="kamra.html"]');if(kl)kl.href='kamra.html?demo=1';load();return;}
   if(API_URL && API_KEY){document.getElementById('app').style.display='block';load();}
   else{document.getElementById('setup').style.display='flex';}
 });
