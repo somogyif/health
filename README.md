@@ -290,9 +290,6 @@ Honest list. These are known and deliberate, not oversights waiting to be discov
 - **The pantry scanner has not been run on a real iPhone yet.** It is checked in a fake
   DOM and in headless Chrome at 375 px with demo data; camera permission, the ZXing
   fallback against a live camera, and decoding real packaging are unverified.
-- **A pantry quantity change can apply twice in one rare case**: the write succeeded, the
-  response was lost, and the step is retried after a reload. Log entries and new pantry
-  items are protected by their ids; a +/− step or a merge into an existing item is not.
 - **Unsaved pantry steps live only in the open page.** Closing it loses them.
 
 - **Notion mirroring is not implemented.** The function logs that it's skipped. It used

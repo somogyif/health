@@ -1939,6 +1939,32 @@ check('kamra írás: ha az írás megtörtént, de a válasz elveszett, az újra
   await q.K.addPantry('111111', 'pack', 1); await q.K.setDay('rest');
   must(q.srv.doc.pantry.length === 1 && q.srv.doc.pantry[0].qty === 1, `kamra duplázva: ${JSON.stringify(q.srv.doc.pantry)}`);
 });
+check('kamra írás: elveszett válasz után a +/− lépés és a meglévő tételbe olvasztás sem érvényesül kétszer (a lépés a CÉLmennyiséget viszi)', async () => {
+  const doc = {...emptyDoc(), products: {'111111': TUNA}, pantry: [{id: 'p_a', code: '111111', name: 'Tonhal', qty: 1, unit: 'pack', added: KDAY},
+                                                                  {id: 'p_g', code: '111111', name: 'Tonhal', qty: 100, unit: 'g', added: KDAY}]};
+  const retry = async o => { o.p.fire('document:click', {target: {closest: () => ({dataset: {act: 'save-retry'}})}, preventDefault() {}}); await o.K.flush(); await settle(); };
+  const q = (o, id) => (o.srv.doc.pantry.find(x => x.id === id) || {}).qty;
+  const a = await kamra(doc, {putSeq: ['lost']});
+  const ok = await a.K.pantryStep('p_a', 1);
+  must(ok === false && unsaved(a) && q(a, 'p_a') === 2, `előfeltétel: a szerveren 2, a lap nem tud róla (nem bizonyít): ${q(a, 'p_a')}`);
+  await retry(a);
+  must(q(a, 'p_a') === 2 && !unsaved(a) && /2 csomag/.test(a.txt('pantryBody')), `+1 kétszer érvényesült: ${q(a, 'p_a')} (unsaved=${unsaved(a)})`);
+  const b = await kamra(doc, {putSeq: ['lost']});
+  await Promise.all([b.K.pantryStep('p_g', -1), b.K.pantryStep('p_a', 1), b.K.pantryStep('p_a', 1)]);
+  await retry(b);
+  must(q(b, 'p_g') === 50 && q(b, 'p_a') === 3 && !unsaved(b), `több lépés: g=${q(b, 'p_g')} csomag=${q(b, 'p_a')}`);
+  const c = await kamra(doc, {putSeq: ['lost']});
+  await c.K.addPantry('111111', 'g', 250);
+  await retry(c);
+  must(q(c, 'p_g') === 350 && c.srv.doc.pantry.length === 2 && !unsaved(c), `összeolvasztás kétszer: ${q(c, 'p_g')}, ${c.srv.doc.pantry.length} tétel`);
+  const d = await kamra(doc, {putSeq: ['lost']});                   // nullára lépés: a tétel egyszer kerül ki
+  await d.K.pantryStep('p_a', -1); await retry(d);
+  must(q(d, 'p_a') === undefined && d.srv.doc.pantry.length === 1 && !unsaved(d) && d.srv.rejected.length === 0, `kivétel kétszer: ${JSON.stringify(d.srv.doc.pantry)}`);
+  // valódi ütközés: a másik eszköz közben kivette a tételt → a lépés nem hozza vissza
+  const e = await kamra(doc, {conflicts: 1, other: x => { x.pantry = x.pantry.filter(i => i.id !== 'p_a'); }});
+  await e.K.pantryStep('p_a', 1);
+  must(q(e, 'p_a') === undefined && !unsaved(e), `a kivett tétel visszajött: ${JSON.stringify(e.srv.doc.pantry)}`);
+});
 check('kamra írás: futó mentés közben az Újratöltés nem indul el (különben a friss írást a régi állapot írhatná felül)', async () => {
   const o = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {confirm: true});
   const g = o.srv.gets, run = o.K.eat({code: '111111', grams: 80});

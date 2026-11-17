@@ -708,24 +708,37 @@ function addPantry(code, unit, qty) {
   if (!p) return nope('Ehhez előbb keress vagy vigyél fel egy terméket.');
   if ((unit !== 'pack' && unit !== 'g') || !amount(qty)) return nope('A mennyiség 0-nál nagyobb szám legyen.');
   const id = rid('p_'), added = today(), name = String(p.name || 'Névtelen termék').slice(0, 200);
+  // Ha már van ilyen tétel (ugyanaz a termék és egység), abba olvasztjuk — a CÉLmennyiséggel,
+  // nem "+qty"-vel: így a lépés újra-alkalmazva (409 után) sem érvényesül kétszer.
+  const old = S.doc.pantry.find(x => isObj(x) && x.code === code && x.unit === unit && typeof x.id === 'string' && fin(x.qty) != null);
+  const target = old ? Math.min(MAXN, r2(old.qty + qty)) : qty;
   const c = change(doc => {
-    // Újra-alkalmazáskor (409 után): ha ez a tétel már ott van, az írásunk célba ért, csak a válasz veszett el.
+    // Újra-alkalmazáskor: ha a mi új tételünk már ott van, az írásunk célba ért, csak a válasz veszett el.
     if (doc.pantry.some(x => isObj(x) && x.id === id)) return false;
-    if (!own(doc.products, code)) doc.products[code] = clone(p);
-    const it = doc.pantry.find(x => isObj(x) && x.code === code && x.unit === unit && fin(x.qty) != null);
-    if (it) it.qty = Math.min(MAXN, r2(it.qty + qty));
-    else doc.pantry.push({id, code, name, qty, unit, added});
+    let any = false;
+    if (!own(doc.products, code)) { doc.products[code] = clone(p); any = true; }
+    const i = old ? pantryAt(doc, old.id) : -1;
+    if (i >= 0) { if (doc.pantry[i].qty !== target) { doc.pantry[i].qty = target; any = true; } }
+    else { doc.pantry.push({id, code, name, qty: target, unit, added}); any = true; }
+    if (!any) return false;
   });
   if (c.ok) say('A kamrába került: ' + name);
   return c.done;
 }
 const pantryAt = (doc, id) => doc.pantry.findIndex(x => isObj(x) && typeof id === 'string' && x.id === id);
-function pantryStep(id, dir) {                              // +/−: összevonva megy (tap)
+// +/−: a lépés a CÉLmennyiséget viszi (a koppintáskori állapotból számolva), nem "±1"-et.
+// Így ha az írás célba ért, de a válasz elveszett, az újra-alkalmazás nem lép még egyet;
+// ha a tételt közben máshol kivették, a lépés nem hozza vissza. Az írás összevonva megy (tap).
+function pantryStep(id, dir) {
+  const cur = S.doc ? S.doc.pantry[pantryAt(S.doc, id)] : null;
+  if (!cur || fin(cur.qty) == null) return Promise.resolve(false);
+  const target = Math.min(MAXN, r2(cur.qty + (dir < 0 ? -1 : 1) * (cur.unit === 'g' ? 50 : 1)));
   return change(doc => {
     const i = pantryAt(doc, id);
-    if (i < 0 || fin(doc.pantry[i].qty) == null) return false;
-    const q = r2(doc.pantry[i].qty + (dir < 0 ? -1 : 1) * (doc.pantry[i].unit === 'g' ? 50 : 1));
-    if (q <= 0) doc.pantry.splice(i, 1); else doc.pantry[i].qty = Math.min(MAXN, q);
+    if (i < 0) return false;
+    if (target <= 0) { doc.pantry.splice(i, 1); return; }
+    if (doc.pantry[i].qty === target) return false;
+    doc.pantry[i].qty = target;
   }, 'tap').done;
 }
 function pantryRemove(id) {
