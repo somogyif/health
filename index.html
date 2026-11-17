@@ -21,7 +21,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<!-- Betűsúlyok (Grok „Refined Warm Data", 2026-11-17): a Plus Jakarta 300-as (vékony) súlya
+     szándékosan NINCS betöltve — a vékony szöveg a sötét háttéren elhalványul; a 300-at kérő
+     stílusok így a 400-ast kapják. A számok DM Mono-ban. -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 <!-- defer: 200 KB, és a diagramok csak a DOMContentLoaded-kori bootnál kellenek,
      így nincs ok a HTML-feldolgozás blokkolására (defer megőrzi a sorrendet). -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"
@@ -65,8 +68,9 @@
   --track2:   rgba(255,255,255,0.12);
   --r:        14px;
   --rs:       9px;
-  --f:        'Plus Jakarta Sans', sans-serif;
-  --m:        'DM Mono', monospace;
+  --f:        'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --m:        'DM Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --shadow:   0 1px 3px rgba(0,0,0,0.25);
 }
 /* Nappal (világos) — Grok „Refined Warm Data" iránya, a kiemelő színek AA-ra sötétítve: a javasolt
    #2a9d7a / #d97706 / #3b82f6 / #8a8780 fehéren 3.2–3.7:1 lett volna. */
@@ -79,7 +83,7 @@
     --border:   rgba(26,25,22,0.12);
     --border2:  rgba(26,25,22,0.22);
     --text:     #1a1916;
-    --text2:    #57544e;
+    --text2:    #4d4a45;
     --text3:    #67645e;
     --teal:     #1a6f57;
     --teal-d:   rgba(26,111,87,0.1);
@@ -101,14 +105,22 @@
     --grid:     rgba(26,25,22,0.08);
     --track:    rgba(26,25,22,0.07);
     --track2:   rgba(26,25,22,0.14);
+    --shadow:   0 1px 2px rgba(0,0,0,0.04);
   }
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+/* Mozgás: kattintáskor enyhe visszajelzés; ha a rendszerben a mozgás csökkentése be van
+   kapcsolva, minden animáció és átmenet ki (a grafikonoké is — lásd mkChart). */
+button:active{transform:scale(.98)}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  button:active{transform:none}
+}
 body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;line-height:1.6;min-height:100vh}
 
 /* ── SETUP ── */
 #setup{display:none;min-height:100vh;align-items:center;justify-content:center;padding:2rem}
-.sc{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:2.5rem;max-width:420px;width:100%}
+.sc{background:var(--s1);border:1px solid var(--border2);box-shadow:var(--shadow);border-radius:var(--r);padding:2.5rem;max-width:420px;width:100%}
 .sc h2{font-size:20px;font-weight:600;margin-bottom:4px}
 .sc h2 span{color:var(--teal)}
 .sc p{font-size:13px;color:var(--text2);margin-bottom:2rem;line-height:1.6;font-family:var(--m)}
@@ -151,28 +163,29 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 /* ── PILLAR GRID ── */
 .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:2rem}
 @media(max-width:600px){.pillars{grid-template-columns:1fr 1fr}}
-.pillar{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem;cursor:pointer;transition:border-color .15s}
+.pillar{background:var(--s1);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--r);padding:1rem;cursor:pointer;transition:border-color .15s}
 .pillar:hover{border-color:var(--border2)}
 .pillar-label{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem}
-.pillar-value{font-size:28px;font-weight:300;letter-spacing:-1px;line-height:1;margin-bottom:4px}
+.pillar-value{font-size:28px;font-family:var(--m);font-weight:500;letter-spacing:-.02em;line-height:1;margin-bottom:4px}
 .pillar-sub{font-size:12px;color:var(--text2);margin-bottom:.75rem}
 .pillar-coaching{font-size:12px;color:var(--text);opacity:0.75;font-style:italic;line-height:1.5;padding-top:.75rem;border-top:.5px solid var(--border)}
 
 /* ── SECTION ── */
 .sec{margin-bottom:2rem}
 .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
-.sec-title{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+/* Szakaszcím (kártyacím): Plus Jakarta 600 — a DM Mono a számoké és a kis címkéké (Grok, 2026-11-17). */
+.sec-title{font-family:var(--f);font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.04em;text-transform:uppercase}
 .sec-line{flex:1;height:.5px;background:var(--border)}
 /* A Day plan és a Tasks szakasz címe (sec-label): ugyanaz a megjelenés, mint a
    sec-head + sec-title + sec-line hármasé — a vonalat a ::after rajzolja. */
-.sec-label{display:flex;align-items:center;gap:10px;margin-bottom:1rem;font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.sec-label{display:flex;align-items:center;gap:10px;margin-bottom:1rem;font-family:var(--f);font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.04em;text-transform:uppercase}
 .sec-label::after{content:"";flex:1;height:.5px;background:var(--border)}
 /* Hosszú, törhetetlen szó (e-mail-cím, URL nélküli azonosító) a két kártyán ne lógjon
    ki 375 px-en: a szöveg bárhol törhet. */
 #dayPlanBody,#tasksBody{overflow-wrap:anywhere}
 
 /* ── CARD ── */
-.card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.card{background:var(--s1);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--r);padding:1rem}
 .g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
@@ -181,7 +194,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 /* ── MINI METRIC ── */
 .mm{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem}
 .mm-l{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
-.mm-v{font-size:22px;font-weight:300;letter-spacing:-.5px;line-height:1;margin-bottom:3px}
+.mm-v{font-size:22px;font-family:var(--m);font-weight:500;letter-spacing:-.02em;line-height:1;margin-bottom:3px}
 .mm-s{font-size:11px;color:var(--text3)}
 .tag{display:inline-block;font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px}
 .tt{background:var(--teal-d);color:var(--teal)}
@@ -190,7 +203,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 .tb{background:var(--blue-d);color:var(--blue)}
 
 /* ── STREAK ── */
-.streak{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.streak{background:var(--s1);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--r);padding:1rem}
 .streak-n{font-size:44px;font-weight:300;letter-spacing:-2px;line-height:1;margin-bottom:4px}
 .streak-l{font-size:13px;color:var(--text2);margin-bottom:.75rem}
 .dots{display:flex;gap:4px;margin-bottom:.5rem}
@@ -255,9 +268,9 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 /* A párosító link visszajelzése (pairing.js, csak textContent). */
 .pair-note{width:calc(100% - 2.5rem);max-width:920px;margin:1rem auto 0;padding:.65rem 1rem;background:var(--s1);border:.5px solid var(--border2);border-radius:var(--rs);font-family:var(--m);font-size:12px;color:var(--text2);line-height:1.6;word-break:break-word;overflow-wrap:anywhere}
 .upd{font-family:var(--m);font-size:10px;color:var(--text3);text-align:center;padding-top:2rem;border-top:.5px solid var(--border)}
-.pf-hero{background:var(--s1);border:.5px solid var(--border2);border-radius:var(--r);padding:1.5rem;margin-bottom:10px}
+.pf-hero{background:var(--s1);border:1px solid var(--border2);box-shadow:var(--shadow);border-radius:var(--r);padding:1.5rem;margin-bottom:10px}
 .pf-hero-top{display:flex;align-items:flex-end;gap:1rem;margin-bottom:1rem;border-bottom:.5px solid var(--border);padding-bottom:1rem}
-.pf-hero-num{font-size:64px;font-weight:300;letter-spacing:-3px;line-height:1;flex-shrink:0}
+.pf-hero-num{font-size:64px;font-family:var(--m);font-weight:500;letter-spacing:-.04em;line-height:1;flex-shrink:0}
 .pf-hero-meta{}
 .pf-hero-name{font-size:18px;font-weight:500;color:var(--text);margin-bottom:2px}
 .pf-hero-ins{font-size:11px;color:var(--text3);font-family:var(--m);margin-bottom:10px;letter-spacing:.04em}
@@ -288,7 +301,7 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 .mstat{font-size:11px;color:var(--text2)}
 .pf-card{background:var(--s2);border-radius:var(--rs);padding:1rem 1.1rem;border:1.5px solid transparent;cursor:pointer;transition:border-color .15s}
 .pf-card.pf-active{background:var(--s1);border-color:var(--border2)}
-.pf-card-num{font-size:28px;font-weight:300;letter-spacing:-1.5px;line-height:1;margin-bottom:3px}
+.pf-card-num{font-size:28px;font-family:var(--m);font-weight:500;letter-spacing:-.02em;line-height:1;margin-bottom:3px}
 .pf-card-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
 .pf-card-mood{font-size:10px;color:var(--text3);margin-bottom:8px}
 .pf-badges{display:flex;gap:5px;flex-wrap:wrap}
@@ -299,7 +312,7 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 .matrix-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 @media(max-width:480px){.matrix-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .gauge-card{background:var(--s2);border-radius:var(--rs);padding:.9rem 1rem;text-align:center}
-.gauge-val{font-size:32px;font-weight:300;letter-spacing:-1.5px;line-height:1;margin-bottom:2px}
+.gauge-val{font-size:32px;font-family:var(--m);font-weight:500;letter-spacing:-.02em;line-height:1;margin-bottom:2px}
 .gauge-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-family:var(--m);margin-bottom:6px}
 .gauge-bar{height:3px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:6px}
 .gauge-bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
@@ -315,7 +328,7 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
 .sr-time{font-size:10px;color:var(--text3);font-family:var(--m)}
 .sr-stats{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap}
 .sr-stat{text-align:center}
-.sr-stat-v{font-size:16px;font-weight:300;color:var(--teal)}
+.sr-stat-v{font-size:16px;font-family:var(--m);font-weight:500;color:var(--teal)}
 .sr-stat-l{font-size:9px;color:var(--text3);font-family:var(--m);text-transform:uppercase}
 .sr-tracks{display:flex;flex-direction:column;gap:4px}
 .sr-track{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:.5px solid var(--border);font-size:11px}
@@ -446,6 +459,9 @@ let CHS=[];
 function killCharts(){CHS.forEach(c=>{try{c.destroy()}catch(e){}});CHS=[];}
 function mkChart(id,cfg){
   const el=document.getElementById(id); if(!el) return;
+  // Csökkentett mozgás (rendszerbeállítás): a grafikon animáció nélkül rajzolódik ki.
+  try{ if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+         cfg.options=Object.assign({},cfg.options,{animation:false}); }catch(e){}
   const c=new Chart(el,cfg); CHS.push(c);
   // A <canvas> tartalma képernyőolvasóval nem elérhető. Az aria-label csak a
   // diagram TÉMÁJÁT mondja meg; az ADATOT egy vizuálisan rejtett táblázat adja,
@@ -855,7 +871,7 @@ function render(d){
       const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px;white-space:nowrap;flex-shrink:0">overdue</span>` : '';
       return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border)">
         <span style="font-size:14px;opacity:.5">□</span>
-        <span style="font-size:12px;font-family:var(--m);color:var(--text);min-width:0">${name}</span>${src}${proj}${over}
+        <span style="font-size:15px;font-family:var(--f);font-weight:500;color:var(--text);min-width:0">${name}</span>${src}${proj}${over}
       </div>`;
     };
 
@@ -1752,7 +1768,7 @@ function render(d){
       const{ctx,chartArea:{left,top,width,height}}=chart;
       ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
       const cx=left+width/2,cy=top+height/2;
-      ctx.font='300 26px Plus Jakarta Sans,sans-serif';
+      ctx.font='500 26px DM Mono,monospace';
       ctx.fillStyle=rsCol;
       ctx.fillText(rs===null?'—':String(rs),cx,cy-5);
       ctx.font='10px DM Mono,monospace';ctx.fillStyle=TC.text3;
@@ -1783,7 +1799,7 @@ function render(d){
     mkChart('bbChart',{
       type:'line',
       data:{labels:bbt.labels,datasets:[
-        {label:'Wake-up battery',data:bbt.wake,borderColor:TC.teal,backgroundColor:alpha(TC.teal,0.06),borderWidth:1.5,pointRadius:0,tension:0.4,fill:true},
+        {label:'Wake-up battery',data:bbt.wake,borderColor:TC.teal,backgroundColor:alpha(TC.teal,0.12),borderWidth:1.5,pointRadius:0,tension:0.4,fill:true},
         {label:'Points drained',data:bbt.drain,borderColor:TC.amber,backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:0.4,borderDash:[4,3]}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},y:{min:0,max:105,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
@@ -1794,7 +1810,7 @@ function render(d){
     mkChart('stressChart',{
       type:'line',
       data:{labels:sw.labels,datasets:[
-        {label:'Avg stress',data:sw.stress,borderColor:alpha(TC.red,0.8),backgroundColor:alpha(TC.red,0.06),borderWidth:1.5,pointRadius:3,pointBackgroundColor:alpha(TC.red,0.8),tension:0.4,fill:true},
+        {label:'Avg stress',data:sw.stress,borderColor:alpha(TC.red,0.8),backgroundColor:alpha(TC.red,0.12),borderWidth:1.5,pointRadius:3,pointBackgroundColor:alpha(TC.red,0.8),tension:0.4,fill:true},
         {label:'Wake-up battery',data:sw.bb_charged,borderColor:alpha(TC.teal,0.8),backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:alpha(TC.teal,0.8),tension:0.4,borderDash:[4,3]}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}

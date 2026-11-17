@@ -13,7 +13,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<!-- Betűsúlyok (Grok „Refined Warm Data", 2026-11-17): a Plus Jakarta 300-as (vékony) súlya
+     szándékosan NINCS betöltve — a vékony szöveg a sötét háttéren elhalványul; a 300-at kérő
+     stílusok így a 400-ast kapják. A számok DM Mono-ban. -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 <!-- Szándékosan NINCS itt külső szkript: a vonalkód-olvasó könyvtár (ZXing) csak
      szkenneléskor töltődik, és csak ott, ahol nincs BarcodeDetector (iPhone Safari). -->
 <style>
@@ -26,18 +29,27 @@
   --text:#f5f2ea; --text2:#b8b4ac; --text3:#96928b;
   --teal:#34c99a; --amber:#e8993a; --red:#eb6b6b; --blue:#5b9cf6;
   --on-teal:#0c0c0b;
-  --m:'DM Mono',monospace; --sans:'Plus Jakarta Sans',system-ui,sans-serif;
-  --r:16px; --rs:10px;
+  --m:'DM Mono',ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  --sans:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --r:14px; --rs:10px; --shadow:0 1px 3px rgba(0,0,0,0.25);
 }
 @media (prefers-color-scheme: light){
   :root{
     --bg:#f7f5f0; --s1:#ffffff; --s2:#f0ede6; --s3:#e7e3da;
     --border:rgba(26,25,22,0.12); --border2:rgba(26,25,22,0.22);
-    --text:#1a1916; --text2:#57544e; --text3:#67645e;
+    --text:#1a1916; --text2:#4d4a45; --text3:#67645e;
     --teal:#1a6f57; --amber:#a14d07; --red:#b42318; --blue:#1f5fd1;
     --on-teal:#ffffff; --track:rgba(26,25,22,0.08);
     --teal-line:rgba(26,111,87,0.3); --red-bg:rgba(180,35,24,0.08); --amber-bg:rgba(161,77,7,0.08);
+    --shadow:0 1px 2px rgba(0,0,0,0.04);
   }
+}
+/* Mozgás: kattintáskor enyhe visszajelzés; ha a rendszerben a mozgás csökkentése be van
+   kapcsolva, minden animáció és átmenet ki (a grafikonoké is — lásd mkChart). */
+button:active{transform:scale(.98)}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  button:active{transform:none}
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
@@ -54,7 +66,9 @@ a.back{font-family:var(--m);font-size:11px;color:var(--text2);text-decoration:no
 section{margin-bottom:1.25rem}
 .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:.6rem}
 .sec-head .line{flex:1;height:.5px;background:var(--border)}
-.card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1rem;min-width:0}
+/* Szakaszcím: Plus Jakarta 600 (a DM Mono a számoké és a kis címkéké) — mint az indexen. */
+.sec-head .lbl{white-space:nowrap;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.04em}
+.card{background:var(--s1);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--r);padding:1rem;min-width:0}
 .note{font-family:var(--m);font-size:12px;color:var(--text2);padding:.65rem .9rem;background:var(--s2);border-radius:12px;margin-bottom:.75rem}
 #msg{color:var(--text);border:.5px solid var(--border2)}
 .pair-note{margin:0 auto 1rem;max-width:640px;padding:.65rem .9rem;background:var(--s2);border-radius:12px;
