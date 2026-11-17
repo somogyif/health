@@ -117,11 +117,18 @@ function frissesseg(d, most) {
 }
 
 // A widgetek és az értesítés közös nézet-modellje.
+// Az elmúlt (legfeljebb) 7 éjszaka alvás-pontszáma (garmin.sleep_week) a mini oszlopokhoz.
+function alvasHet(g) {
+  const het = Array.isArray(g.sleep_week) ? g.sleep_week : [];
+  return het.filter(x => x && szam(x.score) != null).slice(-7).map(x => Math.max(0, Math.min(100, x.score)));
+}
+
 function model(d, most) {
   d = d && typeof d === 'object' ? d : {};
   const g = d.garmin || {}, fr = frissesseg(d, most), tk = teendok(d.tasks), ev = esemenyek(d.calendar);
   const recovery = ((d.day_plan || {}).today || {}).recovery;
   const este = fr.maiAdat && fr.t.getHours() >= ESTI_ORA;
+  const het = alvasHet(g);
   if (este) {
     const bb = szam(g.bb_current), holnap = elsoAznap(ev, ymd(plusNap(most, 1)));
     const sz = bb == null ? {szo: 'Ismeretlen', tonus: 'semleges'} : bb < 35 ? {szo: 'Alacsony', tonus: 'figyel'} : {szo: 'Rendben', tonus: 'jo'};
@@ -129,8 +136,15 @@ function model(d, most) {
       ? `Lassíts: feküdj le időben${holnap ? ` — holnap ${holnap.ido}-kor ${holnap.cim}` : ''}.`
       : holnap && holnap.ido < '09:00' ? `Holnap korán kezdesz: ${holnap.ido} ${holnap.cim}.`
       : holnap ? `Holnap az első esemény: ${holnap.ido} ${holnap.cim}.` : 'Holnapra nincs időpontos esemény.';
+    const lepes = szam(g.steps) == null ? '—' : String(g.steps).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     return {
-      este: true, fr, cimke: `Ma este · ${NAPOK[most.getDay()]}`,
+      este: true, fr, cimke: `Ma este · ${NAPOK[most.getDay()]}`, rovidCimke: `Ma este · ${NAPOK[most.getDay()]}`,
+      paletta: bb == null ? 'ismeretlen' : bb < 35 ? 'este-alacsony' : 'este', fejIkon: 'moon.stars.fill',
+      szintFelirat: bb == null ? 'Ismeretlen' : bb < 35 ? 'Alacsony\nakku' : 'Rendben', het,
+      ikonSorok: [{ikon: 'figure.walk', szoveg: lepes},
+                  {ikon: 'checklist', szoveg: tk.ismert ? `${tk.nyitott} nyitott` : 'ismeretlen'},
+                  {ikon: 'calendar', szoveg: holnap ? `holnap ${holnap.ido}` : 'holnap szabad'}],
+      tanacsWidget: tanacs,
       statok: [{ertek: kiir(bb), nev: 'body battery'},
                {ertek: szam(g.steps) == null ? '—' : String(g.steps).replace(/\B(?=(\d{3})+(?!\d))/g, ' '), nev: 'lépés'},
                {ertek: kiir(tk.nyitott), nev: 'nyitott teendő'}],
@@ -149,8 +163,15 @@ function model(d, most) {
     : ed == null ? `Az óra adata ma hiányzik${teendoResz ? `; ${teendoResz}` : ''}.`
     : `${sz.szo} nap: ${ed}${teendoResz ? `, és ${teendoResz}` : ''}.`;
   const kov = kovetkezo(ev, most);
+  const tanacsWidget = fr.maiAdat && ed != null ? `${nagybetu(ed)}${teendoResz ? `, és ${teendoResz}` : ''}.` : tanacs;
   return {
-    este: false, fr, cimke: `Ma · ${napCimke(most)}`,
+    este: false, fr, cimke: `Ma · ${napCimke(most)}`, rovidCimke: `Ma · ${NAPOK[most.getDay()]}`,
+    paletta: fr.maiAdat ? ({high: 'jo', moderate: 'kozepes', low: 'piheno'}[recovery] || 'ismeretlen') : 'ismeretlen',
+    fejIkon: 'sun.max.fill', het, tanacsWidget,
+    szintFelirat: sz.szo === 'Ismeretlen' ? 'Nincs mai\nadat' : `${sz.szo}\nnap`,
+    ikonSorok: [{ikon: 'moon.fill', szoveg: fr.maiAdat ? alvas(g.sleep_hours) : '—'},
+                {ikon: 'battery.75', szoveg: fr.maiAdat ? kiir(szam(g.bb_current)) : '—'},
+                {ikon: 'checklist', szoveg: !tk.ismert ? 'ismeretlen' : `${tk.nyitott}` + (tk.lejart > 0 ? ` · ${tk.lejart} lejárt` : '')}],
     statok: [{ertek: fr.maiAdat ? kiir(szam(g.readiness_score)) : '—', nev: 'readiness'},
              {ertek: fr.maiAdat ? alvas(g.sleep_hours) : '—', nev: 'alvás'},
              {ertek: fr.maiAdat ? kiir(szam(g.bb_current)) : '—', nev: 'body battery'}],
@@ -160,11 +181,6 @@ function model(d, most) {
     also: kov ? `${kov.ido} ${kov.cim}` : 'Ma nincs több esemény',
     tk, naptar: ev.filter(e => e.datum === ymd(most) && (!e.start || e.start >= most)).slice(0, 3), naptarCim: 'Naptár',
   };
-}
-
-function teendoSor(tk) {
-  if (!tk.ismert) return 'teendők: ismeretlen';
-  return `${tk.nyitott} teendő` + (tk.lejart > 0 ? ` · ${tk.lejart} lejárt` : '');
 }
 
 // Kimondható idő: "10:00" → "10 órakor", "07:30" → "7 óra 30-kor".
@@ -196,135 +212,199 @@ function reggeliUzenet(d, most) {
   return {cim, szoveg, beszed: beszed.replace(/—/g, 'ismeretlen')};
 }
 
-// ── Scriptable-réteg ─────────────────────────────────────────────────────────
+// ── Scriptable-réteg: „hangulat-szín” (B irány, Feri választása 2026-11-17) ─────
+// A widget háttere a nap állapota: zöld = jó nap, borostyán = közepes, indigó = pihenős,
+// pala = nincs mai adat; este mélykék (alacsony akkunál indigó). Minden szöveg fehér — a
+// színpárok fehérrel legalább 4.5:1-esek (a tests/widget_checks.js kiszámolja).
 
-function szin(vilagos, sotet) {
-  const v = new Color(vilagos), s = new Color(sotet);
-  return typeof Color.dynamic === 'function' ? Color.dynamic(v, s) : (Device.isUsingDarkAppearance() ? s : v);
-}
-function szinek() {
-  return {szoveg: szin('#1c1c1e', '#f2f2f7'), masod: szin('#5f5f64', '#aeaeb2'), hatter: szin('#ffffff', '#1c1c1e'),
-          jo: szin('#1a6f57', '#4cd08a'), figyel: szin('#a14d07', '#ffb340'), rossz: szin('#b42318', '#ff6b6b'),
-          semleges: szin('#5f5f64', '#aeaeb2'), vonal: szin('#e5e5ea', '#38383a')};
+const PALETTAK = {
+  jo: ['#15803d', '#166534'], kozepes: ['#c2410c', '#9a3412'], piheno: ['#4338ca', '#3730a3'],
+  ismeretlen: ['#475569', '#334155'], este: ['#1e40af', '#1e3a8a'], 'este-alacsony': ['#4338ca', '#3730a3'],
+};
+
+const feher = (alfa = 1) => new Color('#ffffff', alfa);
+const kerek = meret => (typeof Font.boldRoundedSystemFont === 'function' ? Font.boldRoundedSystemFont(meret) : Font.boldSystemFont(meret));
+
+function hatter(w, paletta) {
+  const [a, b] = PALETTAK[paletta] || PALETTAK.ismeretlen;
+  if (typeof LinearGradient === 'function') {
+    const g = new LinearGradient();
+    g.colors = [new Color(a), new Color(b)];
+    g.locations = [0, 1];
+    g.startPoint = new Point(0, 0);
+    g.endPoint = new Point(1, 1);
+    w.backgroundGradient = g;
+  } else {
+    w.backgroundColor = new Color(a);
+  }
 }
 
-function szovegbe(hol, szoveg, betu, szinErtek, sorok) {
+function szovegbe(hol, szoveg, betu, sorok, alfa) {
   const t = hol.addText(String(szoveg));
   t.font = betu;
-  t.textColor = szinErtek;
+  t.textColor = feher(alfa);
   if (sorok) t.lineLimit = sorok;
   t.minimumScaleFactor = 0.75;
   return t;
 }
 
-function fejlec(hol, m, C) {
-  const s = hol.addStack();
-  s.layoutHorizontally();
-  szovegbe(s, m.cimke.toUpperCase(), Font.semiboldSystemFont(11), C.masod, 1);
-  s.addSpacer();
-  szovegbe(s, m.fr.cimke, Font.systemFont(11), C.masod, 1);
+// SF Symbols ikon; ha a név ismeretlen, egyszerűen kimarad (a szöveg viszi a jelentést).
+function ikon(hol, nev, meret) {
+  const sf = typeof SFSymbol !== 'undefined' && SFSymbol.named ? SFSymbol.named(nev) : null;
+  if (!sf || !sf.image) return;
+  const k = hol.addImage(sf.image);
+  k.imageSize = new Size(meret, meret);
+  k.tintColor = feher();
 }
 
-function statSor(hol, m, C) {
+function cimkeSor(hol, m, szoveg, nevIkon) {
   const s = hol.addStack();
   s.layoutHorizontally();
-  s.spacing = 20;
-  for (const st of m.statok) {
+  s.centerAlignContent();
+  s.spacing = 5;
+  ikon(s, nevIkon, 11);
+  szovegbe(s, szoveg.toUpperCase(), Font.semiboldSystemFont(11), 1);
+  return s;
+}
+
+function oszlopok(hol, het) {
+  if (!het.length) return;
+  const s = hol.addStack();
+  s.layoutHorizontally();
+  s.bottomAlignContent();
+  s.spacing = 4;
+  het.forEach((ertek, i) => {
     const o = s.addStack();
-    o.layoutVertically();
-    szovegbe(o, st.ertek, Font.semiboldSystemFont(24), C.szoveg, 1);
-    szovegbe(o, st.nev, Font.systemFont(12), C.masod, 1);
+    o.size = new Size(9, Math.max(4, Math.round(26 * ertek / 100)));
+    o.cornerRadius = 3;
+    o.backgroundColor = feher(i === het.length - 1 ? 1 : 0.72);
+  });
+}
+
+function felsoBlokk(w, m) {
+  const sor = w.addStack();
+  sor.layoutHorizontally();
+  const bal = sor.addStack();
+  bal.layoutVertically();
+  const fej = cimkeSor(bal, m, m.rovidCimke, m.fejIkon);
+  fej.addSpacer();
+  szovegbe(fej, m.fr.cimke, Font.systemFont(10), 1, 0.92);
+  bal.addSpacer();
+  const nagySor = bal.addStack();
+  nagySor.layoutHorizontally();
+  nagySor.centerAlignContent();
+  nagySor.spacing = 8;
+  szovegbe(nagySor, m.nagySzam.ertek, kerek(46), 1);
+  szovegbe(nagySor, m.szintFelirat, Font.semiboldSystemFont(14), 2);
+  bal.addSpacer();
+  szovegbe(bal, m.tanacsWidget, Font.semiboldSystemFont(14), 2);
+  sor.addSpacer(12);
+  const vonal = sor.addStack();          // függőleges elválasztó (a 0-s méret „tartalomhoz igazodik” lenne)
+  vonal.size = new Size(1, 132);
+  vonal.backgroundColor = feher(0.35);
+  sor.addSpacer(12);
+  const jobb = sor.addStack();
+  jobb.layoutVertically();
+  jobb.size = new Size(104, 0);
+  for (const r of m.ikonSorok) {
+    const s = jobb.addStack();
+    s.layoutHorizontally();
+    s.centerAlignContent();
+    s.spacing = 6;
+    ikon(s, r.ikon, 14);
+    szovegbe(s, r.szoveg, Font.semiboldSystemFont(14), 1);
+    jobb.addSpacer();
   }
+  oszlopok(jobb, m.het);
 }
 
-function kozepes(w, m, C) {
-  fejlec(w, m, C);
-  w.addSpacer(8);
-  statSor(w, m, C);
-  w.addSpacer(8);
-  szovegbe(w, m.tanacs, Font.semiboldSystemFont(15), C.szoveg, 2);
+function kicsiAllapot(w, m) {
+  szovegbe(w, m.nagySzam.cimke.toUpperCase(), Font.semiboldSystemFont(11), 1);
   w.addSpacer();
-  const also = w.addStack();
-  also.layoutHorizontally();
-  szovegbe(also, m.also, Font.systemFont(13), C.masod, 1);
-  also.addSpacer();
-  szovegbe(also, teendoSor(m.tk), Font.semiboldSystemFont(13), m.tk.lejart > 0 ? C.figyel : C.masod, 1);
+  szovegbe(w, m.nagySzam.ertek, kerek(50), 1);
+  w.addSpacer();
+  szovegbe(w, m.szintFelirat.replace('\n', ' '), Font.boldSystemFont(15), 1);
+  szovegbe(w, m.rovid, Font.mediumSystemFont(13), 2);
 }
 
-function kicsiAllapot(w, m, C) {
-  szovegbe(w, m.nagySzam.cimke.toUpperCase(), Font.semiboldSystemFont(11), C.masod, 1);
-  w.addSpacer();
-  szovegbe(w, m.nagySzam.ertek, Font.semiboldSystemFont(46), C.szoveg, 1);
-  w.addSpacer();
-  szovegbe(w, m.szint.szo, Font.semiboldSystemFont(14), C[m.szint.tonus] || C.masod, 1);
-  szovegbe(w, m.rovid, Font.systemFont(13), C.masod, 2);
-}
-
-function kicsiKovetkezo(w, m, C) {
-  szovegbe(w, m.kov.cimke.toUpperCase(), Font.semiboldSystemFont(11), C.masod, 1);
+function kicsiKovetkezo(w, m) {
+  cimkeSor(w, m, m.kov.cimke, 'calendar');
   w.addSpacer();
   if (m.kov.esemeny) {
-    szovegbe(w, m.kov.esemeny.ido, Font.semiboldSystemFont(24), C.szoveg, 1);
-    szovegbe(w, m.kov.esemeny.cim, Font.semiboldSystemFont(14), C.szoveg, 2);
+    szovegbe(w, m.kov.esemeny.ido, kerek(28), 1);
+    szovegbe(w, m.kov.esemeny.cim, Font.semiboldSystemFont(14), 2);
   } else {
-    szovegbe(w, m.kov.ures, Font.semiboldSystemFont(14), C.szoveg, 2);
+    szovegbe(w, m.kov.ures, Font.semiboldSystemFont(14), 2);
   }
   w.addSpacer();
-  szovegbe(w, m.kov.teendoCimke, Font.systemFont(12), C.masod, 1);
-  szovegbe(w, m.tk.elso ? m.tk.elso.nev : (m.tk.ismert ? 'nincs' : 'ismeretlen'), Font.semiboldSystemFont(13), C.szoveg, 2);
+  const vonal = w.addStack();            // vízszintes elválasztó
+  vonal.size = new Size(136, 1);
+  vonal.backgroundColor = feher(0.35);
+  w.addSpacer(6);
+  if (m.tk.elso) {
+    const s = w.addStack();
+    s.layoutHorizontally();
+    s.setPadding(1, 6, 1, 6);
+    s.cornerRadius = 6;
+    s.backgroundColor = feher(0.22);
+    szovegbe(s, m.tk.elso.mikor, Font.boldSystemFont(11), 1);
+    szovegbe(w, m.tk.elso.nev, Font.semiboldSystemFont(13), 2);
+  } else {
+    szovegbe(w, m.tk.ismert ? 'Nincs határidős teendő' : 'Teendők: ismeretlen', Font.semiboldSystemFont(13), 2);
+  }
 }
 
-function nagy(w, m, C) {
-  fejlec(w, m, C);
+function nagy(w, m) {
+  szovegbe(w, m.cimke.toUpperCase(), Font.semiboldSystemFont(11), 1);
   w.addSpacer(8);
-  statSor(w, m, C);
-  w.addSpacer(8);
-  szovegbe(w, m.tanacs, Font.semiboldSystemFont(15), C.szoveg, 2);
-  w.addSpacer(10);
-  szovegbe(w, 'TEENDŐK', Font.semiboldSystemFont(11), C.masod, 1);
-  if (!m.tk.ismert) szovegbe(w, 'A teendők most nem olvashatók.', Font.systemFont(14), C.masod, 1);
-  else if (!m.tk.lista.length) szovegbe(w, 'Nincs határidős teendő.', Font.systemFont(14), C.masod, 1);
+  felsoBlokk(w, m);
+  w.addSpacer(12);
+  szovegbe(w, 'TEENDŐK', Font.semiboldSystemFont(11), 1);
+  w.addSpacer(4);
+  if (!m.tk.ismert) szovegbe(w, 'A teendők most nem olvashatók.', Font.systemFont(14), 1);
+  else if (!m.tk.lista.length) szovegbe(w, 'Nincs határidős teendő.', Font.systemFont(14), 1);
   for (const t of m.tk.lista) {
     const s = w.addStack();
     s.layoutHorizontally();
     s.spacing = 8;
-    szovegbe(s, t.mikor, Font.semiboldSystemFont(14), t.mikor === 'lejárt' ? C.figyel : C.masod, 1);
-    szovegbe(s, t.nev, Font.systemFont(14), C.szoveg, 1);
+    szovegbe(s, t.mikor, Font.boldSystemFont(14), 1);
+    szovegbe(s, t.nev, Font.systemFont(14), 1);
     s.addSpacer();
-    if (t.forras) szovegbe(s, t.forras, Font.systemFont(12), C.masod, 1);
+    if (t.forras) szovegbe(s, t.forras, Font.systemFont(12), 1, 0.92);
   }
-  w.addSpacer(10);
-  szovegbe(w, m.naptarCim.toUpperCase(), Font.semiboldSystemFont(11), C.masod, 1);
-  if (!m.naptar.length) szovegbe(w, m.este ? 'Holnapra nincs esemény.' : 'Ma nincs több esemény.', Font.systemFont(14), C.masod, 1);
+  w.addSpacer(12);
+  szovegbe(w, m.naptarCim.toUpperCase(), Font.semiboldSystemFont(11), 1);
+  w.addSpacer(4);
+  if (!m.naptar.length) szovegbe(w, m.este ? 'Holnapra nincs esemény.' : 'Ma nincs több esemény.', Font.systemFont(14), 1);
   for (const e of m.naptar) {
     const s = w.addStack();
     s.layoutHorizontally();
     s.spacing = 10;
-    szovegbe(s, e.ido || 'egész nap', Font.semiboldSystemFont(14), C.szoveg, 1);
-    szovegbe(s, e.cim, Font.systemFont(14), C.szoveg, 1);
+    szovegbe(s, e.ido || 'egész nap', Font.boldSystemFont(14), 1);
+    szovegbe(s, e.cim, Font.systemFont(14), 1);
   }
   w.addSpacer();
 }
 
 function widget(m, csalad, parameter) {
-  const C = szinek(), w = new ListWidget();
-  w.backgroundColor = C.hatter;
-  w.setPadding(14, 16, 14, 16);
-  if (csalad === 'small') (String(parameter || '').trim() === 'kovetkezo' ? kicsiKovetkezo : kicsiAllapot)(w, m, C);
-  else if (csalad === 'large' || csalad === 'extraLarge') nagy(w, m, C);
-  else if (String(csalad || '').startsWith('accessory')) szovegbe(w, `${m.statok[0].ertek} · ${m.rovid}`, Font.semiboldSystemFont(12), C.szoveg, 2);
-  else kozepes(w, m, C);
+  const w = new ListWidget();
+  hatter(w, m.paletta);
+  w.setPadding(15, 16, 15, 16);
+  if (csalad === 'small') (String(parameter || '').trim() === 'kovetkezo' ? kicsiKovetkezo : kicsiAllapot)(w, m);
+  else if (csalad === 'large' || csalad === 'extraLarge') nagy(w, m);
+  else if (String(csalad || '').startsWith('accessory')) szovegbe(w, `${m.statok[0].ertek} · ${m.rovid}`, Font.semiboldSystemFont(12), 2);
+  else felsoBlokk(w, m);
   w.refreshAfterDate = new Date(Date.now() + 30 * 60 * 1000);
   return w;
 }
 
 function uzenetWidget(cim, szoveg) {
-  const C = szinek(), w = new ListWidget();
-  w.backgroundColor = C.hatter;
-  w.setPadding(14, 16, 14, 16);
-  szovegbe(w, cim, Font.semiboldSystemFont(14), C.szoveg, 2);
+  const w = new ListWidget();
+  hatter(w, 'ismeretlen');
+  w.setPadding(15, 16, 15, 16);
+  szovegbe(w, cim, Font.semiboldSystemFont(14), 2);
   w.addSpacer(6);
-  szovegbe(w, szoveg, Font.systemFont(12), C.masod, 4);
+  szovegbe(w, szoveg, Font.systemFont(12), 4);
   return w;
 }
 

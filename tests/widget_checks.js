@@ -20,15 +20,20 @@ function env(opt = {}) {
   const rec = {widgets: [], set: null, notes: [], output: undefined, completed: 0, presented: [],
                kc: new Map(Object.entries(opt.keychain || {})), files: new Map(Object.entries(opt.files || {})),
                requests: [], alerts: []};
-  class Color { constructor(hex) { this.hex = hex; } static dynamic(l, d) { return {light: l.hex, dark: d.hex}; } }
+  class Color { constructor(hex, alpha = 1) { this.hex = hex; this.alpha = alpha; } static dynamic(l, d) { return {light: l.hex, dark: d.hex}; } }
+  class LinearGradient { constructor() { this.colors = []; } }
+  class Point { constructor(x, y) { this.x = x; this.y = y; } }
+  class Size { constructor(w, h) { this.w = w; this.h = h; } }
+  const SFSymbol = {named: n => (opt.noSymbols ? null : {image: {sf: n}})};
   const Font = new Proxy({}, {get: (_, name) => size => ({name, size})});
   class Elem {
     constructor(kind) { this.kind = kind; this.children = []; }
     addText(t) { const x = {kind: 'text', text: String(t)}; this.children.push(x); return x; }
     addStack() { const s = new Elem('stack'); this.children.push(s); return s; }
     addSpacer(n) { this.children.push({kind: 'spacer', n}); }
+    addImage(img) { const x = {kind: 'image', img}; this.children.push(x); return x; }
     layoutHorizontally() { this.dir = 'h'; } layoutVertically() { this.dir = 'v'; }
-    setPadding() {} centerAlignContent() {}
+    setPadding() {} centerAlignContent() {} bottomAlignContent() {}
   }
   class ListWidget extends Elem {
     constructor() { super('widget'); rec.widgets.push(this); }
@@ -54,7 +59,7 @@ function env(opt = {}) {
     textFieldValue(i) { return this.answer != null ? this.answer : this.fields[i]; }
   }
   const ctx = {
-    Color, Font, ListWidget, Request, Notification, Alert, console,
+    Color, Font, ListWidget, Request, Notification, Alert, console, LinearGradient, Point, Size, SFSymbol,
     Keychain: {contains: k => rec.kc.has(k), get: k => rec.kc.get(k), set: (k, v) => rec.kc.set(k, v), remove: k => rec.kc.delete(k)},
     Script: {setWidget: w => { rec.set = w; }, complete: () => { rec.completed++; }, setShortcutOutput: v => { rec.output = v; }},
     FileManager: {local: () => ({documentsDirectory: () => '/docs', joinPath: (a, b) => `${a}/${b}`,
@@ -80,6 +85,13 @@ async function load(opt) {
 }
 
 const szovegek = node => (node.kind === 'text' ? [node.text] : (node.children || []).flatMap(szovegek));
+const keres = (node, f) => (f(node) ? [node] : []).concat((node.children || []).flatMap(c => keres(c, f)));
+const luminancia = hex => {
+  const n = parseInt(hex.slice(1), 16);
+  return [n >> 16, (n >> 8) & 255, n & 255].map(c => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; })
+    .reduce((a, c, i) => a + c * [0.2126, 0.7152, 0.0722][i], 0);
+};
+const kontraszt = (a, b) => { const x = luminancia(a), y = luminancia(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
 const at = (y, mo, d, h = 0, mi = 0) => new Date(y, mo - 1, d, h, mi);
 const MA = at(2026, 11, 17, 7, 15);        // kedd
 
@@ -193,23 +205,72 @@ check('widgetek: kicsi (állapot / következő), közepes, nagy, zárképernyő 
   const m = api.model(adat(), MA);
   const s = (fam, par) => szovegek(api.widget(m, fam, par)).join(' | ');
   const kicsi = s('small');
-  must(/READINESS \| 74 \| Közepes \| Könnyű edzés/.test(kicsi), `kicsi: ${kicsi}`);
+  must(kicsi === 'READINESS | 74 | Közepes nap | Könnyű edzés', `kicsi: ${kicsi}`);
   const kov = s('small', 'kovetkezo');
-  must(/KÖVETKEZŐ \| 10:00 \| Meeting \| Első teendő \| Könyvtári könyv/.test(kov), `következő: ${kov}`);
+  must(kov === 'KÖVETKEZŐ | 10:00 | Meeting | lejárt | Könyvtári könyv', `következő: ${kov}`);
   const koz = s('medium');
-  must(koz.includes('MA · NOV. 17., KEDD | frissült 07:02') && koz.includes('Közepes nap: könnyű edzés') &&
-       koz.includes('10:00 Meeting') && koz.includes('3 teendő · 1 lejárt'), `közepes: ${koz}`);
+  must(koz === 'MA · KEDD | frissült 07:02 | 74 | Közepes\nnap | Könnyű edzés, és kezdd a lejárt teendővel. | 7.8 ó | 71 | 3 · 1 lejárt',
+       `közepes: ${koz}`);
   const nagy = s('large');
-  must(nagy.includes('TEENDŐK | lejárt | Könyvtári könyv | Google') && nagy.includes('NAPTÁR | 10:00 | Meeting | 17:30 | Edzőterem'), `nagy: ${nagy}`);
+  must(nagy.startsWith('MA · NOV. 17., KEDD | MA · KEDD') && nagy.includes('TEENDŐK | lejárt | Könyvtári könyv | Google') &&
+       nagy.includes('NAPTÁR | 10:00 | Meeting | 17:30 | Edzőterem'), `nagy: ${nagy}`);
   must(s('accessoryRectangular') === '74 · Könnyű edzés', `zárképernyő: ${s('accessoryRectangular')}`);
   const esti = api.model(adat({synced_at: '2026-11-17 20:02', garmin: {bb_current: 32, steps: 5}}), at(2026, 11, 17, 21, 0));
+  const estiKoz = szovegek(api.widget(esti, 'medium')).join(' | ');
+  must(estiKoz === 'MA ESTE · KEDD | frissült 20:02 | 32 | Alacsony\nakku | Lassíts: feküdj le időben — holnap 07:30-kor Edzés. | 5 | 3 nyitott | holnap 07:30',
+       `esti közepes: ${estiKoz}`);
   const estiNagy = szovegek(api.widget(esti, 'large')).join(' | ');
   // Az egész napos esemény elöl, mint az iPhone naptárában.
   must(estiNagy.includes('HOLNAP | egész nap | Születésnap | 07:30 | Edzés'), `esti nagy: ${estiNagy}`);
-  must(szovegek(api.widget(esti, 'small', 'kovetkezo')).join(' | ').startsWith('HOLNAP | 07:30 | Edzés | Még ma'), 'esti kicsi');
+  must(szovegek(api.widget(esti, 'small', 'kovetkezo')).join(' | ') === 'HOLNAP | 07:30 | Edzés | lejárt | Könyvtári könyv', 'esti kicsi');
   const ures = api.model(adat({tasks: null, calendar: []}), MA);
   must(szovegek(api.widget(ures, 'large')).join(' | ').includes('A teendők most nem olvashatók.'), 'ismeretlen teendők a nagyban');
-  must(szovegek(api.widget(ures, 'medium')).join(' | ').includes('teendők: ismeretlen'), 'ismeretlen teendők a közepesben');
+  must(szovegek(api.widget(ures, 'medium')).join(' | ').endsWith('| ismeretlen'), 'ismeretlen teendők a közepesben');
+  must(szovegek(api.widget(ures, 'small', 'kovetkezo')).join(' | ').endsWith('Teendők: ismeretlen'), 'ismeretlen teendők a kicsiben');
+});
+
+check('hangulat-szín: a háttér a nap állapota (jó / közepes / pihenős / nincs mai adat / este)', async () => {
+  const {api} = await load();
+  const bg = m => { const g = api.widget(m, 'medium').backgroundGradient; return g ? g.colors.map(c => c.hex).join('>') : 'nincs'; };
+  const reggel = rec => api.model(adat({day_plan: {today: {recovery: rec}}}), MA);
+  must(bg(reggel('high')) === '#15803d>#166534', `jó: ${bg(reggel('high'))}`);
+  must(bg(reggel('moderate')) === '#c2410c>#9a3412', `közepes: ${bg(reggel('moderate'))}`);
+  must(bg(reggel('low')) === '#4338ca>#3730a3', `pihenős: ${bg(reggel('low'))}`);
+  must(bg(reggel('unknown')) === '#475569>#334155', `ismeretlen: ${bg(reggel('unknown'))}`);
+  must(bg(api.model(adat({synced_at: '2026-11-16 20:02'}), MA)) === '#475569>#334155', 'a régi adat színes állapotot kapott');
+  const este = bb => api.model(adat({synced_at: '2026-11-17 20:02', garmin: {bb_current: bb, steps: 1}}), at(2026, 11, 17, 21));
+  must(bg(este(60)) === '#1e40af>#1e3a8a' && bg(este(20)) === '#4338ca>#3730a3' && bg(este(null)) === '#475569>#334155',
+       `este: ${bg(este(60))} / ${bg(este(20))} / ${bg(este(null))}`);
+});
+
+check('hangulat-szín: minden háttérszínen a fehér szöveg legalább 4.5:1', async () => {
+  const blokk = /const PALETTAK = \{([\s\S]*?)\};/.exec(SRC);
+  must(blokk, 'nincs PALETTAK (nem bizonyít)');
+  const hexek = [...blokk[1].matchAll(/#[0-9a-f]{6}/gi)].map(x => x[0]);
+  must(hexek.length >= 12, `kevés szín (nem bizonyít): ${hexek}`);
+  for (const h of hexek) must(kontraszt('#ffffff', h) >= 4.5, `${h}: fehérrel csak ${kontraszt('#ffffff', h).toFixed(2)}:1`);
+});
+
+check('alvás-oszlopok: az utolsó 7 éjszaka, a mai teli fehér; adat nélkül nincs oszlop', async () => {
+  const {api} = await load();
+  const het = [70, 82, 64, 90, 75, 80, 88].map((score, i) => ({date: `2026-11-${10 + i}`, score}));
+  const g = Object.assign({}, adat().garmin, {sleep_week: [{date: 'régi', score: 50}].concat(het, [{date: 'x', score: null}])});
+  const m = api.model(adat({garmin: g}), MA);
+  must(m.het.join(',') === '70,82,64,90,75,80,88', `az utolsó 7 éjszaka: ${m.het}`);
+  const o = keres(api.widget(m, 'medium'), n => n.kind === 'stack' && n.cornerRadius === 3 && n.size);
+  must(o.length === 7, `${o.length} oszlop`);
+  must(o[6].backgroundColor.alpha === 1 && o[0].backgroundColor.alpha < 1, 'a mai oszlop nem emelkedik ki');
+  must(o[3].size.h > o[2].size.h && o.every(x => x.size.h >= 4 && x.size.h <= 26), `magasságok: ${o.map(x => x.size.h)}`);
+  must(keres(api.widget(api.model(adat(), MA), 'medium'), n => n.cornerRadius === 3).length === 0, 'adat nélkül is rajzolt oszlopot');
+});
+
+check('ikonok: SF Symbols a sorok előtt; ha egy jel hiányzik, a widget akkor is kirajzol', async () => {
+  const {api} = await load();
+  const kepek = keres(api.widget(api.model(adat(), MA), 'medium'), n => n.kind === 'image').map(n => n.img.sf);
+  must(kepek.join(',') === 'sun.max.fill,moon.fill,battery.75,checklist', `ikonok: ${kepek}`);
+  const {api: api2} = await load({noSymbols: true});
+  const t = szovegek(api2.widget(api2.model(adat(), MA), 'medium')).join(' | ');
+  must(t.includes('7.8 ó') && t.includes('Könnyű edzés'), `ikonok nélkül: ${t}`);
 });
 
 // ── A főprogram ──────────────────────────────────────────────────────────────
@@ -221,7 +282,7 @@ check('widgetként: a végpontról olvas (Bearer kulcs), ment, és kirajzol', as
   await api.main();
   must(rec.requests.length === 1 && rec.requests[0].url === `${API}/data`, `kérés: ${rec.requests.map(r => r.url)}`);
   must(rec.requests[0].headers.Authorization === `Bearer ${KEY}` && rec.requests[0].timeoutInterval > 0, 'fejléc vagy timeout');
-  must(rec.set && szovegek(rec.set).join(' | ').includes('Közepes nap'), 'nem rajzolt');
+  must(rec.set && szovegek(rec.set).join(' | ').includes('Könnyű edzés, és kezdd a lejárt teendővel.'), 'nem rajzolt');
   must(rec.files.has('/docs/healthcentre-utolso.json') && rec.completed === 1, 'nem mentette a legutóbbi adatot');
 });
 
@@ -261,7 +322,7 @@ check('Parancsok, „ertesites”: értesítés a mai állapotról, és a felolv
 });
 
 check('az appban: menü — előnézet minden méretben, értesítés-próba', async () => {
-  for (const [pont, meret, szoveg] of [['Kicsi — következő', 'small', 'KÖVETKEZŐ'], ['Nagy', 'large', 'TEENDŐK'], ['Közepes', 'medium', 'Közepes nap']]) {
+  for (const [pont, meret, szoveg] of [['Kicsi — következő', 'small', 'KÖVETKEZŐ'], ['Nagy', 'large', 'TEENDŐK'], ['Közepes', 'medium', 'Könnyű edzés']]) {
     const {api, rec} = await load({now: +MA, keychain: PAROSITVA, fetch: jo(), config: {runsInApp: true},
                                     sheet: a => a.actions.indexOf(pont)});
     await api.main();
