@@ -675,6 +675,51 @@ for (const file of ['index.html', 'brief.html']) {
   });
 }
 
+// ── (a) Naptár: a 7 napos szűrés ugyanabból a mezőből megy, mint a csoportosítás ──
+// A csoportkulcs a `start_date` (helyi nap), a szűrő viszont a `start`-ból számolt: az
+// iCal-úton az nyers UTC, tehát a 8. nap 00:30-as (helyi) eseménye UTC szerint még a 7.
+// napra esett → átment, és 8. nap-fejléc lett belőle. Hiányzó `start`-nál a kivétel
+// elnyelődött, és az esemény szűrés nélkül került be (akármilyen távoli).
+const calView = (now, events) => {
+  const d = demo();
+  d.calendar = events;
+  const p = page('index.html', {now});
+  p.ctx.render(d);
+  const html = p.el('calBody').innerHTML;
+  return {html, text: p.el('calBody').textContent.replace(/\s+/g, ' '),
+          days: [...html.matchAll(/text-transform:uppercase;margin-bottom:\.5rem;display:flex[^>]*>(\d{4}-\d{2}-\d{2})/g)].map(m => m[1])};
+};
+const week = () => [15, 16, 17, 18, 19, 20, 21].map(n => (
+  {title: `Nap${n}`, start: `2026-11-${n}T09:00:00+01:00`, start_date: `2026-11-${n}`, time: '09:00', category: 'work'}));
+check('naptár (a): UTC-s start + helyi 8. napi start_date → nincs 8. nap', () => {
+  const v = calView(at(2026, 11, 15, 10), [...week(),
+    {title: 'Late', start: '2026-11-21T23:30:00Z', start_date: '2026-11-22', time: '00:30', category: 'social'}]);
+  must(v.text.includes('Nap15') && v.text.includes('Nap21'), `a hét nem rajzolódott ki (nem bizonyít): ${v.text.slice(0, 120)}`);
+  must(!v.text.includes('2026-11-22') && !v.text.includes('Late'), `8. nap a listában: ${JSON.stringify(v.days)}`);
+  must(v.days.length === 7, `a napfejlécek száma ${v.days.length}, nem 7: ${JSON.stringify(v.days)}`);
+});
+check('naptár (a): hiányzó / hibás start mellett a távoli esemény nem csúszik be', () => {
+  for (const start of [undefined, 12345, null, '', 'nem dátum']) {
+    const far = {title: 'Far', start_date: '2027-01-10', time: '10:00', category: 'other'};
+    if (start !== undefined) far.start = start;
+    const v = calView(at(2026, 11, 15, 10), [...week(), far]);
+    must(v.text.includes('Nap15'), `a hét nem rajzolódott ki (nem bizonyít): ${v.text.slice(0, 120)}`);
+    must(!v.text.includes('Far') && !v.text.includes('2027-01-10'), `start=${JSON.stringify(start)}: a távoli esemény bekerült: ${JSON.stringify(v.days)}`);
+  }
+});
+check('naptár (a): a start_date, ami nem ISO nap, nem rajzolódik ki (nincs kitalált nap)', () => {
+  for (const sd of ['holnap', '2026-11-16T09:00:00', 20261116, '2026-11-1'])
+    must(!calView(at(2026, 11, 15, 10), [...week(), {title: 'Rossz', start: '2026-11-16T09:00:00Z', start_date: sd}]).text.includes('Rossz'),
+         `start_date=${JSON.stringify(sd)}: az esemény megjelent`);
+});
+check('naptár (a) őrző: a 7. nap eseménye megjelenik, a mai napnál ott a "today" jelölés, start nélkül is', () => {
+  const evs = week(); delete evs[6].start; evs[2].start = '2026-11-16T23:30:00Z';   // UTC-ben az előző nap
+  const v = calView(at(2026, 11, 15, 10), evs);
+  must(v.days.join() === '2026-11-15,2026-11-16,2026-11-17,2026-11-18,2026-11-19,2026-11-20,2026-11-21', `napok: ${v.days}`);
+  must(v.text.includes('Nap21') && v.text.includes('Nap17'), `hiányzó esemény: ${v.text.slice(0, 200)}`);
+  must(/2026-11-15\s*· today/.test(v.text) && (v.text.match(/· today/g) || []).length === 1, `a "today" jelölés: ${v.text.slice(0, 80)}`);
+});
+
 // ── Tasks kártya: hiányzó címke → "—", nem "undefined" ─────────────────────────
 check('tasks: hiányzó label (count > 0) mellett "—" áll, nem "undefined"/"null"', () => {
   for (const hiany of [undefined, null, '']) {

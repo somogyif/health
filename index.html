@@ -823,14 +823,18 @@ function render(d){
     // Group by start_date, filter to near future only
     const groups = {};
     events.forEach(e => {
-      if (!e.start_date) return;
+      if (!e || !e.start_date) return;
       const key = e.start_date;
-      // Try to parse the date to filter
-      try {
-        const parts = e.start.split('T')[0].split('-');
-        const d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-        if (d > cutoff) return; // skip far future
-      } catch(err) {}
+      // A szűrés UGYANABBÓL a mezőből megy, mint a csoportosítás: a `start_date`-ből
+      // (helyi nap). A `start` az iCal-úton nyers UTC — abból számolva a 8. nap éjfél
+      // utáni eseménye még a 7. napnak látszott, és 8. nap-fejléc lett belőle; hiányzó
+      // `start`-nál pedig az elnyelt kivétel miatt bármilyen távoli esemény bekerült.
+      // Számokból épített helyi dátum (Safari). Ami nem valódi ISO nap, azt nem rajzoljuk ki.
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(key));
+      if (!m) return;
+      const day = new Date(+m[1], +m[2]-1, +m[3]);     // helyi éjfél
+      if (day.getMonth() !== +m[2]-1 || day.getDate() !== +m[3]) return;
+      if (day > cutoff) return; // skip far future
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
