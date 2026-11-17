@@ -656,6 +656,25 @@ check('napi terv + tasks: a kártyák minden var(--…) változója definiálva 
   must(!undef.length, `nem definiált CSS-változó a kártyákon: ${undef.join(', ')}`);
 });
 
+// ── (d) A TELJES forrás csak létező CSS-változót használjon ────────────────────
+// A fenti ellenőrzés csak a két kártya kirajzolt HTML-jét nézi. A `var(--mono)` 27 helyen
+// állt az index.html-ben (parfüm-, edzés-, Spotify-, gauge-feliratok), definíció nélkül:
+// a font-family érvénytelen volt, a címkék az örökölt betűvel jelentek meg. A név: --m.
+for (const file of ['index.html', 'brief.html']) {
+  check(`CSS (d): ${file} minden var(--…) változója definiálva van a :root-ban (a teljes forrásban)`, () => {
+    const src = read(file);
+    const defined = new Set([...src.matchAll(/:root\s*\{([^}]*)\}/g)]
+      .flatMap(r => [...r[1].matchAll(/(--[a-z0-9-]+)\s*:/g)].map(m => m[1])));
+    must(defined.has('--m') && defined.size >= 8, `a :root változói nem olvashatók (nem bizonyít): ${[...defined]}`);
+    const used = [...src.matchAll(/var\(\s*(--[a-z0-9-]+)/g)].map(m => m[1]);
+    must(used.length >= 20, `túl kevés var(--…) a forrásban (nem bizonyít): ${used.length}`);
+    const undef = {};
+    for (const v of used) if (!defined.has(v)) undef[v] = (undef[v] || 0) + 1;
+    must(!Object.keys(undef).length,
+         `nem definiált CSS-változó: ${Object.entries(undef).map(([k, n]) => `${k} (${n}×)`).join(', ')}`);
+  });
+}
+
 // ── Tasks kártya: hiányzó címke → "—", nem "undefined" ─────────────────────────
 check('tasks: hiányzó label (count > 0) mellett "—" áll, nem "undefined"/"null"', () => {
   for (const hiany of [undefined, null, '']) {
