@@ -720,6 +720,67 @@ check('naptár (a) őrző: a 7. nap eseménye megjelenik, a mai napnál ott a "t
   must(/2026-11-15\s*· today/.test(v.text) && (v.text.match(/· today/g) || []).length === 1, `a "today" jelölés: ${v.text.slice(0, 80)}`);
 });
 
+// ── (c) Tasks kártya: a napszavak a NÉZŐ mai napjához igazodnak (mint a Day plan, F1) ──
+// A tasks.today / tasks.tomorrow a SYNC napjához képest értendő; a kártya feltétel nélkül
+// "Today" / "Tomorrow" szót írt. 15-én reggel a 14-i adat "Tomorrow" blokkja valójában a mai nap.
+const one = (name, label = 'Light') => ({tasks: [{name}], count: 1, score: 1, label});
+const tasksView = (now, mut) => {
+  const d = demo(); mut(d);
+  const p = page('index.html', {now});
+  p.ctx.render(d);
+  return p.el('tasksBody').textContent.replace(/\s+/g, ' ');
+};
+const twoTasks = d => { d.tasks.today = one('Call the bank'); d.tasks.tomorrow = one('Send review'); d.tasks.overdue = {tasks: [], count: 0}; };
+check('tasks (c) F1: 14-i sync 15-én reggel → "Yesterday · 14 Nov" és "Today · 15 Nov", nincs Tomorrow', () => {
+  const t = tasksView(at(2026, 11, 15, 6, 30), d => { syncAt('2026-11-14 21:30', 'evening')(d); twoTasks(d); });
+  must(t.includes('Call the bank') && t.includes('Send review'), `a feladatok nem jelentek meg (nem bizonyít): ${t.slice(0, 120)}`);
+  must(/Yesterday · 14 Nov\s*Light\s*□\s*Call the bank/.test(t), `a sync-napi blokk címe: ${t.slice(0, 160)}`);
+  must(/Today · 15 Nov\s*Light\s*□\s*Send review/.test(t), `a rákövetkező nap címe: ${t.slice(0, 160)}`);
+  must(!/Tomorrow|Tonight/.test(t), `hamis napszó maradt: ${t.slice(0, 160)}`);
+});
+check('tasks (c) F1: régi adat → "Plan from 12 Nov" / "Plan from 13 Nov"; előrébb járó sync → "Tomorrow · 15 Nov"', () => {
+  const regi = tasksView(at(2026, 11, 15, 9), d => { syncAt('2026-11-12 07:00', 'morning')(d); twoTasks(d); });
+  must(regi.includes('Plan from 12 Nov') && regi.includes('Plan from 13 Nov'), `régi adat: ${regi.slice(0, 160)}`);
+  must(!/Today|Tomorrow|Yesterday|Tonight/.test(regi), `régi adatnál napszó áll: ${regi.slice(0, 160)}`);
+  const elol = tasksView(at(2026, 11, 14, 23), d => { syncAt('2026-11-15 07:00', 'morning')(d); twoTasks(d); });
+  must(elol.includes('Tomorrow · 15 Nov') && elol.includes('Plan from 16 Nov') && !/Today|Yesterday/.test(elol), `előrébb járó sync: ${elol.slice(0, 160)}`);
+});
+check('tasks (c) F1: üres sync-napi lista régi adatnál nem írja, hogy "Nothing due today"', () => {
+  const ures = d => { d.tasks.today = {tasks: [], count: 0, score: 0, label: 'Clear'}; d.tasks.overdue = {tasks: [], count: 0}; d.tasks.tomorrow = one('Send review'); };
+  const tegnap = tasksView(at(2026, 11, 15, 6, 30), d => { syncAt('2026-11-14 21:30', 'evening')(d); ures(d); });
+  must(tegnap.includes('Nothing due · Yesterday · 14 Nov') && !/due today/i.test(tegnap), `tegnapi adat: ${tegnap.slice(0, 160)}`);
+  const regi = tasksView(at(2026, 11, 15, 9), d => { syncAt('2026-11-12 07:00', 'morning')(d); ures(d); });
+  must(regi.includes('Nothing due · Plan from 12 Nov') && !/today/i.test(regi), `régi adat: ${regi.slice(0, 160)}`);
+  // őrző: ugyanazon a napon a szöveg marad
+  const ma = tasksView(at(2026, 11, 15, 9), d => { syncAt('2026-11-15 07:00', 'morning')(d); ures(d); });
+  must(ma.includes('✓ Nothing due today'), `aznapi adat: ${ma.slice(0, 160)}`);
+});
+check('tasks (c): ugyanazon a napon "Today · 17 Mar" és "Tomorrow · 18 Mar" (este sem "Tonight")', () => {
+  for (const ora of [8, 22]) {
+    const t = tasksView(at(2026, 3, 17, ora), twoTasks);           // a demó synced_at-je 2026-03-17, esti kontextus
+    must(t.includes('Today · 17 Mar') && t.includes('Tomorrow · 18 Mar') && !/Tonight/.test(t), `${ora} óra: ${t.slice(0, 160)}`);
+  }
+});
+check('tasks (c): synced_at nélkül (vagy hibás dátummal) "Today" / "Tomorrow" dátum nélkül', () => {
+  for (const mut of [d => { delete d.synced_at; }, d => { d.synced_at = 'nem dátum'; }, d => { d.synced_at = '2026-13-45 07:00'; }]) {
+    const t = tasksView(at(2026, 11, 15, 6, 30), d => { mut(d); twoTasks(d); });
+    must(/Today\s*Light/.test(t) && /Tomorrow\s*Light/.test(t), `a kártya: ${t.slice(0, 160)}`);
+    must(!/(Today|Tomorrow|Yesterday) · /.test(t) && !/Plan from/.test(t), `kitalált dátum a címben: ${t.slice(0, 160)}`);
+  }
+});
+check('tasks (c): a fejléc bal oldala zsugorodhat, a címke nem törik (375 px)', () => {
+  const d = demo(); twoTasks(d);
+  const p = page('index.html', {now: at(2026, 3, 17, 8)});
+  p.ctx.render(d);
+  const html = p.el('tasksBody').innerHTML;
+  for (const cim of ['Today · 17 Mar', 'Tomorrow · 18 Mar']) {
+    const m = new RegExp(`<span style="([^"]*)">${cim}</span>\\s*<span style="([^"]*)">Light</span>`).exec(html);
+    must(m, `nincs meg a(z) "${cim}" fejlécsor (nem bizonyít)`);
+    must(/(^|;)min-width:0(;|$)/.test(m[1]), `${cim}: a cím elemén nincs min-width:0: ${m[1]}`);
+    must(/(^|;)flex-shrink:0(;|$)/.test(m[2]) && /(^|;)white-space:nowrap(;|$)/.test(m[2]), `${cim}: a címke törhet: ${m[2]}`);
+  }
+});
+
 // ── Tasks kártya: hiányzó címke → "—", nem "undefined" ─────────────────────────
 check('tasks: hiányzó label (count > 0) mellett "—" áll, nem "undefined"/"null"', () => {
   for (const hiany of [undefined, null, '']) {
@@ -727,12 +788,12 @@ check('tasks: hiányzó label (count > 0) mellett "—" áll, nem "undefined"/"n
     d.tasks.today = {tasks: [{name: 'Call the bank'}], count: 1, score: 1};
     d.tasks.tomorrow = {tasks: [{name: 'Send review'}], count: 1, score: 1};
     if (hiany !== undefined) { d.tasks.today.label = hiany; d.tasks.tomorrow.label = hiany; }
-    const p = page('index.html');
+    const p = page('index.html', {now: at(2026, 3, 17, 10)});   // a néző a demó sync-napján áll (a fejléc: Today · 17 Mar)
     p.ctx.render(d);
     const t = p.el('tasksBody').textContent.replace(/\s+/g, ' ');
     must(t.includes('Call the bank') && t.includes('Send review'), `a feladatok nem jelentek meg (nem bizonyít): ${t.slice(0, 100)}`);
     must(!/undefined|null/.test(t), `label=${JSON.stringify(hiany)}: "${(/undefined|null/.exec(t) || [])[0]}" a kártyán: ${t.slice(0, 100)}`);
-    must(/Today\s*—/.test(t) && /Tomorrow\s*—/.test(t), `label=${JSON.stringify(hiany)}: nincs "—" a címke helyén: ${t.slice(0, 100)}`);
+    must(/Today · 17 Mar\s*—/.test(t) && /Tomorrow · 18 Mar\s*—/.test(t), `label=${JSON.stringify(hiany)}: nincs "—" a címke helyén: ${t.slice(0, 100)}`);
     must(taskLabelColor(p.el('tasksBody').innerHTML, '—') === 'var(--text3)', 'a "—" nem semleges színű');
   }
 });

@@ -599,20 +599,21 @@ function render(d){
   // mai napjához mért: a sync 07:00-kor és 12:00-kor fut, tehát éjfél után a tegnapi
   // terv "Today"-e már nem ma van. Ami nem tegnap/ma/holnap: "Plan from <dátum>".
   // Ha a synced_at hiányzik vagy nem dátum, nem találunk ki dátumot (a cím dátum
-  // nélküli, a terv saját kontextusa szerint), és head = null.
+  // nélküli, a terv saját kontextusa szerint), és head = null, rel = null.
+  // rel: a nap távolsága a néző mai napjától, napokban (0 = ma) — a Tasks kártya használja.
   function planDayLabel(off, evening) {
     const sm = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d.synced_at || ''));
     const base = sm ? new Date(+sm[1], +sm[2]-1, +sm[3]) : null;
     if (!base || base.getMonth() !== +sm[2]-1 || base.getDate() !== +sm[3])
-      return {title: off ? 'Tomorrow' : evening ? 'Tonight' : 'Today', head: null};
+      return {title: off ? 'Tomorrow' : evening ? 'Tonight' : 'Today', head: null, rel: null};
     const day = new Date(base.getFullYear(), base.getMonth(), base.getDate()+off);
     const n = new Date(), today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
     const rel = Math.round((day - today) / 86400000);   // kerekítve: az óraátállítás napján is egész
     const date = day.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    if (rel === 0) return {title: `${off === 0 && evening ? 'Tonight' : 'Today'} · ${date}`, head: "Today's plan"};
-    if (rel === 1) return {title: `Tomorrow · ${date}`, head: "Tomorrow's plan"};
-    if (rel === -1) return {title: `Yesterday · ${date}`, head: "Yesterday's plan"};
-    return {title: `Plan from ${date}`, head: `Plan from ${date}`};
+    if (rel === 0) return {title: `${off === 0 && evening ? 'Tonight' : 'Today'} · ${date}`, head: "Today's plan", rel};
+    if (rel === 1) return {title: `Tomorrow · ${date}`, head: "Tomorrow's plan", rel};
+    if (rel === -1) return {title: `Yesterday · ${date}`, head: "Yesterday's plan", rel};
+    return {title: `Plan from ${date}`, head: `Plan from ${date}`, rel};
   }
 
   function renderDayPlan(plan) {
@@ -764,6 +765,13 @@ function render(d){
       </div>`;
     };
 
+    // A tasks.today / tasks.tomorrow a SYNC napjához képest értendő, ezért a két fejléc
+    // szava a néző mai napjához mért (planDayLabel, mint a Day plan kártyán): 15-én reggel
+    // a 14-i adat "tomorrow" blokkja a mai nap. A szöveg a lap sajátja, nem külső adat.
+    const dayA = planDayLabel(0, false), dayB = planDayLabel(1, false);
+    const headL = 'font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;min-width:0';
+    const headR = c => `font-family:var(--m);font-size:11px;color:${c};flex-shrink:0;white-space:nowrap`;
+
     let html = '';
 
     // Overdue banner
@@ -777,21 +785,21 @@ function render(d){
     if (today.count > 0 || overdue.count > 0) {
       const allToday = [...taskItems(overdue.tasks), ...taskItems(today.tasks)];
       html += `<div style="margin-bottom:1rem">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
-          <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Today</span>
-          <span style="font-family:var(--m);font-size:11px;color:${scoreColor(today.label)}">${today.label || '—'}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:.4rem">
+          <span style="${headL}">${dayA.title}</span>
+          <span style="${headR(scoreColor(today.label))}">${today.label || '—'}</span>
         </div>
         ${allToday.map(taskRow).join('')}
       </div>`;
     } else {
-      html += `<div style="font-family:var(--m);font-size:12px;color:var(--text3);margin-bottom:.8rem">✓ Nothing due today</div>`;
+      html += `<div style="font-family:var(--m);font-size:12px;color:var(--text3);margin-bottom:.8rem">✓ ${dayA.rel === 0 || dayA.rel === null ? 'Nothing due today' : 'Nothing due · ' + dayA.title}</div>`;
     }
 
     // Tomorrow tasks
     html += `<div style="margin-bottom:.5rem">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
-        <span style="font-family:var(--m);font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Tomorrow</span>
-        <span style="font-family:var(--m);font-size:11px;color:${scoreColor(tomorrow.label)}">${tomorrow.count > 0 ? (tomorrow.label || '—') : '—'}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:.4rem">
+        <span style="${headL}">${dayB.title}</span>
+        <span style="${headR(scoreColor(tomorrow.label))}">${tomorrow.count > 0 ? (tomorrow.label || '—') : '—'}</span>
       </div>
       ${tomorrow.count > 0 ? taskItems(tomorrow.tasks).map(taskRow).join('') : '<div style="font-family:var(--m);font-size:12px;color:var(--text3)">Nothing scheduled</div>'}
     </div>`;
