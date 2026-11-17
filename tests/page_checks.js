@@ -1816,18 +1816,24 @@ check('kamra szkenner: BarcodeDetector nélkül (iPhone Safari) a ZXing CSAK ekk
   must(cam.stopped === 1 && resets >= 1 && p.el('manualForm').hidden === false, `találat után: stopped=${cam.stopped}, reset=${resets}`);
 });
 // ZXing-es (iPhone-os) szkennelés hamis könyvtárral; z.read(t) = egy sikeres képkocka t kóddal.
+// Ha a könyvtár már betöltődött (második szkennelés ugyanazon a lapon), nincs új <script>.
 async function zxingScan(K, p) {
-  const orig = p.ctx.document.createElement, made = [];
-  p.ctx.document.createElement = tag => { const e = orig(tag); e.tag = tag; made.push(e); return e; };
   const z = {cb: null, resets: 0};
-  const run = K.startScan();
-  for (let i = 0; i < 40 && !made.some(e => e.tag === 'script'); i++) await new Promise(r => setTimeout(r, 10));
-  const s = made.find(e => e.tag === 'script');
-  must(s, 'nem hozott létre <script> elemet (nem bizonyít)');
-  p.ctx.ZXing = {DecodeHintType: {POSSIBLE_FORMATS: 2}, BarcodeFormat: {EAN_13: 7, EAN_8: 6, UPC_A: 14, UPC_E: 15, QR_CODE: 11},
+  const fake = {DecodeHintType: {POSSIBLE_FORMATS: 2}, BarcodeFormat: {EAN_13: 7, EAN_8: 6, UPC_A: 14, UPC_E: 15, QR_CODE: 11},
     BrowserMultiFormatReader: class { decodeFromStream(st, v, cb) { z.cb = cb; return Promise.resolve(); } reset() { z.resets++; } }};
-  s.onload();
-  await run; await settle();
+  if (p.ctx.ZXing) { p.ctx.ZXing = fake; await K.startScan(); await settle(); }
+  else {
+    const orig = p.ctx.document.createElement, made = [];
+    p.ctx.document.createElement = tag => { const e = orig(tag); e.tag = tag; made.push(e); return e; };
+    const run = K.startScan();
+    for (let i = 0; i < 40 && !made.some(e => e.tag === 'script'); i++) await new Promise(r => setTimeout(r, 10));
+    const s = made.find(e => e.tag === 'script');
+    p.ctx.document.createElement = orig;
+    must(s, 'nem hozott létre <script> elemet (nem bizonyít)');
+    p.ctx.ZXing = fake;
+    s.onload();
+    await run; await settle();
+  }
   must(typeof z.cb === 'function', 'a ZXing nem kapott visszahívást (nem bizonyít)');
   z.read = async text => { z.cb({getText: () => text}); await settle(); };
   return z;
@@ -1868,6 +1874,19 @@ check('kamra szkenner: a rövid (≤ 8 jegyű) kódot háromszor kell egymás ut
   await settle();
   must(b.srv.off.length === 1 && b.srv.off[0].includes('/8004030341234?'), `BarcodeDetector: OFF-kérés: ${b.srv.off}`);
   b.K.stopScan();
+});
+check('kamra szkenner: a leállítás nullázza a számolást — két külön szkennelés egy-egy leolvasása nem adódik össze', async () => {
+  const {K, p, srv} = await kamra();
+  const cam = camera(p);
+  let z = await zxingScan(K, p);
+  await z.read('5990000000001');
+  K.stopScan();
+  must(cam.stopped === 1 && srv.off.length === 0, `a Leállítás után: stopped=${cam.stopped}, OFF: ${srv.off} (nem bizonyít)`);
+  z = await zxingScan(K, p);
+  await z.read('5990000000001');
+  must(srv.off.length === 0 && cam.stopped === 1, `a két külön szkennelés leolvasása összeadódott (OFF: ${srv.off})`);
+  await z.read('5990000000001');
+  must(srv.off.length === 1 && cam.stopped === 2, `az új szkennelés két egyező leolvasására sem keresett (OFF: ${srv.off}, stopped=${cam.stopped})`);
 });
 check('kamra szkenner: ha a BEOLVASOTT kód nincs az OFF-ben, az üzenet kiírja a kódot és figyelmeztet a félreolvasásra; a beírt kódnál a régi szöveg marad', async () => {
   const {K, p, txt} = await kamra();
