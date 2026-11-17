@@ -861,6 +861,17 @@ check('tasks (g): pótolt lista → "last known list from …"; ismeretlen → "
   const csonka = tasksView(at(2026, 3, 17, 8), googleTasks('ok', {truncated: true}));
   must(csonka.includes('Google Tasks: only part of the list arrived'), `csonka: ${csonka.slice(-200)}`);
 });
+check('tasks (g): 375 px-en az "overdue" és a forrás-címke nem törik (a név zsugorodik)', () => {
+  const d = demo(); googleTasks('ok')(d);
+  d.tasks.overdue = {tasks: [{name: 'Return library book', source: 'google', project: 'My Tasks', overdue: true}], count: 1};
+  const p = page('index.html', {now: at(2026, 3, 17, 8)});
+  p.ctx.render(d);
+  const html = p.el('tasksBody').innerHTML;
+  const over = /<span style="([^"]*)">overdue<\/span>/.exec(html), cimke = /<span style="([^"]*)">Google<\/span>/.exec(html);
+  must(over && cimke, 'nincs "overdue" vagy forrás-címke a kártyán (nem bizonyít)');
+  for (const [nev, m] of [['overdue', over], ['forrás-címke', cimke]])
+    must(/(^|;)flex-shrink:0(;|$)/.test(m[1]) && (nev !== 'overdue' || /(^|;)white-space:nowrap(;|$)/.test(m[1])), `${nev} törhet: ${m[1]}`);
+});
 check('tasks (g): ellenséges forrás, név és bélyeg nem kerül nyersen a kártyára', () => {
   const d = demo();
   googleTasks('carried', {as_of: '<img src=x onerror=alert(1)>'})(d);

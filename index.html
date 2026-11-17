@@ -778,7 +778,8 @@ function render(d){
       const name = t.name || '';
       const src = showSrc && SRC[t.source] ? `<span style="font-size:9px;font-family:var(--m);color:var(--text3);border:.5px solid var(--border2);border-radius:4px;padding:0 4px;margin-left:4px;flex-shrink:0">${SRC[t.source]}</span>` : '';
       const proj = t.project ? `<span style="font-size:10px;color:var(--text3);margin-left:4px">${t.project}</span>` : '';
-      const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px">overdue</span>` : '';
+      // A címke nem törhet ("overdu|e" 375 px-en, a #tasksBody overflow-wrap:anywhere-je miatt).
+      const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px;white-space:nowrap;flex-shrink:0">overdue</span>` : '';
       return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border)">
         <span style="font-size:14px;opacity:.5">□</span>
         <span style="font-size:12px;font-family:var(--m);color:var(--text);min-width:0">${name}</span>${src}${proj}${over}
