@@ -1995,6 +1995,14 @@ check('kamra CSS 375 px: minden rácscella minmax(0,1fr), a szöveg törhet, a v
   must(/\[hidden\]\{display:none!important\}/.test(css), 'a [hidden] elemet egy display-szabály felülírhatja');
 });
 
+// Böngészőben mérve (375 px-es keret, demó adat): a kamra-linkkel a fejléc scrollWidth-je
+// 375 → 388 lett — a .topnav és a .nav-right egy sorba kényszerítette az öt elemet.
+check('kamra-link (index) 375 px: a fejléc törhet (.topnav és .nav-right flex-wrap), nem tolja ki a lapot', () => {
+  const css = read('index.html');
+  const rule = sel => (new RegExp(sel.replace('.', '\\.') + '\\{([^}]*)\\}').exec(css) || [])[1] || '';
+  must(/flex-wrap:wrap/.test(rule('.topnav')) && /flex-wrap:wrap/.test(rule('.nav-right')), `.topnav{${rule('.topnav')}} .nav-right{${rule('.nav-right')}}`);
+});
+
 // ── futtatás ────────────────────────────────────────────────────────────────────
 module.exports = {page, settle, demo, json};   // egyedi próbákhoz: require('./page_checks')
 if (require.main === module) (async () => {

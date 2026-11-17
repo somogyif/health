@@ -64,10 +64,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 #app{display:none;max-width:960px;margin:0 auto;padding:0 1.25rem 5rem}
 
 /* ── TOP NAV ── */
-.topnav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0 0}
+.topnav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:1.25rem 0 0}
 .logo{font-size:15px;font-weight:600;letter-spacing:-.2px}
 .logo span{color:var(--teal)}
-.nav-right{display:flex;align-items:center;gap:8px}
+.nav-right{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px;min-width:0}
 .sync-info{font-family:var(--m);font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
 .live-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:pulse 2.5s ease infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
