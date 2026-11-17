@@ -362,6 +362,14 @@ check('a valódi adatalak (demo-data.json): minden méret hiba nélkül kirajzol
 
 // ── Futtatás ─────────────────────────────────────────────────────────────────
 (async () => {
+  // Ha egy ellenőrzés Promise-a sosem dől el, a Node az összesítő NÉLKÜL, 0-val lépne ki —
+  // ez csendes zöld lenne. Ezért: aki nem ért a végére, az piros.
+  let kesz = false;
+  process.on('exit', () => {
+    if (kesz) return;
+    console.log('BEFEJEZETLEN: egy ellenőrzés nem tért vissza (függő Promise) — ez hiba, nem zöld.');
+    process.exitCode = 1;
+  });
   const szuro = process.argv[2] || '';
   let jo = 0, rossz = 0;
   for (const c of checks.filter(c => c.name.includes(szuro))) {
@@ -369,5 +377,6 @@ check('a valódi adatalak (demo-data.json): minden méret hiba nélkül kirajzol
     catch (e) { rossz++; console.log(`  ✗ ${c.name}\n      ${e && e.stack ? e.stack.split('\n').slice(0, 3).join('\n      ') : e}`); }
   }
   console.log(rossz ? `BUKÓ: ${rossz}/${jo + rossz}` : `OK: ${jo}/${jo + rossz}`);
+  kesz = true;
   process.exit(rossz ? 1 : 0);
 })();
