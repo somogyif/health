@@ -75,6 +75,17 @@ and no build step. Three tabs, a printable brief, and an installable PWA. Delibe
 no service worker: the whole point is live data, and a cache layer would serve stale
 numbers. Data source resolution is demo → authenticated endpoint → fallback.
 
+**iPhone widget and morning briefing.** A [Scriptable](https://scriptable.app) script
+(`widget/egeszseg.js`) reads the same authenticated endpoint and draws a home-screen widget —
+small (state, or what's next), medium or large — with one line of state and one sentence of
+advice, in the morning and (after an evening sync) at night. The same script, run by a
+Shortcuts automation at 07:15, posts a notification and returns text for the phone to read
+aloud. Whether it shows the morning or the evening view is decided by the data's own
+timestamp, not the phone's clock, so last night's numbers are never presented as today's.
+The endpoint address and the read key live in the phone's keychain (paired with the same
+link as the browser), so the script itself holds no secret. `tests/widget_checks.js` runs it
+against a fake Scriptable runtime.
+
 **Day and night.** Every page follows the system appearance (`prefers-color-scheme`): a
 warm light palette by day and the original dark one at night, so a phone set to switch
 automatically at sunset switches the dashboard with it. The charts draw on a canvas, which
