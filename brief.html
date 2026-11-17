@@ -6,16 +6,35 @@
 <!-- A /health/robots.txt hatástalan (a keresők a host gyökerét nézik) — B12. -->
 <meta name="robots" content="noindex">
 <title>Morning Brief — Health Centre</title>
+<!-- Nappal/éjszaka (2026-11-17): a lap a rendszer témáját követi, mint az index. -->
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f5f0">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c0c0b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <style>
+  /* Éjszaka (sötét) az alap, nappal a lenti @media írja felül — ugyanaz a paletta, mint az
+     index.html-ben (a tests/page_checks.js összeveti, és a kontrasztot is kiszámolja). */
   :root{
+    color-scheme: light dark;
     --bg:#0c0c0b; --s1:#1a1a18; --s2:#272724; --s3:#313130;
-    --border:rgba(255,255,255,0.1);
-    --text:#f5f2ea; --text2:#b8b4ac; --text3:#7a7874;
-    --teal:#34c99a; --amber:#e8993a; --red:#e05252; --blue:#5b9cf6;
+    --border:rgba(255,255,255,0.1); --border2:rgba(255,255,255,0.2);
+    --text:#f5f2ea; --text2:#b8b4ac; --text3:#96928b;
+    --teal:#34c99a; --amber:#e8993a; --red:#eb6b6b; --blue:#5b9cf6;
+    --on-teal:#0c0c0b; --track:#313130;
+    --teal-line:rgba(52,201,154,0.3); --red-bg:rgba(235,107,107,0.12); --amber-bg:rgba(232,153,58,0.12);
     --m:'DM Mono',monospace; --sans:'Plus Jakarta Sans',system-ui,sans-serif;
     --r:16px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#f7f5f0; --s1:#ffffff; --s2:#f0ede6; --s3:#e7e3da;
+      --border:rgba(26,25,22,0.12); --border2:rgba(26,25,22,0.22);
+      --text:#1a1916; --text2:#57544e; --text3:#67645e;
+      --teal:#1a6f57; --amber:#a14d07; --red:#b42318; --blue:#1f5fd1;
+      --on-teal:#ffffff; --track:rgba(26,25,22,0.08);
+      --teal-line:rgba(26,111,87,0.3); --red-bg:rgba(180,35,24,0.08); --amber-bg:rgba(161,77,7,0.08);
+    }
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;
@@ -101,7 +120,8 @@
 <script src="freshness.js"></script>
 <script src="pairing.js"></script>
 <script>
-const C = {teal:'#34c99a',amber:'#e8993a',red:'#e05252',blue:'#5b9cf6',text3:'#7a7874'};
+// A színek a témából (CSS-változók): minden felhasználásuk inline stílus, ott a var() működik.
+const C = {teal:'var(--teal)',amber:'var(--amber)',red:'var(--red)',blue:'var(--blue)',text3:'var(--text3)'};
 const DEMO = new URLSearchParams(location.search).get('demo')==='1';  // ?demo=1 → sample data
 const CAT = {work:C.amber,gym:C.teal,wellness:C.teal,social:C.blue,study:C.blue,travel:C.amber,personal:C.text3,other:C.text3};
 const esc = s => (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -129,8 +149,8 @@ function verdict(r){
 function ring(score,color){
   const R=42,C2=2*Math.PI*R,pct=Math.max(0,Math.min(100,score||0))/100;
   return `<div class="ring"><svg width="96" height="96" viewBox="0 0 96 96">
-    <circle cx="48" cy="48" r="${R}" fill="none" stroke="#313130" stroke-width="6"/>
-    <circle cx="48" cy="48" r="${R}" fill="none" stroke="${color}" stroke-width="6"
+    <circle cx="48" cy="48" r="${R}" fill="none" style="stroke:var(--track)" stroke-width="6"/>
+    <circle cx="48" cy="48" r="${R}" fill="none" style="stroke:${color}" stroke-width="6"
       stroke-linecap="round" stroke-dasharray="${C2}" stroke-dashoffset="${C2*(1-pct)}"/>
   </svg><div class="num"><b>${score??'—'}</b><s>/100</s></div></div>`;
 }
@@ -226,12 +246,12 @@ function render(d){
   const stale = HealthFreshness.stale(d.freshness, Date.now());
   const red = stale.length && Math.max(...stale.map(x=>x.days)) >= HealthFreshness.RED_DAYS;
   const staleHTML = stale.length
-    ? `<div class="stale" style="color:var(${red?'--red':'--amber'});background:${red?'rgba(224,82,82,0.12)':'rgba(232,153,58,0.12)'}">⚠ Showing older data — ${stale.map(x=>`<b>${x.name}</b> from ${x.when} (${x.days}d)`).join(' · ')}</div>`
+    ? `<div class="stale" style="color:var(${red?'--red':'--amber'});background:${red?'var(--red-bg)':'var(--amber-bg)'}">⚠ Showing older data — ${stale.map(x=>`<b>${x.name}</b> from ${x.when} (${x.days}d)`).join(' · ')}</div>`
     : '';
 
   document.getElementById('root').innerHTML = `
     <header>
-      <div class="kicker"><span class="dot"></span><span class="lbl">${esc(W.kicker)}</span>${DEMO?'<span class="lbl" style="color:var(--teal);border:1px solid rgba(52,201,154,0.3);border-radius:20px;padding:1px 8px">DEMO</span>':''}</div>
+      <div class="kicker"><span class="dot"></span><span class="lbl">${esc(W.kicker)}</span>${DEMO?'<span class="lbl" style="color:var(--teal);border:1px solid var(--teal-line);border-radius:20px;padding:1px 8px">DEMO</span>':''}</div>
       <div class="greet">${greeting()}, Feri.</div>
       <div class="subline">${esc(v.h)} — ${esc(v.p)}</div>
     </header>
