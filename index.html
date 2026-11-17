@@ -9,9 +9,14 @@
 <title>Feri — Health Centre</title>
 <!-- PWA / Add to Home Screen -->
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0c0c0b">
+<!-- Nappal/éjszaka (2026-11-17): a lap a rendszer témáját követi (prefers-color-scheme). A böngésző
+     sávja és a telepített app állapotsora a téma-színt veszi át; a "black-translucent" fehér
+     órát írt volna a világos lapra, ezért "default". -->
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f5f0">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0c0c0b">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Health">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -24,6 +29,11 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 :root {
+  /* Éjszaka (sötét) — az alap; nappal a lenti @media (prefers-color-scheme: light) írja felül.
+     Minden szöveg-szín legalább 4.5:1 a --bg, --s1 és --s2 háttéren (WCAG AA) — a
+     tests/page_checks.js a két palettán ki is számolja. 2026-11-17-ig a --text3 (#7a7874) a
+     kártyákon 3.96:1, a --red a --s2-n 3.92:1 volt. */
+  color-scheme: light dark;
   --bg:       #0c0c0b;
   --s1:       #1a1a18;
   --s2:       #272724;
@@ -32,19 +42,66 @@
   --border2:  rgba(255,255,255,0.2);
   --text:     #f5f2ea;
   --text2:    #b8b4ac;
-  --text3:    #7a7874;
+  --text3:    #96928b;
   --teal:     #34c99a;
   --teal-d:   rgba(52,201,154,0.1);
+  --teal-bg:  rgba(52,201,154,0.15);
+  --teal-line:rgba(52,201,154,0.3);
+  --on-teal:  #0c0c0b;
   --amber:    #e8993a;
   --amber-d:  rgba(232,153,58,0.1);
-  --red:      #e05252;
-  --red-d:    rgba(224,82,82,0.08);
+  --amber-bg: rgba(232,153,58,0.12);
+  --amber-line:rgba(232,153,58,0.3);
+  --red:      #eb6b6b;
+  --red-d:    rgba(235,107,107,0.08);
+  --red-bg:   rgba(235,107,107,0.12);
+  --red-line: rgba(235,107,107,0.3);
   --blue:     #5b9cf6;
   --blue-d:   rgba(91,156,246,0.1);
+  --violet:   #a78bfa;
+  --sky:      #38bdf8;
+  --grid:     rgba(255,255,255,0.06);
+  --track:    rgba(255,255,255,0.06);
+  --track2:   rgba(255,255,255,0.12);
   --r:        14px;
   --rs:       9px;
   --f:        'Plus Jakarta Sans', sans-serif;
   --m:        'DM Mono', monospace;
+}
+/* Nappal (világos) — Grok „Refined Warm Data" iránya, a kiemelő színek AA-ra sötétítve: a javasolt
+   #2a9d7a / #d97706 / #3b82f6 / #8a8780 fehéren 3.2–3.7:1 lett volna. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:       #f7f5f0;
+    --s1:       #ffffff;
+    --s2:       #f0ede6;
+    --s3:       #e7e3da;
+    --border:   rgba(26,25,22,0.12);
+    --border2:  rgba(26,25,22,0.22);
+    --text:     #1a1916;
+    --text2:    #57544e;
+    --text3:    #67645e;
+    --teal:     #1a6f57;
+    --teal-d:   rgba(26,111,87,0.1);
+    --teal-bg:  rgba(26,111,87,0.1);
+    --teal-line:rgba(26,111,87,0.3);
+    --on-teal:  #ffffff;
+    --amber:    #a14d07;
+    --amber-d:  rgba(161,77,7,0.1);
+    --amber-bg: rgba(161,77,7,0.08);
+    --amber-line:rgba(161,77,7,0.3);
+    --red:      #b42318;
+    --red-d:    rgba(180,35,24,0.07);
+    --red-bg:   rgba(180,35,24,0.08);
+    --red-line: rgba(180,35,24,0.3);
+    --blue:     #1f5fd1;
+    --blue-d:   rgba(31,95,209,0.1);
+    --violet:   #6d28d9;
+    --sky:      #0369a1;
+    --grid:     rgba(26,25,22,0.08);
+    --track:    rgba(26,25,22,0.07);
+    --track2:   rgba(26,25,22,0.14);
+  }
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;line-height:1.6;min-height:100vh}
@@ -58,7 +115,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 .sc label{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:6px}
 .sc input{width:100%;background:var(--s2);border:.5px solid var(--border2);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:var(--m);font-size:13px;outline:none;margin-bottom:1rem}
 .sc input:focus{border-color:var(--teal)}
-.sc button{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:#0c0c0b;font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer}
+.sc button{width:100%;padding:11px;background:var(--teal);border:none;border-radius:var(--rs);color:var(--on-teal);font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer}
 
 /* ── APP SHELL ── */
 #app{display:none;max-width:960px;margin:0 auto;padding:0 1.25rem 5rem}
@@ -409,7 +466,23 @@ function mkChart(id,cfg){
     el.parentNode.insertBefore(t, el.nextSibling);
   }catch(e){ /* a táblázat kiegészítés, sosem törheti meg a diagramot */ }
 }
-const gc='rgba(255,255,255,0.04)', tc='#3e3d3b';
+// A grafikonok színei a TÉMÁBÓL (CSS-változók): a canvas nem érti a var()-t, ezért rajzoláskor
+// olvassuk ki; témaváltáskor a lap újrarajzol (lásd lent, a load() után). Ha a környezet nem tud
+// stílust számolni, az éjszakai (alap) paletta marad. A régi tengelyfelirat-szín (#3e3d3b) a
+// sötét kártyán 1.6:1 volt — gyakorlatilag olvashatatlan.
+const DARK_COLS={teal:'#34c99a',amber:'#e8993a',red:'#eb6b6b',text:'#f5f2ea',text3:'#96928b',
+  grid:'rgba(255,255,255,0.06)',track:'rgba(255,255,255,0.06)',track2:'rgba(255,255,255,0.12)'};
+function themeCols(){
+  const out=Object.assign({},DARK_COLS);
+  try{
+    const cs=getComputedStyle(document.documentElement);
+    for(const k of Object.keys(out)){ const v=cs.getPropertyValue('--'+k).trim(); if(v) out[k]=v; }
+  }catch(e){ /* nincs számolt stílus (pl. ál-DOM): az alap paletta */ }
+  return out;
+}
+// #rrggbb → rgba(r,g,b,a); ami nem ilyen alakú, változatlanul megy tovább.
+function alpha(c,a){ const m=/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(String(c).trim()); return m?`rgba(${parseInt(m[1],16)},${parseInt(m[2],16)},${parseInt(m[3],16)},${a})`:c; }
+let gc=DARK_COLS.grid, tc=DARK_COLS.text3;
 const scol=s=>s>=85?'var(--teal)':s>=65?'var(--amber)':'var(--red)';
 const fmt=(v,u='')=>v!=null?`${v}${u}`:'—';
 
@@ -593,7 +666,7 @@ function render(d){
   const CAT_COLORS = {
     work: 'var(--amber)', study: 'var(--blue)', deadline: 'var(--red)',
     gym: 'var(--teal)', wellness: 'var(--teal)', meeting: 'var(--blue)',
-    social: '#a78bfa', travel: '#38bdf8', personal: 'var(--text3)', other: 'var(--text3)'
+    social: 'var(--violet)', travel: 'var(--sky)', personal: 'var(--text3)', other: 'var(--text3)'
   };
   const CAT_LABELS = {
     work: 'work', study: 'study', deadline: 'deadline', gym: 'gym',
@@ -681,7 +754,7 @@ function render(d){
       // A kapu != null-t néz, hogy a valós 0 se tüntesse el a blokkot.
       if (!isTom && (plan.bb != null || plan.readiness != null || plan.hrv != null)) {
         const bb = plan.bb, rd = plan.readiness, hrv = plan.hrv;
-        const eCol = (v,lo,mid) => v == null ? 'var(--border)' : v < lo ? '#E24B4A' : v < mid ? '#EF9F27' : '#1D9E75';
+        const eCol = (v,lo,mid) => v == null ? 'var(--border)' : v < lo ? 'var(--red)' : v < mid ? 'var(--amber)' : 'var(--teal)';
         const bar = (v,max,c) => v == null
           ? `<div style="flex:1;height:5px;background:var(--s2);border-radius:3px"></div>`
           : `<div style="flex:1;height:5px;background:var(--s2);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.round(v/max*100))}%;height:100%;background:${c};border-radius:3px"></div></div>`;
@@ -949,7 +1022,7 @@ function render(d){
           <div style="font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem">Today · ${g.date||'—'}</div>
           <div class="hero-label" style="color:${rv.color}">${rv.label}</div>
           <div class="hero-coaching">${rv.coaching}</div>
-          ${trainWarn ? `<div style="margin-top:.5rem;padding:.4rem .7rem;background:rgba(224,82,82,0.12);border:1px solid rgba(224,82,82,0.3);border-radius:6px;font-size:12px;color:var(--red)">⚠️ Training tomorrow but BB is low — consider lighter intensity or extra rest tonight.</div>` : ""}
+          ${trainWarn ? `<div style="margin-top:.5rem;padding:.4rem .7rem;background:var(--red-bg);border:1px solid var(--red-line);border-radius:6px;font-size:12px;color:var(--red)">⚠️ Training tomorrow but BB is low — consider lighter intensity or extra rest tonight.</div>` : ""}
         </div>
         <div class="hero-ring">
           <canvas id="heroRing" width="88" height="88" role="img" aria-label="${rs===null?'Readiness unknown — no reading':'Readiness '+rs+'/100'}">${rsDisplay}/100</canvas>
@@ -980,7 +1053,7 @@ function render(d){
 
     <div class="sec">
       <div class="sec-head"><div class="sec-title">Recovery factors</div><div class="sec-line"></div></div>
-      ${lateNight ? `<div style="margin-bottom:.5rem;padding:.4rem .7rem;background:rgba(232,153,58,0.12);border:1px solid rgba(232,153,58,0.3);border-radius:6px;font-size:12px;color:var(--amber)">⚠️ Last night sleep score below 65 — earlier bedtime tonight will improve recovery.</div>` : ""}
+      ${lateNight ? `<div style="margin-bottom:.5rem;padding:.4rem .7rem;background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:6px;font-size:12px;color:var(--amber)">⚠️ Last night sleep score below 65 — earlier bedtime tonight will improve recovery.</div>` : ""}
       <div class="card">
         <div style="display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:start;margin-bottom:1.25rem">
           <div>
@@ -1133,7 +1206,7 @@ function render(d){
     if (!stale.length) { el.style.display='none'; return; }
     const worst = Math.max(...stale.map(x=>x.days));
     const col = worst >= HealthFreshness.RED_DAYS ? 'var(--red)' : 'var(--amber)';
-    const bg  = worst >= HealthFreshness.RED_DAYS ? 'rgba(224,82,82,0.12)' : 'rgba(232,153,58,0.12)';
+    const bg  = worst >= HealthFreshness.RED_DAYS ? 'var(--red-bg)' : 'var(--amber-bg)';
     el.style.display = 'block';
     el.innerHTML = `<div style="padding:.55rem .85rem;margin-bottom:1rem;border-radius:8px;
       background:${bg};border:1px solid ${col};color:${col};font-family:var(--m);font-size:11px">
@@ -1440,7 +1513,7 @@ function render(d){
   const wqHTML = (d.workout_quality||d.workouts_quality||[]).length ? (d.workout_quality||d.workouts_quality||[]).map(wq => {
     const overloadHTML = (wq.overload||[]).map(o => {
       const arrow = o.type==="weight" ? `${o.from}→${o.to}kg` : `${o.from}→${o.to} sets`;
-      return `<span style="display:inline-block;background:rgba(52,201,154,0.15);color:var(--teal);border:1px solid rgba(52,201,154,0.3);border-radius:4px;padding:1px 6px;font-size:10px;margin:2px 2px 0 0">↑ ${o.name.split(" ")[0]} ${arrow}</span>`;
+      return `<span style="display:inline-block;background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-line);border-radius:4px;padding:1px 6px;font-size:10px;margin:2px 2px 0 0">↑ ${o.name.split(" ")[0]} ${arrow}</span>`;
     }).join("");
     const scoreCol = wq.score >= 70 ? 'var(--teal)' : wq.score >= 45 ? 'var(--amber)' : 'var(--red)';
     const wqTitle = wq.title || wq.name || '—';
@@ -1573,11 +1646,11 @@ function render(d){
           <div class="agebar">
             <div class="agebar-fill"></div>
             <div class="agemark" style="left:5%;width:2px;height:14px;top:-4px;background:var(--teal)"></div>
-            <div class="agemark" style="left:29%;width:3px;height:18px;top:-6px;background:#fff;box-shadow:0 0 4px rgba(255,255,255,.3)"></div>
+            <div class="agemark" style="left:29%;width:3px;height:18px;top:-6px;background:var(--text);box-shadow:0 0 4px var(--border2)"></div>
             <div class="agemark" style="left:45%;width:2px;height:12px;top:-3px;background:var(--amber)"></div>
           </div>
           <div style="display:flex;gap:14px;font-family:var(--m);font-size:10px;color:var(--text3)">
-            <span><span style="color:#fff">●</span> now ${bioAge}</span>
+            <span><span style="color:var(--text)">●</span> now ${bioAge}</span>
             <span><span style="color:var(--amber)">●</span> actual ${chronoAge}</span>
             <span><span style="color:var(--teal)">●</span> possible ${achieveAge}</span>
           </div>
@@ -1669,18 +1742,20 @@ function render(d){
   `;
 
   // ── CHARTS ─────────────────────────────────────────────────────────────
+  const TC=themeCols(); gc=TC.grid; tc=TC.text3;
+  const rsCol = rs===null?TC.text3:rs>=85?TC.teal:rs>=65?TC.amber:TC.red;
   mkChart('heroRing',{
     type:'doughnut',
-    data:{datasets:[{data:[rs===null?0:rs,rs===null?100:100-rs],backgroundColor:[rs===null?'rgba(255,255,255,0.10)':rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252','rgba(255,255,255,0.04)'],borderWidth:0,circumference:270,rotation:225}]},
+    data:{datasets:[{data:[rs===null?0:rs,rs===null?100:100-rs],backgroundColor:[rs===null?TC.track2:rsCol,TC.track],borderWidth:0,circumference:270,rotation:225}]},
     options:{responsive:false,cutout:'82%',plugins:{legend:{display:false},tooltip:{enabled:false}}},
     plugins:[{id:'ct',afterDraw(chart){
       const{ctx,chartArea:{left,top,width,height}}=chart;
       ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
       const cx=left+width/2,cy=top+height/2;
       ctx.font='300 26px Plus Jakarta Sans,sans-serif';
-      ctx.fillStyle=rs===null?'#3e3d3b':rs>=85?'#34c99a':rs>=65?'#e8993a':'#e05252';
+      ctx.fillStyle=rsCol;
       ctx.fillText(rs===null?'—':String(rs),cx,cy-5);
-      ctx.font='10px DM Mono,monospace';ctx.fillStyle='#3e3d3b';
+      ctx.font='10px DM Mono,monospace';ctx.fillStyle=TC.text3;
       ctx.fillText('/100',cx,cy+11);ctx.restore();
     }}]
   });
@@ -1689,8 +1764,8 @@ function render(d){
     mkChart('compChart',{
       type:'bar',
       data:{labels:[''],datasets:[
-        {label:'Lean',data:[bc.lean_kg],backgroundColor:'#34c99a',borderWidth:0,borderRadius:3,borderSkipped:false},
-        {label:'Fat',data:[bc.weight-bc.lean_kg],backgroundColor:'#e8993a',borderWidth:0,borderRadius:3,borderSkipped:false}
+        {label:'Lean',data:[bc.lean_kg],backgroundColor:TC.teal,borderWidth:0,borderRadius:3,borderSkipped:false},
+        {label:'Fat',data:[bc.weight-bc.lean_kg],backgroundColor:TC.amber,borderWidth:0,borderRadius:3,borderSkipped:false}
       ]},
       options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,max:Math.max(90,Math.ceil((bc.weight||85)+5)),ticks:{callback:v=>v+' kg',color:tc,font:{size:9}},grid:{color:gc}},y:{stacked:true,display:false}}}
     });
@@ -1699,7 +1774,7 @@ function render(d){
   if(ss.labels&&ss.labels.length){
     mkChart('sleepChart',{
       type:'bar',
-      data:{labels:ss.labels,datasets:[{label:'😴 Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>s>=80?'rgba(52,201,154,0.7)':s>=65?'rgba(232,153,58,0.7)':'rgba(224,82,82,0.7)'),borderRadius:4,borderWidth:0}]},
+      data:{labels:ss.labels,datasets:[{label:'😴 Sleep score',data:ss.scores,backgroundColor:ss.scores.map(s=>alpha(s>=80?TC.teal:s>=65?TC.amber:TC.red,0.7)),borderRadius:4,borderWidth:0}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
   }
@@ -1708,8 +1783,8 @@ function render(d){
     mkChart('bbChart',{
       type:'line',
       data:{labels:bbt.labels,datasets:[
-        {label:'Wake-up battery',data:bbt.wake,borderColor:'#34c99a',backgroundColor:'rgba(52,201,154,0.04)',borderWidth:1.5,pointRadius:0,tension:0.4,fill:true},
-        {label:'Points drained',data:bbt.drain,borderColor:'#e8993a',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:0.4,borderDash:[4,3]}
+        {label:'Wake-up battery',data:bbt.wake,borderColor:TC.teal,backgroundColor:alpha(TC.teal,0.06),borderWidth:1.5,pointRadius:0,tension:0.4,fill:true},
+        {label:'Points drained',data:bbt.drain,borderColor:TC.amber,backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:0.4,borderDash:[4,3]}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+Math.round(c.parsed.y)}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true,maxTicksLimit:12},grid:{color:gc}},y:{min:0,max:105,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
@@ -1719,13 +1794,26 @@ function render(d){
     mkChart('stressChart',{
       type:'line',
       data:{labels:sw.labels,datasets:[
-        {label:'Avg stress',data:sw.stress,borderColor:'rgba(224,82,82,0.8)',backgroundColor:'rgba(224,82,82,0.04)',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(224,82,82,0.8)',tension:0.4,fill:true},
-        {label:'Wake-up battery',data:sw.bb_charged,borderColor:'rgba(52,201,154,0.8)',backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(52,201,154,0.8)',tension:0.4,borderDash:[4,3]}
+        {label:'Avg stress',data:sw.stress,borderColor:alpha(TC.red,0.8),backgroundColor:alpha(TC.red,0.06),borderWidth:1.5,pointRadius:3,pointBackgroundColor:alpha(TC.red,0.8),tension:0.4,fill:true},
+        {label:'Wake-up battery',data:sw.bb_charged,borderColor:alpha(TC.teal,0.8),backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(52,201,154,0.8)',tension:0.4,borderDash:[4,3]}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
   }
 }
+
+// Nappal/éjszaka: ha a rendszer témája vált (pl. az iPhone „Automatikus" megjelenése napnyugtakor),
+// a CSS magától vált, a canvas-grafikonok viszont nem — újrarajzolunk az utolsó adattal (a
+// render() a nyers adatból dolgozik, a deepEscape másolatot ad, nem ír bele).
+let LAST_DATA=null;
+function onThemeChange(){
+  if(!LAST_DATA) return;
+  try{ render(LAST_DATA); }catch(e){ console.warn('újrarajzolás témaváltáskor:', e && e.message); }
+}
+try{
+  const mq=window.matchMedia && window.matchMedia('(prefers-color-scheme: light)');
+  if(mq){ if(mq.addEventListener) mq.addEventListener('change',onThemeChange); else if(mq.addListener) mq.addListener(onThemeChange); }
+}catch(e){ /* matchMedia nélkül nincs élő váltás; a következő betöltés már az új témát rajzolja */ }
 
 async function load(){
   const btn=document.getElementById('rbtn'),sp=document.getElementById('spin'),rl=document.getElementById('rl'),eb=document.getElementById('errbox');
@@ -1736,9 +1824,10 @@ async function load(){
     const bad = validatePayload(data);
     if (bad) throw new Error(`Data looks incomplete — ${bad}. Not rendering a partial dashboard.`);
     render(data);
+    LAST_DATA=data;
     if(DEMO && !document.getElementById('demoBadge')){
       const b=document.createElement('span'); b.id='demoBadge'; b.textContent='DEMO · sample data';
-      b.style.cssText='margin-left:8px;font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(52,201,154,0.15);color:var(--teal);border:1px solid rgba(52,201,154,0.3)';
+      b.style.cssText='margin-left:8px;font-family:var(--m);font-size:10px;padding:2px 8px;border-radius:20px;background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-line)';
       document.querySelector('.logo').appendChild(b);
     }
   }catch(e){
