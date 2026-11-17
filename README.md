@@ -30,10 +30,11 @@ outside it, because the sync runs on a personal machine and the data must not be
 ```
 index.html            the whole dashboard: HTML + CSS + vanilla JS in one file, no build
 brief.html            printable one-page brief
+kamra.html            pantry, barcode scanner and macro log (Hungarian UI) — see "Kamra"
 freshness.js          shared by both pages: which source is stale, measured against now
-pairing.js            shared by both pages: the guarded setup link (see "Connecting a browser")
+pairing.js            shared by all pages: the guarded setup links (see "Connecting a browser")
 demo-data.json        anonymised sample data powering ?demo=1
-tests/page_checks.js  runs both pages' own scripts in Node against hostile/stale input
+tests/page_checks.js  runs the pages' own scripts in Node against hostile/stale input
 manifest.webmanifest  PWA — installs to an iPhone home screen
 robots.txt            no effect here: crawlers only read the host root's robots.txt;
                       both pages carry <meta name="robots" content="noindex"> instead
@@ -198,8 +199,9 @@ one external script is version-pinned with a Subresource Integrity hash, because
 read browser storage and a compromised CDN would otherwise inherit that access. External
 text is length-capped at the ingest layer, and the frontend validates the document's
 shape before rendering rather than displaying a half-empty dashboard.
-Separate read and write keys on the endpoint, so a browser never holds a key that can
-write. Rate limiting and logging on failed authentication. The frontend's token prompt
+Separate read and write keys on the endpoint: the sync's write key never reaches a
+browser. The pantry page (`kamra.html`) uses its own, third key, sent only with
+`PUT /nutrition`; without it that page is read-only. Rate limiting and logging on failed authentication. The frontend's token prompt
 is a convenience, not a security boundary — enforcement is server-side, and the code
 says so.
 
@@ -223,6 +225,37 @@ already gone to the server; the page says to use `#` instead of `?`. Browsers th
 already paired keep working with nothing to do. Before this, the brief accepted any link
 without asking, and the dashboard compared endpoints by string prefix, so a crafted link
 could point a fresh browser at a `data:` URL holding its own payload.
+
+**Kamra (pantry, barcode scanner, macro log).** `kamra.html` reads and writes one
+document on the same private endpoint (`GET`/`PUT <api>/nutrition`): cached products,
+the pantry, a per-day food log, and daily targets for four day types (strength, HYROX,
+rest, maintenance) with a weekly schedule and per-day overrides. `?demo=1` shows sample
+data and never writes.
+
+- *Scanning.* The rear camera decodes EAN-13/EAN-8/UPC-A/UPC-E/QR with the browser's
+  `BarcodeDetector` where it exists. iPhone Safari has none, so there the page loads
+  `@zxing/library` 0.21.3 from jsDelivr — lazily, only when a scan starts, pinned and
+  with an SRI hash. The camera stops on a hit and when the page is hidden. A typed
+  barcode works without a camera.
+- *Lookup.* Open Food Facts, which is user-contributed: every number is parsed
+  defensively and every string is escaped on render. A missing nutriment is "—", never
+  0, and a day total that includes one is shown as "legalább X" (at least X). Unknown
+  barcodes and network failures fall back to a manual-entry form.
+- *Write key.* Set once with `…/health/kamra.html#nkey=<write key>`, under the same
+  rules as the read link (fragment only, removed from the address bar first, confirmation
+  with the host name). It can only be attached to an already-paired endpoint, and it is
+  dropped when the endpoint changes, so a link cannot redirect it to another host.
+- *Saving.* The page sends the whole document with the `rev` it loaded. On `409` it
+  reloads, re-applies the unsaved steps and retries once; on `429` or `503` it waits and
+  retries once. If a write still fails, the step stays on the page marked "nincs mentve" with a
+  manual retry button — nothing is retried in a loop and nothing is overwritten
+  silently. Rapid +/− taps are batched into one write. If the document could not be
+  loaded, the page writes nothing.
+- *Checked against the real Worker.* `tests/page_checks.js` loads the Worker's own source
+  (it lives in the sync repo; `HEALTH_WORKER_JS=…/worker.js` points at it) and sends every
+  document a full page session would write through its `fetch()`, with an in-memory KV
+  and fake keys. If the Worker source is not on the machine, those checks are reported
+  as skipped (`⊘ KIHAGYVA`), never as passed.
 
 ---
 
@@ -258,6 +291,11 @@ where monitoring the output catches none of them.
 ## Known limitations
 
 Honest list. These are known and deliberate, not oversights waiting to be discovered.
+
+- **The pantry scanner has not been run on a real iPhone yet.** It is checked in a fake
+  DOM and in headless Chrome at 375 px with demo data; camera permission, the ZXing
+  fallback against a live camera, and decoding real packaging are unverified.
+- **Unsaved pantry steps live only in the open page.** Closing it loses them.
 
 - **Notion mirroring is not implemented.** The function logs that it's skipped. It used
   to log a success tick while doing nothing, which is worse than not having it.

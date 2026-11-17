@@ -64,10 +64,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:15px;
 #app{display:none;max-width:960px;margin:0 auto;padding:0 1.25rem 5rem}
 
 /* ── TOP NAV ── */
-.topnav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0 0}
+.topnav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:1.25rem 0 0}
 .logo{font-size:15px;font-weight:600;letter-spacing:-.2px}
 .logo span{color:var(--teal)}
-.nav-right{display:flex;align-items:center;gap:8px}
+.nav-right{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px;min-width:0}
 .sync-info{font-family:var(--m);font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
 .live-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:pulse 2.5s ease infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
@@ -303,6 +303,7 @@ hr{border:none;border-top:.5px solid var(--border);margin:1.25rem 0}
         <span id="sub">loading</span>
       </div>
       <a class="btn-sm" href="brief.html" title="Morning brief">◔ brief</a>
+      <a class="btn-sm" href="kamra.html" title="Kamra — pantry &amp; macros">▤ kamra</a>
       <button class="btn-sm" onclick="clearToken()" title="Reset token">⚙</button>
       <button class="btn-sm" id="rbtn" onclick="load()">
         <div class="spin" id="spin"></div>
@@ -341,11 +342,11 @@ const {api: API_URL, key: API_KEY} = HealthPairing.run();  // ?demo=1 → sample
 try { localStorage.removeItem('gh_token'); } catch (e) {}
 // A ⚙ gomb a BÖNGÉSZŐBEN tárolt hozzáférést törli (nem a szervert).
 const clearToken=()=>{if(!confirm('Disconnect this browser from the data endpoint?'))return;
-  ['health_api','health_key','gh_token'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  ['health_api','health_key','health_nkey','gh_token'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
   location.reload();};
 
 window.addEventListener('DOMContentLoaded',()=>{
-  if(DEMO){document.getElementById('setup').style.display='none';document.getElementById('app').style.display='block';const bl=document.querySelector('a[href="brief.html"]');if(bl)bl.href='brief.html?demo=1';load();return;}
+  if(DEMO){document.getElementById('setup').style.display='none';document.getElementById('app').style.display='block';const bl=document.querySelector('a[href="brief.html"]');if(bl)bl.href='brief.html?demo=1';const kl=document.querySelector('a[href="kamra.html"]');if(kl)kl.href='kamra.html?demo=1';load();return;}
   if(API_URL && API_KEY){document.getElementById('app').style.display='block';load();}
   else{document.getElementById('setup').style.display='flex';}
 });

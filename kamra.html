@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- A /health/robots.txt hatástalan (a keresők a host gyökerét nézik) — B12. -->
+<meta name="robots" content="noindex">
+<title>Kamra — Health Centre</title>
+<meta name="theme-color" content="#0c0c0b">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<!-- Szándékosan NINCS itt külső szkript: a vonalkód-olvasó könyvtár (ZXing) csak
+     szkenneléskor töltődik, és csak ott, ahol nincs BarcodeDetector (iPhone Safari). -->
+<style>
+:root{
+  --bg:#0c0c0b; --s1:#1a1a18; --s2:#272724; --s3:#313130;
+  --border:rgba(255,255,255,0.1); --border2:rgba(255,255,255,0.2);
+  --text:#f5f2ea; --text2:#b8b4ac; --text3:#7a7874;
+  --teal:#34c99a; --amber:#e8993a; --red:#e05252; --blue:#5b9cf6;
+  --m:'DM Mono',monospace; --sans:'Plus Jakarta Sans',system-ui,sans-serif;
+  --r:16px; --rs:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;
+     -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;
+     padding:1rem 1rem calc(3rem + env(safe-area-inset-bottom));overflow-wrap:anywhere}
+.wrap{max-width:640px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:1rem}
+header h1{font-size:22px;font-weight:600;letter-spacing:-.3px}
+header h1 span{color:var(--teal)}
+a.back{font-family:var(--m);font-size:11px;color:var(--text2);text-decoration:none;border:.5px solid var(--border2);
+       border-radius:20px;padding:6px 12px;white-space:nowrap}
+.lbl{font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+section{margin-bottom:1.25rem}
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:.6rem}
+.sec-head .line{flex:1;height:.5px;background:var(--border)}
+.card{background:var(--s1);border:.5px solid var(--border);border-radius:var(--r);padding:1rem;min-width:0}
+.note{font-family:var(--m);font-size:12px;color:var(--text2);padding:.65rem .9rem;background:var(--s2);border-radius:12px;margin-bottom:.75rem}
+#msg{color:var(--text);border:.5px solid var(--border2)}
+.pair-note{margin:0 auto 1rem;max-width:640px;padding:.65rem .9rem;background:var(--s2);border-radius:12px;
+           font-family:var(--m);font-size:12px;color:var(--text2);word-break:break-word}
+.empty{font-family:var(--m);font-size:12px;color:var(--text3)}
+
+/* Gombok és mezők: 44 px-es érintési cél; 16 px-es betű, hogy az iOS ne nagyítson rá. */
+button{font-family:var(--sans);font-size:14px;font-weight:500;min-height:44px;padding:0 14px;border-radius:var(--rs);
+       border:.5px solid var(--border2);background:var(--s2);color:var(--text);cursor:pointer;-webkit-appearance:none;appearance:none}
+button.pri{background:var(--teal);color:#0c0c0b;border-color:var(--teal)}
+button.sq{min-width:44px;padding:0;font-family:var(--m);font-size:18px}
+button.ghost{background:transparent;color:var(--text2)}
+button[aria-pressed="true"]{background:var(--teal);color:#0c0c0b;border-color:var(--teal)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select{font-family:var(--m);font-size:16px;min-width:0;width:100%;min-height:44px;padding:0 12px;border-radius:var(--rs);
+      border:.5px solid var(--border2);background:var(--s2);color:var(--text);-webkit-appearance:none;appearance:none}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.row{display:flex;gap:8px;align-items:center;margin-top:.6rem}
+.row > *{min-width:0}
+.row input{flex:1 1 0}
+.row button{flex:0 0 auto}
+.row .unit{font-family:var(--m);font-size:12px;color:var(--text3);flex:0 0 auto}
+.btns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:.6rem}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;margin-top:.6rem}
+.fgrid .full{grid-column:1 / -1}
+.fgrid label,.tset label{display:block;font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.tset{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:.4rem 0 .9rem}
+.tset input{padding:0 6px}
+.tsub{font-size:13px;font-weight:500;margin-top:.5rem}
+.tsub small{font-family:var(--m);font-size:11px;color:var(--text3);font-weight:400}
+
+/* Kamera */
+#cam{width:100%;max-height:46vh;display:block;background:#000;border-radius:var(--rs);object-fit:cover;margin-top:.6rem}
+
+/* Termékkártya */
+.pname{font-size:17px;font-weight:600;line-height:1.3}
+.pbrand{font-family:var(--m);font-size:12px;color:var(--text2);margin-top:2px}
+.mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:.75rem}
+.mcell{background:var(--s2);border-radius:var(--rs);padding:.5rem .4rem;text-align:center;min-width:0}
+.mcell b{display:block;font-family:var(--m);font-size:13px;font-weight:500}
+.mcell span{font-family:var(--m);font-size:9px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase}
+
+/* Mai nap */
+.daytype{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:.5rem}
+.dayline{font-size:14px;margin-bottom:.7rem}
+.dayline small{font-family:var(--m);font-size:11px;color:var(--text3)}
+.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;margin:.4rem 0 .9rem}
+.sgrid label{display:block;font-family:var(--m);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+#unsavedBox{border:.5px solid var(--amber);color:var(--text)}
+#unsavedBox button{margin-top:.5rem;width:100%}
+.mrow{margin-bottom:.8rem}
+.mhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mlabel{font-size:13px;color:var(--text2)}
+.mval{font-family:var(--m);font-size:13px;text-align:right}
+.bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;background:var(--teal);border-radius:3px}
+.bar i.over{background:var(--amber)}
+.mrem{font-family:var(--m);font-size:11px;color:var(--text3);margin-top:3px}
+.item{display:flex;align-items:center;gap:8px;padding:.6rem 0}
+.item + .item{border-top:.5px solid var(--border)}
+.item .txt{flex:1 1 0;min-width:0}
+.item .nm{font-size:14px;line-height:1.3}
+.item .sub{font-family:var(--m);font-size:11px;color:var(--text3)}
+.item .act{display:flex;gap:6px;flex:0 0 auto}
+.qty{font-family:var(--m);font-size:12px;color:var(--text2)}
+</style>
+</head>
+<body>
+<div id="pairNote" class="pair-note" role="status" hidden></div>
+<div class="wrap">
+  <header>
+    <h1>Kam<span>ra</span></h1>
+    <a class="back" id="homeLink" href="./">← Health Centre</a>
+  </header>
+
+  <div id="status" class="note" role="status" hidden></div>
+  <div id="msg" class="note" role="status" aria-live="polite" hidden></div>
+  <div id="unsavedBox" class="note" role="status" hidden>
+    <div id="unsavedText"></div>
+    <button type="button" class="pri" data-act="save-retry">Mentés újra</button>
+  </div>
+
+  <section aria-label="Vonalkód">
+    <div class="sec-head"><span class="lbl">Vonalkód</span><span class="line"></span></div>
+    <div class="card">
+      <div class="btns">
+        <button type="button" class="pri" data-act="scan-start">Szkennelés</button>
+        <button type="button" data-act="manual-open">Kézi felvitel</button>
+      </div>
+      <div id="scanBox" hidden>
+        <video id="cam" playsinline muted autoplay></video>
+        <div class="row"><span class="unit" style="flex:1 1 0">Tartsd a vonalkódot a kép közepére.</span>
+          <button type="button" data-act="scan-stop">Leállítás</button></div>
+      </div>
+      <div class="row">
+        <input id="codeIn" type="text" inputmode="numeric" autocomplete="off" placeholder="vonalkód kézzel" aria-label="Vonalkód kézzel">
+        <button type="button" data-act="lookup">Keresés</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="productCard" aria-label="Termék"></section>
+
+  <section id="manualForm" aria-label="Kézi felvitel" hidden>
+    <div class="sec-head"><span class="lbl">Kézi felvitel</span><span class="line"></span></div>
+    <div class="card">
+      <div id="manualNote" class="empty"></div>
+      <div class="fgrid">
+        <div class="full"><label for="mName">Név</label><input id="mName" type="text" maxlength="200" autocomplete="off"></div>
+        <div class="full"><label for="mBrand">Márka (nem kötelező)</label><input id="mBrand" type="text" maxlength="200" autocomplete="off"></div>
+        <div><label for="mKcal">kcal / 100 g</label><input id="mKcal" type="text" inputmode="decimal" autocomplete="off"></div>
+        <div><label for="mProtein">Fehérje g / 100 g</label><input id="mProtein" type="text" inputmode="decimal" autocomplete="off"></div>
+        <div><label for="mCarbs">Szénhidrát g / 100 g</label><input id="mCarbs" type="text" inputmode="decimal" autocomplete="off"></div>
+        <div><label for="mFat">Zsír g / 100 g</label><input id="mFat" type="text" inputmode="decimal" autocomplete="off"></div>
+        <div><label for="mPack">Csomag (g)</label><input id="mPack" type="text" inputmode="decimal" autocomplete="off"></div>
+        <div><label for="mCode">Vonalkód (nem kötelező)</label><input id="mCode" type="text" inputmode="numeric" maxlength="40" autocomplete="off"></div>
+      </div>
+      <p class="empty" style="margin-top:.6rem">Amit nem tudsz, hagyd üresen — az „ismeretlen” marad, nem nulla.</p>
+      <div class="btns">
+        <button type="button" class="pri" data-act="manual-save">Mentés</button>
+        <button type="button" class="ghost" data-act="manual-close">Mégse</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Mai nap">
+    <div class="sec-head"><span class="lbl">Mai nap</span><span class="line"></span></div>
+    <div class="card" id="todayBody"><p class="empty">Betöltés…</p></div>
+  </section>
+
+  <section aria-label="Kamra">
+    <div class="sec-head"><span class="lbl">Kamra</span><span class="line"></span></div>
+    <div class="card" id="pantryBody"><p class="empty">Betöltés…</p></div>
+  </section>
+
+  <section aria-label="Célok">
+    <div class="sec-head"><span class="lbl">Célok</span><span class="line"></span></div>
+    <div class="card">
+      <div class="btns">
+        <button type="button" data-act="targets-open">Célok beállítása</button>
+        <button type="button" class="ghost" data-act="reload">↻ Újratöltés</button>
+      </div>
+      <div id="targetsForm" hidden>
+        <p class="empty" style="margin-top:.8rem">Napi cél naptípusonként. Amelyik típusra nincs célod, azt hagyd teljesen üresen.</p>
+        <p class="tsub">Erőedzés</p>
+        <div class="tset">
+          <div><label for="t_strength_kcal">kcal</label><input id="t_strength_kcal" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_strength_protein_g">Fehérje</label><input id="t_strength_protein_g" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_strength_carbs_g">Szénh.</label><input id="t_strength_carbs_g" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_strength_fat_g">Zsír</label><input id="t_strength_fat_g" type="text" inputmode="decimal" autocomplete="off"></div>
+        </div>
+        <p class="tsub">HYROX</p>
+        <div class="tset">
+          <div><label for="t_hyrox_kcal">kcal</label><input id="t_hyrox_kcal" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_hyrox_protein_g">Fehérje</label><input id="t_hyrox_protein_g" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_hyrox_carbs_g">Szénh.</label><input id="t_hyrox_carbs_g" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_hyrox_fat_g">Zsír</label><input id="t_hyrox_fat_g" type="text" inputmode="decimal" autocomplete="off"></div>
+        </div>
+        <p class="tsub">Pihenőnap</p>
+        <div class="tset">
+          <div><label for="t_rest_kcal">kcal</label><input id="t_rest_kcal" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_rest_protein_g">Fehérje</label><input id="t_rest_protein_g" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_rest_carbs_g">Szénh.</label><input id="t_rest_carbs_g" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_rest_fat_g">Zsír</label><input id="t_rest_fat_g" type="text" inputmode="decimal" autocomplete="off"></div>
+        </div>
+        <p class="tsub">Fenntartó hét</p>
+        <div class="tset">
+          <div><label for="t_maintenance_kcal">kcal</label><input id="t_maintenance_kcal" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_maintenance_protein_g">Fehérje</label><input id="t_maintenance_protein_g" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_maintenance_carbs_g">Szénh.</label><input id="t_maintenance_carbs_g" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div><label for="t_maintenance_fat_g">Zsír</label><input id="t_maintenance_fat_g" type="text" inputmode="decimal" autocomplete="off"></div>
+        </div>
+        <p class="tsub">Heti rend <small>— melyik nap milyen típusú</small></p>
+        <div class="sgrid">
+          <div><label for="s_mon">Hétfő</label><select id="s_mon"><option value="">—</option><option value="strength">Erőedzés</option><option value="hyrox">HYROX</option><option value="rest">Pihenőnap</option><option value="maintenance">Fenntartó hét</option></select></div>
+          <div><label for="s_tue">Kedd</label><select id="s_tue"><option value="">—</option><option value="strength">Erőedzés</option><option value="hyrox">HYROX</option><option value="rest">Pihenőnap</option><option value="maintenance">Fenntartó hét</option></select></div>
+          <div><label for="s_wed">Szerda</label><select id="s_wed"><option value="">—</option><option value="strength">Erőedzés</option><option value="hyrox">HYROX</option><option value="rest">Pihenőnap</option><option value="maintenance">Fenntartó hét</option></select></div>
+          <div><label for="s_thu">Csütörtök</label><select id="s_thu"><option value="">—</option><option value="strength">Erőedzés</option><option value="hyrox">HYROX</option><option value="rest">Pihenőnap</option><option value="maintenance">Fenntartó hét</option></select></div>
+          <div><label for="s_fri">Péntek</label><select id="s_fri"><option value="">—</option><option value="strength">Erőedzés</option><option value="hyrox">HYROX</option><option value="rest">Pihenőnap</option><option value="maintenance">Fenntartó hét</option></select></div>
+          <div><label for="s_sat">Szombat</label><select id="s_sat"><option value="">—</option><option value="strength">Erőedzés</option><option value="hyrox">HYROX</option><option value="rest">Pihenőnap</option><option value="maintenance">Fenntartó hét</option></select></div>
+          <div><label for="s_sun">Vasárnap</label><select id="s_sun"><option value="">—</option><option value="strength">Erőedzés</option><option value="hyrox">HYROX</option><option value="rest">Pihenőnap</option><option value="maintenance">Fenntartó hét</option></select></div>
+        </div>
+        <div class="btns">
+          <button type="button" class="pri" data-act="targets-save">Célok mentése</button>
+          <button type="button" class="ghost" data-act="targets-close">Mégse</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="pairing.js"></script>
+<script>
+'use strict';
+// ── Kamra: vonalkód → Open Food Facts → kamra + étkezési napló + napi célok ──────
+// Adat: egyetlen dokumentum a privát Workeren (GET/PUT <api>/nutrition). Az olvasás
+// az index.html-lel közös párosítással megy (pairing.js), az írás külön kulccsal
+// (health_nkey, kamra.html#nkey=…). Írókulcs nélkül a lap csak olvas; ?demo=1 soha
+// nem ír.
+//
+// Mentés: a lépés azonnal látszik a lapon, a PUT a teljes dokumentumot küldi a
+// betöltéskori rev-vel; az új rev MINDIG a válaszból jön.
+//  • 409 (másik eszköz írt): újratöltés, a még nem mentett lépések újra-alkalmazása
+//    a friss dokumentumra, EGY újrapróba. Csendben soha nem írunk felül;
+//  • 429 (sebességkorlát) és 503 (a tároló nem érhető el): várakozás (429: a Retry-After
+//    szerint, legfeljebb ~10 s; különben ~2,5 s), EGY újrapróba ugyanazzal a dokumentummal;
+//    a NAPI keret (429, scope "day") kivétel: arra nincs újrapróba;
+//  • ha ezután sem megy (vagy 500 / nincs hálózat): a lépés a lapon marad
+//    "nincs mentve" jelzéssel és Mentés újra gombbal — magától nem próbálkozik tovább;
+//  • 400 / 401 / 413: az újrapróba értelmetlen, a lépés visszavonva, hibaüzenettel;
+//  • a gyors +/− koppintások egy írásba vonódnak össze (~1 s), két írás között > 2 s telik;
+//  • ha a lap rejtetté válik (iOS), a várakozó írás azonnal megy, keepalive-val (60 KB alatt).
+//
+// Kemény szabályok (health-sync/CLAUDE.md):
+//  • külső szöveg (OFF, a dokumentum, a link) csak a render(d)-n át kerül innerHTML-be,
+//    aminek első lépése a deepEscape; minden más kiírás textContent;
+//  • ami hiányzik, az "—" (null), sosem 0 — a hiányos összeg "legalább X";
+//  • ha a betöltés nem sikerült, a lap SEMMIT nem ír (üres alap nem írhat felül jó adatot);
+//  • a lapban nincs beégetett cél: a célok és a heti rend adatként kerülnek a dokumentumba.
+const DEMO = new URLSearchParams(location.search).get('demo') === '1';
+const {api: API_URL, key: API_KEY, nkey: WRITE_KEY} = HealthPairing.run({write: true});
+const OFF_URL = 'https://world.openfoodfacts.org/api/v2/product/';
+const OFF_FIELDS = 'code,product_name,brands,quantity,product_quantity,product_quantity_unit,serving_quantity,nutriments';
+// A vonalkód-olvasó tartalék (ahol nincs BarcodeDetector): @zxing/library 0.21.3 UMD,
+// rögzített verzió + SRI, mint a Chart.js az index.html-ben. Csak szkenneléskor töltődik.
+const ZXING = {
+  src: 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js',
+  integrity: 'sha384-BzBxP10ZE72aitqj5UMmUsbKFliP/DZqA8Wq+BNNhlIJDGoEd1tpkMYXOg9+n6sB',
+};
+const MAXN = 100000;                       // a Worker számkorlátja (0..100000)
+const MACROS = ['kcal', 'protein', 'carbs', 'fat'];
+const TYPES = ['strength', 'hyrox', 'rest', 'maintenance'];
+const TYPE_HU = {strength: 'Erőedzés', hyrox: 'HYROX', rest: 'Pihenőnap', maintenance: 'Fenntartó hét'};
+const WEEK = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+const WD_HU = {mon: 'hétfő', tue: 'kedd', wed: 'szerda', thu: 'csütörtök', fri: 'péntek', sat: 'szombat', sun: 'vasárnap'};
+const TKEYS = ['kcal', 'protein_g', 'carbs_g', 'fat_g'];
+// Időzítések (ms): +/− összevonás, a keresés lusta mentése, két írás közti szünet, 429 utáni várakozás.
+// retryMax: a szerver Retry-After-jának plafonja; margin: ráhagyás a Retry-After-re.
+const T = {debounce: 1000, lazy: 4000, gap: 2100, retry: 2500, retryMax: 10000, margin: 300};
+
+const $ = id => document.getElementById(id);
+const esc = s => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+// A kulcs is külső szöveg (B2): ugyanúgy semlegesítjük, mint az értéket.
+function deepEscape(v) {
+  if (typeof v === 'string') return esc(v);
+  if (Array.isArray(v)) return v.map(deepEscape);
+  if (v && typeof v === 'object') { const o = {}; for (const k in v) o[esc(k)] = deepEscape(v[k]); return o; }
+  return v;
+}
+const own = (o, k) => !!o && typeof k === 'string' && Object.prototype.hasOwnProperty.call(o, k);
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const fin = v => (typeof v === 'number' && isFinite(v) ? v : null);       // szám vagy null — sosem 0 a hiány helyett
+const r1 = v => Math.round(v * 10) / 10, r2 = v => Math.round(v * 100) / 100;
+const clone = o => JSON.parse(JSON.stringify(o));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const p2 = n => String(n).padStart(2, '0');
+
+// ── dátum: mindig a néző helyi napja, SZÁMOKBÓL (Safari-biztos: nincs szöveg-értelmezés) ──
+const fmtDay = x => `${x.getFullYear()}-${p2(x.getMonth() + 1)}-${p2(x.getDate())}`;
+const today = () => fmtDay(new Date());
+const nowTime = () => { const n = new Date(); return `${p2(n.getHours())}:${p2(n.getMinutes())}`; };
+// 'YYYY-MM-DD' → {y, m, d, date}; ami nem valódi naptári nap, az null.
+function ymd(s) {
+  const k = typeof s === 'string' ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(s) : null;
+  if (!k) return null;
+  const y = +k[1], m = +k[2], d = +k[3], date = new Date(y, m - 1, d);
+  return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d ? {y, m, d, date} : null;
+}
+function weekday(s) { const p = ymd(s); return p ? WEEK[(p.date.getDay() + 6) % 7] : null; }
+// A nap hetének 7 napja, hétfőtől vasárnapig.
+function weekDates(s) {
+  const p = ymd(s);
+  if (!p) return [];
+  const {y, m, d} = p, back = (p.date.getDay() + 6) % 7;
+  return WEEK.map((_, i) => fmtDay(new Date(y, m - 1, d - back + i)));
+}
+function rid(prefix) {
+  const abc = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let s = '';
+  try { const a = new Uint8Array(10); crypto.getRandomValues(a); for (const b of a) s += abc[b % 36]; }
+  catch (e) { s = ''; for (let i = 0; i < 10; i++) s += abc[Math.floor(Math.random() * 36)]; }
+  return prefix + s;
+}
+
+// ── számok külső forrásból és űrlapból ──────────────────────────────────────────
+// OFF-érték: szám, vagy tisztán számjegyes szöveg; a tartományon kívüli és a nem véges null.
+function ext(v) {
+  if (typeof v === 'string' && /^\d+(\.\d+)?$/.test(v.trim())) v = Number(v.trim());
+  return typeof v === 'number' && isFinite(v) && v >= 0 && v <= MAXN ? v : null;
+}
+// Űrlapmező: üres → null (ismeretlen), hibás → NaN, különben szám (tizedesvessző is jó).
+function field(id) {
+  const s = String($(id).value == null ? '' : $(id).value).trim().replace(',', '.');
+  if (!s) return null;
+  if (!/^\d+(\.\d+)?$/.test(s)) return NaN;
+  const n = Number(s);
+  return n >= 0 && n <= MAXN ? n : NaN;
+}
+const amount = v => typeof v === 'number' && isFinite(v) && v > 0 && v <= MAXN;
+
+// ── OFF → termék (felhasználók által szerkesztett, megbízhatatlan adat) ─────────
+function offToProduct(j) {
+  if (!isObj(j) || j.status !== 1 || !isObj(j.product)) return null;
+  const p = j.product, n = isObj(p.nutriments) ? p.nutriments : {};
+  const text = v => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 200) : null);
+  let kcal = ext(n['energy-kcal_100g']);
+  if (kcal == null) { const kj = ext(n.energy_100g); kcal = kj == null ? null : r1(kj / 4.184); }
+  const pos = v => { const x = ext(v); return x != null && x > 0 ? x : null; };
+  const unit = typeof p.product_quantity_unit === 'string' ? p.product_quantity_unit.trim().toLowerCase() : '';
+  return {
+    name: text(p.product_name) || 'Névtelen termék', brand: text(p.brands),
+    per100: {kcal, protein: ext(n.proteins_100g), carbs: ext(n.carbohydrates_100g), fat: ext(n.fat_100g)},
+    pack_g: unit === 'g' ? pos(p.product_quantity) : null, serving_g: pos(p.serving_quantity),
+    source: 'off', added: today(),
+  };
+}
+
+// ── számtan ─────────────────────────────────────────────────────────────────────
+function macros(per100, grams) {
+  const o = {};
+  for (const k of MACROS) { const v = isObj(per100) ? fin(per100[k]) : null; o[k] = v == null ? null : r1(grams * v / 100); }
+  return o;
+}
+// Összeg a meglévő értékekből; incomplete, ha bármelyik tételnél hiányzik az adat; known =
+// hány tételnek VAN adata (ha egynek sincs, az összeg nem "legalább 0", hanem ismeretlen).
+function totals(entries) {
+  const t = {};
+  for (const k of MACROS) t[k] = {sum: 0, incomplete: false, known: 0};
+  for (const e of Array.isArray(entries) ? entries : []) {
+    if (!isObj(e)) continue;
+    for (const k of MACROS) { const v = fin(e[k]); if (v == null) t[k].incomplete = true; else { t[k].sum = r1(t[k].sum + v); t[k].known++; } }
+  }
+  return t;
+}
+
+// ── állapot ─────────────────────────────────────────────────────────────────────
+// mode: 'boot' | 'demo' | 'live' (betöltve) | 'error' (nem töltődött be) | 'unpaired'
+// doc: amit a lap mutat (a még nem mentett lépésekkel); base: a szerveren lévő állapot.
+const S = {mode: 'boot', doc: null, base: null, card: null, found: Object.create(null), err: ''};
+// A mentési sor: pending = a base óta tett, még nem mentett lépések.
+const Q = {pending: [], timer: null, running: null, again: false, unsaved: false, last: null, wake: null};
+const canWrite = () => S.mode === 'live' && !!WRITE_KEY && !!S.base && !!S.doc;
+const canEdit = () => S.mode === 'demo' || canWrite();
+const product = code => (S.doc && own(S.doc.products, code) && isObj(S.doc.products[code]) ? S.doc.products[code]
+                        : own(S.found, code) ? S.found[code] : null);
+
+function say(text) { const el = $('msg'); el.textContent = text || ''; el.hidden = !text; }
+const nope = text => { say(text); return Promise.resolve(false); };
+function status() {
+  const t = S.mode === 'demo' ? 'Demó — mintaadat. Kipróbálhatsz mindent, de semmi nem mentődik.'
+    : S.mode === 'unpaired' ? 'Ez a böngésző nincs párosítva az adat-végponttal. Nyisd meg a párosító linkedet a főoldalon (…/health/#api=…&key=…), vagy nézd meg a demót: kamra.html?demo=1'
+    : S.mode === 'error' ? 'A betöltés nem sikerült (' + S.err + '). Amíg nincs betöltve, a lap semmit nem ír. Próbáld újra az Újratöltéssel.'
+    : S.mode === 'live' && !WRITE_KEY ? 'Csak olvasható: ebben a böngészőben nincs írókulcs. Beállítás: kamra.html#nkey=<írókulcs>'
+    : '';
+  const el = $('status'); el.textContent = t; el.hidden = !t;
+  const u = Q.unsaved && Q.pending.length > 0;
+  $('unsavedText').textContent = u ? 'Nincs mentve: ' + Q.pending.length + ' lépés csak ezen a lapon van meg. Ne zárd be a lapot; a Mentés újra gombbal próbáld újra.' : '';
+  $('unsavedBox').hidden = !u;
+}
+function draw() {
+  status();
+  render({mode: S.mode, edit: canEdit(), today: today(), doc: S.doc, card: S.card, found: S.found});
+}
+
+// A felület. Minden, ami innerHTML-be megy, ITT megy, és a deepEscape után.
+function render(d) {
+  d = deepEscape(d);
+  const doc = d.doc, edit = d.edit;
+  const nf = v => (fin(v) == null ? '—' : String(r1(v)).replace('.', ','));
+  const withUnit = (v, u) => (fin(v) == null ? '—' : nf(v) + ' ' + u);
+  const text = v => (typeof v === 'string' ? v : '');
+  const idAttr = v => (typeof v === 'string' && v ? ` data-id="${v}"` : null);
+  const NAMES = {kcal: 'Energia', protein: 'Fehérje', carbs: 'Szénhidrát', fat: 'Zsír'};
+  const UNITS = {kcal: 'kcal', protein: 'g', carbs: 'g', fat: 'g'};
+  const prod = code => (doc && own(doc.products, code) && isObj(doc.products[code]) ? doc.products[code]
+                       : own(d.found, code) && isObj(d.found[code]) ? d.found[code] : null);
+  const qtyText = it => (fin(it.qty) == null ? '—' : nf(it.qty) + (it.unit === 'g' ? ' g' : it.unit === 'pack' ? ' csomag' : ''));
+
+  // ── termékkártya ──
+  let card = '';
+  if (d.card) {
+    const item = doc && Array.isArray(doc.pantry) ? doc.pantry.find(x => isObj(x) && x.id === d.card.pantryId) : null;
+    const p = prod(d.card.code);
+    if (p || item) {
+      const per = p && isObj(p.per100) ? p.per100 : {};
+      const serving = p && fin(p.serving_g) > 0 ? p.serving_g : 100;
+      const facts = [p && text(p.brand), p && fin(p.pack_g) != null ? `csomag: ${nf(p.pack_g)} g` : null,
+                     p && p.source === 'manual' ? 'kézi adat' : p && p.source === 'off' ? 'Open Food Facts' : null,
+                     item ? `a kamrában: ${qtyText(item)}` : null].filter(Boolean).join(' · ');
+      card = `<div class="sec-head"><span class="lbl">Termék</span><span class="line"></span></div><div class="card">
+        <div class="pname">${text(p ? p.name : item.name) || '—'}</div>
+        <div class="pbrand">${facts || '—'}</div>
+        <div class="mgrid">${MACROS.map(k => `<div class="mcell"><b>${withUnit(per[k], UNITS[k])}</b><span>${NAMES[k]}</span></div>`).join('')}</div>
+        <p class="empty" style="margin-top:.5rem">100 g-ra${p ? '' : ' — a termék adatai ismeretlenek'}</p>
+        ${edit ? `<div class="row"><input id="eatGrams" type="text" inputmode="decimal" autocomplete="off" value="${serving}" aria-label="Mennyit ettél, gramm">
+            <span class="unit">g</span><button type="button" class="pri" data-act="eat">Megettem</button></div>
+          ${p ? `<div class="row"><button type="button" data-act="pantry-add-pack" style="flex:1 1 0">Kamrába +1 csomag</button></div>
+          <div class="row"><input id="pantryGrams" type="text" inputmode="decimal" autocomplete="off" placeholder="gramm" aria-label="Kamrába, gramm">
+            <span class="unit">g</span><button type="button" data-act="pantry-add-g">Kamrába</button></div>` : ''}` : ''}
+        <div class="row"><button type="button" class="ghost" data-act="card-close" style="flex:1 1 0">Bezár</button></div>
+      </div>`;
+    }
+  }
+  $('productCard').innerHTML = card;
+
+  if (!doc) {
+    const why = d.mode === 'boot' ? 'Betöltés…' : 'Nincs megjeleníthető adat.';
+    $('todayBody').innerHTML = `<p class="empty">${why}</p>`;
+    $('pantryBody').innerHTML = `<p class="empty">${why}</p>`;
+    return;
+  }
+
+  // ── mai nap ──
+  const entries = (isObj(doc.log) && Array.isArray(doc.log[d.today]) ? doc.log[d.today] : []).filter(isObj);
+  const tot = totals(entries);
+  // A nap típusa: days[nap] (kézi felülírás), különben a heti rend, különben ismeretlen.
+  // A cél a típus SAJÁT készlete; ha az nincs, kiírjuk — más készletre sosem esünk vissza.
+  const tg = isObj(doc.targets) ? doc.targets : null;
+  const wd = weekday(d.today), when = ymd(d.today);
+  const manual = isObj(doc.days) && own(doc.days, d.today) && TYPES.includes(doc.days[d.today]) ? doc.days[d.today] : null;
+  const planned = tg && isObj(tg.schedule) && own(tg.schedule, wd) && TYPES.includes(tg.schedule[wd]) ? tg.schedule[wd] : null;
+  const type = manual || planned;
+  const set = tg && type && isObj(tg.sets) && own(tg.sets, type) && isObj(tg.sets[type]) ? tg.sets[type] : null;
+  const dateText = when ? `${when.y}. ${p2(when.m)}. ${p2(when.d)}., ${WD_HU[wd]}` : '—';
+  const dayLine = `<p class="dayline">${dateText} — ${type ? `<b>${TYPE_HU[type]}</b> <small>· ${manual ? 'kézzel beállítva' : 'heti rend szerint'}</small>`
+                                                              : '<small>naptípus nincs megadva</small>'}</p>`;
+  const dayBtns = !edit ? '' : `<div class="daytype">${TYPES.map(x => `<button type="button" aria-pressed="${type === x}" data-act="day-${x}">${TYPE_HU[x]}</button>`).join('')}</div>
+    <div class="row" style="margin:0 0 .9rem"><button type="button" class="ghost" data-act="week-maintenance" style="flex:1 1 0">Egész hét fenntartó</button>
+      ${manual ? '<button type="button" class="ghost" data-act="day-auto" style="flex:1 1 0">Vissza a heti rendhez</button>' : ''}</div>`;
+  const rows = MACROS.map(k => {
+    const u = UNITS[k], t = tot[k];
+    // Ha van tétel, de egynek sincs adata erre a makróra: az összeg ismeretlen ("—"), nem "legalább 0".
+    const none = t.incomplete && t.known === 0;
+    const sum = none ? '—' : (t.incomplete ? 'legalább ' : '') + nf(t.sum);
+    const goal = set ? fin(set[k === 'kcal' ? 'kcal' : k + '_g']) : null;
+    if (!set) return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${sum}${none ? '' : ' ' + u}</span></div></div>`;
+    if (goal == null || goal < 0) return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${sum}${none ? '' : ' ' + u} · cél: —</span></div></div>`;
+    if (none) return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">— / ${nf(goal)} ${u}</span></div><div class="mrem">nincs adat a mai tételekben</div></div>`;
+    const left = r1(goal - t.sum), pct = goal > 0 ? Math.min(100, Math.max(0, Math.round(t.sum / goal * 100))) : null;
+    const rem = left < 0 ? `túl: ${nf(-left)} ${u}` : t.incomplete ? `legfeljebb ${nf(left)} ${u} maradt` : `még ${nf(left)} ${u}`;
+    return `<div class="mrow"><div class="mhead"><span class="mlabel">${NAMES[k]}</span><span class="mval">${sum} / ${nf(goal)} ${u}</span></div>
+      ${pct == null ? '' : `<div class="bar"><i${left < 0 ? ' class="over"' : ''} style="width:${pct}%"></i></div>`}<div class="mrem">${rem}</div></div>`;
+  }).join('');
+  const goalNote = !tg ? 'nincs cél beállítva' : !set ? 'erre a naptípusra nincs cél' : 'napi cél';
+  const incompleteNote = !MACROS.some(k => tot[k].incomplete) ? ''
+    : `<p class="empty" style="margin-bottom:.6rem">Van tétel hiányzó tápértékkel — ${MACROS.some(k => tot[k].incomplete && tot[k].known > 0)
+        ? 'az összeg ezért „legalább”' : 'az összeg ezért ismeretlen'}.</p>`;
+  const list = entries.length ? entries.map(e => {
+    const del = edit && idAttr(e.id) ? `<div class="act"><button type="button" class="sq ghost" data-act="log-del"${idAttr(e.id)} aria-label="Tétel törlése">×</button></div>` : '';
+    return `<div class="item"><div class="txt"><div class="nm">${text(e.name) || '—'}</div>
+      <div class="sub">${text(e.time) || '—'} · ${withUnit(e.grams, 'g')} · ${withUnit(e.kcal, 'kcal')} · F ${nf(e.protein)} · Sz ${nf(e.carbs)} · Zs ${nf(e.fat)}</div></div>${del}</div>`;
+  }).join('') : '<p class="empty">Ma még nincs bejegyzés.</p>';
+  $('todayBody').innerHTML = `${dayLine}${dayBtns}<p class="lbl" style="margin-bottom:.6rem">${goalNote}</p>${rows}${incompleteNote}${list}`;
+
+  // ── kamra ──
+  const pantry = (Array.isArray(doc.pantry) ? doc.pantry : []).filter(isObj);
+  $('pantryBody').innerHTML = pantry.length ? pantry.map(it => {
+    const id = idAttr(it.id);
+    const act = edit && id ? `<div class="act"><button type="button" class="sq" data-act="pantry-dec"${id} aria-label="Kevesebb">−</button>
+        <button type="button" class="sq" data-act="pantry-inc"${id} aria-label="Több">+</button></div>` : '';
+    const more = edit && id ? `<div class="row" style="margin-top:.35rem"><button type="button" data-act="pantry-eat"${id} style="flex:1 1 0">Megettem…</button>
+        <button type="button" class="ghost" data-act="pantry-del"${id}>Eltávolítás</button></div>` : '';
+    return `<div class="item" style="flex-wrap:wrap"><div class="txt"><div class="nm">${text(it.name) || '—'}</div><div class="qty">${qtyText(it)}</div></div>${act}
+      <div style="flex:1 1 100%;min-width:0">${more}</div></div>`;
+  }).join('') : '<p class="empty">A kamra üres. Szkennelj be egy terméket, és tedd a kamrába.</p>';
+}
+
+// ── betöltés ────────────────────────────────────────────────────────────────────
+const timeout = ms => (typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(ms) : undefined);
+// A dokumentum pontosan a szerződés 7 kulcsával; a hiányzó rész üres alapot kap, a
+// hibás alak viszont hiba (hibás dokumentumra nem építünk, és nem is írjuk vissza).
+function normDoc(j) {
+  const bad = why => { throw new Error('hibás dokumentum: ' + why); };
+  if (!isObj(j)) bad('nem objektum');
+  if (j.version !== 1) bad('ismeretlen verzió');
+  if (!Number.isSafeInteger(j.rev)) bad('nincs rev');
+  const part = (k, ok, def) => (j[k] == null ? def : ok(j[k]) ? j[k] : bad(k));
+  return {version: 1, rev: j.rev, targets: part('targets', isObj, null), products: part('products', isObj, {}),
+          pantry: part('pantry', Array.isArray, []), log: part('log', isObj, {}), days: part('days', isObj, {})};
+}
+async function fetchDoc() {
+  const r = await fetch(`${API_URL}/nutrition`, {headers: {'Authorization': 'Bearer ' + API_KEY}, cache: 'no-store', signal: timeout(10000)});
+  if (!r.ok) throw new Error(r.status === 401 ? 'az olvasókulcsot a szerver nem fogadta el' : 'a szerver válasza: ' + r.status);
+  return normDoc(await r.json());
+}
+function dropPending() {
+  clearTimeout(Q.timer); Q.timer = null;
+  for (const it of Q.pending) it.resolve(false);
+  Q.pending = []; Q.unsaved = false;
+}
+async function load() {
+  dropPending();
+  if (DEMO) { S.mode = 'demo'; S.doc = demoDoc(); S.base = null; draw(); return; }
+  if (!API_URL || !API_KEY) { S.mode = 'unpaired'; S.doc = S.base = null; draw(); return; }
+  try { S.base = await fetchDoc(); S.doc = clone(S.base); S.mode = 'live'; S.err = ''; }
+  catch (e) { S.doc = S.base = null; S.mode = 'error'; S.err = e && e.name === 'TimeoutError' ? 'időtúllépés' : String(e && e.message || e).slice(0, 120); }
+  draw();
+}
+
+// ── mentés ──────────────────────────────────────────────────────────────────────
+// A törzs mérete bájtban (TextEncoder nélkül óvatos felső becslés).
+const bytes = s => (typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(s).length : s.length * 3);
+async function put(doc) {
+  try {
+    const body = JSON.stringify(doc);
+    // keepalive: a kérés akkor is célba ér, ha a lap közben háttérbe kerül / bezárul (iOS).
+    // A böngészők ~64 KB-ig engedik; nagyobb törzsnél nem kérjük (a kérés elbukna).
+    const r = await fetch(`${API_URL}/nutrition`, Object.assign({method: 'PUT', cache: 'no-store', signal: timeout(10000),
+      headers: {'Authorization': 'Bearer ' + WRITE_KEY, 'Content-Type': 'application/json'}, body}, bytes(body) < 60000 ? {keepalive: true} : {}));
+    let j = null;
+    try { j = await r.json(); } catch (e) {}                 // a 413 válasza sima szöveg
+    // Retry-After másodpercben (a dátum-alakot nem értelmezzük → alapérték). Böngészőben csak
+    // akkor olvasható, ha a Worker kiteszi (Access-Control-Expose-Headers) — különben null.
+    let ra = null;
+    try { const h = r.headers.get('Retry-After'); if (typeof h === 'string' && /^\d+(\.\d+)?$/.test(h.trim())) ra = Number(h.trim()) * 1000; } catch (e) {}
+    return {status: r.status, rev: isObj(j) && Number.isSafeInteger(j.rev) ? j.rev : null,
+            scope: isObj(j) && typeof j.scope === 'string' ? j.scope : null, retryAfter: ra};
+  } catch (e) { return {status: 0, rev: null, scope: null, retryAfter: null}; }
+}
+// Egy lépés: az action egy dokumentum-másolatot módosít (false = nincs mit tenni). A lépés
+// azonnal látszik; a mentés a sorban megy. kind: 'now' | 'tap' (összevonva) | 'lazy'.
+// Vissza: {ok: alkalmazva-e, done: Promise<mentve-e>}.
+function change(action, kind) {
+  const no = {ok: false, done: Promise.resolve(false)};
+  if (S.mode !== 'demo' && !canWrite()) {
+    say(S.mode === 'live' ? 'Csak olvasható: nincs írókulcs ebben a böngészőben (kamra.html#nkey=…).'
+                          : 'Nincs betöltött adat, ezért a lap nem ír.');
+    return no;
+  }
+  const next = clone(S.doc);
+  if (action(next) === false) return no;
+  S.doc = next;
+  if (S.mode === 'demo') { draw(); return {ok: true, done: Promise.resolve(true)}; }   // a demó helyben él, hálózat nélkül
+  const item = {action, lazy: kind === 'lazy'};
+  item.done = new Promise(r => { item.resolve = r; });
+  Q.pending.push(item);
+  draw();
+  if (kind === 'lazy') { if (!Q.timer && !Q.running) Q.timer = setTimeout(kick, T.lazy); }
+  else if (kind === 'tap') { clearTimeout(Q.timer); Q.timer = setTimeout(kick, T.debounce); }
+  else kick();
+  return {ok: true, done: item.done};
+}
+// A sor ürítése: egyszerre egy fut. Hiba után megáll — újra csak a felhasználó indítja
+// (Mentés újra, vagy egy újabb lépés), magától soha.
+function kick() {
+  clearTimeout(Q.timer); Q.timer = null;
+  // Ha épp fut egy mentés, a kérés nem veszhet el: a futó kör után még egy indul
+  // (különben a kör legvégén érkező lépés mentetlenül, jelzés nélkül maradna).
+  if (Q.running) { Q.again = true; return Q.running; }
+  Q.running = pump().then(() => { Q.running = null; if (Q.again) { Q.again = false; return kick(); } });
+  return Q.running;
+}
+async function pump() {
+  try { while (Q.pending.length && canWrite()) { if (!await flushOnce()) break; } }
+  catch (e) { keepUnsaved(Q.pending.slice(), 'Váratlan hiba mentés közben — a lépés nincs mentve.'); }
+}
+function rebase(fresh) {                                    // a nem mentett lépések a friss dokumentumra
+  S.base = fresh;
+  let doc = clone(fresh);
+  for (const it of Q.pending) { const n = clone(doc); if (it.action(n) !== false) doc = n; }
+  S.doc = doc;
+}
+function saved(batch, body) {
+  S.base = body;
+  Q.pending = Q.pending.filter(it => !batch.includes(it));
+  for (const it of batch) it.resolve(true);
+  if (Q.unsaved) say('Mentve.');
+  Q.unsaved = false;
+}
+function keepUnsaved(batch, msg) {
+  Q.unsaved = true;
+  for (const it of batch) it.resolve(false);
+  say(msg); draw();
+  return false;
+}
+// Megszakítható várakozás: ha a lap közben rejtetté válik, nem várjuk ki (Q.wake).
+function pause(ms) {
+  return new Promise(r => {
+    const done = () => { clearTimeout(t); Q.wake = null; r(); };
+    const t = setTimeout(done, ms);
+    Q.wake = done;
+  });
+}
+async function flushOnce() {
+  // Két írás között szünet (a Worker ~2 s-en belüli második írásra 429-et ad). Rejtett lapnál
+  // nem várunk: az iOS hamar felfüggeszti a lapot, inkább egy 429, mint egy el sem küldött írás.
+  if (Q.last != null && !document.hidden) { const w = Math.min(T.gap, Q.last + T.gap - Date.now()); if (w > 0) await pause(w); }
+  Q.again = false;                                          // ez a kör minden eddigi lépést visz
+  let batch = Q.pending.slice();
+  let body = clone(S.doc); body.rev = S.base.rev;
+  let r = await put(body);
+  // Sebességkorlát (429) / a tároló nem érhető el (503): várunk, és EGYSZER újra, ugyanazzal.
+  // A 429-nél a szerver Retry-After-je számít (plafonnal), különben ~2,5 s. A NAPI keret
+  // (scope "day") kivétel: arra órákig nincs értelme várni — azonnal "nincs mentve".
+  if ((r.status === 429 && r.scope !== 'day') || r.status === 503) {
+    say('A szerver most nem fogad írást — pár másodperc múlva egyszer újrapróbálom…');
+    await sleep(r.status === 429 && r.retryAfter != null ? Math.min(T.retryMax, r.retryAfter + T.margin) : T.retry);
+    r = await put(body);
+  }
+  if (r.status === 409) {                                   // közben egy másik eszköz írt
+    let fresh;
+    try { fresh = await fetchDoc(); }
+    catch (e) { Q.last = Date.now(); return keepUnsaved(batch, 'A mentés nem sikerült: közben máshol változott az adat, és az újratöltés sem ment. A lépés nincs mentve.'); }
+    rebase(fresh);
+    batch = Q.pending.slice();
+    draw();
+    if (JSON.stringify(S.doc) === JSON.stringify(fresh)) { saved(batch, fresh); draw(); return true; }   // a másik eszköz már megtette
+    body = clone(S.doc);
+    r = await put(body);
+  }
+  Q.last = Date.now();
+  if (r.status === 200) {
+    if (r.rev != null) { body.rev = r.rev; S.doc.rev = r.rev; saved(batch, body); }
+    else {                                                  // rev nélküli válasz: nem számolunk helyben, újratöltünk
+      saved(batch, body);
+      try { rebase(await fetchDoc()); } catch (e) {}
+    }
+    draw();
+    return true;
+  }
+  if (r.status === 400 || r.status === 401 || r.status === 413) {   // az újrapróba értelmetlen → visszavonjuk
+    S.doc = clone(S.base);
+    dropPending();
+    say(r.status === 401 ? 'Az írókulcsot a szerver nem fogadta el — a lépés nem mentődött, visszavontam. Nyisd meg újra az írókulcs-linket.'
+      : r.status === 413 ? 'A dokumentum túl nagy, a szerver nem fogadta be — a lépés nem mentődött, visszavontam.'
+      : 'A szerver elutasította a mentést (érvénytelen adat) — a lépés nem mentődött, visszavontam.');
+    draw();
+    return false;
+  }
+  return keepUnsaved(batch,
+    r.status === 409 ? 'A mentés nem sikerült: közben kétszer is változott az adat egy másik eszközön. A lépés nincs mentve — próbáld újra.'
+    : r.status === 429 && r.scope === 'day' ? 'A mai írási keret elfogyott — a szerver ma már nem fogad több mentést. A lépés nincs mentve; hagyd nyitva a lapot, és holnap a Mentés újra gombbal elmentheted.'
+    : r.status === 429 ? 'A szerver most nem fogad több írást (sebességkorlát). A lépés nincs mentve — próbáld újra kicsit később.'
+    : r.status === 503 ? 'A tároló most nem érhető el (egy újrapróba után sem). A lépés nincs mentve — próbáld újra később.'
+    : r.status === 0 ? 'A mentés nem sikerült (nincs hálózat?). A lépés nincs mentve.'
+    : 'A mentés nem sikerült (a szerver válasza: ' + r.status + '). A lépés nincs mentve.');
+}
+
+// ── keresés és kézi felvitel ────────────────────────────────────────────────────
+function showCard(code, pantryId) {
+  S.card = {code: code == null ? null : code, pantryId: pantryId || null};
+  $('manualForm').hidden = true;
+  draw();
+}
+function openManual(code, note) {
+  S.card = null;
+  for (const id of ['mName', 'mBrand', 'mKcal', 'mProtein', 'mCarbs', 'mFat', 'mPack']) $(id).value = '';
+  $('mCode').value = code || '';
+  $('manualNote').textContent = note || 'Add meg, amit a csomagoláson látsz.';
+  $('manualForm').hidden = false;
+  draw();
+}
+// A terméket a dokumentum products térképébe tesszük (gyorsítótár: legközelebb hálózat nélkül jön).
+const keep = (code, p) => doc => { if (own(doc.products, code)) return false; doc.products[code] = clone(p); };
+async function lookup(raw) {
+  const code = String(raw == null ? '' : raw).trim();
+  say('');
+  if (!code) { say('Írj be egy vonalkódot, vagy szkennelj.'); return; }
+  if (product(code)) { showCard(code); return; }
+  if (!/^\d{6,14}$/.test(code)) { openManual('', 'Ez nem termék-vonalkód (a beolvasott kód nem csak számjegy). Vidd fel kézzel.'); return; }
+  let j = null, net = false;
+  try {
+    const r = await fetch(OFF_URL + encodeURIComponent(code) + '?fields=' + OFF_FIELDS, {signal: timeout(10000)});
+    try { j = await r.json(); } catch (e) { j = null; net = !r.ok && r.status !== 404; }
+  } catch (e) { net = true; }
+  const p = net ? null : offToProduct(j);
+  if (!p) {
+    openManual(code, net ? 'Az Open Food Facts most nem érhető el (hálózati hiba). Vidd fel kézzel, vagy próbáld később.'
+                         : 'Ez a vonalkód nem található az Open Food Facts adatbázisában. Vidd fel kézzel.');
+    return;
+  }
+  S.found[code] = p;
+  // Lusta mentés: a puszta keresés nem ér külön írást (napi keret) — a következő lépéssel megy.
+  if (canEdit()) change(keep(code, p), 'lazy');
+  showCard(code);
+}
+function saveManual() {
+  const name = String($('mName').value || '').trim(), brand = String($('mBrand').value || '').trim();
+  let code = String($('mCode').value || '').trim();
+  const n = {kcal: field('mKcal'), protein: field('mProtein'), carbs: field('mCarbs'), fat: field('mFat'), pack: field('mPack')};
+  if (!name) return nope('A név kötelező.');
+  if (name.length > 200 || brand.length > 200) return nope('A név és a márka legfeljebb 200 karakter lehet.');
+  if (Object.values(n).some(v => v != null && isNaN(v))) return nope('A számmezőkbe 0 és 100000 közötti szám kerülhet (vagy maradjon üres, ha nem tudod).');
+  if (code && !/^\d{6,14}$/.test(code)) return nope('A vonalkód 6–14 számjegy lehet (vagy maradjon üres).');
+  if (!code) code = rid('m_');
+  const p = {name, brand: brand || null, per100: {kcal: n.kcal, protein: n.protein, carbs: n.carbs, fat: n.fat},
+             pack_g: n.pack != null && n.pack > 0 ? n.pack : null, serving_g: null, source: 'manual', added: today()};
+  if (!canEdit()) {
+    S.found[code] = p;
+    say('Ez a lap most nem tud írni, ezért a termék csak itt, most látszik — nem mentődött.');
+    showCard(code);
+    return Promise.resolve(false);
+  }
+  const c = change(doc => { doc.products[code] = clone(p); });
+  if (c.ok) { say('Felvéve: ' + name); showCard(code); }
+  return c.done;
+}
+
+// ── kamra ───────────────────────────────────────────────────────────────────────
+function addPantry(code, unit, qty) {
+  const p = product(code);
+  if (!p) return nope('Ehhez előbb keress vagy vigyél fel egy terméket.');
+  if ((unit !== 'pack' && unit !== 'g') || !amount(qty)) return nope('A mennyiség 0-nál nagyobb szám legyen.');
+  const id = rid('p_'), added = today(), name = String(p.name || 'Névtelen termék').slice(0, 200);
+  // Ha már van ilyen tétel (ugyanaz a termék és egység), abba olvasztjuk — a CÉLmennyiséggel,
+  // nem "+qty"-vel: így a lépés újra-alkalmazva (409 után) sem érvényesül kétszer.
+  const old = S.doc.pantry.find(x => isObj(x) && x.code === code && x.unit === unit && typeof x.id === 'string' && fin(x.qty) != null);
+  const target = old ? Math.min(MAXN, r2(old.qty + qty)) : qty;
+  const c = change(doc => {
+    // Újra-alkalmazáskor: ha a mi új tételünk már ott van, az írásunk célba ért, csak a válasz veszett el.
+    if (doc.pantry.some(x => isObj(x) && x.id === id)) return false;
+    let any = false;
+    if (!own(doc.products, code)) { doc.products[code] = clone(p); any = true; }
+    const i = old ? pantryAt(doc, old.id) : -1;
+    if (i >= 0) { if (doc.pantry[i].qty !== target) { doc.pantry[i].qty = target; any = true; } }
+    else { doc.pantry.push({id, code, name, qty: target, unit, added}); any = true; }
+    if (!any) return false;
+  });
+  if (c.ok) say('A kamrába került: ' + name);
+  return c.done;
+}
+const pantryAt = (doc, id) => doc.pantry.findIndex(x => isObj(x) && typeof id === 'string' && x.id === id);
+// +/−: a lépés a CÉLmennyiséget viszi (a koppintáskori állapotból számolva), nem "±1"-et.
+// Így ha az írás célba ért, de a válasz elveszett, az újra-alkalmazás nem lép még egyet;
+// ha a tételt közben máshol kivették, a lépés nem hozza vissza. Az írás összevonva megy (tap).
+function pantryStep(id, dir) {
+  const cur = S.doc ? S.doc.pantry[pantryAt(S.doc, id)] : null;
+  if (!cur || fin(cur.qty) == null) return Promise.resolve(false);
+  const target = Math.min(MAXN, r2(cur.qty + (dir < 0 ? -1 : 1) * (cur.unit === 'g' ? 50 : 1)));
+  return change(doc => {
+    const i = pantryAt(doc, id);
+    if (i < 0) return false;
+    if (target <= 0) { doc.pantry.splice(i, 1); return; }
+    if (doc.pantry[i].qty === target) return false;
+    doc.pantry[i].qty = target;
+  }, 'tap').done;
+}
+function pantryRemove(id) {
+  return change(doc => { const i = pantryAt(doc, id); if (i < 0) return false; doc.pantry.splice(i, 1); }).done;
+}
+
+// ── napló ───────────────────────────────────────────────────────────────────────
+function eat(o) {
+  const code = o && typeof o.code === 'string' ? o.code : null, pantryId = o && o.pantryId || null, grams = o && o.grams;
+  if (!amount(grams)) return nope('Add meg grammban, mennyit ettél (0-nál nagyobb szám).');
+  const p = product(code);
+  const item = S.doc && pantryId ? S.doc.pantry[pantryAt(S.doc, pantryId)] : null;
+  if (!p && !item) return nope('Ehhez előbb keress vagy vigyél fel egy terméket.');
+  const name = String((p && p.name) || (item && item.name) || 'Névtelen termék').slice(0, 200);
+  const m = macros(p && p.per100, grams);
+  if (MACROS.some(k => m[k] != null && m[k] > MAXN)) return nope('Ez a mennyiség ezzel a tápértékkel túl nagy számot adna — ellenőrizd a grammot és a termék adatait.');
+  const entry = Object.assign({id: rid('l_'), code: p ? code : null, name, grams}, m, {time: nowTime()});
+  const day = today();
+  let unknownPack = false;
+  const c = change(doc => {
+    // Újra-alkalmazáskor (409 után): ha ez a tétel már ott van, az írásunk célba ért, csak a válasz
+    // veszett el — nem naplózzuk kétszer (és a kamrából sem vonjuk le kétszer).
+    if (Array.isArray(doc.log[day]) && doc.log[day].some(x => isObj(x) && x.id === entry.id)) return false;
+    if (p && !own(doc.products, code)) doc.products[code] = clone(p);
+    if (!Array.isArray(doc.log[day])) doc.log[day] = [];
+    doc.log[day].push(clone(entry));
+    // A kamrából evés csökkenti a készletet. Csomagnál csak ismert csomagtömeggel tudjuk
+    // átszámolni — ismeretlennél nem találunk ki semmit, a készlet változatlan marad.
+    const i = pantryId ? pantryAt(doc, pantryId) : -1;
+    unknownPack = false;
+    if (i >= 0 && fin(doc.pantry[i].qty) != null) {
+      const it = doc.pantry[i], pack = p ? fin(p.pack_g) : null;
+      if (it.unit === 'g' || (it.unit === 'pack' && pack > 0)) {
+        const q = r2(it.qty - (it.unit === 'g' ? grams : grams / pack));
+        if (q <= 0) doc.pantry.splice(i, 1); else it.qty = q;
+      } else unknownPack = true;
+    }
+  });
+  if (c.ok) say('Naplózva: ' + name + (unknownPack ? ' — a csomag tömege ismeretlen, ezért a kamra mennyisége nem változott; állítsd kézzel.' : ''));
+  return c.done;
+}
+function logDelete(id) {
+  const day = today();
+  return change(doc => {
+    const l = Array.isArray(doc.log[day]) ? doc.log[day] : [], i = l.findIndex(x => isObj(x) && typeof id === 'string' && x.id === id);
+    if (i < 0) return false;
+    l.splice(i, 1);
+    if (!l.length) delete doc.log[day];
+  }).done;
+}
+// A mai nap típusa (kézi felülírás); 'auto' = a felülírás törlése, vissza a heti rendhez.
+function setDay(type) {
+  if (type !== 'auto' && !TYPES.includes(type)) return Promise.resolve(false);
+  const day = today();
+  return change(doc => {
+    if (type === 'auto') { if (!own(doc.days, day)) return false; delete doc.days[day]; return; }
+    if (doc.days[day] === type) return false;
+    doc.days[day] = type;
+  }).done;
+}
+// Fenntartó hét: a mostani hét mind a 7 napja (hétfő–vasárnap), EGY írással.
+function maintenanceWeek() {
+  const week = weekDates(today());
+  const c = change(doc => {
+    let any = false;
+    for (const day of week) if (doc.days[day] !== 'maintenance') { doc.days[day] = 'maintenance'; any = true; }
+    if (!any) return false;
+  });
+  if (c.ok) say('A hét (' + week[0] + ' – ' + week[6] + ') fenntartó hétre állítva.');
+  return c.done;
+}
+
+// ── célok ───────────────────────────────────────────────────────────────────────
+function openTargets() {
+  const t = S.doc && isObj(S.doc.targets) ? S.doc.targets : {};
+  const sets = isObj(t.sets) ? t.sets : {}, sched = isObj(t.schedule) ? t.schedule : {};
+  for (const type of TYPES) for (const k of TKEYS)
+    $(`t_${type}_${k}`).value = own(sets, type) && isObj(sets[type]) && fin(sets[type][k]) != null ? String(sets[type][k]) : '';
+  for (const d of WEEK) $('s_' + d).value = own(sched, d) && TYPES.includes(sched[d]) ? sched[d] : '';
+  $('targetsForm').hidden = false;
+}
+function saveTargets() {
+  const sets = {}, schedule = {};
+  for (const type of TYPES) {
+    const v = TKEYS.map(k => field(`t_${type}_${k}`));
+    if (v.every(x => x == null)) { sets[type] = null; continue; }
+    if (v.some(x => x == null || isNaN(x))) return nope(TYPE_HU[type] + ': a célt vagy töltsd ki teljesen (négy szám, 0 és 100000 között), vagy hagyd teljesen üresen.');
+    sets[type] = {kcal: v[0], protein_g: v[1], carbs_g: v[2], fat_g: v[3]};
+  }
+  for (const d of WEEK) {
+    const v = String($('s_' + d).value || '');
+    if (!TYPES.includes(v)) return nope('A heti rendben minden naphoz válassz típust (' + WD_HU[d] + ' hiányzik).');
+    schedule[d] = v;
+  }
+  const targets = {sets, schedule, updated: today()};
+  const c = change(doc => { doc.targets = clone(targets); });
+  if (c.ok) { $('targetsForm').hidden = true; say('A célok felvéve.'); }
+  return c.done;
+}
+
+// ── szkennelés ──────────────────────────────────────────────────────────────────
+const WANT = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'qr_code'];
+const scan = {gen: 0, on: false, stream: null, timer: null, reader: null};
+let zxLoading = null;
+function loadZXing() {
+  if (window.ZXing) return Promise.resolve();
+  if (!zxLoading) zxLoading = new Promise((ok, no) => {
+    const s = document.createElement('script');
+    s.src = ZXING.src; s.integrity = ZXING.integrity; s.crossOrigin = 'anonymous'; s.referrerPolicy = 'no-referrer';
+    s.onload = () => (window.ZXing ? ok() : no(new Error('zxing')));
+    s.onerror = () => no(new Error('zxing'));
+    (document.head || document.body).appendChild(s);
+  }).catch(e => { zxLoading = null; throw e; });
+  return zxLoading;
+}
+function stopScan() {
+  scan.gen++; scan.on = false;
+  clearTimeout(scan.timer); scan.timer = null;
+  if (scan.reader) { try { scan.reader.reset(); } catch (e) {} scan.reader = null; }
+  if (scan.stream) { try { scan.stream.getTracks().forEach(t => t.stop()); } catch (e) {} scan.stream = null; }
+  const v = $('cam');
+  try { if (v.pause) v.pause(); } catch (e) {}
+  v.srcObject = null;
+  $('scanBox').hidden = true;
+}
+function hit(text) {
+  stopScan();                                    // találat után a kamera azonnal leáll
+  const code = String(text == null ? '' : text).trim();
+  $('codeIn').value = /^\d{6,14}$/.test(code) ? code : '';
+  return lookup(code);
+}
+async function startScan() {
+  if (scan.on) return;
+  say('');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    return say('Ez a böngésző itt nem ad kamerát. Írd be a vonalkódot kézzel.');
+  scan.on = true;
+  const gen = ++scan.gen, stale = () => scan.gen !== gen;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}, audio: false});
+    if (stale()) { stream.getTracks().forEach(t => t.stop()); return; }
+    scan.stream = stream;
+    const v = $('cam');
+    $('scanBox').hidden = false;
+    v.muted = true; v.setAttribute('playsinline', '');
+    let formats = [];
+    if (typeof BarcodeDetector !== 'undefined') {
+      try { const sup = await BarcodeDetector.getSupportedFormats(); formats = WANT.filter(f => sup.includes(f)); } catch (e) {}
+    }
+    if (stale()) return;
+    if (formats.length) {
+      v.srcObject = stream;
+      try { if (v.play) await v.play(); } catch (e) {}
+      if (stale()) return;
+      const det = new BarcodeDetector({formats});
+      const tick = async () => {
+        if (stale()) return;
+        try {
+          const r = await det.detect(v);
+          if (stale()) return;
+          if (r && r.length && r[0].rawValue != null) { hit(r[0].rawValue); return; }
+        } catch (e) { /* a videó még nem kész — a következő körben újra */ }
+        scan.timer = setTimeout(tick, 200);
+      };
+      tick();
+      return;
+    }
+    // iPhone Safari: nincs BarcodeDetector. Itt a videóra a ZXing köti rá a kamerát
+    // (decodeFromStream) — ha előtte mi is rákötnénk, a lejátszás-eseményére hiába várna.
+    await loadZXing();
+    if (stale()) return;
+    const Z = window.ZXing, F = Z.BarcodeFormat;
+    const hints = new Map([[Z.DecodeHintType.POSSIBLE_FORMATS, [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E, F.QR_CODE]]]);
+    scan.reader = new Z.BrowserMultiFormatReader(hints);
+    Promise.resolve(scan.reader.decodeFromStream(stream, v, (res, err) => {
+      if (stale() || !res) return;               // a találat nélküli képkocka nem hiba
+      hit(res.getText());
+    })).catch(() => { if (!stale()) { stopScan(); say('A kamera képe nem olvasható. Írd be a vonalkódot kézzel.'); } });
+  } catch (e) {
+    if (stale()) return;
+    stopScan();
+    say(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError') ? 'A szkenneléshez kamera-engedély kell. Engedélyezd a böngészőben, vagy írd be a vonalkódot kézzel.'
+      : e && e.message === 'zxing' ? 'A vonalkód-olvasó nem töltődött be (hálózat?). Írd be a vonalkódot kézzel.'
+      : 'A kamera nem indult el. Írd be a vonalkódot kézzel.');
+  }
+}
+// Ha a lap háttérbe kerül vagy bezárul: a kamera leáll, és a várakozó (összevont / lusta)
+// mentés azonnal elindul. A hibára megállt sort ez sem indítja újra.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) return;
+  stopScan();
+  if (Q.pending.length && !Q.unsaved) { if (Q.wake) Q.wake(); kick(); }
+});
+window.addEventListener('pagehide', () => stopScan());
+// "Elhagyod a lapot?" csak valódi, mentetlen lépésnél — a lusta termék-gyorsítótár miatt nem
+// (az legfeljebb egy újabb OFF-keresésbe kerül).
+window.addEventListener('beforeunload', e => { if (Q.pending.some(it => !it.lazy)) { e.preventDefault(); e.returnValue = ''; } });
+
+// ── demó (kitalált mintaadat, a néző mai napjára) ───────────────────────────────
+function demoDoc() {
+  const d = today();
+  const P = {
+    '5990000000017': {name: 'Zabpehely', brand: 'Minta Malom', per100: {kcal: 372, protein: 13.5, carbs: 58.7, fat: 7}, pack_g: 500, serving_g: 60, source: 'off', added: d},
+    '5990000000024': {name: 'Görög joghurt 2%', brand: 'Minta Tej', per100: {kcal: 73, protein: 9.5, carbs: 3.9, fat: 2}, pack_g: 400, serving_g: 150, source: 'off', added: d},
+    '5990000000031': {name: 'Csirkemell filé', brand: null, per100: {kcal: 110, protein: 23, carbs: 0, fat: 1.5}, pack_g: 600, serving_g: null, source: 'off', added: d},
+    'm_demobanan': {name: 'Banán', brand: null, per100: {kcal: 89, protein: 1.1, carbs: 22.8, fat: 0.3}, pack_g: null, serving_g: 120, source: 'manual', added: d},
+  };
+  const e = (id, code, grams, time) => Object.assign({id, code, name: P[code].name, grams}, macros(P[code].per100, grams), {time});
+  const set = (kcal, protein_g, carbs_g, fat_g) => ({kcal, protein_g, carbs_g, fat_g});
+  return {version: 1, rev: 0,
+    targets: {sets: {strength: set(2500, 170, 290, 80), hyrox: set(2700, 170, 340, 80), rest: set(2200, 170, 230, 75), maintenance: set(2800, 170, 340, 85)},
+              schedule: {mon: 'strength', tue: 'rest', wed: 'strength', thu: 'hyrox', fri: 'strength', sat: 'rest', sun: 'rest'}, updated: d},
+    products: P,
+    pantry: [{id: 'p_demo1', code: '5990000000017', name: 'Zabpehely', qty: 2, unit: 'pack', added: d},
+             {id: 'p_demo2', code: '5990000000024', name: 'Görög joghurt 2%', qty: 3, unit: 'pack', added: d},
+             {id: 'p_demo3', code: '5990000000031', name: 'Csirkemell filé', qty: 450, unit: 'g', added: d}],
+    log: {[d]: [e('l_demo1', '5990000000017', 80, '07:10'), e('l_demo2', '5990000000024', 200, '07:10'),
+                e('l_demo3', 'm_demobanan', 120, '10:30'), e('l_demo4', '5990000000031', 220, '12:45')]},
+    days: {}};
+}
+
+// ── gombok: egyetlen kattintás-figyelő (a kirajzolt gombok data-act-je alapján) ──
+const ACTS = {
+  'scan-start': () => startScan(),
+  'scan-stop': () => stopScan(),
+  'lookup': () => lookup($('codeIn').value),
+  'manual-open': () => openManual('', ''),
+  'manual-close': () => { $('manualForm').hidden = true; },
+  'manual-save': () => saveManual(),
+  'card-close': () => { S.card = null; draw(); },
+  'eat': () => { const g = field('eatGrams'); return S.card ? eat({code: S.card.code, pantryId: S.card.pantryId, grams: g == null ? NaN : g}) : null; },
+  'pantry-add-pack': () => (S.card ? addPantry(S.card.code, 'pack', 1) : null),
+  'pantry-add-g': () => { const g = field('pantryGrams'); return S.card ? addPantry(S.card.code, 'g', g == null ? NaN : g) : null; },
+  'pantry-inc': id => pantryStep(id, 1),
+  'pantry-dec': id => pantryStep(id, -1),
+  'pantry-del': id => pantryRemove(id),
+  'pantry-eat': id => { const it = S.doc ? S.doc.pantry[pantryAt(S.doc, id)] : null; if (it) showCard(typeof it.code === 'string' ? it.code : null, id); },
+  'log-del': id => logDelete(id),
+  'day-strength': () => setDay('strength'),
+  'day-hyrox': () => setDay('hyrox'),
+  'day-rest': () => setDay('rest'),
+  'day-maintenance': () => setDay('maintenance'),
+  'day-auto': () => setDay('auto'),
+  'week-maintenance': () => maintenanceWeek(),
+  'targets-open': () => openTargets(),
+  'targets-close': () => { $('targetsForm').hidden = true; },
+  'targets-save': () => saveTargets(),
+  'save-retry': () => { say('Mentés…'); return kick(); },
+  'reload': () => {
+    // Futó mentés alatt nem töltünk újra: a régi állapot a friss rev-vel felülírhatná, amit épp mentünk.
+    if (Q.running) return say('Mentés folyamatban — várj egy pillanatot, és próbáld újra.');
+    if (Q.pending.length && !confirm('Van ' + Q.pending.length + ' nem mentett lépés ezen a lapon. Újratöltéskor elvesznek. Biztosan újratöltesz?')) return null;
+    say('');
+    return load();
+  },
+};
+document.addEventListener('click', e => {
+  const b = e.target && e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!b || !own(ACTS, b.dataset.act)) return;
+  e.preventDefault();
+  ACTS[b.dataset.act](b.dataset.id);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'codeIn') { e.preventDefault(); lookup($('codeIn').value); } });
+
+// Tesztekhez és hibakereséshez — a lap gombjai ugyanezeket hívják.
+const Kamra = {offToProduct, macros, totals, weekday, weekDates, lookup, saveManual, addPantry, pantryStep, pantryRemove, eat, logDelete,
+               setDay, maintenanceWeek, openTargets, saveTargets, startScan, stopScan, load, flush: () => kick(), timing: T, doc: () => S.doc};
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (DEMO) $('homeLink').href = './?demo=1';
+  load();
+});
+</script>
+</body>
+</html>
