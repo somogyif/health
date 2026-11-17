@@ -134,6 +134,8 @@ input,select{font-family:var(--m);font-size:16px;min-width:0;width:100%;min-heig
 .item .sub{font-family:var(--m);font-size:11px;color:var(--text3)}
 .item .act{display:flex;gap:6px;flex:0 0 auto}
 .qty{font-family:var(--m);font-size:12px;color:var(--text2)}
+.soon-bad{color:var(--red)}
+.soon-warn{color:var(--amber)}
 </style>
 </head>
 <body>
@@ -157,12 +159,14 @@ input,select{font-family:var(--m);font-size:16px;min-width:0;width:100%;min-heig
       <div class="btns">
         <button type="button" class="pri" data-act="scan-start">Szkennelés</button>
         <button type="button" data-act="manual-open">Kézi felvitel</button>
+        <button type="button" data-act="bulk-start">Bevásárlás</button>
       </div>
       <div id="scanBox" hidden>
         <video id="cam" playsinline muted autoplay></video>
         <div class="row"><span class="unit" style="flex:1 1 0">Tartsd a vonalkódot a kép közepére.</span>
           <button type="button" data-act="scan-stop">Leállítás</button></div>
       </div>
+      <div id="bulkBox"></div>
       <div class="row">
         <input id="codeIn" type="text" inputmode="numeric" autocomplete="off" placeholder="vonalkód kézzel" aria-label="Vonalkód kézzel">
         <button type="button" data-act="lookup">Keresés</button>
@@ -192,6 +196,33 @@ input,select{font-family:var(--m);font-size:16px;min-width:0;width:100%;min-heig
         <button type="button" class="ghost" data-act="manual-close">Mégse</button>
       </div>
     </div>
+  </section>
+
+  <section id="itemForm" aria-label="Lejárat és felbontás" hidden>
+    <div class="sec-head"><span class="lbl">Lejárat és felbontás</span><span class="line"></span></div>
+    <div class="card">
+      <div id="iName" class="pname"></div>
+      <div class="fgrid">
+        <div><label for="iExp">Lejárat (a csomagon)</label><input id="iExp" type="date"></div>
+        <div><label for="iOpened">Felbontva</label><input id="iOpened" type="date"></div>
+        <div class="full"><label for="iDays">A csomagon: felbontás után ennyi napon belül</label><input id="iDays" type="text" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="nem kötelező"></div>
+      </div>
+      <p id="iGuide" class="empty" style="margin-top:.6rem"></p>
+      <div class="btns">
+        <button type="button" class="pri" data-act="item-save">Mentés</button>
+        <button type="button" class="ghost" data-act="item-close">Mégse</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Hamarosan lejár">
+    <div class="sec-head"><span class="lbl">Hamarosan lejár</span><span class="line"></span></div>
+    <div class="card" id="soonBody"><p class="empty">Betöltés…</p></div>
+  </section>
+
+  <section id="todoSec" aria-label="Rendezendő" hidden>
+    <div class="sec-head"><span class="lbl">Rendezendő</span><span class="line"></span></div>
+    <div class="card"><p class="empty" style="margin-bottom:.4rem">Szkennelt, de még ismeretlen termékek. Töltsd ki őket, vagy küldd el a címke fotóját.</p><div id="todoBody"></div></div>
   </section>
 
   <section aria-label="Mai nap">
@@ -291,7 +322,7 @@ input,select{font-family:var(--m);font-size:16px;min-width:0;width:100%;min-heig
 const DEMO = new URLSearchParams(location.search).get('demo') === '1';
 const {api: API_URL, key: API_KEY, nkey: WRITE_KEY} = HealthPairing.run({write: true});
 const OFF_URL = 'https://world.openfoodfacts.org/api/v2/product/';
-const OFF_FIELDS = 'code,product_name,brands,quantity,product_quantity,product_quantity_unit,serving_quantity,nutriments';
+const OFF_FIELDS = 'code,product_name,brands,quantity,product_quantity,product_quantity_unit,serving_quantity,nutriments,categories_tags';
 // A vonalkód-olvasó tartalék (ahol nincs BarcodeDetector): @zxing/library 0.21.3 UMD,
 // rögzített verzió + SRI, mint a Chart.js az index.html-ben. Csak szkenneléskor töltődik.
 const ZXING = {
@@ -307,7 +338,46 @@ const WD_HU = {mon: 'hétfő', tue: 'kedd', wed: 'szerda', thu: 'csütörtök', 
 const TKEYS = ['kcal', 'protein_g', 'carbs_g', 'fat_g'];
 // Időzítések (ms): +/− összevonás, a keresés lusta mentése, két írás közti szünet, 429 utáni várakozás.
 // retryMax: a szerver Retry-After-jának plafonja; margin: ráhagyás a Retry-After-re.
-const T = {debounce: 1000, lazy: 4000, gap: 2100, retry: 2500, retryMax: 10000, margin: 300};
+const T = {debounce: 1000, lazy: 4000, gap: 2100, retry: 2500, retryMax: 10000, margin: 300, again: 1500};
+// again: bevásárlás módban ugyanazt a kódot csak ennyi ms szünet után számoljuk újra (a kézben
+// tartott dobozt a kamera folyamatosan olvassa — azt nem számoljuk többször).
+const SOON = 3;                            // ennyi napon belül lejáró tétel kerül a „Hamarosan lejár”-ba
+const PENDING_NAME = 'Ismeretlen termék';  // a szkennelt, még kitöltetlen (Rendezendő) termék neve
+
+// ── felbontás utáni eltarthatóság: ÓVATOS, ÁLTALÁNOS irányelv (hűtőben, jól lezárva), napban ──
+// Claude töltötte ki általános élelmiszer-biztonsági tudásból (2026-11-17, Feri kérésére) — NEM
+// a csomag adata. A csomag „felbontás után X napon belül” felirata (products[code].open_days)
+// felülírja. Az első egyező sor nyer, ezért a szűkebb fajta (növényi ital, tejföl, tejszín,
+// felvágott) a tágabb (tej, nyers hús) előtt áll. days: null = nincs általános szám (édesség).
+// tags: Open Food Facts categories_tags (a szülő-kategóriák is benne vannak); re: a név, kisbetűvel.
+const NB = '(^|[^a-z0-9áéíóöőúüű])', NE = '($|[^a-z0-9áéíóöőúüű])';   // szóhatár ékezettel is
+const SHELF = [
+  {kind: 'sweet', hu: 'édesség', days: null, tags: ['en:chocolates', 'en:biscuits', 'en:confectioneries'], re: /csok|chocolate|keksz|biscuit|cookie|nápolyi|ostya|cukorka/},
+  {kind: 'plant_milk', hu: 'növényi ital', days: 5, tags: ['en:milk-substitutes', 'en:plant-milks', 'en:plant-based-milk-alternatives', 'en:oat-based-drinks', 'en:soy-based-drinks', 'en:almond-based-drinks', 'en:rice-based-drinks', 'en:nut-based-drinks'],
+   re: /(zab|szója|szoja|mandula|rizs|kesu|mogyoró|kókusz|kokusz)\s?-?\s?ital|növényi ital|\boat\b|oatly|alpro|\bsoy\b|almond/},
+  {kind: 'sour_cream', hu: 'tejföl', days: 5, tags: ['en:sour-creams', 'en:fermented-creams'], re: /tejföl|tejfol|crème fraîche|creme fraiche|sour cream/},
+  {kind: 'cream', hu: 'tejszín', days: 3, tags: ['en:creams', 'en:cooking-creams', 'en:whipping-creams'], re: /tejszín|tejszin|\bcream\b/},
+  {kind: 'yogurt', hu: 'joghurt, kefir', days: 3, tags: ['en:yogurts', 'en:kefir', 'en:kefirs', 'en:fermented-milk-drinks', 'en:skyr'], re: /joghurt|jogurt|yogh?urt|kefir|skyr|aludttej/},
+  {kind: 'fresh_cheese', hu: 'túró, friss sajt', days: 3, tags: ['en:fresh-cheeses', 'en:cottage-cheeses', 'en:cream-cheeses', 'en:mozzarella', 'en:ricotta', 'en:mascarpone', 'en:quarks'],
+   re: /túró|turo|mozzarella|ricotta|mascarpone|cottage|krémsajt|kremsajt|cream cheese|tofu|feta/},
+  {kind: 'hard_cheese', hu: 'kemény sajt', days: 21, tags: ['en:hard-cheeses', 'en:parmigiano-reggiano', 'en:grana-padano', 'en:pecorino'], re: /parmez|parmigiano|grana padano|pecorino|kemény sajt/},
+  {kind: 'cheese', hu: 'sajt', days: 7, tags: ['en:cheeses'], re: /sajt|cheese|trappista|gouda|edami|cheddar|ementál|emmental/},
+  {kind: 'milk', hu: 'friss tej', days: 3, tags: ['en:milks'], re: new RegExp(NB + '(tej|milk)' + NE)},
+  {kind: 'butter', hu: 'vaj, margarin', days: 14, tags: ['en:butters', 'en:margarines'], re: /vaj\b|margarin|butter/},
+  {kind: 'sliced_meat', hu: 'felvágott, sonka', days: 3, tags: ['en:hams', 'en:cooked-hams', 'en:sliced-meats', 'en:cold-cuts', 'en:sausages', 'en:salamis'],
+   re: /sonka|felvágott|felvagott|párizsi|parizsi|virsli|szalámi|szalami|bacon|\bham\b|salami/},
+  {kind: 'raw_meat', hu: 'nyers hús', days: 1, tags: ['en:meats', 'en:poultries', 'en:chickens'], re: /csirke|pulyka|darált|daralt|sertés|sertes|marha|hús\b|filé|chicken|beef|pork/},
+  {kind: 'fish', hu: 'hal', days: 2, tags: ['en:fishes', 'en:seafood', 'en:smoked-salmons', 'en:canned-fishes', 'en:tunas'], re: /tonhal|lazac|makréla|makrela|szardínia|szardinia|hering|hal\b|salmon|tuna/},
+  {kind: 'canned', hu: 'konzerv (felbontva, áttéve)', days: 3, tags: ['en:canned-foods'], re: /konzerv|kókusztej|kokusztej|coconut milk/},
+  {kind: 'dip', hu: 'hummusz, krém, pástétom', days: 3, tags: ['en:hummus', 'en:dips', 'en:pates'], re: /hummus|humusz|hummusz|guacamole|tzatziki|pástétom|pastetom|májkrém|majkrem|padlizsánkrém/},
+  {kind: 'juice', hu: 'gyümölcslé', days: 3, tags: ['en:fruit-juices', 'en:juices', 'en:vegetable-juices'], re: new RegExp('gyümölcslé|gyumolcsle|juice|smoothie|' + NB + 'lé' + NE)},
+  {kind: 'tomato_sauce', hu: 'paradicsomszósz, pesto', days: 3, tags: ['en:tomato-sauces', 'en:pestos', 'en:pasta-sauces'], re: /passata|paradicsomszósz|paradicsom szósz|paradicsompüré|sűrített paradicsom|pesto|tésztaszósz/},
+  {kind: 'bread', hu: 'kenyér, tortilla', days: 3, tags: ['en:breads', 'en:sliced-breads', 'en:tortillas', 'en:wraps'], re: /kenyér|kenyer|toast|zsemle|kifli|tortilla|\bwrap\b|bread/},
+  {kind: 'condiment', hu: 'ketchup, mustár, majonéz', days: 30, tags: ['en:ketchup', 'en:mustards', 'en:mayonnaises'], re: /ketchup|mustár|mustar|majonéz|majonez|mayo/},
+  {kind: 'jam', hu: 'lekvár, dzsem', days: 30, tags: ['en:jams', 'en:fruit-preserves', 'en:marmalades'], re: /lekvár|lekvar|dzsem|\bjam\b|marmalade|gyümölcskrém/},
+  {kind: 'dry', hu: 'száraz áru (pehely, rizs, tészta, liszt)', days: 90, tags: ['en:cereal-flakes', 'en:rolled-oats', 'en:rices', 'en:pastas', 'en:flours', 'en:breakfast-cereals', 'en:mueslis', 'en:protein-powders'],
+   re: /pehely|müzli|muzli|granola|rizs|tészta|teszta|spagetti|penne|liszt|fehérjepor|protein ?por|whey|\boats\b/},
+];
 
 const $ = id => document.getElementById(id);
 const esc = s => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
@@ -378,12 +448,15 @@ function offToProduct(j) {
   if (kcal == null) { const kj = ext(n.energy_100g); kcal = kj == null ? null : r1(kj / 4.184); }
   const pos = v => { const x = ext(v); return x != null && x > 0 ? x : null; };
   const unit = typeof p.product_quantity_unit === 'string' ? p.product_quantity_unit.trim().toLowerCase() : '';
-  return {
+  const out = {
     name: text(p.product_name) || 'Névtelen termék', brand: text(p.brands),
     per100: {kcal, protein: ext(n.proteins_100g), carbs: ext(n.carbohydrates_100g), fat: ext(n.fat_100g)},
     pack_g: unit === 'g' ? pos(p.product_quantity) : null, serving_g: pos(p.serving_quantity),
     source: 'off', added: today(),
   };
+  const kind = kindFromTags(p.categories_tags);         // a felbontás utáni irányelvhez; ismeretlenre nincs kulcs
+  if (kind) out.kind = kind;
+  return out;
 }
 
 // ── számtan ─────────────────────────────────────────────────────────────────────
@@ -404,10 +477,51 @@ function totals(entries) {
   return t;
 }
 
+// ── lejárat és felbontás ────────────────────────────────────────────────────────
+// OFF-kategóriák → termékfajta (az első egyező sor); ismeretlenre null — nincs találgatás.
+function kindFromTags(tags) {
+  if (!Array.isArray(tags)) return null;
+  const have = new Set(tags.filter(t => typeof t === 'string'));
+  const row = SHELF.find(r => r.tags.some(t => have.has(t)));
+  return row ? row.kind : null;
+}
+// Az irányelv egy termékre: a tárolt fajta (OFF-kategóriából), különben a név szavai.
+// {kind, hu, days}, vagy null, ha nincs általános szám — sosem kitalált érték.
+function shelfGuide(p) {
+  if (!isObj(p)) return null;
+  let row = typeof p.kind === 'string' ? SHELF.find(r => r.kind === p.kind) : null;
+  if (!row && typeof p.name === 'string') { const n = p.name.toLowerCase(); row = SHELF.find(r => r.re.test(n)) || null; }
+  return row && row.days != null ? {kind: row.kind, hu: row.hu, days: row.days} : null;
+}
+// 'YYYY-MM-DD' + n nap (helyi naptár, számokból); hibás bemenetre null.
+function addDays(s, n) { const p = ymd(s); return p && Number.isInteger(n) ? fmtDay(new Date(p.y, p.m - 1, p.d + n)) : null; }
+// Hány naptári nap van hátra (negatív: lejárt) — UTC-napokból, így az óraátállítás nem zavar.
+function daysLeft(s, from) {
+  const a = ymd(s), b = ymd(from);
+  return a && b ? Math.round((Date.UTC(a.y, a.m - 1, a.d) - Date.UTC(b.y, b.m - 1, b.d)) / 864e5) : null;
+}
+const openDays = p => (isObj(p) && Number.isInteger(p.open_days) && p.open_days >= 1 && p.open_days <= 365 ? p.open_days : null);
+// A tétel tényleges lejárata: a csomagon lévő dátum (expires) és a felbontás + napok közül a
+// korábbi. A napok: a csomag felirata (open_days), különben az irányelv; ha egyik sincs, a
+// felbontásból NEM számolunk dátumot. from: 'printed' | 'opened' (irányelv) | 'label' (felirat).
+// null, ha a tételnek nincs érvényes dátuma.
+function expiry(it, p) {
+  if (!isObj(it)) return null;
+  const printed = ymd(it.expires) ? it.expires : null, opened = ymd(it.opened) ? it.opened : null;
+  if (!printed && !opened) return null;
+  const label = openDays(p), guide = label == null ? shelfGuide(p) : null;
+  const days = label != null ? label : guide ? guide.days : null;
+  const byOpen = opened && days != null ? addDays(opened, days) : null;
+  const date = printed && byOpen ? (byOpen < printed ? byOpen : printed) : printed || byOpen;
+  const from = !date ? null : date === byOpen && date !== printed ? (label != null ? 'label' : 'opened') : 'printed';
+  return {date, from, printed, opened, days, label: label != null, guide};
+}
+const whenText = n => (n == null ? '—' : n < 0 ? `lejárt ${-n} napja` : n === 0 ? 'ma lejár' : n === 1 ? 'holnap lejár' : `${n} nap múlva`);
+
 // ── állapot ─────────────────────────────────────────────────────────────────────
 // mode: 'boot' | 'demo' | 'live' (betöltve) | 'error' (nem töltődött be) | 'unpaired'
 // doc: amit a lap mutat (a még nem mentett lépésekkel); base: a szerveren lévő állapot.
-const S = {mode: 'boot', doc: null, base: null, card: null, found: Object.create(null), err: ''};
+const S = {mode: 'boot', doc: null, base: null, card: null, found: Object.create(null), err: '', bulk: {on: false, list: []}};
 // A mentési sor: pending = a base óta tett, még nem mentett lépések.
 const Q = {pending: [], timer: null, running: null, again: false, unsaved: false, last: null, wake: null};
 const canWrite = () => S.mode === 'live' && !!WRITE_KEY && !!S.base && !!S.doc;
@@ -430,7 +544,7 @@ function status() {
 }
 function draw() {
   status();
-  render({mode: S.mode, edit: canEdit(), today: today(), doc: S.doc, card: S.card, found: S.found});
+  render({mode: S.mode, edit: canEdit(), today: today(), doc: S.doc, card: S.card, found: S.found, bulk: S.bulk});
 }
 
 // A felület. Minden, ami innerHTML-be megy, ITT megy, és a deepEscape után.
@@ -474,10 +588,23 @@ function render(d) {
   }
   $('productCard').innerHTML = card;
 
+  // ── bevásárlás: a kör futó listája (kódonként hány csomag; −1 = egyet vissza) ──
+  const B = isObj(d.bulk) && Array.isArray(d.bulk.list) ? d.bulk : {on: false, list: []};
+  $('bulkBox').innerHTML = !B.on && !B.list.length ? '' : `<p class="empty" style="margin-top:.6rem">${B.on
+      ? 'Bevásárlás: minden beolvasott csomag +1 a kamrába. Ugyanazt még egyszer: vedd ki egy pillanatra a képből (vagy +1).'
+      : 'Az előző bevásárlás ebben a körben:'}</p>` + B.list.filter(isObj).map(e => {
+    const p = prod(e.code), nm = e.state === 'lookup' ? 'keresem…' : p && p.source !== 'pending' ? text(p.name) || '—' : 'Rendezendő';
+    const btn = edit && idAttr(e.code) ? `<div class="act"><button type="button" class="sq ghost" data-act="bulk-undo"${idAttr(e.code)} aria-label="Egyet vissza">−1</button>
+        <button type="button" class="sq ghost" data-act="bulk-more"${idAttr(e.code)} aria-label="Még egy">+1</button></div>` : '';
+    return `<div class="item"><div class="txt"><div class="nm">${nm}${fin(e.n) > 0 ? ' ×' + e.n : ''}</div><div class="sub">${text(e.code)}</div></div>${btn}</div>`;
+  }).join('');
+
   if (!doc) {
     const why = d.mode === 'boot' ? 'Betöltés…' : 'Nincs megjeleníthető adat.';
     $('todayBody').innerHTML = `<p class="empty">${why}</p>`;
     $('pantryBody').innerHTML = `<p class="empty">${why}</p>`;
+    $('soonBody').innerHTML = `<p class="empty">${why}</p>`;
+    $('todoSec').hidden = true;
     return;
   }
 
@@ -525,15 +652,49 @@ function render(d) {
 
   // ── kamra ──
   const pantry = (Array.isArray(doc.pantry) ? doc.pantry : []).filter(isObj);
+  const dt = s => { const x = ymd(s); return x ? `${x.y}. ${p2(x.m)}. ${p2(x.d)}.` : '—'; };
+  const tone = n => (n == null ? '' : n <= 0 ? 'soon-bad' : n === 1 ? 'soon-warn' : '');
+  // Miért ez a dátum: a csomag dátuma, vagy a felbontás + a csomag felirata / az általános irányelv.
+  const why = x => (x.from === 'label' ? ` · felbontva ${dt(x.opened)}, a csomag szerint ${x.days} napig`
+    : x.from === 'opened' ? ` · felbontva ${dt(x.opened)}; irányelv: ${x.guide ? x.guide.hu : '—'}, ${x.days} nap` : '');
+  const isPending = p => !!p && p.source === 'pending';
   $('pantryBody').innerHTML = pantry.length ? pantry.map(it => {
-    const id = idAttr(it.id);
+    const id = idAttr(it.id), p = prod(it.code), x = expiry(it, p), n = x && x.date ? daysLeft(x.date, d.today) : null;
+    const info = x && x.date ? `<div class="sub ${tone(n)}">lejár: ${dt(x.date)} · ${whenText(n)}${why(x)}</div>`
+      : x && x.opened ? `<div class="sub">felbontva: ${dt(x.opened)} · eltarthatósága ismeretlen (add meg a Dátumok…-ban)</div>` : '';
     const act = edit && id ? `<div class="act"><button type="button" class="sq" data-act="pantry-dec"${id} aria-label="Kevesebb">−</button>
         <button type="button" class="sq" data-act="pantry-inc"${id} aria-label="Több">+</button></div>` : '';
     const more = edit && id ? `<div class="row" style="margin-top:.35rem"><button type="button" data-act="pantry-eat"${id} style="flex:1 1 0">Megettem…</button>
-        <button type="button" class="ghost" data-act="pantry-del"${id}>Eltávolítás</button></div>` : '';
-    return `<div class="item" style="flex-wrap:wrap"><div class="txt"><div class="nm">${text(it.name) || '—'}</div><div class="qty">${qtyText(it)}</div></div>${act}
+        <button type="button" class="ghost" data-act="pantry-del"${id}>Eltávolítás</button></div>
+        <div class="row" style="margin-top:.35rem">${x && x.opened ? '' : `<button type="button" data-act="pantry-open"${id} style="flex:1 1 0">Felbontottam</button>`}
+        <button type="button" class="ghost" data-act="item-open"${id} style="flex:1 1 0">Dátumok…</button></div>` : '';
+    return `<div class="item" style="flex-wrap:wrap"><div class="txt"><div class="nm">${text(it.name) || '—'}${isPending(p) ? ' <small>(Rendezendő)</small>' : ''}</div>
+      <div class="qty">${qtyText(it)}</div>${info}</div>${act}
       <div style="flex:1 1 100%;min-width:0">${more}</div></div>`;
   }).join('') : '<p class="empty">A kamra üres. Szkennelj be egy terméket, és tedd a kamrába.</p>';
+
+  // ── Hamarosan lejár: a SOON napon belül lejáró és a már lejárt tételek, dátum szerint ──
+  const soon = pantry.map(it => ({it, x: expiry(it, prod(it.code))}))
+    .filter(o => o.x && o.x.date && daysLeft(o.x.date, d.today) <= SOON)
+    .sort((a, b) => (a.x.date < b.x.date ? -1 : a.x.date > b.x.date ? 1 : 0));
+  $('soonBody').innerHTML = soon.length ? soon.map(({it, x}) => {
+    const n = daysLeft(x.date, d.today);
+    return `<div class="item"><div class="txt"><div class="nm">${text(it.name) || '—'}</div>
+      <div class="sub ${tone(n)}">${whenText(n)} · ${dt(x.date)}${why(x)}</div></div></div>`;
+  }).join('') + (soon.some(o => o.x.from === 'opened') ? '<p class="empty" style="margin-top:.4rem">Az „irányelv” általános, óvatos becslés a termékfajta alapján — ha a csomagon más áll, az számít.</p>' : '')
+    : `<p class="empty">${SOON} napon belül semmi nem jár le.</p>`;
+
+  // ── Rendezendő: szkennelt, még ismeretlen termékek (kódonként) ──
+  const todo = [];
+  for (const it of pantry) {
+    if (!isPending(prod(it.code))) continue;
+    const t = todo.find(o => o.code === it.code);
+    if (t) t.qty = r2(t.qty + (fin(it.qty) || 0)); else todo.push({code: it.code, qty: fin(it.qty) || 0, unit: it.unit, added: it.added});
+  }
+  $('todoSec').hidden = !todo.length;
+  $('todoBody').innerHTML = todo.map(t => `<div class="item"><div class="txt"><div class="nm">${text(t.code) || '—'}</div>
+      <div class="sub">${qtyText(t)} · szkennelve: ${dt(t.added)}</div></div>
+      ${edit && idAttr(t.code) ? `<div class="act"><button type="button" data-act="todo-fill"${idAttr(t.code)}>Kitöltöm</button></div>` : ''}</div>`).join('');
 }
 
 // ── betöltés ────────────────────────────────────────────────────────────────────
@@ -723,29 +884,44 @@ function openManual(code, note) {
 }
 // A terméket a dokumentum products térképébe tesszük (gyorsítótár: legközelebb hálózat nélkül jön).
 const keep = (code, p) => doc => { if (own(doc.products, code)) return false; doc.products[code] = clone(p); };
-async function lookup(raw, scanned) {
-  const code = String(raw == null ? '' : raw).trim();
-  say('');
-  if (!code) { say('Írj be egy vonalkódot, vagy szkennelj.'); return; }
-  if (product(code)) { showCard(code); return; }
-  if (!/^\d{6,14}$/.test(code)) { openManual('', 'Ez nem termék-vonalkód (a beolvasott kód nem csak számjegy). Vidd fel kézzel.'); return; }
+const isPend = p => isObj(p) && p.source === 'pending';
+// A függő (Rendezendő) termék helyére a valódi adat; a helyőrző nevű kamratételek is átneveződnek.
+// Ha közben máshol már kitöltötték (nem függő), nem nyúl hozzá.
+const adopt = (code, p) => doc => {
+  if (own(doc.products, code) && !isPend(doc.products[code])) return false;
+  doc.products[code] = clone(p);
+  const name = String(p.name || 'Névtelen termék').slice(0, 200);
+  for (const it of doc.pantry) if (isObj(it) && it.code === code && it.name === PENDING_NAME) it.name = name;
+};
+async function offFind(code) {
   let j = null, net = false;
   try {
     const r = await fetch(OFF_URL + encodeURIComponent(code) + '?fields=' + OFF_FIELDS, {signal: timeout(10000)});
     try { j = await r.json(); } catch (e) { j = null; net = !r.ok && r.status !== 404; }
   } catch (e) { net = true; }
-  const p = net ? null : offToProduct(j);
+  return {p: net ? null : offToProduct(j), net};
+}
+async function lookup(raw, scanned) {
+  const code = String(raw == null ? '' : raw).trim();
+  say('');
+  if (!code) { say('Írj be egy vonalkódot, vagy szkennelj.'); return; }
+  const known = product(code);
+  if (known && !isPend(known)) { showCard(code); return; }
+  if (!/^\d{6,14}$/.test(code)) { openManual('', 'Ez nem termék-vonalkód (a beolvasott kód nem csak számjegy). Vidd fel kézzel.'); return; }
+  const {p, net} = await offFind(code);
   if (!p) {
     // Szkennelt kódnál a félreolvasás is lehet az ok — ezt a felhasználó csak a dobozon látja.
     openManual(code, net ? 'Az Open Food Facts most nem érhető el (hálózati hiba). Vidd fel kézzel, vagy próbáld később.'
       : scanned ? 'A beolvasott kód (' + code + ') nincs az Open Food Facts adatbázisában. Nézd meg, egyezik-e a vonalkód alatti számmal: '
                   + 'ha nem, a kamera tévedett — szkenneld újra, vagy írd be a számot. Ha egyezik, vidd fel kézzel.'
+      : known ? 'Ez a Rendezendő termék nincs az Open Food Facts adatbázisában. Vidd fel kézzel a csomagolás alapján.'
       : 'Ez a vonalkód nem található az Open Food Facts adatbázisában. Vidd fel kézzel.');
     return;
   }
   S.found[code] = p;
   // Lusta mentés: a puszta keresés nem ér külön írást (napi keret) — a következő lépéssel megy.
-  if (canEdit()) change(keep(code, p), 'lazy');
+  // A Rendezendő termék kitöltése viszont valódi lépés: azonnal megy.
+  if (canEdit()) { if (known) change(adopt(code, p)); else change(keep(code, p), 'lazy'); }
   showCard(code);
 }
 function saveManual() {
@@ -765,20 +941,23 @@ function saveManual() {
     showCard(code);
     return Promise.resolve(false);
   }
-  const c = change(doc => { doc.products[code] = clone(p); });
+  const c = change(doc => {
+    const was = own(doc.products, code) && isPend(doc.products[code]);
+    doc.products[code] = clone(p);
+    if (was) for (const it of doc.pantry) if (isObj(it) && it.code === code && it.name === PENDING_NAME) it.name = name;
+  });
   if (c.ok) { say('Felvéve: ' + name); showCard(code); }
   return c.done;
 }
 
 // ── kamra ───────────────────────────────────────────────────────────────────────
-function addPantry(code, unit, qty) {
-  const p = product(code);
-  if (!p) return nope('Ehhez előbb keress vagy vigyél fel egy terméket.');
-  if ((unit !== 'pack' && unit !== 'g') || !amount(qty)) return nope('A mennyiség 0-nál nagyobb szám legyen.');
+// A kamrába tesz: ha már van ilyen tétel (ugyanaz a termék és egység), BONTATLAN és DÁTUM NÉLKÜLI,
+// abba olvasztjuk — a CÉLmennyiséggel, nem "+qty"-vel: így a lépés újra-alkalmazva (409 után) sem
+// érvényesül kétszer. A felbontott vagy lejárati dátumos tételbe nem: az új csomag külön tétel.
+function pantryPut(code, p, unit, qty, kind) {
   const id = rid('p_'), added = today(), name = String(p.name || 'Névtelen termék').slice(0, 200);
-  // Ha már van ilyen tétel (ugyanaz a termék és egység), abba olvasztjuk — a CÉLmennyiséggel,
-  // nem "+qty"-vel: így a lépés újra-alkalmazva (409 után) sem érvényesül kétszer.
-  const old = S.doc.pantry.find(x => isObj(x) && x.code === code && x.unit === unit && typeof x.id === 'string' && fin(x.qty) != null);
+  const old = S.doc.pantry.find(x => isObj(x) && x.code === code && x.unit === unit && typeof x.id === 'string' && fin(x.qty) != null
+                                     && !own(x, 'opened') && !own(x, 'expires'));
   const target = old ? Math.min(MAXN, r2(old.qty + qty)) : qty;
   const c = change(doc => {
     // Újra-alkalmazáskor: ha a mi új tételünk már ott van, az írásunk célba ért, csak a válasz veszett el.
@@ -789,8 +968,15 @@ function addPantry(code, unit, qty) {
     if (i >= 0) { if (doc.pantry[i].qty !== target) { doc.pantry[i].qty = target; any = true; } }
     else { doc.pantry.push({id, code, name, qty: target, unit, added}); any = true; }
     if (!any) return false;
-  });
-  if (c.ok) say('A kamrába került: ' + name);
+  }, kind);
+  return Object.assign(c, {id: old ? old.id : id, name});
+}
+function addPantry(code, unit, qty) {
+  const p = product(code);
+  if (!p) return nope('Ehhez előbb keress vagy vigyél fel egy terméket.');
+  if ((unit !== 'pack' && unit !== 'g') || !amount(qty)) return nope('A mennyiség 0-nál nagyobb szám legyen.');
+  const c = pantryPut(code, p, unit, qty);
+  if (c.ok) say('A kamrába került: ' + c.name);
   return c.done;
 }
 const pantryAt = (doc, id) => doc.pantry.findIndex(x => isObj(x) && typeof id === 'string' && x.id === id);
@@ -811,6 +997,75 @@ function pantryStep(id, dir) {
 }
 function pantryRemove(id) {
   return change(doc => { const i = pantryAt(doc, id); if (i < 0) return false; doc.pantry.splice(i, 1); }).done;
+}
+// Felbontottam: több csomagból EGYET bont le (külön, felbontott tétel — a többi bontatlan marad, a
+// saját lejáratával), egyetlen csomagot vagy grammos tételt helyben jelöl. Az új tétel azonosítója
+// a lépés része: újra-alkalmazva (409 / elveszett válasz után) sem bont kétszer.
+function openPack(id) {
+  const cur = S.doc ? S.doc.pantry[pantryAt(S.doc, id)] : null;
+  if (!cur || fin(cur.qty) == null) return Promise.resolve(false);
+  if (ymd(cur.opened)) return nope('Ez már fel van bontva.');
+  const day = today(), nid = rid('p_');
+  const c = change(doc => {
+    if (doc.pantry.some(x => isObj(x) && x.id === nid)) return false;
+    const i = pantryAt(doc, id);
+    if (i < 0) return false;
+    const it = doc.pantry[i];
+    if (it.unit === 'pack' && fin(it.qty) > 1) {
+      const o = {id: nid, code: it.code, name: it.name, qty: 1, unit: 'pack', added: it.added};
+      if (own(it, 'expires')) o.expires = it.expires;
+      o.opened = day;
+      it.qty = r2(it.qty - 1);
+      doc.pantry.splice(i + 1, 0, o);
+    } else { if (own(it, 'opened')) return false; it.opened = day; }
+  });
+  if (c.ok) say('Felbontva: ' + String(cur.name || '').slice(0, 200));
+  return c.done;
+}
+// Dátumok űrlap: lejárat és felbontás a tételre, a csomag „felbontás után X napon belül”
+// felirata a termékre (a következő csomagokra is érvényes). Üres mező = a kulcs törlése.
+const ITEM = {id: null};
+function openItem(id) {
+  const it = S.doc ? S.doc.pantry[pantryAt(S.doc, id)] : null;
+  if (!it) return;
+  const p = product(it.code), g = shelfGuide(p);
+  ITEM.id = id;
+  $('iName').textContent = String(it.name || '—');
+  $('iExp').value = ymd(it.expires) ? it.expires : '';
+  $('iOpened').value = ymd(it.opened) ? it.opened : '';
+  $('iDays').value = openDays(p) != null ? String(p.open_days) : '';
+  $('iGuide').textContent = g ? `Általános, óvatos irányelv (${g.hu}): felbontás után kb. ${g.days} nap, hűtőben. Ha a csomagon más áll, írd be fent — az számít.`
+    : 'Ehhez a termékhez nincs általános irányelv. Ha a csomagon áll, hány napig jó felbontás után, írd be fent.';
+  $('itemForm').hidden = false;
+}
+function saveItem() {
+  const id = ITEM.id, it = S.doc && id ? S.doc.pantry[pantryAt(S.doc, id)] : null;
+  if (!it) { $('itemForm').hidden = true; return Promise.resolve(false); }
+  const v = k => String($(k).value == null ? '' : $(k).value).trim();
+  const exp = v('iExp'), opn = v('iOpened'), ds = v('iDays');
+  if (exp && !ymd(exp)) return nope('A lejárat nem valódi dátum.');
+  if (opn && !ymd(opn)) return nope('A felbontás napja nem valódi dátum.');
+  if (opn && opn > today()) return nope('A felbontás napja nem lehet a jövőben.');
+  const days = ds ? (/^\d{1,3}$/.test(ds) ? Number(ds) : NaN) : null;
+  if (days != null && !(days >= 1 && days <= 365)) return nope('A „felbontás után ennyi napon belül” egész szám legyen 1 és 365 között (vagy maradjon üres).');
+  if (!canEdit()) return change(() => false).done;            // kiírja, miért nem ír
+  const code = typeof it.code === 'string' ? it.code : null;
+  const c = change(doc => {
+    const i = pantryAt(doc, id);
+    if (i < 0) return false;
+    let any = false;
+    const put = (o, k, val) => {
+      if (val == null) { if (own(o, k)) { delete o[k]; any = true; } }
+      else if (o[k] !== val) { o[k] = val; any = true; }
+    };
+    put(doc.pantry[i], 'expires', exp || null);
+    put(doc.pantry[i], 'opened', opn || null);
+    if (code && own(doc.products, code) && isObj(doc.products[code])) put(doc.products[code], 'open_days', days);
+    if (!any) return false;
+  });
+  $('itemForm').hidden = true;
+  say(c.ok ? 'Mentve: ' + String(it.name || '').slice(0, 200) : 'Nem változott semmi.');
+  return c.done;
 }
 
 // ── napló ───────────────────────────────────────────────────────────────────────
@@ -909,7 +1164,7 @@ function saveTargets() {
 
 // ── szkennelés ──────────────────────────────────────────────────────────────────
 const WANT = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'qr_code'];
-const scan = {gen: 0, on: false, stream: null, timer: null, reader: null, last: '', seen: 0};
+const scan = {gen: 0, on: false, stream: null, timer: null, reader: null, last: '', seen: 0, bulk: false, held: new Map()};
 // Egyetlen leolvasás nem elég (2026-11-17, valódi iPhone): az Oat Barista 5701977002961-es
 // kódjából a ZXing egy képkockán ellenőrzőjegyre is stimmelő, de hamis EAN-8-at olvasott
 // (21910029). Ezért ugyanazt a kódot egymás után többször kell látni: a hosszút kétszer, a
@@ -934,7 +1189,8 @@ function loadZXing() {
   return zxLoading;
 }
 function stopScan() {
-  scan.gen++; scan.on = false; scan.last = ''; scan.seen = 0;
+  const wasBulk = scan.bulk;
+  scan.gen++; scan.on = false; scan.bulk = false; scan.last = ''; scan.seen = 0; scan.held = new Map();
   clearTimeout(scan.timer); scan.timer = null;
   if (scan.reader) { try { scan.reader.reset(); } catch (e) {} scan.reader = null; }
   if (scan.stream) { try { scan.stream.getTracks().forEach(t => t.stop()); } catch (e) {} scan.stream = null; }
@@ -942,6 +1198,66 @@ function stopScan() {
   try { if (v.pause) v.pause(); } catch (e) {}
   v.srcObject = null;
   $('scanBox').hidden = true;
+  if (wasBulk) { S.bulk.on = false; draw(); if (Q.pending.length && !Q.unsaved) kick(); }   // a kör végén azonnal mentünk
+}
+
+// ── bevásárlás mód: a kamera bekapcsolva marad, minden egyező beolvasás +1 csomag ──
+// Hangjelzés csak a Bevásárlás gomb érintése után (az iOS csak érintésre engedi a hangot);
+// ahol nincs hang vagy rezgés (iPhone: rezgés nincs), a futó lista a visszajelzés.
+const sound = {ctx: null};
+function unlockSound() {
+  try { const A = window.AudioContext || window.webkitAudioContext; if (A && !sound.ctx) sound.ctx = new A(); if (sound.ctx && sound.ctx.resume) sound.ctx.resume(); }
+  catch (e) { sound.ctx = null; }
+}
+function beep(low) {
+  try { if (navigator.vibrate) navigator.vibrate(low ? [60, 60, 60] : 60); } catch (e) {}
+  try {
+    const c = sound.ctx;
+    if (!c) return;
+    const o = c.createOscillator(), g = c.createGain();
+    o.frequency.value = low ? 440 : 880; g.gain.value = 0.08;
+    o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + 0.12);
+  } catch (e) {}
+}
+const pendingProduct = () => ({name: PENDING_NAME, brand: null, per100: {kcal: null, protein: null, carbs: null, fat: null},
+                               pack_g: null, serving_g: null, source: 'pending', added: today()});
+// Egy kép-olvasat bevásárlás módban. A kézben tartott (épp elfogadott) kódot a kamera újra és újra
+// látja: amíg T.again ms-on belül újra feltűnik, nem számoljuk — csak ha közben eltűnt a képből.
+function bulkRead(text) {
+  const code = String(text == null ? '' : text).trim(), now = Date.now();
+  if (!code) return;
+  for (const [c, t] of scan.held) if (now - t >= T.again) scan.held.delete(c);
+  if (scan.held.has(code)) { scan.held.set(code, now); return; }
+  if (!agreed(code)) return;
+  scan.last = ''; scan.seen = 0;
+  scan.held.set(code, now);
+  bulkAdd(code);
+}
+// +1 csomag a kamrába. Ismert termék azonnal; ismeretlen kódnál OFF-keresés, és ha ott sincs (vagy
+// nincs hálózat), Rendezendő helyőrző termék — a szkennelés NEM áll meg. Kódonként sorban megy.
+function bulkAdd(code) {
+  if (!/^\d{6,14}$/.test(code)) { say('Ez nem termék-vonalkód — kihagytam.'); return Promise.resolve(false); }
+  let e = S.bulk.list.find(x => x.code === code);
+  if (!e) { e = {code, n: 0, ids: [], state: product(code) ? 'ok' : 'lookup'}; S.bulk.list.unshift(e); draw(); }
+  e.wait = (e.wait || Promise.resolve()).then(async () => {
+    let p = product(code);
+    if (!p) { const r = await offFind(code); p = r.p; if (p) S.found[code] = p; }
+    const c = pantryPut(code, p || pendingProduct(), 'pack', 1, 'tap');
+    e.state = !p || isPend(p) ? 'pending' : 'ok';
+    if (c.ok) { e.n++; e.ids.push(c.id); beep(e.state === 'pending'); }
+    draw();
+    return c.ok;
+  }).catch(() => { say('Váratlan hiba a bevásárlás közben — ez a csomag nem került a kamrába. Próbáld a +1-gyel.'); return false; });
+  return e.wait;
+}
+// −1: az utolsó hozzáadott csomag vissza (abból a tételből, amelyikbe ment); +1: még egy ugyanabból.
+function bulkUndo(code) {
+  const e = S.bulk.list.find(x => x.code === code);
+  if (!e || !e.ids.length) return Promise.resolve(false);
+  const id = e.ids.pop();
+  e.n = Math.max(0, e.n - 1);
+  if (!e.n) S.bulk.list = S.bulk.list.filter(x => x !== e);
+  return pantryStep(id, -1);
 }
 function hit(text) {
   stopScan();                                    // találat után a kamera azonnal leáll
@@ -949,9 +1265,15 @@ function hit(text) {
   $('codeIn').value = /^\d{6,14}$/.test(code) ? code : '';
   return lookup(code, true);
 }
-async function startScan() {
+async function startScan(bulk) {
   if (scan.on) return;
   say('');
+  // A bevásárlás csak író lapon indul (párosítva, írókulccsal, betöltve; vagy a demóban).
+  if (bulk && !canEdit()) return say(S.mode === 'live' ? 'A bevásárláshoz írókulcs kell ebben a böngészőben (kamra.html#nkey=…).'
+                                                       : 'A bevásárlás csak betöltött adattal indul (párosítás vagy Újratöltés).');
+  scan.bulk = !!bulk; scan.held = new Map();
+  S.bulk = {on: !!bulk, list: []};
+  if (bulk) { unlockSound(); draw(); }
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
     return say('Ez a böngésző itt nem ad kamerát. Írd be a vonalkódot kézzel.');
   scan.on = true;
@@ -978,7 +1300,10 @@ async function startScan() {
         try {
           const r = await det.detect(v);
           if (stale()) return;
-          if (r && r.length && r[0].rawValue != null && agreed(r[0].rawValue)) { hit(r[0].rawValue); return; }
+          if (r && r.length && r[0].rawValue != null) {
+            if (scan.bulk) bulkRead(r[0].rawValue);
+            else if (agreed(r[0].rawValue)) { hit(r[0].rawValue); return; }
+          }
         } catch (e) { /* a videó még nem kész — a következő körben újra */ }
         scan.timer = setTimeout(tick, 200);
       };
@@ -995,7 +1320,8 @@ async function startScan() {
     Promise.resolve(scan.reader.decodeFromStream(stream, v, (res, err) => {
       if (stale() || !res) return;               // a találat nélküli képkocka nem hiba
       const t = res.getText();
-      if (agreed(t)) hit(t);
+      if (scan.bulk) bulkRead(t);
+      else if (agreed(t)) hit(t);
     })).catch(() => { if (!stale()) { stopScan(); say('A kamera képe nem olvasható. Írd be a vonalkódot kézzel.'); } });
   } catch (e) {
     if (stale()) return;
@@ -1042,7 +1368,15 @@ function demoDoc() {
 
 // ── gombok: egyetlen kattintás-figyelő (a kirajzolt gombok data-act-je alapján) ──
 const ACTS = {
-  'scan-start': () => startScan(),
+  'scan-start': () => startScan(false),
+  'bulk-start': () => startScan(true),
+  'bulk-undo': code => bulkUndo(code),
+  'bulk-more': code => bulkAdd(code),
+  'pantry-open': id => openPack(id),
+  'item-open': id => openItem(id),
+  'item-save': () => saveItem(),
+  'item-close': () => { $('itemForm').hidden = true; },
+  'todo-fill': code => lookup(code),
   'scan-stop': () => stopScan(),
   'lookup': () => lookup($('codeIn').value),
   'manual-open': () => openManual('', ''),
@@ -1085,7 +1419,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target &&
 
 // Tesztekhez és hibakereséshez — a lap gombjai ugyanezeket hívják.
 const Kamra = {offToProduct, macros, totals, weekday, weekDates, lookup, saveManual, addPantry, pantryStep, pantryRemove, eat, logDelete,
-               setDay, maintenanceWeek, openTargets, saveTargets, startScan, stopScan, load, flush: () => kick(), timing: T, doc: () => S.doc};
+               setDay, maintenanceWeek, openTargets, saveTargets, startScan, stopScan, load, flush: () => kick(), timing: T, doc: () => S.doc,
+               kindFromTags, shelfGuide, expiry, daysLeft, openPack, openItem, saveItem, bulkAdd, bulkUndo, SHELF};
 
 window.addEventListener('DOMContentLoaded', () => {
   if (DEMO) $('homeLink').href = './?demo=1';

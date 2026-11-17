@@ -270,6 +270,18 @@ data and never writes.
   defensively and every string is escaped on render. A missing nutriment is "—", never
   0, and a day total that includes one is shown as "legalább X" (at least X). Unknown
   barcodes and network failures fall back to a manual-entry form.
+- *Shopping mode (Bevásárlás).* The camera stays on; every agreed read adds one pack to
+  the pantry, with a running list that has −1 / +1 per code. A code that stays in view is
+  not counted again until it has been out of view for 1.5 s. An unknown code does not stop
+  scanning: it gets a `pending` placeholder product and shows up under "Rendezendő" (to
+  sort out), where "Kitöltöm" retries Open Food Facts or opens the manual form.
+- *Expiry and opening.* Each pantry item can have a printed expiry date (`expires`) and an
+  opening date (`opened`). "Felbontottam" splits one pack off a multi-pack item. After
+  opening, a conservative built-in table (by Open Food Facts category, then name keywords)
+  gives a general shelf-life guideline in days; a "use within X days of opening" figure
+  from the pack (`open_days` on the product) overrides it, and an unknown product type gets
+  no number at all. The effective date is the earlier of the two, and "Hamarosan lejár"
+  lists everything due within 3 days or already past.
 - *Write key.* Set once with `…/health/kamra.html#nkey=<write key>`, under the same
   rules as the read link (fragment only, removed from the address bar first, confirmation
   with the host name). It can only be attached to an already-paired endpoint, and it is

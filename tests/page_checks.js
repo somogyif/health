@@ -1530,7 +1530,7 @@ const OFF_TUNA = {code: '8004030341234', product_name: 'Tonhal', brands: 'Rio Ma
 check('kamra keresés: az OFF v2 végpontot kéri a megadott mezőkkel, kulcs és fejléc nélkül; a találat kártyán jelenik meg', async () => {
   const {K, srv, p, txt} = await kamra(null, {off: offOk(OFF_TUNA)});
   await K.lookup(' 8004030341234 ');
-  must(srv.off.length === 1 && srv.off[0] === 'https://world.openfoodfacts.org/api/v2/product/8004030341234?fields=code,product_name,brands,quantity,product_quantity,product_quantity_unit,serving_quantity,nutriments', `OFF-kérés: ${srv.off}`);
+  must(srv.off.length === 1 && srv.off[0] === 'https://world.openfoodfacts.org/api/v2/product/8004030341234?fields=code,product_name,brands,quantity,product_quantity,product_quantity_unit,serving_quantity,nutriments,categories_tags', `OFF-kérés: ${srv.off}`);
   const f = p.calls.fetch.find(x => x.url.includes('openfoodfacts'));
   must(!(f.init.headers || {}).Authorization && !JSON.stringify(f.init).includes(KEY) && !JSON.stringify(f.init).includes(NKEY), 'kulcs ment az OFF felé');
   const t = txt('productCard');
@@ -2077,15 +2077,15 @@ check('kamra szkenner: BarcodeDetector nélkül (iPhone Safari) a ZXing CSAK ekk
 });
 // ZXing-es (iPhone-os) szkennelés hamis könyvtárral; z.read(t) = egy sikeres képkocka t kóddal.
 // Ha a könyvtár már betöltődött (második szkennelés ugyanazon a lapon), nincs új <script>.
-async function zxingScan(K, p) {
+async function zxingScan(K, p, bulk) {
   const z = {cb: null, resets: 0};
   const fake = {DecodeHintType: {POSSIBLE_FORMATS: 2}, BarcodeFormat: {EAN_13: 7, EAN_8: 6, UPC_A: 14, UPC_E: 15, QR_CODE: 11},
     BrowserMultiFormatReader: class { decodeFromStream(st, v, cb) { z.cb = cb; return Promise.resolve(); } reset() { z.resets++; } }};
-  if (p.ctx.ZXing) { p.ctx.ZXing = fake; await K.startScan(); await settle(); }
+  if (p.ctx.ZXing) { p.ctx.ZXing = fake; await K.startScan(bulk); await settle(); }
   else {
     const orig = p.ctx.document.createElement, made = [];
     p.ctx.document.createElement = tag => { const e = orig(tag); e.tag = tag; made.push(e); return e; };
-    const run = K.startScan();
+    const run = K.startScan(bulk);
     for (let i = 0; i < 40 && !made.some(e => e.tag === 'script'); i++) await new Promise(r => setTimeout(r, 10));
     const s = made.find(e => e.tag === 'script');
     p.ctx.document.createElement = orig;
@@ -2175,6 +2175,10 @@ function invalidDoc(d) {
   const errs = [], bad = m => errs.push(m);
   const obj = v => !!v && typeof v === 'object' && !Array.isArray(v);
   const keys = (o, want, hol) => { const k = Object.keys(o).sort().join(), w = [...want].sort().join(); if (k !== w) bad(`${hol}: kulcsok [${k}] ≠ [${w}]`); };
+  // A Worker elhagyható kulcsai (kamra 2. kör): vagy hiányoznak, vagy érvényesek — null sem lehet.
+  const keysOpt = (o, want, opt, hol) => { const k = Object.keys(o);
+    if (!want.every(x => k.includes(x)) || !k.every(x => want.includes(x) || opt.includes(x))) bad(`${hol}: kulcsok [${k.sort()}] ≠ [${want}] + [${opt}]`); };
+  const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
   const num = (v, hol, pos) => { if (typeof v !== 'number' || !isFinite(v) || v < 0 || v > 100000 || (pos && v <= 0)) bad(`${hol}: szám ${JSON.stringify(v)}`); };
   const numN = (v, hol) => { if (v !== null) num(v, hol); };
   const date = (v, hol) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(typeof v === 'string' ? v : ''); const x = m && new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
@@ -2201,18 +2205,22 @@ function invalidDoc(d) {
     if (!code.length || code.length > 40) bad(`termékkód hossza: ${code}`);
     if (code.startsWith('m_') ? !/^m_[A-Za-z0-9]{4,32}$/.test(code) : !/^\d{6,14}$/.test(code)) bad(`termékkód: ${code}`);
     if (!obj(p)) { bad(`termék ${code}`); continue; }
-    keys(p, ['name', 'brand', 'per100', 'pack_g', 'serving_g', 'source', 'added'], `termék ${code}`);
+    keysOpt(p, ['name', 'brand', 'per100', 'pack_g', 'serving_g', 'source', 'added'], ['kind', 'open_days'], `termék ${code}`);
+    if (has(p, 'kind') && !(typeof p.kind === 'string' && /^[a-z][a-z_]{0,23}$/.test(p.kind))) bad(`kind ${code}: ${JSON.stringify(p.kind)}`);
+    if (has(p, 'open_days') && !(Number.isInteger(p.open_days) && p.open_days >= 1 && p.open_days <= 365)) bad(`open_days ${code}: ${JSON.stringify(p.open_days)}`);
     name(p.name, `termék ${code}`); if (p.brand !== null) name(p.brand, `márka ${code}`);
     if (obj(p.per100)) { keys(p.per100, ['kcal', 'protein', 'carbs', 'fat'], `per100 ${code}`); for (const k of Object.keys(p.per100)) numN(p.per100[k], `per100.${k} ${code}`); } else bad(`per100 ${code}`);
     numN(p.pack_g, `pack_g ${code}`); numN(p.serving_g, `serving_g ${code}`);
-    if (p.source !== 'off' && p.source !== 'manual') bad(`source ${code}`);
+    if (p.source !== 'off' && p.source !== 'manual' && p.source !== 'pending') bad(`source ${code}`);
     date(p.added, `added ${code}`);
   }
   const ids = new Set(), uniq = (id, hol) => { if (ids.has(id)) bad(`${hol}: ismétlődő azonosító ${id}`); ids.add(id); };
   const codeRef = (c, hol) => { if (c !== null && !(typeof c === 'string' && Object.prototype.hasOwnProperty.call(P, c))) bad(`${hol}: a code nem létező termékre mutat (${c})`); };
   if (!Array.isArray(d.pantry)) bad('pantry'); else for (const it of d.pantry) {
     if (!obj(it)) { bad('kamra-tétel'); continue; }
-    keys(it, ['id', 'code', 'name', 'qty', 'unit', 'added'], `kamra ${it.id}`);
+    keysOpt(it, ['id', 'code', 'name', 'qty', 'unit', 'added'], ['expires', 'opened'], `kamra ${it.id}`);
+    if (has(it, 'expires')) date(it.expires, `expires ${it.id}`);
+    if (has(it, 'opened')) date(it.opened, `opened ${it.id}`);
     if (!/^p_[A-Za-z0-9_-]{1,38}$/.test(it.id)) bad(`kamra-azonosító ${it.id}`); uniq(it.id, 'kamra');
     codeRef(it.code, `kamra ${it.id}`); name(it.name, `kamra ${it.id}`); num(it.qty, `qty ${it.id}`, true);
     if (it.unit !== 'pack' && it.unit !== 'g') bad(`unit ${it.id}`); date(it.added, `added ${it.id}`);
@@ -2716,6 +2724,207 @@ check('valódi Worker: a hibaválaszai úgy érkeznek, ahogy a lap kezeli — 42
   must(okF === false && f.p.el('unsavedBox').hidden === false && f.txt('todayBody').includes('HYROX'), `503 → 429: a lépés elveszett (${f.w.puts().map(x => x.status)})`);
 });
 
+// ════════════════════════════════════════════════════════════════════════════════
+// KAMRA 2. KÖR (2026-11-17 este, Feri döntései): lejárat, „Felbontottam”, Hamarosan lejár,
+// bevásárlás mód, Rendezendő. A felbontás utáni napok ÓVATOS, általános irányelvek a lap
+// táblájából; a csomag felirata (products[code].open_days) felülírja; ismeretlenre nincs szám.
+// ════════════════════════════════════════════════════════════════════════════════
+const MILK = {name: 'Friss tej 2,8%', brand: null, per100: {kcal: 64, protein: 3.4, carbs: 4.7, fat: 2.8},
+              pack_g: 1000, serving_g: 250, source: 'off', added: '2026-11-10'};
+const pend = (name = 'Ismeretlen termék') => ({name, brand: null, per100: {kcal: null, protein: null, carbs: null, fat: null},
+                                               pack_g: null, serving_g: null, source: 'pending', added: '2026-11-17'});
+const pit = (id, code, o = {}) => Object.assign({id, code, name: 'x', qty: 1, unit: 'pack', added: '2026-11-10'}, o);
+const clickAct = (p, act, id) => p.fire('document:click', {target: {closest: () => ({dataset: {act, id}})}, preventDefault() {}});
+
+check('kamra felbontás: óvatos irányelv a táblából — előbb a tárolt termékfajta (OFF-kategóriából), aztán a név szavai; ismeretlenre nincs kitalált nap', async () => {
+  const {K} = await kamra();
+  // az Oat Barista élő OFF-kategóriái (2026-11-17)
+  must(K.kindFromTags(['en:plant-based-foods-and-beverages', 'en:dairy-substitutes', 'en:milk-substitutes', 'da:Oat Barista']) === 'plant_milk', 'Oat Barista ≠ plant_milk');
+  must(K.kindFromTags(['en:dairies', 'en:milks']) === 'milk' && K.kindFromTags(['en:dairies', 'en:fermented-milk-products', 'en:yogurts']) === 'yogurt', 'tej / joghurt');
+  must(K.kindFromTags(['en:dairies', 'en:cheeses', 'en:hard-cheeses']) === 'hard_cheese' && K.kindFromTags(['en:cheeses']) === 'cheese', 'sajt');
+  must(K.kindFromTags(['en:snacks']) === null && K.kindFromTags(null) === null && K.kindFromTags([HOSTILE, 5]) === null, 'ismeretlen kategória');
+  const g = p => { const x = K.shelfGuide(p); return x ? `${x.kind}:${x.days}` : null; };
+  const want = {'Oat Barista': 'plant_milk:5', 'Zabital': 'plant_milk:5', 'Friss tej 2,8%': 'milk:3', 'Tejföl 20%': 'sour_cream:5',
+    'Habtejszín': 'cream:3', 'Görög joghurt 2%': 'yogurt:3', 'Kefir': 'yogurt:3', 'Trappista sajt': 'cheese:7', 'Parmezán': 'hard_cheese:21',
+    'Pulykamell sonka': 'sliced_meat:3', 'Málnalekvár': 'jam:30', 'Zabpehely': 'dry:90', 'Kókusztej': 'canned:3',
+    'Tonhal sós lében': 'fish:2', 'Csirkemell filé': 'raw_meat:1', 'Tejcsokoládé': null, 'Rejtély': null};
+  for (const [name, w] of Object.entries(want)) must(g({name}) === w, `${name}: ${g({name})} ≠ ${w}`);
+  must(g({name: 'Friss tej', kind: 'jam'}) === 'jam:30', 'a tárolt kind nem előzi meg a nevet');
+  must(g({name: 'Friss tej', kind: 'nincs_ilyen'}) === 'milk:3', 'ismeretlen tárolt kind mellett nem a név döntött');
+  must(g({name: HOSTILE}) === null && g(null) === null && g({name: 5}) === null, 'ismeretlen névre kitalált nap');
+  // az OFF-ból a fajta a termékbe kerül; kategória nélkül a kulcs HIÁNYZIK (nem null)
+  must(K.offToProduct({status: 1, product: {product_name: 'X', categories_tags: ['en:yogurts']}}).kind === 'yogurt', 'OFF → kind');
+  must(!('kind' in K.offToProduct({status: 1, product: {product_name: 'X'}})), 'kategória nélkül is lett kind kulcs');
+});
+
+check('kamra lejárat: a tényleges lejárat a csomag dátuma és a felbontás + napok közül a korábbi; a felirat felülírja a táblát; ismeretlen napra nincs kitalált dátum', async () => {
+  const {K} = await kamra();
+  const e = (it, p) => { const x = K.expiry(it, p); return x && x.date ? `${x.date}|${x.from}` : x ? 'nincs dátum' : null; };
+  must(e({expires: '2026-11-25', opened: '2026-11-17'}, MILK) === '2026-11-20|opened', `bontott tej: ${e({expires: '2026-11-25', opened: '2026-11-17'}, MILK)}`);
+  must(e({expires: '2026-11-25', opened: '2026-11-17'}, {...MILK, open_days: 2}) === '2026-11-19|label', 'a csomag felirata nem írta felül a táblát');
+  must(e({expires: '2026-11-18', opened: '2026-11-17'}, MILK) === '2026-11-18|printed', 'a korábbi csomag-dátum nem nyert');
+  must(e({opened: '2026-11-29'}, MILK) === '2026-12-02|opened', `hónapforduló: ${e({opened: '2026-11-29'}, MILK)}`);
+  must(e({opened: '2026-12-30'}, {...MILK, open_days: 3}) === '2027-01-02|label', 'évforduló');
+  must(e({opened: '2026-11-17'}, {...MILK, name: 'Rejtély'}) === 'nincs dátum', 'ismeretlen fajtára kitalált dátum');
+  must(e({expires: '2026-11-21', opened: '2026-11-17'}, {...MILK, name: 'Rejtély'}) === '2026-11-21|printed', 'ismeretlen napnál a csomag dátuma marad');
+  must(e({expires: '2026-02-30'}, MILK) === null && e({}, MILK) === null && e({expires: HOSTILE}, MILK) === null, 'hibás dátum nem lehet lejárat');
+});
+
+check('kamra Hamarosan lejár: a 3 napon belül lejáró és a már lejárt tétel, sorrendben, napokkal; a távoli és a dátum nélküli nem; ellenséges név szöveg marad', async () => {
+  const doc = {...emptyDoc(), products: {'111111': TUNA, '222222': MILK}, pantry: [
+    pit('p_far', '111111', {name: 'Távoli', expires: '2026-11-25'}),
+    pit('p_tom', '111111', {name: 'Holnapi', expires: '2026-11-18'}),
+    pit('p_old', '111111', {name: 'Régi', expires: '2026-11-16'}),
+    pit('p_opn', '222222', {name: 'Bontott tej', opened: '2026-11-16'}),
+    pit('p_today', '111111', {name: HOSTILE, expires: KDAY}),
+    pit('p_non', '111111', {name: 'Dátum nélkül'}),
+    pit('p_d3', '111111', {name: 'Harmadnapi', expires: '2026-11-20'}),
+    pit('p_d4', '111111', {name: 'Negyednapi', expires: '2026-11-21'})]};
+  const {txt, html} = await kamra(doc);
+  const t = txt('soonBody');
+  must(t.includes('Harmadnapi') && !t.includes('Negyednapi'), `a 3 napos határ: ${t}`);
+  const at = w => t.indexOf(w);
+  must(at('Régi') >= 0 && at('Régi') < at('onerror') && at('onerror') < at('Holnapi') && at('Holnapi') < at('Bontott tej'), `sorrend: ${t}`);
+  must(!t.includes('Távoli') && !t.includes('Dátum nélkül'), `távoli vagy dátum nélküli is bekerült: ${t}`);
+  must(/lejárt 1 napja/.test(t) && /ma lejár/.test(t) && /holnap lejár/.test(t) && /2 nap múlva/.test(t), `napok: ${t}`);
+  must(/felbontva/.test(t) && /irányelv/.test(t), `a bontott tételnél nem látszik, hogy irányelv: ${t}`);
+  noRaw(html('soonBody'), 'Hamarosan lejár'); noRaw(html('pantryBody'), 'kamra');
+  must(/lejár: 2026\. 11\. 25\./.test(txt('pantryBody')), `a kamra-listában nem látszik a lejárat: ${txt('pantryBody')}`);
+  const none = await kamra({...emptyDoc(), products: {'111111': TUNA}, pantry: [pit('p_far', '111111', {name: 'Távoli', expires: '2026-11-25'})]});
+  must(/3 napon belül semmi/.test(none.txt('soonBody')), `üres lista szövege: ${none.txt('soonBody')}`);
+});
+
+check('kamra Felbontottam: több csomagból EGYET bont le (a többi bontatlan), egyetlen csomagot helyben jelöl; elveszett válasz után sem bont kétszer', async () => {
+  const doc = {...emptyDoc(), products: {'222222': MILK}, pantry: [pit('p_milk', '222222', {name: 'Friss tej', qty: 3, expires: '2026-11-24'})]};
+  const {K, p, srv} = await kamra(doc, {putSeq: ['lost']});
+  clickAct(p, 'pantry-open', 'p_milk'); await settle(10);
+  await K.flush(); await settle(10);                       // Mentés újra: 409 → újratöltés → a lépés már célba ért
+  const pan = srv.doc.pantry;
+  must(pan.length === 2, `tételek: ${JSON.stringify(pan)}`);
+  const sealed = pan.find(x => x.id === 'p_milk'), open = pan.find(x => x.id !== 'p_milk');
+  must(sealed.qty === 2 && !('opened' in sealed) && sealed.expires === '2026-11-24', `bontatlan: ${JSON.stringify(sealed)}`);
+  must(open.qty === 1 && open.opened === KDAY && open.expires === '2026-11-24' && open.code === '222222' && open.name === 'Friss tej', `bontott: ${JSON.stringify(open)}`);
+  must(srv.rejected.length === 0 && JSON.stringify(K.doc().pantry) === JSON.stringify(pan), `elutasítva: ${srv.rejected} / a lap mást mutat`);
+  const one = await kamra({...emptyDoc(), products: {'222222': MILK}, pantry: [pit('p_one', '222222', {qty: 1}), pit('p_g', '222222', {qty: 400, unit: 'g'})]});
+  await one.K.openPack('p_one'); await one.K.openPack('p_g');
+  must(one.srv.doc.pantry.length === 2 && one.srv.doc.pantry.every(x => x.opened === KDAY), `helyben: ${JSON.stringify(one.srv.doc.pantry)}`);
+  const n = one.srv.puts.length;
+  await one.K.openPack('p_one');
+  must(one.srv.puts.length === n, 'a már bontott tételt újra bontotta (fölösleges írás)');
+});
+
+check('kamra dátumok: az űrlap a lejáratot és a felbontást a tételre, a csomag feliratát a termékre írja; az ürítés kulcsot töröl; rossz értékre nincs mentés', async () => {
+  const doc = {...emptyDoc(), products: {'222222': MILK}, pantry: [pit('p_milk', '222222', {name: HOSTILE})]};
+  const {K, p, srv, txt} = await kamra(doc);
+  p.el('itemForm').hidden = true;                          // a statikus hidden attribútum (az ál-DOM nem olvassa)
+  clickAct(p, 'item-open', 'p_milk');
+  must(p.el('itemForm').hidden === false && p.el('iName').textContent === HOSTILE, `űrlap: ${p.el('iName').textContent}`);
+  must(/friss tej/i.test(p.el('iGuide').textContent) && /3 nap/.test(p.el('iGuide').textContent), `irányelv: ${p.el('iGuide').textContent}`);
+  p.el('iExp').value = '2026-11-24'; p.el('iOpened').value = KDAY; p.el('iDays').value = '4';
+  await K.saveItem(); await settle(10);
+  let b = srv.doc;
+  must(b.pantry[0].expires === '2026-11-24' && b.pantry[0].opened === KDAY && b.products['222222'].open_days === 4, `mentve: ${JSON.stringify(b.pantry[0])} ${b.products['222222'].open_days}`);
+  must(p.el('itemForm').hidden, 'az űrlap nyitva maradt');
+  clickAct(p, 'item-open', 'p_milk');
+  must(p.el('iExp').value === '2026-11-24' && p.el('iOpened').value === KDAY && p.el('iDays').value === '4', 'az űrlap nem a mentett értékekkel nyílt');
+  p.el('iExp').value = ''; p.el('iOpened').value = ''; p.el('iDays').value = '';
+  await K.saveItem(); await settle(10);
+  b = srv.doc;
+  must(!('expires' in b.pantry[0]) && !('opened' in b.pantry[0]) && !('open_days' in b.products['222222']), `ürítés: ${JSON.stringify(b.pantry[0])}`);
+  const n = srv.puts.length;
+  for (const [fld, v] of [['iDays', '0'], ['iDays', '366'], ['iDays', '2,5'], ['iExp', '2026-02-30'], ['iOpened', 'tegnap']]) {
+    clickAct(p, 'item-open', 'p_milk'); p.el(fld).value = v;
+    await K.saveItem(); await settle(5);
+    must(srv.puts.length === n && txt('msg').length > 0, `${fld}=${v}: mentett, vagy nem szólt (${txt('msg')})`);
+  }
+  p.el('iDays').value = ''; p.el('iExp').value = ''; p.el('iOpened').value = '2026-11-18';   // holnapi felbontás
+  await K.saveItem(); await settle(5);
+  must(srv.puts.length === n, 'jövőbeli felbontási dátumot mentett');
+});
+
+check('kamra kamrába: az új csomag nem olvad bele a felbontott vagy lejárati dátumos tételbe — külön, bontatlan tétel lesz', async () => {
+  const doc = {...emptyDoc(), products: {'222222': MILK}, pantry: [pit('p_o', '222222', {opened: '2026-11-16'}), pit('p_e', '222222', {expires: '2026-11-20'})]};
+  const {K, srv} = await kamra(doc);
+  await K.addPantry('222222', 'pack', 1);
+  await K.addPantry('222222', 'pack', 1);
+  const pan = srv.doc.pantry, fresh = pan.filter(x => !['p_o', 'p_e'].includes(x.id));
+  must(pan.find(x => x.id === 'p_o').qty === 1 && pan.find(x => x.id === 'p_e').qty === 1, `a régi tételek változtak: ${JSON.stringify(pan)}`);
+  must(fresh.length === 1 && fresh[0].qty === 2 && !('opened' in fresh[0]) && !('expires' in fresh[0]), `új tétel: ${JSON.stringify(fresh)}`);
+});
+
+check('kamra bevásárlás: minden egyező beolvasás +1 csomag, a kamera bekapcsolva marad; a kézben tartott dobozt nem számolja újra; ismeretlen kód a Rendezendőbe; visszavonható', async () => {
+  const {K, p, srv, txt} = await kamra(null, {off: url => url.includes('/5701977002961?') ? offOk({...OFF_OAT, categories_tags: ['en:milk-substitutes']})() : offMiss()});
+  const cam = camera(p);
+  p.el('manualForm').hidden = true;                        // a statikus hidden attribútum (az ál-DOM nem olvassa)
+  let now = KNOW; p.run('Date').now = () => now;
+  const z = await zxingScan(K, p, true);
+  const OAT = '5701977002961', UNK = '5990000000999';
+  const oat = () => (K.doc().pantry.find(x => x.code === OAT) || {}).qty;
+  await z.read(OAT); must(oat() === undefined, 'egyetlen leolvasásra is számolt');
+  await z.read(OAT); await settle(10);
+  must(oat() === 1 && cam.stopped === 0 && !p.el('scanBox').hidden, `első csomag: ${oat()}, stopped=${cam.stopped}`);
+  must(K.doc().products[OAT].kind === 'plant_milk', 'az OFF-kategóriából nem lett termékfajta');
+  for (let i = 0; i < 6; i++) { now += 500; await z.read(OAT); }        // 3 s-ig a kézben: folyamatosan olvassa
+  must(oat() === 1, `a kézben tartott dobozt újra számolta: ${oat()}`);
+  now += 2000; await z.read(OAT); await z.read(OAT); await settle(10);  // kivette a képből, jön a következő
+  must(oat() === 2, `második csomag: ${oat()}`);
+  now += 100; await z.read(UNK); await z.read(UNK); await settle(10);
+  const d = K.doc();
+  must(d.products[UNK] && d.products[UNK].source === 'pending' && d.pantry.some(x => x.code === UNK && x.qty === 1), `ismeretlen: ${JSON.stringify(d.products[UNK])}`);
+  must(cam.stopped === 0 && p.el('manualForm').hidden === true, `ismeretlen kódra leállt a kamera, vagy kézi űrlap nyílt (stopped=${cam.stopped}, manualForm.hidden=${p.el('manualForm').hidden})`);
+  must(/Oat Barista/.test(txt('bulkBox')) && /×\s?2/.test(txt('bulkBox')) && txt('bulkBox').includes(UNK), `futó lista: ${txt('bulkBox')}`);
+  must(!p.el('todoSec').hidden && txt('todoBody').includes(UNK), `Rendezendő: ${txt('todoBody')}`);
+  await K.bulkUndo(OAT); await settle(10);
+  must(oat() === 1 && /×\s?1/.test(txt('bulkBox')), `visszavonás: ${oat()} · ${txt('bulkBox')}`);
+  await K.bulkUndo(UNK); await settle(10);
+  must(!K.doc().pantry.some(x => x.code === UNK), 'a visszavont ismeretlen tétel a kamrában maradt');
+  await settle(10);
+  must(srv.rejected.length === 0 && srv.puts.length >= 1 && JSON.stringify(srv.doc.pantry) === JSON.stringify(K.doc().pantry), `szerver: ${srv.rejected} ${JSON.stringify(srv.doc.pantry)}`);
+  K.stopScan();
+  must(cam.stopped === 1 && p.el('scanBox').hidden, 'a Leállítás nem állította le a kamerát');
+});
+
+check('kamra bevásárlás: nem termék-kód (QR) kimarad, a kamera fut tovább; ellenséges OFF-név a futó listában szöveg marad', async () => {
+  const {K, p, srv, html} = await kamra(null, {off: offOk({...OFF_TUNA, product_name: HOSTILE})});
+  const cam = camera(p);
+  let now = KNOW; p.run('Date').now = () => now;
+  const z = await zxingScan(K, p, true);
+  await z.read('https://example.invalid/x'); await z.read('https://example.invalid/x'); await settle(10);
+  must(srv.off.length === 0 && K.doc().pantry.length === 0 && cam.stopped === 0, 'a QR-kódot keresni próbálta vagy leállt');
+  now += 100; await z.read('8004030341234'); await z.read('8004030341234'); await settle(10);
+  must(K.doc().pantry.length === 1, 'a termék nem került a kamrába');
+  noRaw(html('bulkBox'), 'futó lista'); noRaw(html('pantryBody'), 'kamra');
+});
+
+check('kamra bevásárlás: csak író lapon indul — írókulcs nélkül vagy betöltetlen adattal kiírja, miért, és a kamera el sem indul', async () => {
+  const ro = await kamra(null, {storage: PAIRED});
+  const cam = camera(ro.p);
+  ro.K.startScan(true); await settle(10);                  // nem várjuk meg: hibás úton a ZXing betöltésére várna (függ)
+  must(cam.tracks === 0 && /írókulcs/.test(ro.txt('msg')), `írókulcs nélkül: kamera=${cam.tracks}, üzenet: ${ro.txt('msg')}`);
+  const err = await kamra(null, {getFail: 500});
+  const cam2 = camera(err.p);
+  err.K.startScan(true); await settle(10);
+  must(cam2.tracks === 0 && /betöltött adattal/.test(err.txt('msg')), `betöltetlen: kamera=${cam2.tracks}, üzenet: ${err.txt('msg')}`);
+});
+
+check('kamra Rendezendő: a kitöltés (OFF-ból vagy kézzel) a függő terméket valódira cseréli, a tétel nevét is; a lista eltűnik', async () => {
+  const CODE = '5990000000999';
+  const doc = {...emptyDoc(), products: {[CODE]: pend()}, pantry: [pit('p_r1', CODE, {name: 'Ismeretlen termék', qty: 2})]};
+  const {K, p, srv, txt, html} = await kamra(doc);
+  must(!p.el('todoSec').hidden && txt('todoBody').includes(CODE) && /data-act="todo-fill"/.test(html('todoBody')), `Rendezendő: ${txt('todoBody')}`);
+  p.el('manualForm').hidden = true;                        // a statikus hidden attribútum (az ál-DOM nem olvassa)
+  clickAct(p, 'todo-fill', CODE); await settle(10);
+  must(srv.off.length === 1 && !p.el('manualForm').hidden && p.el('mCode').value === CODE, `OFF: ${srv.off} · űrlap: ${p.el('manualForm').hidden}`);
+  p.el('mName').value = 'Kecskesajt'; p.el('mKcal').value = '300';
+  await K.saveManual(); await settle(10);
+  must(srv.doc.products[CODE].source === 'manual' && srv.doc.products[CODE].name === 'Kecskesajt', `termék: ${JSON.stringify(srv.doc.products[CODE])}`);
+  must(srv.doc.pantry[0].name === 'Kecskesajt' && srv.doc.pantry[0].qty === 2 && p.el('todoSec').hidden, `tétel: ${JSON.stringify(srv.doc.pantry[0])}`);
+  const viaOff = await kamra(doc, {off: offOk(OFF_TUNA)});
+  await viaOff.K.lookup(CODE); await settle(10);
+  must(viaOff.K.doc().products[CODE].source === 'off' && viaOff.K.doc().pantry[0].name === viaOff.K.doc().products[CODE].name && viaOff.p.el('todoSec').hidden,
+       `OFF-ból nem cserélte le a függő terméket: ${JSON.stringify(viaOff.K.doc().products[CODE])} · ${viaOff.K.doc().pantry[0].name} · todoSec.hidden=${viaOff.p.el('todoSec').hidden}`);
+});
+
 // Böngészőben mérve (375 px-es keret, demó adat): a kamra-linkkel a fejléc scrollWidth-je
 // 375 → 388 lett — a .topnav és a .nav-right egy sorba kényszerítette az öt elemet.
 check('kamra-link (index) 375 px: a fejléc törhet (.topnav és .nav-right flex-wrap), nem tolja ki a lapot', () => {
@@ -2727,6 +2936,12 @@ check('kamra-link (index) 375 px: a fejléc törhet (.topnav és .nav-right flex
 // ── futtatás ────────────────────────────────────────────────────────────────────
 module.exports = {page, settle, demo, json};   // egyedi próbákhoz: require('./page_checks')
 if (require.main === module) (async () => {
+  let finished = false;
+  process.on('exit', () => {
+    if (finished) return;
+    console.log('BEFEJEZETLEN: egy ellenőrzés nem tért vissza (függő Promise) — ez hiba, nem zöld.');
+    process.exitCode = 1;
+  });
   const only = process.argv[2];
   let bad = 0, ran = 0, skipped = 0;
   for (const c of checks) {
@@ -2742,5 +2957,6 @@ if (require.main === module) (async () => {
     catch (e) { bad++; console.log(`  ✗ ${c.name}\n      ${String(e && e.stack || e).split('\n').slice(0, 3).join('\n      ')}`); }
   }
   console.log((bad ? `BUKÓ: ${bad}/${ran}` : `OK: ${ran}/${ran}`) + (skipped ? ` · KIHAGYVA: ${skipped}` : ''));
+  finished = true;
   process.exit(bad ? 1 : 0);
 })();
