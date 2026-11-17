@@ -692,7 +692,7 @@ function openManual(code, note) {
 }
 // A terméket a dokumentum products térképébe tesszük (gyorsítótár: legközelebb hálózat nélkül jön).
 const keep = (code, p) => doc => { if (own(doc.products, code)) return false; doc.products[code] = clone(p); };
-async function lookup(raw) {
+async function lookup(raw, scanned) {
   const code = String(raw == null ? '' : raw).trim();
   say('');
   if (!code) { say('Írj be egy vonalkódot, vagy szkennelj.'); return; }
@@ -705,8 +705,11 @@ async function lookup(raw) {
   } catch (e) { net = true; }
   const p = net ? null : offToProduct(j);
   if (!p) {
+    // Szkennelt kódnál a félreolvasás is lehet az ok — ezt a felhasználó csak a dobozon látja.
     openManual(code, net ? 'Az Open Food Facts most nem érhető el (hálózati hiba). Vidd fel kézzel, vagy próbáld később.'
-                         : 'Ez a vonalkód nem található az Open Food Facts adatbázisában. Vidd fel kézzel.');
+      : scanned ? 'A beolvasott kód (' + code + ') nincs az Open Food Facts adatbázisában. Nézd meg, egyezik-e a vonalkód alatti számmal: '
+                  + 'ha nem, a kamera tévedett — szkenneld újra, vagy írd be a számot. Ha egyezik, vidd fel kézzel.'
+      : 'Ez a vonalkód nem található az Open Food Facts adatbázisában. Vidd fel kézzel.');
     return;
   }
   S.found[code] = p;
@@ -875,7 +878,18 @@ function saveTargets() {
 
 // ── szkennelés ──────────────────────────────────────────────────────────────────
 const WANT = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'qr_code'];
-const scan = {gen: 0, on: false, stream: null, timer: null, reader: null};
+const scan = {gen: 0, on: false, stream: null, timer: null, reader: null, last: '', seen: 0};
+// Egyetlen leolvasás nem elég (2026-11-17, valódi iPhone): az Oat Barista 5701977002961-es
+// kódjából a ZXing egy képkockán ellenőrzőjegyre is stimmelő, de hamis EAN-8-at olvasott
+// (21910029). Ezért ugyanazt a kódot egymás után többször kell látni: a hosszút kétszer, a
+// rövidet (≤ 8 jegy — EAN-8 / UPC-E, a hosszú kód csonka olvasata is ilyen) háromszor.
+// Egy közbeeső MÁSIK kód újraindítja a számolást. (A ZXing két sikeres olvasás között 500 ms-ot vár.)
+function agreed(text) {
+  const code = String(text == null ? '' : text).trim();
+  if (!code) return false;
+  if (code === scan.last) scan.seen++; else { scan.last = code; scan.seen = 1; }
+  return scan.seen >= (/^\d{1,8}$/.test(code) ? 3 : 2);
+}
 let zxLoading = null;
 function loadZXing() {
   if (window.ZXing) return Promise.resolve();
@@ -889,7 +903,7 @@ function loadZXing() {
   return zxLoading;
 }
 function stopScan() {
-  scan.gen++; scan.on = false;
+  scan.gen++; scan.on = false; scan.last = ''; scan.seen = 0;
   clearTimeout(scan.timer); scan.timer = null;
   if (scan.reader) { try { scan.reader.reset(); } catch (e) {} scan.reader = null; }
   if (scan.stream) { try { scan.stream.getTracks().forEach(t => t.stop()); } catch (e) {} scan.stream = null; }
@@ -902,7 +916,7 @@ function hit(text) {
   stopScan();                                    // találat után a kamera azonnal leáll
   const code = String(text == null ? '' : text).trim();
   $('codeIn').value = /^\d{6,14}$/.test(code) ? code : '';
-  return lookup(code);
+  return lookup(code, true);
 }
 async function startScan() {
   if (scan.on) return;
@@ -933,7 +947,7 @@ async function startScan() {
         try {
           const r = await det.detect(v);
           if (stale()) return;
-          if (r && r.length && r[0].rawValue != null) { hit(r[0].rawValue); return; }
+          if (r && r.length && r[0].rawValue != null && agreed(r[0].rawValue)) { hit(r[0].rawValue); return; }
         } catch (e) { /* a videó még nem kész — a következő körben újra */ }
         scan.timer = setTimeout(tick, 200);
       };
@@ -949,7 +963,8 @@ async function startScan() {
     scan.reader = new Z.BrowserMultiFormatReader(hints);
     Promise.resolve(scan.reader.decodeFromStream(stream, v, (res, err) => {
       if (stale() || !res) return;               // a találat nélküli képkocka nem hiba
-      hit(res.getText());
+      const t = res.getText();
+      if (agreed(t)) hit(t);
     })).catch(() => { if (!stale()) { stopScan(); say('A kamera képe nem olvasható. Írd be a vonalkódot kézzel.'); } });
   } catch (e) {
     if (stale()) return;

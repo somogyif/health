@@ -235,8 +235,10 @@ data and never writes.
 - *Scanning.* The rear camera decodes EAN-13/EAN-8/UPC-A/UPC-E/QR with the browser's
   `BarcodeDetector` where it exists. iPhone Safari has none, so there the page loads
   `@zxing/library` 0.21.3 from jsDelivr — lazily, only when a scan starts, pinned and
-  with an SRI hash. The camera stops on a hit and when the page is hidden. A typed
-  barcode works without a camera.
+  with an SRI hash. A code counts as a hit only after the same value is read twice in a
+  row (three times for codes of 8 digits or fewer): on a real iPhone, ZXing once turned
+  a 13-digit EAN into a wrong 8-digit one that still passed the check digit. The camera
+  stops on a hit and when the page is hidden. A typed barcode works without a camera.
 - *Lookup.* Open Food Facts, which is user-contributed: every number is parsed
   defensively and every string is escaped on render. A missing nutriment is "—", never
   0, and a day total that includes one is shown as "legalább X" (at least X). Unknown
@@ -292,9 +294,12 @@ where monitoring the output catches none of them.
 
 Honest list. These are known and deliberate, not oversights waiting to be discovered.
 
-- **The pantry scanner has not been run on a real iPhone yet.** It is checked in a fake
-  DOM and in headless Chrome at 375 px with demo data; camera permission, the ZXing
-  fallback against a live camera, and decoding real packaging are unverified.
+- **The pantry scanner has been tried on one real iPhone, briefly (2026-11-17).** Camera
+  permission, the ZXing fallback and an EAN-13 lookup worked; one wrong EAN-8 read was
+  seen, which led to the repeated-read rule above. That rule makes misreads rarer, not
+  impossible, so when a scanned code is not found the page shows it and asks you to
+  compare it with the digits under the barcode. The rule itself is checked only in a
+  fake DOM so far.
 - **Unsaved pantry steps live only in the open page.** Closing it loses them.
 
 - **Notion mirroring is not implemented.** The function logs that it's skipped. It used
