@@ -242,8 +242,9 @@ input,select{font-family:var(--m);font-size:16px;min-width:0;width:100%;min-heig
 // betöltéskori rev-vel; az új rev MINDIG a válaszból jön.
 //  • 409 (másik eszköz írt): újratöltés, a még nem mentett lépések újra-alkalmazása
 //    a friss dokumentumra, EGY újrapróba. Csendben soha nem írunk felül;
-//  • 429 (sebességkorlát) és 503 (a tároló nem érhető el): ~2,5 s várakozás, EGY újrapróba
-//    ugyanazzal a dokumentummal;
+//  • 429 (sebességkorlát) és 503 (a tároló nem érhető el): várakozás (429: a Retry-After
+//    szerint, legfeljebb ~10 s; különben ~2,5 s), EGY újrapróba ugyanazzal a dokumentummal;
+//    a NAPI keret (429, scope "day") kivétel: arra nincs újrapróba;
 //  • ha ezután sem megy (vagy 500 / nincs hálózat): a lépés a lapon marad
 //    "nincs mentve" jelzéssel és Mentés újra gombbal — magától nem próbálkozik tovább;
 //  • 400 / 401 / 413: az újrapróba értelmetlen, a lépés visszavonva, hibaüzenettel;
@@ -273,7 +274,8 @@ const WEEK = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const WD_HU = {mon: 'hétfő', tue: 'kedd', wed: 'szerda', thu: 'csütörtök', fri: 'péntek', sat: 'szombat', sun: 'vasárnap'};
 const TKEYS = ['kcal', 'protein_g', 'carbs_g', 'fat_g'];
 // Időzítések (ms): +/− összevonás, a keresés lusta mentése, két írás közti szünet, 429 utáni várakozás.
-const T = {debounce: 1000, lazy: 4000, gap: 2100, retry: 2500};
+// retryMax: a szerver Retry-After-jának plafonja; margin: ráhagyás a Retry-After-re.
+const T = {debounce: 1000, lazy: 4000, gap: 2100, retry: 2500, retryMax: 10000, margin: 300};
 
 const $ = id => document.getElementById(id);
 const esc = s => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
@@ -541,8 +543,13 @@ async function put(doc) {
       headers: {'Authorization': 'Bearer ' + WRITE_KEY, 'Content-Type': 'application/json'}, body: JSON.stringify(doc)});
     let j = null;
     try { j = await r.json(); } catch (e) {}                 // a 413 válasza sima szöveg
-    return {status: r.status, rev: isObj(j) && Number.isSafeInteger(j.rev) ? j.rev : null};
-  } catch (e) { return {status: 0, rev: null}; }
+    // Retry-After másodpercben (a dátum-alakot nem értelmezzük → alapérték). Böngészőben csak
+    // akkor olvasható, ha a Worker kiteszi (Access-Control-Expose-Headers) — különben null.
+    let ra = null;
+    try { const h = r.headers.get('Retry-After'); if (typeof h === 'string' && /^\d+(\.\d+)?$/.test(h.trim())) ra = Number(h.trim()) * 1000; } catch (e) {}
+    return {status: r.status, rev: isObj(j) && Number.isSafeInteger(j.rev) ? j.rev : null,
+            scope: isObj(j) && typeof j.scope === 'string' ? j.scope : null, retryAfter: ra};
+  } catch (e) { return {status: 0, rev: null, scope: null, retryAfter: null}; }
 }
 // Egy lépés: az action egy dokumentum-másolatot módosít (false = nincs mit tenni). A lépés
 // azonnal látszik; a mentés a sorban megy. kind: 'now' | 'tap' (összevonva) | 'lazy'.
@@ -606,9 +613,12 @@ async function flushOnce() {
   let batch = Q.pending.slice();
   let body = clone(S.doc); body.rev = S.base.rev;
   let r = await put(body);
-  if (r.status === 429 || r.status === 503) {               // sebességkorlát / a tároló nem érhető el: várunk, és EGYSZER újra, ugyanazzal
+  // Sebességkorlát (429) / a tároló nem érhető el (503): várunk, és EGYSZER újra, ugyanazzal.
+  // A 429-nél a szerver Retry-After-je számít (plafonnal), különben ~2,5 s. A NAPI keret
+  // (scope "day") kivétel: arra órákig nincs értelme várni — azonnal "nincs mentve".
+  if ((r.status === 429 && r.scope !== 'day') || r.status === 503) {
     say('A szerver most nem fogad írást — pár másodperc múlva egyszer újrapróbálom…');
-    await sleep(T.retry);
+    await sleep(r.status === 429 && r.retryAfter != null ? Math.min(T.retryMax, r.retryAfter + T.margin) : T.retry);
     r = await put(body);
   }
   if (r.status === 409) {                                   // közben egy másik eszköz írt
@@ -643,7 +653,8 @@ async function flushOnce() {
   }
   return keepUnsaved(batch,
     r.status === 409 ? 'A mentés nem sikerült: közben kétszer is változott az adat egy másik eszközön. A lépés nincs mentve — próbáld újra.'
-    : r.status === 429 ? 'A szerver most nem fogad több írást (sebességkorlát vagy napi keret). A lépés nincs mentve — próbáld újra kicsit később.'
+    : r.status === 429 && r.scope === 'day' ? 'A mai írási keret elfogyott — a szerver ma már nem fogad több mentést. A lépés nincs mentve; hagyd nyitva a lapot, és holnap a Mentés újra gombbal elmentheted.'
+    : r.status === 429 ? 'A szerver most nem fogad több írást (sebességkorlát). A lépés nincs mentve — próbáld újra kicsit később.'
     : r.status === 503 ? 'A tároló most nem érhető el (egy újrapróba után sem). A lépés nincs mentve — próbáld újra később.'
     : r.status === 0 ? 'A mentés nem sikerült (nincs hálózat?). A lépés nincs mentve.'
     : 'A mentés nem sikerült (a szerver válasza: ' + r.status + '). A lépés nincs mentve.');

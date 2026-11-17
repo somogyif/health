@@ -1147,11 +1147,12 @@ function nutri(doc, o = {}) {
     if (url === `${API}/nutrition` && m === 'PUT') {
       const body = JSON.parse(init.body);
       s.puts.push({body: clone(body), auth});
-      const st = o.putStatus || s.seq.shift();
+      const raw = o.putStatus || s.seq.shift(), st = raw && typeof raw === 'object' ? raw.status : raw;   // {status, scope, retryAfter} is lehet
       if (st === 'net') return Promise.reject(new TypeError('Load failed'));
       if (st === 'lost') { s.doc = clone(body); s.doc.rev++; return Promise.reject(new TypeError('Load failed')); }   // az írás megtörtént, a válasz elveszett
       if (st === 413) return new Response('Payload Too Large', {status: 413});
-      if (st) return new Response(JSON.stringify({error: {401: 'unauthorized', 429: 'rate_limited', 503: 'storage', 500: 'storage'}[st] || 'invalid', detail: 'x'}), {status: st});
+      if (st) return new Response(JSON.stringify({error: {401: 'unauthorized', 429: 'rate_limited', 503: 'storage', 500: 'storage'}[st] || 'invalid',
+        ...(st === 429 ? {scope: raw.scope || 'gap'} : {detail: 'x'})}), {status: st, headers: raw && raw.retryAfter != null ? {'Retry-After': String(raw.retryAfter)} : {}});
       if (s.conflicts > 0) {                       // közben egy másik eszköz írt
         s.conflicts--; if (o.other) o.other(s.doc); s.doc.rev++;
         return new Response(JSON.stringify({error: 'conflict', rev: s.doc.rev}), {status: 409});
@@ -1178,7 +1179,7 @@ async function kamra(doc, o = {}) {
   const p = page('kamra.html', {url: o.url, storage: o.storage || WPAIRED, now: o.now == null ? KNOW : o.now, fetch: srv.fetch, confirm: o.confirm});
   p.fire('DOMContentLoaded');
   await settle();
-  Object.assign(p.run('Kamra').timing, {debounce: 0, lazy: 0, gap: 0, retry: 0}, o.timing);   // a valódi értékekre külön ellenőrzés van
+  Object.assign(p.run('Kamra').timing, {debounce: 0, lazy: 0, gap: 0, retry: 0, margin: 0}, o.timing);   // a valódi értékekre külön ellenőrzés van
   return {p, srv, K: p.run('Kamra'), txt: id => p.el(id).textContent.replace(/\s+/g, ' ').trim(), html: id => p.el(id).innerHTML};
 }
 const noRaw = (html, hol) => must(!/<img\b/i.test(html), `nyers <img> a(z) ${hol} innerHTML-jében: …${html.slice(Math.max(0, html.search(/<img\b/i) - 30), html.search(/<img\b/i) + 50)}…`);
@@ -1928,6 +1929,7 @@ check('kamra írás: az időzítések alapértéke — összevonás ~1 s, 429 ut
   const p = page('kamra.html', {storage: WPAIRED});
   const t = p.run('Kamra').timing;
   must(t.debounce >= 800 && t.debounce <= 1500 && t.retry >= 2500 && t.retry <= 4000 && t.gap >= 2000 && t.gap <= 3000, JSON.stringify(t));
+  must(t.retryMax >= 8000 && t.retryMax <= 12000 && t.margin >= 0 && t.margin <= 1000, `Retry-After plafon ~10 s: ${JSON.stringify(t)}`);
 });
 check('kamra írás: 429-re vár, majd EGYSZER újrapróbál ugyanazzal a dokumentummal és rev-vel — siker után nincs "nincs mentve"', async () => {
   const o = await kamra({...emptyDoc(), rev: 5, products: {'111111': TUNA}}, {putSeq: [429], timing: {retry: 60}});
@@ -1938,6 +1940,31 @@ check('kamra írás: 429-re vár, majd EGYSZER újrapróbál ugyanazzal a dokume
   must(JSON.stringify(o.srv.puts[0].body) === JSON.stringify(o.srv.puts[1].body) && o.srv.puts[1].body.rev === 5, 'az újrapróba más dokumentumot / rev-et küldött');
   must(ms >= 50, `nem várt az újrapróba előtt (${ms.toFixed(0)} ms)`);
   must(!unsaved(o) && o.srv.doc.log[KDAY].length === 1 && o.K.doc().rev === 6, `állapot: unsaved=${unsaved(o)}, rev=${o.K.doc().rev}`);
+});
+const timed = async f => { const t0 = process.hrtime.bigint(); const v = await f(); return [v, Number(process.hrtime.bigint() - t0) / 1e6]; };
+check('kamra írás: 429-nél a Retry-After fejlécet követi (plafonnal), fejléc nélkül / szemét fejlécnél a ~2,5 s alapértéket', async () => {
+  const doc = {...emptyDoc(), products: {'111111': TUNA}};
+  const a = await kamra(doc, {putSeq: [{status: 429, scope: 'gap', retryAfter: '0.15'}], timing: {retry: 0}});
+  const [okA, msA] = await timed(() => a.K.eat({code: '111111', grams: 80}));
+  must(okA === true && a.srv.puts.length === 2 && msA >= 140, `Retry-After 0,15 s: ${msA.toFixed(0)} ms, ${a.srv.puts.length} PUT`);
+  const b = await kamra(doc, {putSeq: [{status: 429, scope: 'gap', retryAfter: '3600'}], timing: {retry: 0, retryMax: 90}});
+  const [okB, msB] = await timed(() => b.K.eat({code: '111111', grams: 80}));
+  must(okB === true && b.srv.puts.length === 2 && msB >= 80 && msB < 1500, `plafon: ${msB.toFixed(0)} ms`);
+  for (const ra of ['abc', '-5', '', 'Wed, 21 Oct 2026 07:28:00 GMT']) {
+    const c = await kamra(doc, {putSeq: [{status: 429, scope: 'gap', retryAfter: ra}], timing: {retry: 70, retryMax: 5000}});
+    const [okC, msC] = await timed(() => c.K.eat({code: '111111', grams: 80}));
+    must(okC === true && msC >= 60 && msC < 1500, `Retry-After=${JSON.stringify(ra)}: ${msC.toFixed(0)} ms (az alapérték 70 kellene)`);
+  }
+  const d = await kamra(doc, {putSeq: [{status: 429, scope: 'gap', retryAfter: '0.05'}], timing: {retry: 0, margin: 120}});
+  const [, msD] = await timed(() => d.K.eat({code: '111111', grams: 80}));
+  must(msD >= 160, `a ráhagyás (margin) nem adódott hozzá: ${msD.toFixed(0)} ms`);
+});
+check('kamra írás: 429 scope "day" (a mai írási keret elfogyott) → NINCS újrapróba, a lépés azonnal "nincs mentve", érthető üzenettel', async () => {
+  const o = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {putSeq: [{status: 429, scope: 'day', retryAfter: '0.05'}], timing: {retry: 0}});
+  const [ok, ms] = await timed(() => o.K.eat({code: '111111', grams: 80}));
+  await new Promise(r => setTimeout(r, 150));
+  must(ok === false && o.srv.puts.length === 1, `${o.srv.puts.length} PUT (1 kell — a napi keretre nincs újrapróba)`);
+  must(unsaved(o) && /mai írási keret elfogyott/i.test(o.txt('msg')) && o.txt('todayBody').includes('Tonhal'), `unsaved=${unsaved(o)}, msg="${o.txt('msg')}"`);
 });
 check('kamra írás: kétszeri 429 → a lépés megmarad a lapon, "nincs mentve" jelzéssel; a Mentés újra gomb menti, magától nem próbálkozik', async () => {
   const o = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {putSeq: [429, 429]});
