@@ -855,6 +855,18 @@ check('brief (b): a hosszabb fejléc 375 px-en törhet (.kicker flex-wrap), a be
   must(!/Loading today/.test(src), 'a betöltő szöveg: "Loading today\'s brief…"');
 });
 
+// ── (d) utójavítás: a DM Mono szélesebb — a Training fül 375 px-en ne lógjon ki ──
+// Böngészőben mérve (375 px-es keret, demó adat): a (d) után a Training fül scrollWidth-je
+// 375 → 393 lett. Ok: a .ws-row rácsa `56px 1fr` volt (10. szabály: minmax(0,1fr)), és a
+// gyakorlat-pirula (.ex-tag) nem törhetett — "Back Extension (Weighted Hyperextension)".
+check('CSS (d) 375 px: a .ws-row rácscellája minmax(0,1fr), a gyakorlat-pirula törhet', () => {
+  const row = cssRule('.ws-row'), tag = cssRule('.ex-tag');
+  must(row && tag, 'a .ws-row / .ex-tag szabály nem olvasható (nem bizonyít)');
+  const cols = row.find(x => /^grid-template-columns:/.test(x)) || '';
+  must(/minmax\(0,\s*1fr\)/.test(cols) && !/(^|\s)1fr/.test(cols.replace(/minmax\([^)]*\)/g, '')), `.ws-row: ${cols}`);
+  must(!tag.includes('white-space:nowrap') && tag.includes('overflow-wrap:anywhere'), `.ex-tag: ${tag.join(';')}`);
+});
+
 // ── Időjárás: a hiány nem lehet állítás ("No rain — biking ok", 0 mm) ───────────
 // A sync mostantól null-t küld, ha a csapadék ismeretlen (rain, precip_mm) vagy a kód
 // ismeretlen (description). A sáv hiányzó esőnél is ☀️-t és zöld "No rain — biking ok"-t
