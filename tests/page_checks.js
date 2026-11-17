@@ -2018,6 +2018,53 @@ check('kamra írás: a gyors +/− koppintások EGY írásba vonódnak össze (d
   const res = await Promise.all(runs);
   must(o.srv.puts.length === 1 && o.srv.doc.pantry[0].qty === 4 && res.every(x => x === true), `${o.srv.puts.length} PUT, qty=${o.srv.doc.pantry[0].qty}, ${res}`);
 });
+// ── iOS: a háttérbe kerülő lapot a Safari hamar felfüggeszti ────────────────────
+const hide = o => { o.p.ctx.document.hidden = true; o.p.ctx.document.visibilityState = 'hidden'; o.p.fire('document:visibilitychange'); };
+check('kamra iOS: ha a lap rejtetté válik, a várakozó írás AZONNAL megy (az összevonás és a két írás közti szünet kivárása nélkül)', async () => {
+  const doc = {...emptyDoc(), products: {'111111': TUNA}, pantry: [{id: 'p_a', code: '111111', name: 'Tonhal', qty: 1, unit: 'pack', added: KDAY}]};
+  const a = await kamra(doc, {timing: {debounce: 1500, gap: 0}});                 // összevonásra váró koppintás
+  const step = a.K.pantryStep('p_a', 1);
+  await new Promise(r => setTimeout(r, 40));
+  must(a.srv.puts.length === 0, 'előfeltétel: a koppintás még vár (nem bizonyít)');
+  const [okA, msA] = await timed(async () => { hide(a); return step; });
+  must(okA === true && a.srv.puts.length === 1 && msA < 700, `összevonás: ${msA.toFixed(0)} ms, ${a.srv.puts.length} PUT`);
+  const b = await kamra(doc, {timing: {gap: 1500}});                              // a két írás közti szünetben álló írás
+  await b.K.eat({code: '111111', grams: 80});
+  const second = b.K.eat({code: '111111', grams: 20});
+  await new Promise(r => setTimeout(r, 40));
+  must(b.srv.puts.length === 1, 'előfeltétel: a második írás a szünetre vár (nem bizonyít)');
+  const [okB, msB] = await timed(async () => { hide(b); return second; });
+  must(okB === true && b.srv.puts.length === 2 && msB < 700, `szünet: ${msB.toFixed(0)} ms, ${b.srv.puts.length} PUT`);
+  const c = await kamra(doc, {putSeq: [500]});                                    // hibára megállt sort a rejtés NEM indít újra
+  await c.K.eat({code: '111111', grams: 80}); await settle();
+  hide(c); await new Promise(r => setTimeout(r, 80));
+  must(c.srv.puts.length === 1 && unsaved(c), `a hibára megállt sor magától újraindult: ${c.srv.puts.length} PUT`);
+});
+check('kamra iOS: a PUT keepalive-val megy, ha a törzs 60 KB alatti (nagyobbnál nem — a böngésző eldobná)', async () => {
+  const small = await kamra({...emptyDoc(), products: {'111111': TUNA}});
+  await small.K.eat({code: '111111', grams: 80});
+  const f = small.p.calls.fetch.find(x => x.init.method === 'PUT');
+  must(f && f.init.keepalive === true && f.init.body.length < 20000, `kicsi törzs: keepalive=${f && f.init.keepalive}`);
+  const products = {};
+  for (let i = 0; i < 400; i++) products[String(5990000000000 + i)] = {...TUNA, name: 'Árvíztűrő tükörfúrógép termék '.repeat(5) + i};
+  const big = await kamra({...emptyDoc(), products});
+  await big.K.eat({code: '5990000000000', grams: 80});
+  const g = big.p.calls.fetch.find(x => x.init.method === 'PUT');
+  must(g && g.init.body.length > 60000 && !g.init.keepalive && big.srv.doc.log[KDAY].length === 1, `nagy törzs (${g && g.init.body.length} karakter): keepalive=${g && g.init.keepalive}`);
+});
+check('kamra iOS: a lusta termék-gyorsítótár lépés nem vált ki "elhagyod a lapot?" kérdést; a valódi, mentetlen lépés igen', async () => {
+  const leave = o => { let asked = false; o.p.fire('beforeunload', {preventDefault() { asked = true; }}); return asked; };
+  const a = await kamra(null, {off: offOk(OFF_TUNA), timing: {lazy: 300}});
+  must(leave(a) === false, 'üres sornál is kérdez');
+  await a.K.lookup('8004030341234');
+  must(a.srv.puts.length === 0 && a.K.doc().products['8004030341234'], 'előfeltétel: a termék lustán vár (nem bizonyít)');
+  must(leave(a) === false, 'a lusta gyorsítótár-lépés miatt kérdez');
+  await a.K.flush();
+  must(a.srv.puts.length === 1, 'a lusta lépés nem mentődött');
+  const b = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {putSeq: [500]});
+  await b.K.eat({code: '111111', grams: 80});
+  must(leave(b) === true, 'mentetlen valódi lépésnél nem kérdez');
+});
 check('kamra írás: a rev MINDIG a PUT válaszából jön (nem helyben számolt); rev nélküli 200 után újratölt', async () => {
   const srvJump = await kamra({...emptyDoc(), rev: 3, products: {'111111': TUNA}}, {revJump: 10});
   await srvJump.K.eat({code: '111111', grams: 80}); await srvJump.K.eat({code: '111111', grams: 20});

@@ -248,7 +248,8 @@ input,select{font-family:var(--m);font-size:16px;min-width:0;width:100%;min-heig
 //  • ha ezután sem megy (vagy 500 / nincs hálózat): a lépés a lapon marad
 //    "nincs mentve" jelzéssel és Mentés újra gombbal — magától nem próbálkozik tovább;
 //  • 400 / 401 / 413: az újrapróba értelmetlen, a lépés visszavonva, hibaüzenettel;
-//  • a gyors +/− koppintások egy írásba vonódnak össze (~1 s), két írás között > 2 s telik.
+//  • a gyors +/− koppintások egy írásba vonódnak össze (~1 s), két írás között > 2 s telik;
+//  • ha a lap rejtetté válik (iOS), a várakozó írás azonnal megy, keepalive-val (60 KB alatt).
 //
 // Kemény szabályok (health-sync/CLAUDE.md):
 //  • külső szöveg (OFF, a dokumentum, a link) csak a render(d)-n át kerül innerHTML-be,
@@ -377,7 +378,7 @@ function totals(entries) {
 // doc: amit a lap mutat (a még nem mentett lépésekkel); base: a szerveren lévő állapot.
 const S = {mode: 'boot', doc: null, base: null, card: null, found: Object.create(null), err: ''};
 // A mentési sor: pending = a base óta tett, még nem mentett lépések.
-const Q = {pending: [], timer: null, running: null, again: false, unsaved: false, last: null};
+const Q = {pending: [], timer: null, running: null, again: false, unsaved: false, last: null, wake: null};
 const canWrite = () => S.mode === 'live' && !!WRITE_KEY && !!S.base && !!S.doc;
 const canEdit = () => S.mode === 'demo' || canWrite();
 const product = code => (S.doc && own(S.doc.products, code) && isObj(S.doc.products[code]) ? S.doc.products[code]
@@ -537,10 +538,15 @@ async function load() {
 }
 
 // ── mentés ──────────────────────────────────────────────────────────────────────
+// A törzs mérete bájtban (TextEncoder nélkül óvatos felső becslés).
+const bytes = s => (typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(s).length : s.length * 3);
 async function put(doc) {
   try {
-    const r = await fetch(`${API_URL}/nutrition`, {method: 'PUT', cache: 'no-store', signal: timeout(10000),
-      headers: {'Authorization': 'Bearer ' + WRITE_KEY, 'Content-Type': 'application/json'}, body: JSON.stringify(doc)});
+    const body = JSON.stringify(doc);
+    // keepalive: a kérés akkor is célba ér, ha a lap közben háttérbe kerül / bezárul (iOS).
+    // A böngészők ~64 KB-ig engedik; nagyobb törzsnél nem kérjük (a kérés elbukna).
+    const r = await fetch(`${API_URL}/nutrition`, Object.assign({method: 'PUT', cache: 'no-store', signal: timeout(10000),
+      headers: {'Authorization': 'Bearer ' + WRITE_KEY, 'Content-Type': 'application/json'}, body}, bytes(body) < 60000 ? {keepalive: true} : {}));
     let j = null;
     try { j = await r.json(); } catch (e) {}                 // a 413 válasza sima szöveg
     // Retry-After másodpercben (a dátum-alakot nem értelmezzük → alapérték). Böngészőben csak
@@ -565,7 +571,7 @@ function change(action, kind) {
   if (action(next) === false) return no;
   S.doc = next;
   if (S.mode === 'demo') { draw(); return {ok: true, done: Promise.resolve(true)}; }   // a demó helyben él, hálózat nélkül
-  const item = {action};
+  const item = {action, lazy: kind === 'lazy'};
   item.done = new Promise(r => { item.resolve = r; });
   Q.pending.push(item);
   draw();
@@ -607,8 +613,18 @@ function keepUnsaved(batch, msg) {
   say(msg); draw();
   return false;
 }
+// Megszakítható várakozás: ha a lap közben rejtetté válik, nem várjuk ki (Q.wake).
+function pause(ms) {
+  return new Promise(r => {
+    const done = () => { clearTimeout(t); Q.wake = null; r(); };
+    const t = setTimeout(done, ms);
+    Q.wake = done;
+  });
+}
 async function flushOnce() {
-  if (Q.last != null) { const w = Math.min(T.gap, Q.last + T.gap - Date.now()); if (w > 0) await sleep(w); }
+  // Két írás között szünet (a Worker ~2 s-en belüli második írásra 429-et ad). Rejtett lapnál
+  // nem várunk: az iOS hamar felfüggeszti a lapot, inkább egy 429, mint egy el sem küldött írás.
+  if (Q.last != null && !document.hidden) { const w = Math.min(T.gap, Q.last + T.gap - Date.now()); if (w > 0) await pause(w); }
   Q.again = false;                                          // ez a kör minden eddigi lépést visz
   let batch = Q.pending.slice();
   let body = clone(S.doc); body.rev = S.base.rev;
@@ -948,10 +964,12 @@ async function startScan() {
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) return;
   stopScan();
-  if (Q.pending.length && !Q.unsaved) kick();
+  if (Q.pending.length && !Q.unsaved) { if (Q.wake) Q.wake(); kick(); }
 });
 window.addEventListener('pagehide', () => stopScan());
-window.addEventListener('beforeunload', e => { if (Q.pending.length) { e.preventDefault(); e.returnValue = ''; } });
+// "Elhagyod a lapot?" csak valódi, mentetlen lépésnél — a lusta termék-gyorsítótár miatt nem
+// (az legfeljebb egy újabb OFF-keresésbe kerül).
+window.addEventListener('beforeunload', e => { if (Q.pending.some(it => !it.lazy)) { e.preventDefault(); e.returnValue = ''; } });
 
 // ── demó (kitalált mintaadat, a néző mai napjára) ───────────────────────────────
 function demoDoc() {
