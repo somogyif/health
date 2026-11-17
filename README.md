@@ -75,6 +75,17 @@ and no build step. Three tabs, a printable brief, and an installable PWA. Delibe
 no service worker: the whole point is live data, and a cache layer would serve stale
 numbers. Data source resolution is demo → authenticated endpoint → fallback.
 
+**Day and night.** Every page follows the system appearance (`prefers-color-scheme`): a
+warm light palette by day and the original dark one at night, so a phone set to switch
+automatically at sunset switches the dashboard with it. The charts draw on a canvas, which
+cannot read CSS variables, so they take their colours from the computed style when they
+are drawn and are redrawn with the last data when the theme changes. Every text colour is
+at least 4.5:1 against every background it sits on, in both themes — the page checks
+compute this from the actual CSS. The accents proposed for the light theme (#2a9d7a,
+#d97706, #3b82f6) reached only 3.2–3.7:1 on white and were darkened; the old dark
+theme's secondary grey (3.96:1 on cards) and chart axis labels (1.6:1) were below the
+line too and were lightened.
+
 ---
 
 ## The hard problems
@@ -317,9 +328,13 @@ Honest list. These are known and deliberate, not oversights waiting to be discov
   session that the API client can't produce. It's marked as such in the source.
 - **Single user, no auth system.** There are no accounts and no multi-tenant model.
   Adding a second user would change the threat model entirely.
-- **No full WCAG audit.** Semantic landmarks, visible focus states, `aria-label`s and
-  screen-reader data tables behind the canvas charts are in place; a complete AA pass
-  with assistive technology has not been done.
+- **No full WCAG audit.** Semantic landmarks, visible focus states, `aria-label`s,
+  screen-reader data tables behind the canvas charts and AA text contrast in both themes
+  are in place; a complete AA pass with assistive technology has not been done. The
+  pastel load badges in the day plan keep their own fixed colours in both themes.
+- **The installed app's status bar is untested in the light theme.** It now follows the
+  theme colour (`default` style); how iOS draws it in each theme has only been checked
+  in a desktop browser, not on a phone.
 - **Laptop-hosted schedule.** If the machine is off at the scheduled time, that run is
   missed. The heartbeat surfaces it rather than preventing it.
 - **A couple of half-finished features** remain in the codebase and stay hidden when
