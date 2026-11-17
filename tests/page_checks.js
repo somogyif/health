@@ -1833,7 +1833,7 @@ function invalidDoc(d) {
   const numN = (v, hol) => { if (v !== null) num(v, hol); };
   const date = (v, hol) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(typeof v === 'string' ? v : ''); const x = m && new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
     if (!m || x.getUTCFullYear() !== +m[1] || x.getUTCMonth() !== +m[2] - 1 || x.getUTCDate() !== +m[3]) bad(`${hol}: dátum ${JSON.stringify(v)}`); };
-  const name = (v, hol) => { if (typeof v !== 'string' || !v.length || v.length > 200) bad(`${hol}: név ${JSON.stringify(v).slice(0, 30)}`); };
+  const name = (v, hol) => { if (typeof v !== 'string' || !v.length || v.length > 200) bad(`${hol}: név ${String(JSON.stringify(v)).slice(0, 30)}`); };
   const D = ['strength', 'hyrox', 'rest', 'maintenance'];
   if (!obj(d)) return ['nem objektum'];
   keys(d, ['version', 'rev', 'targets', 'products', 'pantry', 'log', 'days'], 'dokumentum');
@@ -2168,6 +2168,208 @@ check('kamra CSS 375 px: minden rácscella minmax(0,1fr), a szöveg törhet, a v
   must(/\[hidden\]\{display:none!important\}/.test(css), 'a [hidden] elemet egy display-szabály felülírhatja');
 });
 
+// ════════════════════════════════════════════════════════════════════════════════
+// Megfelelés a VALÓDI Workernek. A fenti ellenőrzések az itteni ál-szerver (nutri) ellen
+// futnak, ami a szerződés MÁSOLATA — ha a másolat téved, minden zöld, és élesben 400 jön.
+// Ez az ellenőrzés a Worker saját forrását tölti be (worker.js, ES-modul), és a lap minden
+// írását annak a fetch()-én küldi át, hamis KV-vel, hamis Cache API-val és hamis kulcsokkal
+// (hálózat nincs). A Worker a sync-repóban él, nem ebben: ha a fájl nincs meg, az ellenőrzés
+// LÁTHATÓAN kimarad (⊘ KIHAGYVA) — nem csendben zöld.
+//   HEALTH_WORKER_JS=/út/worker.js node tests/page_checks.js Worker
+// ════════════════════════════════════════════════════════════════════════════════
+const os = require('node:os'), {pathToFileURL} = require('node:url');
+const WORKER_CANDIDATES = [process.env.HEALTH_WORKER_JS,
+  path.join(os.homedir(), 'health-sync/.claude/worktrees/taplalkozas/worker/worker.js'),
+  path.join(os.homedir(), 'health-sync/worker/worker.js')].filter(Boolean);
+async function realWorker() {
+  const file = WORKER_CANDIDATES.find(f => fs.existsSync(f));
+  if (!file) return {skip: `SKIP: a Worker forrása nincs meg (kerestem: ${WORKER_CANDIDATES.map(f => f.replace(os.homedir(), '~')).join(', ')}) — add meg: HEALTH_WORKER_JS=…/worker.js`};
+  const src = fs.readFileSync(file, 'utf8');
+  if (!/\/nutrition/.test(src)) return {skip: `SKIP: ${file.replace(os.homedir(), '~')} még nem ismeri a /nutrition végpontot (a táplálkozás-ág nincs beolvasztva)`};
+  const mod = await import(pathToFileURL(file).href);           // ha nem tölthető be, az HIBA, nem kihagyás
+  must(mod.default && typeof mod.default.fetch === 'function', 'a worker.js alapértelmezett exportjának nincs fetch()-e');
+  return {worker: mod.default, file};
+}
+// A Worker köré: memóriabeli KV, a Cache API utánzata hamis órával (mint a worker.test.mjs-ben).
+function workerWorld(worker, o = {}) {
+  const store = new Map(), cstore = new Map(), clock = {now: 1_000_000};
+  const kv = {failPuts: 0,
+    async get(k) { return store.has(k) ? store.get(k) : null; },
+    async put(k, v) { if (kv.failPuts > 0) { kv.failPuts--; throw new Error('KV put failed'); } store.set(k, v); }};
+  const cache = {
+    async match(req) { const e = cstore.get(new URL(req.url).href); return !e || e.until <= clock.now ? undefined : new Response(e.text); },
+    async put(req, res) { const m = /max-age=(\d+)/.exec(res.headers.get('Cache-Control') || ''); if (m) cstore.set(new URL(req.url).href, {text: await res.text(), until: clock.now + Number(m[1]) * 1000}); },
+  };
+  const env = {READ_KEY: KEY, WRITE_KEY: 'teszt-sync-irokulcs-nem-titok', NUTRITION_WRITE_KEY: o.nkey || NKEY, HEALTH_KV: kv};
+  const w = {store, kv, cache, clock, calls: [], off: o.off, autoAdvance: o.autoAdvance !== false};
+  w.fetch = async (url, init) => {
+    if (url.startsWith('https://world.openfoodfacts.org/')) return w.off ? w.off(url) : offMiss();
+    must(url.startsWith(API + '/'), `váratlan lekérés: ${url}`);
+    const method = String(init.method || 'GET').toUpperCase();
+    const headers = {...(init.headers || {}), Origin: 'https://somogyif.github.io', 'CF-Connecting-IP': '203.0.113.10'};
+    const prevCaches = globalThis.caches, log = console.log;
+    globalThis.caches = {default: cache}; console.log = () => {};          // a Worker naplósorai ne szemeteljenek
+    let res;
+    try { res = await worker.fetch(new Request(url, {method, headers, body: init.body}), env); }
+    finally { console.log = log; if (prevCaches === undefined) delete globalThis.caches; else globalThis.caches = prevCaches; }
+    let body = null;
+    try { body = await res.clone().json(); } catch (e) {}
+    w.calls.push({method, status: res.status, body, sent: method === 'PUT' ? JSON.parse(init.body) : null, retryAfter: res.headers.get('Retry-After')});
+    // Az óra: sikeres írás után telik az idő (a Worker 2 s-es írás-szünete), 429 után a Retry-After.
+    if (method === 'PUT' && res.status === 200 && w.autoAdvance) clock.now += 2500;
+    if (method === 'PUT' && res.status === 429) clock.now += 2500;
+    // A Worker az írás-szünet helyét a KV-írás ELŐTT foglalja le, tehát a 503-mal végződő írás
+    // is elindítja a 2 s-es szünetet. A lap 503 után ~2,5 s-et vár (ez az alapérték, lásd az
+    // időzítések ellenőrzését) — az óra itt ennyit lép. Ha a lap várakozása a szünetnél
+    // rövidebb lenne, az újrapróba 429-et kapna, és a lépés mentetlen maradna.
+    if (method === 'PUT' && res.status === 503) clock.now += o.after503 == null ? 2500 : o.after503;
+    return res;
+  };
+  w.puts = () => w.calls.filter(c => c.method === 'PUT');
+  w.stored = () => JSON.parse(store.get('nutrition'));
+  return w;
+}
+async function kamraOnWorker(worker, o = {}) {
+  const w = workerWorld(worker, o);
+  const p = page('kamra.html', {storage: o.storage || WPAIRED, now: KNOW, fetch: w.fetch, confirm: true});
+  p.fire('DOMContentLoaded'); await settle(8);
+  Object.assign(p.run('Kamra').timing, {debounce: 0, lazy: 0, gap: 0, retry: 0, margin: 0, retryMax: 60}, o.timing);
+  return {w, p, K: p.run('Kamra'), txt: id => p.el(id).textContent.replace(/\s+/g, ' ').trim()};
+}
+check('valódi Worker: egy teljes munkamenet MINDEN írására 200 jön, és a rev lépésenként nő (üres dokumentumtól, targets: null-lal indulva)', async () => {
+  const rw = await realWorker();
+  if (rw.skip) return rw.skip;
+  let n = 0;
+  const off = () => (++n === 1 ? offOk(OFF_TUNA)() : offOk({product_name: 'Rejtély', brands: '', nutriments: {'energy-kcal_100g': 200}})());
+  const {w, p, K, txt} = await kamraOnWorker(rw.worker, {off});
+  must(w.calls.length === 1 && w.calls[0].status === 200 && JSON.stringify(K.doc()) === JSON.stringify(emptyDoc()),
+       `a Worker üres alapja nem az, amire a lap számít: ${JSON.stringify(w.calls[0] && w.calls[0].body)}`);
+  must(/nincs cél beállítva/.test(txt('todayBody')), 'targets: null-lal nem "nincs cél beállítva" látszik');
+  const step = async (nev, f) => {
+    const before = w.puts().length;
+    const r = await f(); await K.flush(); await settle();
+    const now = w.puts().slice(before), bad = now.find(c => c.status !== 200);
+    must(!bad, `${nev}: a valódi Worker ${bad && bad.status}-t adott: ${JSON.stringify(bad && bad.body)} — küldve: ${String(JSON.stringify(bad && bad.sent)).slice(0, 300)}`);
+    must(now.length >= 1, `${nev}: nem ment írás (a lépés eredménye: ${r})`);
+    must(p.el('unsavedBox').hidden !== false, `${nev}: "nincs mentve" maradt — ${txt('msg')}`);
+    must(JSON.stringify(K.doc()) === JSON.stringify(w.stored()), `${nev}: a lap állapota eltér a Workerben tárolttól`);
+  };
+  await step('szkennelt termék (OFF) a gyorsítótárba', () => K.lookup('8004030341234'));
+  await step('kamrába +1 csomag', () => K.addPantry('8004030341234', 'pack', 1));
+  await step('kamrába grammban', () => K.addPantry('8004030341234', 'g', 250));
+  const [pk, gr] = K.doc().pantry.map(x => x.id);
+  await step('+ lépés', () => K.pantryStep(pk, 1));
+  await step('− lépés (g)', () => K.pantryStep(gr, -1));
+  await step('három gyors koppintás egy írásban', () => Promise.all([K.pantryStep(pk, 1), K.pantryStep(pk, 1), K.pantryStep(pk, -1)]));
+  await step('evés a kamrából (csomag)', () => K.eat({code: '8004030341234', pantryId: pk, grams: 80}));
+  await step('hiányos tápértékű termék: keresés + evés (null makrók)', async () => { await K.lookup('5999999999999'); return K.eat({code: '5999999999999', grams: 33.3}); });
+  await step('evés a kamrából, a tétel kiürül', () => K.eat({code: '8004030341234', pantryId: gr, grams: 200}));
+  fillManual(p, {mName: 'Házi granola', mKcal: '450', mProtein: '12,5'});
+  await step('kézi termék vonalkód nélkül (m_…)', () => K.saveManual());
+  fillManual(p, {mCode: '5990000000001', mName: 'Túró Rudi', mBrand: 'Pöttyös', mKcal: '380', mPack: '30'});
+  await step('kézi termék vonalkóddal', () => K.saveManual());
+  await step('napló: egy tétel törlése (a nap megmarad)', () => K.logDelete(K.doc().log[KDAY][1].id));
+  must(K.doc().log[KDAY].length === 2, 'előfeltétel: két tétel maradt');
+  await step('napló: még egy tétel törlése', () => K.logDelete(K.doc().log[KDAY][0].id));
+  await step('napló: a nap UTOLSÓ tételének törlése (a nap kulcsa is kikerül)', () => K.logDelete(K.doc().log[KDAY][0].id));
+  must(!(KDAY in w.stored().log), `a kiürült nap kulcsa a dokumentumban maradt: ${JSON.stringify(w.stored().log)}`);
+  await step('naptípus kézzel (célok nélkül)', () => K.setDay('hyrox'));
+  await step('fenntartó hét (7 nap egy írásban)', () => K.maintenanceWeek());
+  fillT(p, {...S4, hyrox: null, maintenance: null}, SCHED);
+  await step('célok: két készlet null', () => K.saveTargets());
+  fillT(p, {strength: null, hyrox: null, rest: null, maintenance: null}, SCHED);
+  await step('célok: mind a négy készlet null', () => K.saveTargets());
+  fillT(p, S4, SCHED);
+  await step('célok: mind kitöltve', () => K.saveTargets());
+  await step('vissza a heti rendhez', () => K.setDay('auto'));
+  await step('evés célok mellett', () => K.eat({code: '8004030341234', grams: 120}));
+  await step('kamra-tétel eltávolítása', () => K.pantryRemove(pk));
+  const puts = w.puts();
+  must(puts.length >= 22 && puts.every(c => c.status === 200), `${puts.length} írás, állapotok: ${puts.map(c => c.status)}`);
+  puts.forEach((c, i) => must(c.sent.rev === i && c.body.ok === true && c.body.rev === i + 1, `${i + 1}. írás: küldött rev ${c.sent.rev}, válasz ${JSON.stringify(c.body)}`));
+  must(w.stored().rev === puts.length && K.doc().rev === puts.length, `végső rev: ${w.stored().rev} / ${K.doc().rev} (${puts.length} írás)`);
+  // az ál-szerver ellenőrzője ugyanazt mondja-e, mint a valódi: amit a valódi elfogadott, azt az is fogadja el
+  const disagree = puts.map(c => invalidDoc(c.sent)).filter(e => e.length);
+  must(!disagree.length, `a teszt saját ellenőrzője szigorúbb a valódi Workernél: ${disagree[0] && disagree[0][0]}`);
+});
+check('valódi Worker: az üres naplónap ([]) és a törölt nap is elfogadott; az ál-szerver ellenőrzője ugyanott utasít el, ahol a valódi', async () => {
+  const rw = await realWorker();
+  if (rw.skip) return rw.skip;
+  const send = async doc => {
+    const w = workerWorld(rw.worker);
+    const r = await w.fetch(`${API}/nutrition`, {method: 'PUT', headers: {Authorization: `Bearer ${NKEY}`, 'Content-Type': 'application/json'}, body: JSON.stringify(doc)});
+    return r.status;
+  };
+  must(await send({...emptyDoc(), log: {[KDAY]: []}}) === 200, 'az üres naplónapot ([]) a valódi Worker elutasítja');
+  must(await send(emptyDoc()) === 200, 'az üres alapdokumentumot a valódi Worker elutasítja');
+  const E = {id: 'l_1', code: null, name: 'X', grams: 10, kcal: null, protein: null, carbs: null, fat: null, time: '12:00'};
+  const P = {id: 'p_1', code: null, name: 'X', qty: 1, unit: 'pack', added: KDAY};
+  const cases = {
+    'jó napló- és kamra-tétel': {...emptyDoc(), log: {[KDAY]: [E]}, pantry: [P]},
+    'hiányzó days': (({days, ...r}) => r)(emptyDoc()),
+    'ismeretlen kulcs': {...emptyDoc(), extra: 1},
+    'grams 0': {...emptyDoc(), log: {[KDAY]: [{...E, grams: 0}]}},
+    'qty 0': {...emptyDoc(), pantry: [{...P, qty: 0}]},
+    'rossz napló-azonosító': {...emptyDoc(), log: {[KDAY]: [{...E, id: 'x1'}]}},
+    'rossz idő': {...emptyDoc(), log: {[KDAY]: [{...E, time: '24:00'}]}},
+    'nem létező nap': {...emptyDoc(), log: {'2026-02-30': []}},
+    'hiányzó code kulcs': {...emptyDoc(), pantry: [(({code, ...r}) => r)(P)]},
+    'rossz kézi termékkód': {...emptyDoc(), products: {'m_x': TUNA}},
+    'hiányzó brand': {...emptyDoc(), products: {'111111': (({brand, ...r}) => r)(TUNA)}},
+    'sets-ből hiányzó típus': {...emptyDoc(), targets: {sets: {strength: null, hyrox: null, rest: null}, schedule: SCHED, updated: KDAY}},
+    'ismeretlen naptípus': {...emptyDoc(), days: {[KDAY]: 'cheat'}},
+    'jó célok null készletekkel': {...emptyDoc(), targets: {sets: {strength: null, hyrox: null, rest: null, maintenance: null}, schedule: SCHED, updated: KDAY}},
+    'túl nagy szám': {...emptyDoc(), log: {[KDAY]: [{...E, kcal: 100001}]}},
+  };
+  for (const [nev, doc] of Object.entries(cases)) {
+    const real = await send(doc), mock = invalidDoc(doc).length ? 400 : 200;
+    must(real === mock, `${nev}: a valódi Worker ${real}, a teszt ellenőrzője ${mock}`);
+  }
+});
+check('valódi Worker: a hibaválaszai úgy érkeznek, ahogy a lap kezeli — 429 gap (Retry-After), 429 day, 409, 401, 503', async () => {
+  const rw = await realWorker();
+  if (rw.skip) return rw.skip;
+  const seed = {...emptyDoc(), products: {'111111': TUNA}};
+  const boot = async o => { const x = await kamraOnWorker(rw.worker, o); await x.K.setDay('rest'); return x; };   // 1. írás: rev 0 → 1
+  // 429 gap: két írás 2 s-en belül → a lap a Retry-After szerint vár, és egyszer újrapróbál
+  const a = await boot({autoAdvance: false});
+  const okA = await a.K.setDay('hyrox');
+  const sa = a.w.puts().map(c => c.status);
+  must(JSON.stringify(sa) === '[200,429,200]' && okA === true, `gap: ${sa}, eredmény: ${okA}`);
+  must(a.w.puts()[1].body.error === 'rate_limited' && a.w.puts()[1].body.scope === 'gap' && /^\d+$/.test(a.w.puts()[1].retryAfter), `a 429 alakja: ${JSON.stringify(a.w.puts()[1])}`);
+  // 429 day: a napi keret elfogyott → nincs újrapróba, a lépés "nincs mentve"
+  const b = await boot();
+  await b.w.cache.put(new Request('https://nw.invalid/day'), new Response(`150:${Math.floor(Date.now() / 1000)}`, {headers: {'Cache-Control': 'max-age=86400'}}));
+  const okB = await b.K.setDay('hyrox');
+  const sb = b.w.puts().map(c => c.status);
+  must(JSON.stringify(sb) === '[200,429]' && okB === false && b.w.puts()[1].body.scope === 'day', `day: ${sb} ${JSON.stringify(b.w.puts()[1].body)}`);
+  must(b.p.el('unsavedBox').hidden === false && /mai írási keret elfogyott/.test(b.txt('msg')), `day üzenet: ${b.txt('msg')}`);
+  // 409: közben egy másik eszköz írt → újratöltés, újra-alkalmazás, egy újrapróba
+  const c = await boot();
+  const other = c.w.stored(); other.days['2026-01-05'] = 'strength'; other.rev = 2; c.w.store.set('nutrition', JSON.stringify(other));
+  const okC = await c.K.setDay('hyrox');
+  const sc = c.w.puts().map(x => x.status);
+  must(JSON.stringify(sc) === '[200,409,200]' && okC === true && c.w.stored().days['2026-01-05'] === 'strength' && c.w.stored().days[KDAY] === 'hyrox' && c.w.stored().rev === 3,
+       `409: ${sc}, tárolt: ${JSON.stringify(c.w.stored().days)} rev ${c.w.stored().rev}`);
+  // 401: rossz írókulcs → a lépés visszavonva
+  const d = await kamraOnWorker(rw.worker, {nkey: 'egy-masik-irokulcs-nem-titok'});
+  const okD = await d.K.setDay('rest');
+  must(okD === false && d.w.puts().length === 1 && d.w.puts()[0].status === 401 && /írókulcs/i.test(d.txt('msg')) && !d.w.store.has('nutrition'), `401: ${d.w.puts().map(x => x.status)} — ${d.txt('msg')}`);
+  // 503: a KV egyszer nem írható → egy újrapróba, siker
+  const e = await boot();
+  e.w.kv.failPuts = 1;
+  const okE = await e.K.setDay('hyrox');
+  const se = e.w.puts().map(x => x.status);
+  must(JSON.stringify(se) === '[200,503,200]' && okE === true && e.w.stored().days[KDAY] === 'hyrox', `503: ${se}, eredmény: ${okE}`);
+  // …és ezért a lap 503 utáni várakozásának HOSSZABBNAK kell lennie a Worker írás-szüneténél:
+  const gapMs = Number(a.w.puts()[1].retryAfter) * 1000, def = page('kamra.html', {storage: WPAIRED}).run('Kamra').timing.retry;
+  must(def > gapMs, `a lap 503 utáni várakozása (${def} ms) nem hosszabb a Worker írás-szüneténél (${gapMs} ms)`);
+  const f = await boot({after503: 0});                              // a szünetnél rövidebb várakozás: 429 jönne — a lépés ekkor sem vész el
+  f.w.kv.failPuts = 1;
+  const okF = await f.K.setDay('hyrox');
+  must(okF === false && f.p.el('unsavedBox').hidden === false && f.txt('todayBody').includes('HYROX'), `503 → 429: a lépés elveszett (${f.w.puts().map(x => x.status)})`);
+});
+
 // Böngészőben mérve (375 px-es keret, demó adat): a kamra-linkkel a fejléc scrollWidth-je
 // 375 → 388 lett — a .topnav és a .nav-right egy sorba kényszerítette az öt elemet.
 check('kamra-link (index) 375 px: a fejléc törhet (.topnav és .nav-right flex-wrap), nem tolja ki a lapot', () => {
@@ -2180,13 +2382,19 @@ check('kamra-link (index) 375 px: a fejléc törhet (.topnav és .nav-right flex
 module.exports = {page, settle, demo, json};   // egyedi próbákhoz: require('./page_checks')
 if (require.main === module) (async () => {
   const only = process.argv[2];
-  let bad = 0, ran = 0;
+  let bad = 0, ran = 0, skipped = 0;
   for (const c of checks) {
     if (only && !c.name.includes(only)) continue;
     ran++;
-    try { await c.fn(); console.log(`  ✓ ${c.name}`); }
+    try {
+      // Egy ellenőrzés KIHAGYHATJA magát ('SKIP: ok' visszatérő értékkel) — ez látszik a
+      // kimenetben és az összesítőben is: sem csendben zöld, sem csendben piros.
+      const r = await c.fn();
+      if (typeof r === 'string' && r.startsWith('SKIP')) { skipped++; ran--; console.log(`  ⊘ ${c.name}\n      KIHAGYVA — ${r.replace(/^SKIP:?\s*/, '')}`); }
+      else console.log(`  ✓ ${c.name}`);
+    }
     catch (e) { bad++; console.log(`  ✗ ${c.name}\n      ${String(e && e.stack || e).split('\n').slice(0, 3).join('\n      ')}`); }
   }
-  console.log(bad ? `BUKÓ: ${bad}/${ran}` : `OK: ${ran}/${ran}`);
+  console.log((bad ? `BUKÓ: ${bad}/${ran}` : `OK: ${ran}/${ran}`) + (skipped ? ` · KIHAGYVA: ${skipped}` : ''));
   process.exit(bad ? 1 : 0);
 })();

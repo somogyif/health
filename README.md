@@ -251,6 +251,11 @@ data and never writes.
   manual retry button — nothing is retried in a loop and nothing is overwritten
   silently. Rapid +/− taps are batched into one write. If the document could not be
   loaded, the page writes nothing.
+- *Checked against the real Worker.* `tests/page_checks.js` loads the Worker's own source
+  (it lives in the sync repo; `HEALTH_WORKER_JS=…/worker.js` points at it) and sends every
+  document a full page session would write through its `fetch()`, with an in-memory KV
+  and fake keys. If the Worker source is not on the machine, those checks are reported
+  as skipped (`⊘ KIHAGYVA`), never as passed.
 
 ---
 
