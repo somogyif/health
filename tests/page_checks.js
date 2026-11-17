@@ -720,6 +720,17 @@ check('naptár (a) őrző: a 7. nap eseménye megjelenik, a mai napnál ott a "t
   must(/2026-11-15\s*· today/.test(v.text) && (v.text.match(/· today/g) || []).length === 1, `a "today" jelölés: ${v.text.slice(0, 80)}`);
 });
 
+check('naptár (a) őrző: a néző mai napja előtti nap nem kerül a "Next 7 days" alá (régi adat)', () => {
+  // Hideg review (2026-11-17): a szűrőnek csak felső határa volt. Régi (pótolt vagy késő
+  // éjjel nézett) adatnál a tegnapi nap is a "következő 7 nap" fejléc alá került.
+  const mult = [13, 14].map(n => ({title: `Mult${n}`, start: `2026-11-${n}T09:00:00+01:00`,
+                                   start_date: `2026-11-${n}`, time: '09:00', category: 'work'}));
+  const v = calView(at(2026, 11, 15, 10), [...mult, ...week()]);
+  must(v.text.includes('Nap15') && v.text.includes('Nap21'), `a hét nem rajzolódott ki (nem bizonyít): ${v.text.slice(0, 120)}`);
+  must(!v.text.includes('Mult13') && !v.text.includes('Mult14'), `múltbeli nap a listában: ${JSON.stringify(v.days)}`);
+  must(v.days.length === 7 && v.days[0] === '2026-11-15', `napok: ${JSON.stringify(v.days)}`);
+});
+
 // ── Lábléc: a synced_at Safarin ──────────────────────────────────────────────────
 // A synced_at helyi, időzóna nélküli "ÉÉÉÉ-HH-NN óó:pp" (health_sync.py: NOW.strftime). A
 // Safari (iOS) a szóközös alakot nem érti — new Date(...) → Invalid Date —, és a lábléc

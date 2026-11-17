@@ -833,6 +833,7 @@ function render(d){
     // tovább, és három napra vágott — 87 esemény esett kívülre 36 napon).
     const today = new Date();
     const cutoff = new Date(today); cutoff.setHours(23,59,59,999); cutoff.setDate(cutoff.getDate() + 6);
+    const todayStart = new Date(today); todayStart.setHours(0,0,0,0);
     // A csoportkulcs a nyers `start_date`, ami mindig ISO ('YYYY-MM-DD').
     // A korábbi 'en-GB' rövid formátum ('5 Sep') ezzel soha nem egyezett, ezért a
     // "· today" jelölés egyetlen napon sem jelent meg. Helyi dátum, nem UTC.
@@ -854,6 +855,7 @@ function render(d){
       const day = new Date(+m[1], +m[2]-1, +m[3]);     // helyi éjfél
       if (day.getMonth() !== +m[2]-1 || day.getDate() !== +m[3]) return;
       if (day > cutoff) return; // skip far future
+      if (day < todayStart) return; // régi adat: a néző mai napja előtti nap nem "Next 7 days"
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
