@@ -2,8 +2,10 @@
 //
 // Mit tud:
 //  • widget a kezdőképernyőn: kicsi („allapot” vagy „kovetkezo” paraméterrel), közepes, nagy;
-//  • reggeli értesítés + felolvasás szövege: a Parancsok app „Run Script” lépése hívja
-//    „ertesites” paraméterrel (lásd a README „iPhone-widget” részét).
+//  • reggeli értesítés + felolvasás szövege: ha a Parancsok (vagy Siri) futtatja — tehát se
+//    widgetként, se az appban —, magától ezt csinálja; paraméter nem kell (az újabb iOS a
+//    „Run Script” paraméter-mezőjébe csak fájlt enged választani). Az „ertesites” paraméter
+//    ettől még működik.
 //
 // Az adat a privát végpontról jön (ugyanaz, amit a dashboard olvas). A cím és az olvasókulcs a
 // telefon kulcskarikájában (Keychain) van — a szkriptben NINCS titok, ezért lehet nyilvános.
@@ -473,7 +475,9 @@ async function main() {
     return;
   }
   const {d, hiba} = await adat(cfg);
-  if (String(args.shortcutParameter || '').trim() === 'ertesites') {
+  // Értesítés-mód: a Parancsok vagy Siri futtatja (se widget, se app), vagy kifejezetten kérték.
+  const ertesitesMod = String(args.shortcutParameter || '').trim() === 'ertesites' || (!config.runsInWidget && !config.runsInApp);
+  if (ertesitesMod) {
     const u = d ? reggeliUzenet(d, most) : {cim: 'Reggeli állapot', szoveg: `Az adat most nem érhető el (${hiba}).`, beszed: 'Az egészség-adat most nem érhető el.'};
     const n = new Notification();
     n.title = u.cim;
