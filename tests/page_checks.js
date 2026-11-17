@@ -1309,6 +1309,46 @@ check('kamra XSS: ellenséges kulcs, azonosító és szám-helyén-szöveg a bet
   must(html('pantryBody').includes('onerror') && html('todayBody').includes('onerror'), 'a próba nem jelent meg (nem bizonyít)');
   for (const id of ['pantryBody', 'todayBody', 'productCard', 'status']) { noRaw(html(id), id); must(!/undefined|NaN|\[object/.test(html(id)), `${id}: undefined/NaN`); }
 });
+// Attribútum-környezet: az <img …> próbában nincs idézőjel, így az a data-id="…" és a
+// value="…" kitörését nem vizsgálja (az esc()-ből a " és a ' kivéve mind a 199 ellenőrzés
+// zöld maradt). Itt minden kiírt címkének szigorú alakúnak kell lennie: név + attr="érték".
+const QUOTED = ['" onmouseover=alert(1) x="', "' onfocus=alert(1) '", '"><b onclick=alert(1)>x</b><i a="'];
+function tagProblems(html) {
+  const problems = [];
+  const rest = html.replace(/<\/[a-z0-9]+>/gi, '').replace(/<[a-z][a-z0-9]*((?:\s+[a-zA-Z-]+(?:="[^"<>]*")?)*)\s*>/g, (m, attrs) => {
+    for (const a of attrs.matchAll(/\s+([a-zA-Z-]+)(?:="[^"]*")?/g))
+      if (/^on/i.test(a[1]) || !/^(class|style|type|id|value|placeholder|inputmode|autocomplete|aria-label|aria-pressed|data-act|data-id)$/.test(a[1])) problems.push(`váratlan attribútum: ${a[1]}`);
+    return '';
+  });
+  const i = rest.search(/[<>]/);
+  if (i >= 0) problems.push(`szabálytalan címke: …${rest.slice(Math.max(0, i - 30), i + 70)}…`);
+  return problems;
+}
+check('kamra XSS (attribútum): idézőjeles támadó szöveg az azonosítóban, névben, márkában, kódban nem tör ki egyetlen attribútumból sem', async () => {
+  must(tagProblems('<button type="button" data-id="" onmouseover=alert(1) x="">x</button>').length > 0 &&
+       tagProblems("<input value='' onfocus=alert(1) ''>").length > 0 && tagProblems('<i data-id=""><b onclick=alert(1)>x</b>').length > 0 &&
+       tagProblems('<div class="a"><button type="button" data-act="eat" data-id="p_1">x</button></div>').length === 0, 'a vizsgáló nem vizsgál (nem bizonyít)');
+  for (const Q of QUOTED) {
+    const doc = {...emptyDoc(), targets: {sets: {strength: {kcal: Q, protein_g: Q, carbs_g: 1, fat_g: 1}}, schedule: {tue: Q}, updated: Q},
+      products: {[Q]: {...TUNA, name: Q, brand: Q, serving_g: Q, pack_g: Q, source: Q}, '111111': {...TUNA, name: Q, brand: Q}},
+      pantry: [{id: Q, code: Q, name: Q, qty: 2, unit: 'pack', added: Q}, {id: 'p_ok', code: '111111', name: Q, qty: Q, unit: Q, added: KDAY}],
+      log: {[KDAY]: [{id: Q, code: Q, name: Q, grams: 50, kcal: 1, protein: Q, carbs: 1, fat: 1, time: Q}]}, days: {[KDAY]: Q}};
+    const {K, p, html, srv} = await kamra(doc, {noValidate: true, off: offOk({...OFF_TUNA, product_name: Q, brands: Q})});
+    const all = hol => { for (const id of ['productCard', 'todayBody', 'pantryBody']) { const pr = tagProblems(html(id)); must(!pr.length, `${JSON.stringify(Q)} — ${hol} — ${id}: ${pr[0]}`); } };
+    all('betöltve');
+    must(html('pantryBody').includes(`data-act="pantry-inc" data-id="${esc(Q)}"`) && html('todayBody').includes(`data-act="log-del" data-id="${esc(Q)}"`),
+         `${JSON.stringify(Q)}: az azonosító nem semlegesítve áll a data-id-ben (nem bizonyít): ${html('pantryBody').slice(0, 300)}`);
+    must(html('pantryBody').includes(esc(Q)) && html('todayBody').includes(esc(Q)), 'a név nem jelent meg (nem bizonyít)');
+    await K.lookup(Q); all('kártya a dokumentum termékéből');
+    must(html('productCard').includes(esc(Q)) && /id="eatGrams"[^>]*value="100"/.test(html('productCard')), `a kártya: ${html('productCard').slice(0, 200)}`);
+    p.fire('document:click', {target: {closest: () => ({dataset: {act: 'pantry-eat', id: Q}})}, preventDefault() {}}); all('kártya a kamra-tételből');
+    await K.lookup('8004030341234'); all('kártya az OFF-ből');
+    fillManual(p, {mName: Q, mBrand: Q, mKcal: '100'}); await K.saveManual(); all('kézi termék');
+    must(html('productCard').includes(esc(Q)), 'a kézi termék neve nem jelent meg (nem bizonyít)');
+    await K.addPantry('111111', 'g', 100); await K.eat({code: '111111', grams: 10}); all('írás után');
+    must(srv.puts.length > 0 && srv.puts[srv.puts.length - 1].body.pantry.some(x => x.name === Q), 'a dokumentumba nem a nyers szöveg került');
+  }
+});
 check('kamra hiányzó adat: tápérték nélküli terméknél "—" áll (nem 0), a napi összeg pedig "legalább"', async () => {
   const {K, txt} = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {off: offOk({product_name: 'Rejtély', nutriments: {'energy-kcal_100g': 200}})});
   await K.lookup('5999999999999');
