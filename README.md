@@ -1,8 +1,9 @@
 # Health Centre
 
 A personal health intelligence dashboard. A scheduled sync engine pulls from seven
-external services — a wearable, a strength-training log, a smart scale, two calendars,
-a task manager and a weather API — normalises them into a single document, computes
+external services — a wearable, a strength-training log, a smart scale, a calendar and
+to-do feed, a task manager, a notes workspace and a weather API — normalises them into a
+single document, computes
 derived metrics (recovery signals, training load, progressive overload, a daily plan),
 and publishes to an authenticated endpoint that a static frontend reads. Nothing on the
 dashboard is hardcoded: every value is fetched live or computed from fetched data.
@@ -49,10 +50,14 @@ seven sources → sync engine (Python, scheduled) → guards → authenticated e
 ```
 
 **Integrations (7).** A wearable platform (recovery, sleep, HRV, training load, body
-battery), a strength-training API, a smart scale exporting through a cloud drive, an
-iCal calendar feed, a second calendar via Notion, a local task manager, and a weather
-API. Four different authentication models: username/password with token reuse, an API
-key, a service-account JWT, and a secret feed URL.
+battery), a strength-training API, a smart scale exporting through a cloud drive, a
+calendar feed (a small Apps Script endpoint that returns every calendar of the account and
+the open to-dos of its task lists, with a plain iCal feed as fallback), a local task
+manager mirrored into a Notion database, and a weather API. The to-do card shows the task
+manager's to-dos and the feed's to-dos as one list, each marked with its source; if the feed
+does not answer, the last known list is kept and labelled with its time. Four different
+authentication models: username/password with token reuse, an API key, a service-account
+JWT, and a secret feed URL.
 
 **Sync engine.** ~1,500 lines of Python, standard library plus three dependencies, run
 on a schedule by `launchd`. A fetch layer (one adapter per source, each independently
@@ -301,6 +306,10 @@ Honest list. These are known and deliberate, not oversights waiting to be discov
   compare it with the digits under the barcode. The rule itself is checked only in a
   fake DOM so far.
 - **Unsaved pantry steps live only in the open page.** Closing it loses them.
+- **The to-do card is read-only and does not detect duplicates.** A to-do kept in both the
+  task manager and the calendar feed's task lists shows twice; matching by title would be
+  guessing. If the task manager cannot be read, the card is hidden rather than showing the
+  feed's to-dos alone — that list would claim "nothing due" when there might be.
 
 - **Notion mirroring is not implemented.** The function logs that it's skipped. It used
   to log a success tick while doing nothing, which is worse than not having it.
