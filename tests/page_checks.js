@@ -720,6 +720,31 @@ check('naptár (a) őrző: a 7. nap eseménye megjelenik, a mai napnál ott a "t
   must(/2026-11-15\s*· today/.test(v.text) && (v.text.match(/· today/g) || []).length === 1, `a "today" jelölés: ${v.text.slice(0, 80)}`);
 });
 
+// ── Lábléc: a synced_at Safarin ──────────────────────────────────────────────────
+// A synced_at helyi, időzóna nélküli "ÉÉÉÉ-HH-NN óó:pp" (health_sync.py: NOW.strftime). A
+// Safari (iOS) a szóközös alakot nem érti — new Date(...) → Invalid Date —, és a lábléc
+// "synced Invalid Date"-et írt. A V8 elnézi, ezért a próba egy szigorú, Safari-szerű
+// Date-et tesz a lap alá. (Hideg review, 2026-11-17.)
+const safariDate = p => vm.runInContext(`(() => { const R = Date;
+  globalThis.Date = class extends R {
+    constructor(...a) {
+      if (a.length === 1 && typeof a[0] === 'string' && /^\\d{4}-\\d{2}-\\d{2} \\d/.test(a[0])) super(NaN);
+      else super(...a);
+    }
+    static now() { return R.now(); }
+  }; })()`, p.ctx);
+check('lábléc: a synced_at ("ÉÉÉÉ-HH-NN óó:pp") Safarin sem lesz "Invalid Date"', () => {
+  const d = demo(); d.synced_at = '2026-03-17 07:12';
+  const p = page('index.html', {now: at(2026, 3, 17, 9)});
+  safariDate(p);
+  p.ctx.render(d);
+  const html = p.el('tab-today').innerHTML;
+  const upd = (/synced ([^·<]*)·/.exec(html) || [])[1] || '';
+  must(upd.trim(), `nincs "synced …" sor (nem bizonyít): ${html.length} karakter`);
+  must(!/invalid/i.test(upd), `a lábléc: synced ${upd.trim()}`);
+  must(/17 Mar/.test(upd) && /07:12/.test(upd), `rossz idő a láblécben: synced ${upd.trim()}`);
+});
+
 // ── (c) Tasks kártya: a napszavak a NÉZŐ mai napjához igazodnak (mint a Day plan, F1) ──
 // A tasks.today / tasks.tomorrow a SYNC napjához képest értendő; a kártya feltétel nélkül
 // "Today" / "Tomorrow" szót írt. 15-én reggel a 14-i adat "Tomorrow" blokkja valójában a mai nap.

@@ -576,7 +576,11 @@ function render(d){
   const wq=d.workout_quality||d.workouts_quality||[];
   const wks=d.workouts||[];
 
-  const synced=d.synced_at?new Date(d.synced_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+  // A synced_at helyi, időzóna nélküli "ÉÉÉÉ-HH-NN óó:pp": számokból építjük, mert a Safari a
+  // szóközös alakot nem érti (new Date(...) → "synced Invalid Date" a láblécben).
+  const _sm=/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(String(d.synced_at||''));
+  const _sd=_sm?new Date(+_sm[1],+_sm[2]-1,+_sm[3],+_sm[4],+_sm[5]):null;
+  const synced=_sd&&!isNaN(_sd)?_sd.toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
 
   // Render calendar events
   const calEvents = d.calendar || [];
