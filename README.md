@@ -82,6 +82,10 @@ advice, in the morning and (after an evening sync) at night. The same script, ru
 Shortcuts automation at 07:15, posts a notification and returns text for the phone to read
 aloud. Whether it shows the morning or the evening view is decided by the data's own
 timestamp, not the phone's clock, so last night's numbers are never presented as today's.
+The notification ends with one more line from the pantry (`GET /nutrition`, same key):
+what is due within 3 days or already past, by the same rule as the pantry page, at most four
+items. If the pantry cannot be read, the line says so; if nothing is due, there is no line. The
+widget itself shows nothing from the pantry and does not even request it.
 The endpoint address and the read key live in the phone's keychain (paired with the same
 link as the browser), so the script itself holds no secret. `tests/widget_checks.js` runs it
 against a fake Scriptable runtime.
@@ -281,7 +285,10 @@ data and never writes.
   gives a general shelf-life guideline in days; a "use within X days of opening" figure
   from the pack (`open_days` on the product) overrides it, and an unknown product type gets
   no number at all. The effective date is the earlier of the two, and "Hamarosan lejár"
-  lists everything due within 3 days or already past.
+  lists everything due within 3 days or already past. The 07:15 notification repeats this
+  list in one line. The table and the rule live in two places (the page and the Scriptable
+  script cannot load a shared file), so `tests/page_checks.js` compares them: the table row
+  by row, and the rule on a large matrix against what the page actually renders.
 - *Write key.* Set once with `…/health/kamra.html#nkey=<write key>`, under the same
   rules as the read link (fragment only, removed from the address bar first, confirmation
   with the host name). It can only be attached to an already-paired endpoint, and it is
