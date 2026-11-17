@@ -6,6 +6,8 @@
 //    widgetként, se az appban —, magától ezt csinálja; paraméter nem kell (az újabb iOS a
 //    „Run Script” paraméter-mezőjébe csak fájlt enged választani). Az „ertesites” paraméter
 //    ettől még működik.
+//  • az értesítés végén, új sorban a kamra „Hamarosan lejár”-ja (GET /nutrition, ugyanazzal az
+//    olvasókulccsal; ugyanaz a szabály, mint a kamra.html-ben). A widget KÉPÉN nincs kamra.
 //
 // Az adat a privát végpontról jön (ugyanaz, amit a dashboard olvas). A cím és az olvasókulcs a
 // telefon kulcskarikájában (Keychain) van — a szkriptben NINCS titok, ezért lehet nyilvános.
@@ -212,6 +214,146 @@ function reggeliUzenet(d, most) {
   const beszed = `Jó reggelt! Readiness ${r}, alvás ${a === '—' ? 'ismeretlen' : a.replace(' ó', ' óra').replace('.', ',')}, ` +
     `body battery ${bb}. ${m.tanacs}` + (kov ? ` Első esemény ${kimondIdo(kov.ido)}: ${kov.cim}.` : '');
   return {cim, szoveg, beszed: beszed.replace(/—/g, 'ismeretlen')};
+}
+
+// ── Kamra: „Hamarosan lejár” a reggeli értesítésbe ──────────────────────────────
+// UGYANAZ a szabály és táblázat, mint a kamra.html-ben (SOON, SHELF, expiry): a lap és ez a
+// szkript nem tölthet közös fájlt, ezért a tests/page_checks.js a táblázatot sorról sorra, a
+// szabályt pedig egy nagy mátrixon veti össze a lap kirajzolt listájával. Ha a lapon változik,
+// itt is kell — a próba szól.
+const KAMRA_SOON = 3;                    // ennyi napon belül lejáró tétel (a lap SOON-ja)
+const KAMRA_MAX = 4;                     // ennyi tétel fér az értesítés sorába; a többi: „és még N tétel”
+const NEV_MAX = 28;                      // ennél hosszabb tételnév szóhatáron rövidül
+
+// Felbontás utáni eltarthatóság: óvatos, általános irányelv napban — a kamra.html táblájának
+// szó szerinti másolata (a magyarázat ott van). A csomag felirata (open_days) felülírja.
+const NB = '(^|[^a-z0-9áéíóöőúüű])', NE = '($|[^a-z0-9áéíóöőúüű])';   // szóhatár ékezettel is
+const SHELF = [
+  {kind: 'sweet', hu: 'édesség', days: null, tags: ['en:chocolates', 'en:biscuits', 'en:confectioneries'], re: /csok|chocolate|keksz|biscuit|cookie|nápolyi|ostya|cukorka/},
+  {kind: 'plant_milk', hu: 'növényi ital', days: 5, tags: ['en:milk-substitutes', 'en:plant-milks', 'en:plant-based-milk-alternatives', 'en:oat-based-drinks', 'en:soy-based-drinks', 'en:almond-based-drinks', 'en:rice-based-drinks', 'en:nut-based-drinks'],
+   re: /(zab|szója|szoja|mandula|rizs|kesu|mogyoró|kókusz|kokusz)\s?-?\s?ital|növényi ital|\boat\b|oatly|alpro|\bsoy\b|almond/},
+  {kind: 'sour_cream', hu: 'tejföl', days: 5, tags: ['en:sour-creams', 'en:fermented-creams'], re: /tejföl|tejfol|crème fraîche|creme fraiche|sour cream/},
+  {kind: 'cream', hu: 'tejszín', days: 3, tags: ['en:creams', 'en:cooking-creams', 'en:whipping-creams'], re: /tejszín|tejszin|\bcream\b/},
+  {kind: 'yogurt', hu: 'joghurt, kefir', days: 3, tags: ['en:yogurts', 'en:kefir', 'en:kefirs', 'en:fermented-milk-drinks', 'en:skyr'], re: /joghurt|jogurt|yogh?urt|kefir|skyr|aludttej/},
+  {kind: 'fresh_cheese', hu: 'túró, friss sajt', days: 3, tags: ['en:fresh-cheeses', 'en:cottage-cheeses', 'en:cream-cheeses', 'en:mozzarella', 'en:ricotta', 'en:mascarpone', 'en:quarks'],
+   re: /túró|turo|mozzarella|ricotta|mascarpone|cottage|krémsajt|kremsajt|cream cheese|tofu|feta/},
+  {kind: 'hard_cheese', hu: 'kemény sajt', days: 21, tags: ['en:hard-cheeses', 'en:parmigiano-reggiano', 'en:grana-padano', 'en:pecorino'], re: /parmez|parmigiano|grana padano|pecorino|kemény sajt/},
+  {kind: 'cheese', hu: 'sajt', days: 7, tags: ['en:cheeses'], re: /sajt|cheese|trappista|gouda|edami|cheddar|ementál|emmental/},
+  {kind: 'milk', hu: 'friss tej', days: 3, tags: ['en:milks'], re: new RegExp(NB + '(tej|milk)' + NE)},
+  {kind: 'butter', hu: 'vaj, margarin', days: 14, tags: ['en:butters', 'en:margarines'], re: /vaj\b|margarin|butter/},
+  {kind: 'sliced_meat', hu: 'felvágott, sonka', days: 3, tags: ['en:hams', 'en:cooked-hams', 'en:sliced-meats', 'en:cold-cuts', 'en:sausages', 'en:salamis'],
+   re: /sonka|felvágott|felvagott|párizsi|parizsi|virsli|szalámi|szalami|bacon|\bham\b|salami/},
+  {kind: 'raw_meat', hu: 'nyers hús', days: 1, tags: ['en:meats', 'en:poultries', 'en:chickens'], re: /csirke|pulyka|darált|daralt|sertés|sertes|marha|hús\b|filé|chicken|beef|pork/},
+  {kind: 'fish', hu: 'hal', days: 2, tags: ['en:fishes', 'en:seafood', 'en:smoked-salmons', 'en:canned-fishes', 'en:tunas'], re: /tonhal|lazac|makréla|makrela|szardínia|szardinia|hering|hal\b|salmon|tuna/},
+  {kind: 'canned', hu: 'konzerv (felbontva, áttéve)', days: 3, tags: ['en:canned-foods'], re: /konzerv|kókusztej|kokusztej|coconut milk/},
+  {kind: 'dip', hu: 'hummusz, krém, pástétom', days: 3, tags: ['en:hummus', 'en:dips', 'en:pates'], re: /hummus|humusz|hummusz|guacamole|tzatziki|pástétom|pastetom|májkrém|majkrem|padlizsánkrém/},
+  {kind: 'juice', hu: 'gyümölcslé', days: 3, tags: ['en:fruit-juices', 'en:juices', 'en:vegetable-juices'], re: new RegExp('gyümölcslé|gyumolcsle|juice|smoothie|' + NB + 'lé' + NE)},
+  {kind: 'tomato_sauce', hu: 'paradicsomszósz, pesto', days: 3, tags: ['en:tomato-sauces', 'en:pestos', 'en:pasta-sauces'], re: /passata|paradicsomszósz|paradicsom szósz|paradicsompüré|sűrített paradicsom|pesto|tésztaszósz/},
+  {kind: 'bread', hu: 'kenyér, tortilla', days: 3, tags: ['en:breads', 'en:sliced-breads', 'en:tortillas', 'en:wraps'], re: /kenyér|kenyer|toast|zsemle|kifli|tortilla|\bwrap\b|bread/},
+  {kind: 'condiment', hu: 'ketchup, mustár, majonéz', days: 30, tags: ['en:ketchup', 'en:mustards', 'en:mayonnaises'], re: /ketchup|mustár|mustar|majonéz|majonez|mayo/},
+  {kind: 'jam', hu: 'lekvár, dzsem', days: 30, tags: ['en:jams', 'en:fruit-preserves', 'en:marmalades'], re: /lekvár|lekvar|dzsem|\bjam\b|marmalade|gyümölcskrém/},
+  {kind: 'dry', hu: 'száraz áru (pehely, rizs, tészta, liszt)', days: 90, tags: ['en:cereal-flakes', 'en:rolled-oats', 'en:rices', 'en:pastas', 'en:flours', 'en:breakfast-cereals', 'en:mueslis', 'en:protein-powders'],
+   re: /pehely|müzli|muzli|granola|rizs|tészta|teszta|spagetti|penne|liszt|fehérjepor|protein ?por|whey|\boats\b/},
+];
+
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+// 'YYYY-MM-DD' → {y, m, d}, ha valódi naptári nap; különben null (a lap ymd-je).
+function naptariNap(s) {
+  const k = typeof s === 'string' ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(s) : null;
+  if (!k) return null;
+  const y = +k[1], m = +k[2], d = +k[3], date = new Date(y, m - 1, d);
+  return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d ? {y, m, d} : null;
+}
+// Az irányelv egy termékre: a tárolt fajta, különben a név szavai; {kind, hu, days} vagy null.
+function shelfGuide(p) {
+  if (!isObj(p)) return null;
+  let row = typeof p.kind === 'string' ? SHELF.find(r => r.kind === p.kind) : null;
+  if (!row && typeof p.name === 'string') { const n = p.name.toLowerCase(); row = SHELF.find(r => r.re.test(n)) || null; }
+  return row && row.days != null ? {kind: row.kind, hu: row.hu, days: row.days} : null;
+}
+function addDays(s, n) { const p = naptariNap(s); return p && Number.isInteger(n) ? ymd(new Date(p.y, p.m - 1, p.d + n)) : null; }
+// Hány naptári nap van hátra (negatív: lejárt) — UTC-napokból, így az óraátállítás nem zavar.
+function daysLeft(s, from) {
+  const a = naptariNap(s), b = naptariNap(from);
+  return a && b ? Math.round((Date.UTC(a.y, a.m - 1, a.d) - Date.UTC(b.y, b.m - 1, b.d)) / 864e5) : null;
+}
+const openDays = p => (isObj(p) && Number.isInteger(p.open_days) && p.open_days >= 1 && p.open_days <= 365 ? p.open_days : null);
+// A tétel tényleges lejárata: a csomag dátuma és a felbontás + napok közül a korábbi; ha nincs
+// szám (sem felirat, sem irányelv), a felbontásból NEM számolunk dátumot. from: 'printed' |
+// 'opened' (irányelv) | 'label' (felirat).
+function expiry(it, p) {
+  if (!isObj(it)) return null;
+  const printed = naptariNap(it.expires) ? it.expires : null, opened = naptariNap(it.opened) ? it.opened : null;
+  if (!printed && !opened) return null;
+  const label = openDays(p), guide = label == null ? shelfGuide(p) : null;
+  const days = label != null ? label : guide ? guide.days : null;
+  const byOpen = opened && days != null ? addDays(opened, days) : null;
+  const date = printed && byOpen ? (byOpen < printed ? byOpen : printed) : printed || byOpen;
+  const from = !date ? null : date === byOpen && date !== printed ? (label != null ? 'label' : 'opened') : 'printed';
+  return {date, from};
+}
+
+// A /nutrition válasza → {products, pantry}, ha a lap is elfogadná (normDoc); különben null.
+function kamraDok(j) {
+  if (!isObj(j) || j.version !== 1 || !Number.isSafeInteger(j.rev)) return null;
+  const products = j.products == null ? {} : isObj(j.products) ? j.products : null;
+  const pantry = j.pantry == null ? [] : Array.isArray(j.pantry) ? j.pantry : null;
+  return products && pantry ? {products, pantry} : null;
+}
+
+function rovidNev(s) {
+  const t = typeof s === 'string' ? s.replace(/\s+/g, ' ').trim() : '';
+  const b = Array.from(t);
+  if (!b.length) return 'Névtelen tétel';
+  if (b.length <= NEV_MAX) return t;
+  const v = b.slice(0, NEV_MAX - 1).join(''), i = v.lastIndexOf(' ');
+  return `${i >= 12 ? v.slice(0, i) : v}…`;
+}
+
+// A kamra → a KAMRA_SOON napon belül lejáró és a már lejárt tételek, dátum szerint (egyenlő
+// dátumnál a kamra sorrendjében) — pontosan a lap „Hamarosan lejár”-ja. A nap a telefoné.
+function lejarok(doc, most) {
+  const products = doc && isObj(doc.products) ? doc.products : {};
+  const prod = code => (typeof code === 'string' && Object.prototype.hasOwnProperty.call(products, code) && isObj(products[code]) ? products[code] : null);
+  const ma = ymd(most);
+  return (doc && Array.isArray(doc.pantry) ? doc.pantry : []).filter(isObj)
+    .map(it => ({it, x: expiry(it, prod(it.code))}))
+    .filter(o => o.x && o.x.date && daysLeft(o.x.date, ma) <= KAMRA_SOON)
+    .sort((a, b) => (a.x.date < b.x.date ? -1 : a.x.date > b.x.date ? 1 : 0))
+    .map(({it, x}) => ({nev: rovidNev(it.name), datum: x.date, n: daysLeft(x.date, ma), felbontva: x.from !== 'printed'}));
+}
+
+// Az értesítés kamra-sora: {szoveg, beszed}, vagy null (a kamrát nem kértük, vagy semmi nem
+// jár le). Ha a kamra nem olvasható, azt mondja ki — nem hallgat el, és nem talál ki semmit.
+function kamraSor(k, most) {
+  if (!k) return null;
+  if (!k.doc) return {szoveg: `Kamra: most nem olvasható (${k.hiba || 'ismeretlen hiba'}).`, beszed: 'A kamra most nem olvasható.'};
+  const mind = lejarok(k.doc, most);
+  if (!mind.length) return null;
+  const lat = mind.slice(0, KAMRA_MAX), tobb = mind.length - lat.length;
+  const lejart = lat.filter(x => x.n < 0), hamar = lat.filter(x => x.n >= 0);
+  const mikor = n => (n === 0 ? 'ma' : n === 1 ? 'holnap' : `${n} nap múlva`);
+  const bont = x => (x.felbontva ? ', felbontva' : '');
+  const reszek = [], mondatok = [];
+  if (lejart.length) {
+    reszek.push(`lejárt: ${lejart.map(x => `${x.nev} (${-x.n} napja${bont(x)})`).join(', ')}`);
+    mondatok.push(`lejárt: ${lejart.map(x => x.nev).join(', ')}.`);
+  }
+  if (hamar.length) {
+    reszek.push(`hamarosan lejár: ${hamar.map(x => `${x.nev} (${mikor(x.n)}${bont(x)})`).join(', ')}`);
+    mondatok.push(`hamarosan lejár: ${hamar.map(x => `${x.nev} ${mikor(x.n)}`).join(', ')}.`);
+  }
+  const beszed = [`A kamrában ${mondatok[0]}`].concat(mondatok.slice(1).map(nagybetu)).join(' ') + (tobb ? ` És még ${tobb} tétel.` : '');
+  return {szoveg: `Kamra — ${reszek.join('; ')}${tobb ? ` — és még ${tobb} tétel` : ''}.`, beszed};
+}
+
+// Az értesítés (a 7:15-ös és az appbeli próba): a reggeli — este az esti — állapot, és új
+// sorban a kamra. Ha az egészség-adat nem jött meg, a kamra-sor akkor is ott van.
+function ertesites(d, hiba, most, k) {
+  const u = d ? reggeliUzenet(d, most)
+    : {cim: 'Reggeli állapot', szoveg: `Az adat most nem érhető el (${hiba}).`, beszed: 'Az egészség-adat most nem érhető el.'};
+  const s = kamraSor(k, most);
+  return s ? {cim: u.cim, szoveg: `${u.szoveg}\n${s.szoveg}`, beszed: `${u.beszed} ${s.beszed}`} : u;
 }
 
 // ── Scriptable-réteg: „hangulat-szín” (B irány, Feri választása 2026-11-17) ─────
@@ -464,6 +606,25 @@ async function adat(cfg) {
   }
 }
 
+// A kamra-dokumentum (GET /nutrition, ugyanazzal az olvasókulccsal) — csak az értesítéshez.
+// {doc, hiba}: hibánál doc null, és a hiba oka (az értesítés kiírja). Helyi mentés nincs: a
+// kamráról csak friss adatból mondunk valamit.
+async function kamraAdat(cfg) {
+  try {
+    const r = new Request(`${cfg.api}/nutrition`);
+    r.headers = {Authorization: `Bearer ${cfg.key}`};
+    r.timeoutInterval = 15;
+    const j = await r.loadJSON();
+    const st = r.response ? r.response.statusCode : null;
+    if (st !== 200) throw new Error(`a végpont ${st == null ? '?' : st} választ adott`);
+    const doc = kamraDok(j);
+    if (!doc) throw new Error('hibás kamra-dokumentum');
+    return {doc, hiba: null};
+  } catch (e) {
+    return {doc: null, hiba: (e && e.message) || String(e)};
+  }
+}
+
 async function main() {
   const most = new Date();
   let cfg = beallitas();
@@ -474,11 +635,12 @@ async function main() {
     Script.complete();
     return;
   }
-  const {d, hiba} = await adat(cfg);
   // Értesítés-mód: a Parancsok vagy Siri futtatja (se widget, se app), vagy kifejezetten kérték.
   const ertesitesMod = String(args.shortcutParameter || '').trim() === 'ertesites' || (!config.runsInWidget && !config.runsInApp);
+  // A kamra csak az értesítésbe kell (a widget képe nem változik); a két kérés párhuzamosan megy.
+  const [{d, hiba}, k] = await Promise.all([adat(cfg), ertesitesMod ? kamraAdat(cfg) : null]);
   if (ertesitesMod) {
-    const u = d ? reggeliUzenet(d, most) : {cim: 'Reggeli állapot', szoveg: `Az adat most nem érhető el (${hiba}).`, beszed: 'Az egészség-adat most nem érhető el.'};
+    const u = ertesites(d, hiba, most, k);
     const n = new Notification();
     n.title = u.cim;
     n.body = u.szoveg;
@@ -494,12 +656,13 @@ async function main() {
     Script.complete();
     return;
   }
-  await appMenu(d, hiba, most);
+  await appMenu(cfg, d, hiba, most);
   Script.complete();
 }
 
-// Az appban futtatva: előnézet minden méretben, értesítés-próba, újrapárosítás.
-async function appMenu(d, hiba, most) {
+// Az appban futtatva: előnézet minden méretben, értesítés-próba (a kamra-sorral, mint 7:15-kor),
+// újrapárosítás.
+async function appMenu(cfg, d, hiba, most) {
   const menu = new Alert();
   menu.title = 'Health Centre widget';
   menu.message = d ? `${frissesseg(d, most).cimke}${hiba ? ` · a frissítés most nem sikerült (${hiba})` : ''}` : `Nincs adat: ${hiba}`;
@@ -511,7 +674,7 @@ async function appMenu(d, hiba, most) {
   if (pontok[i] === 'Párosítás újra') { await parositas(); return; }
   if (!d) return;
   if (pontok[i] === 'Értesítés próba') {
-    const u = reggeliUzenet(d, most), n = new Notification();
+    const u = ertesites(d, hiba, most, await kamraAdat(cfg)), n = new Notification();
     n.title = u.cim;
     n.body = u.szoveg;
     n.threadIdentifier = 'healthcentre';
