@@ -843,7 +843,9 @@ check('tasks (g): kikapcsolt Google-forrás, vagy a régi alak (nincs tasks.goog
                             ['régi alak', d => { googleTasks('ok')(d); delete d.tasks.google; }]]) {
     const t = tasksView(at(2026, 3, 17, 8), mut);
     must(t.includes('Dentist call'), `${nev}: a tétel nem jelent meg (nem bizonyít)`);
-    must(!/\b(Things|Google)\b/.test(t), `${nev}: forrás-címke áll: ${t.slice(0, 200)}`);
+    // Szóhatár NÉLKÜL: a címke szövege szóköz nélkül tapad a névhez ("bankThings"), egy
+    // \b-s minta nem látná — így maradt zölden egy mutáns (2026-11-17).
+    must(!/Things|Google/.test(t), `${nev}: forrás-címke áll: ${t.slice(0, 200)}`);
   }
 });
 check('tasks (g): pótolt lista → "last known list from …"; ismeretlen → "unavailable"; csonka → jelzés', () => {
