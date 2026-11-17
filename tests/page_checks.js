@@ -2899,11 +2899,11 @@ check('kamra bevásárlás: nem termék-kód (QR) kimarad, a kamera fut tovább;
 check('kamra bevásárlás: csak író lapon indul — írókulcs nélkül vagy betöltetlen adattal kiírja, miért, és a kamera el sem indul', async () => {
   const ro = await kamra(null, {storage: PAIRED});
   const cam = camera(ro.p);
-  await ro.K.startScan(true);
+  ro.K.startScan(true); await settle(10);                  // nem várjuk meg: hibás úton a ZXing betöltésére várna (függ)
   must(cam.tracks === 0 && /írókulcs/.test(ro.txt('msg')), `írókulcs nélkül: kamera=${cam.tracks}, üzenet: ${ro.txt('msg')}`);
   const err = await kamra(null, {getFail: 500});
   const cam2 = camera(err.p);
-  await err.K.startScan(true);
+  err.K.startScan(true); await settle(10);
   must(cam2.tracks === 0 && /betöltött adattal/.test(err.txt('msg')), `betöltetlen: kamera=${cam2.tracks}, üzenet: ${err.txt('msg')}`);
 });
 
@@ -2936,6 +2936,12 @@ check('kamra-link (index) 375 px: a fejléc törhet (.topnav és .nav-right flex
 // ── futtatás ────────────────────────────────────────────────────────────────────
 module.exports = {page, settle, demo, json};   // egyedi próbákhoz: require('./page_checks')
 if (require.main === module) (async () => {
+  let finished = false;
+  process.on('exit', () => {
+    if (finished) return;
+    console.log('BEFEJEZETLEN: egy ellenőrzés nem tért vissza (függő Promise) — ez hiba, nem zöld.');
+    process.exitCode = 1;
+  });
   const only = process.argv[2];
   let bad = 0, ran = 0, skipped = 0;
   for (const c of checks) {
@@ -2951,5 +2957,6 @@ if (require.main === module) (async () => {
     catch (e) { bad++; console.log(`  ✗ ${c.name}\n      ${String(e && e.stack || e).split('\n').slice(0, 3).join('\n      ')}`); }
   }
   console.log((bad ? `BUKÓ: ${bad}/${ran}` : `OK: ${ran}/${ran}`) + (skipped ? ` · KIHAGYVA: ${skipped}` : ''));
+  finished = true;
   process.exit(bad ? 1 : 0);
 })();
