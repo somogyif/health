@@ -1896,8 +1896,26 @@ check('kamra írás: kétszeri 429 → a lépés megmarad a lapon, "nincs mentve
   await o.K.flush(); await settle();
   must(o.srv.puts.length === 3 && o.srv.doc.log[KDAY].length === 1 && !unsaved(o), `Mentés újra után: ${o.srv.puts.length} PUT, unsaved=${unsaved(o)}`);
 });
-check('kamra írás: 503 (a tároló nem érhető el) és 500 → hibaüzenet, a lépés "nincs mentve", NINCS automatikus újrapróba; a következő lépés mindkettőt menti', async () => {
-  for (const st of [503, 500, 'net']) {
+check('kamra írás: 503-ra (a tároló nem érhető el) vár, majd EGYSZER újrapróbál ugyanazzal a dokumentummal — siker után nincs "nincs mentve"', async () => {
+  const o = await kamra({...emptyDoc(), rev: 5, products: {'111111': TUNA}}, {putSeq: [503], timing: {retry: 60}});
+  const t0 = process.hrtime.bigint();
+  const ok = await o.K.eat({code: '111111', grams: 80});
+  const ms = Number(process.hrtime.bigint() - t0) / 1e6;
+  must(ok === true && o.srv.puts.length === 2, `${o.srv.puts.length} PUT, eredmény: ${ok}`);
+  must(JSON.stringify(o.srv.puts[0].body) === JSON.stringify(o.srv.puts[1].body) && o.srv.puts[1].body.rev === 5, 'az újrapróba más dokumentumot / rev-et küldött');
+  must(ms >= 50 && !unsaved(o) && o.srv.doc.log[KDAY].length === 1, `várakozás: ${ms.toFixed(0)} ms, unsaved=${unsaved(o)}`);
+});
+check('kamra írás: kétszeri 503 → hibaüzenet, a lépés "nincs mentve"; harmadszor magától nem próbál; a következő lépés mindkettőt menti', async () => {
+  const o = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {putSeq: [503, 503]});
+  const ok = await o.K.eat({code: '111111', grams: 80});
+  await new Promise(r => setTimeout(r, 120));
+  must(ok === false && o.srv.puts.length === 2, `${o.srv.puts.length} PUT (2 kell: egy újrapróba)`);
+  must(unsaved(o) && /tároló/i.test(o.txt('msg')) && o.txt('todayBody').includes('Tonhal'), `unsaved=${unsaved(o)}, msg="${o.txt('msg')}"`);
+  await o.K.eat({code: '111111', grams: 20});
+  must(o.srv.puts.length === 3 && o.srv.doc.log[KDAY].length === 2 && !unsaved(o), `a következő lépés után ${o.srv.puts.length} PUT`);
+});
+check('kamra írás: 500 (sérült tárolt dokumentum) és hálózati hiba → hibaüzenet, "nincs mentve", NINCS automatikus újrapróba', async () => {
+  for (const st of [500, 'net']) {
     const o = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {putSeq: [st]});
     const ok = await o.K.eat({code: '111111', grams: 80});
     await new Promise(r => setTimeout(r, 120));
@@ -1973,7 +1991,7 @@ check('kamra írás: futó mentés közben az Újratöltés nem indul el (külö
   must(await run === true && o.srv.doc.log[KDAY].length === 1 && o.txt('todayBody').includes('Tonhal'), 'a futó mentés nem ért célba');
 });
 check('kamra írás: mentetlen lépésekkel az Újratöltés megerősítést kér (nem dobja el csendben)', async () => {
-  const o = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {putSeq: [503], confirm: false});
+  const o = await kamra({...emptyDoc(), products: {'111111': TUNA}}, {putSeq: [500], confirm: false});
   await o.K.eat({code: '111111', grams: 80});
   await settle();                                  // a mentési kör lezárul
   const g = o.srv.gets;

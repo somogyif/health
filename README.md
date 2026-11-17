@@ -246,8 +246,8 @@ data and never writes.
   with the host name). It can only be attached to an already-paired endpoint, and it is
   dropped when the endpoint changes, so a link cannot redirect it to another host.
 - *Saving.* The page sends the whole document with the `rev` it loaded. On `409` it
-  reloads, re-applies the unsaved steps and retries once; on `429` it waits and retries
-  once. If a write still fails, the step stays on the page marked "nincs mentve" with a
+  reloads, re-applies the unsaved steps and retries once; on `429` or `503` it waits and
+  retries once. If a write still fails, the step stays on the page marked "nincs mentve" with a
   manual retry button — nothing is retried in a loop and nothing is overwritten
   silently. Rapid +/− taps are batched into one write. If the document could not be
   loaded, the page writes nothing.

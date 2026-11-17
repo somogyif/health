@@ -242,8 +242,9 @@ input,select{font-family:var(--m);font-size:16px;min-width:0;width:100%;min-heig
 // betöltéskori rev-vel; az új rev MINDIG a válaszból jön.
 //  • 409 (másik eszköz írt): újratöltés, a még nem mentett lépések újra-alkalmazása
 //    a friss dokumentumra, EGY újrapróba. Csendben soha nem írunk felül;
-//  • 429 (sebességkorlát): ~2,5 s várakozás, EGY újrapróba ugyanazzal a dokumentummal;
-//  • ha ezután sem megy (vagy 503 / 500 / nincs hálózat): a lépés a lapon marad
+//  • 429 (sebességkorlát) és 503 (a tároló nem érhető el): ~2,5 s várakozás, EGY újrapróba
+//    ugyanazzal a dokumentummal;
+//  • ha ezután sem megy (vagy 500 / nincs hálózat): a lépés a lapon marad
 //    "nincs mentve" jelzéssel és Mentés újra gombbal — magától nem próbálkozik tovább;
 //  • 400 / 401 / 413: az újrapróba értelmetlen, a lépés visszavonva, hibaüzenettel;
 //  • a gyors +/− koppintások egy írásba vonódnak össze (~1 s), két írás között > 2 s telik.
@@ -599,7 +600,7 @@ async function flushOnce() {
   let batch = Q.pending.slice();
   let body = clone(S.doc); body.rev = S.base.rev;
   let r = await put(body);
-  if (r.status === 429) {                                   // sebességkorlát: várunk, és EGYSZER újra, ugyanazzal
+  if (r.status === 429 || r.status === 503) {               // sebességkorlát / a tároló nem érhető el: várunk, és EGYSZER újra, ugyanazzal
     say('A szerver most nem fogad írást — pár másodperc múlva egyszer újrapróbálom…');
     await sleep(T.retry);
     r = await put(body);
@@ -637,7 +638,7 @@ async function flushOnce() {
   return keepUnsaved(batch,
     r.status === 409 ? 'A mentés nem sikerült: közben kétszer is változott az adat egy másik eszközön. A lépés nincs mentve — próbáld újra.'
     : r.status === 429 ? 'A szerver most nem fogad több írást (sebességkorlát vagy napi keret). A lépés nincs mentve — próbáld újra kicsit később.'
-    : r.status === 503 ? 'A tároló most nem érhető el. A lépés nincs mentve — próbáld újra később.'
+    : r.status === 503 ? 'A tároló most nem érhető el (egy újrapróba után sem). A lépés nincs mentve — próbáld újra később.'
     : r.status === 0 ? 'A mentés nem sikerült (nincs hálózat?). A lépés nincs mentve.'
     : 'A mentés nem sikerült (a szerver válasza: ' + r.status + '). A lépés nincs mentve.');
 }
