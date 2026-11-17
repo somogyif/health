@@ -1247,7 +1247,7 @@ function bulkAdd(code) {
     if (c.ok) { e.n++; e.ids.push(c.id); beep(e.state === 'pending'); }
     draw();
     return c.ok;
-  }).catch(() => false);
+  }).catch(() => { say('Váratlan hiba a bevásárlás közben — ez a csomag nem került a kamrába. Próbáld a +1-gyel.'); return false; });
   return e.wait;
 }
 // −1: az utolsó hozzáadott csomag vissza (abból a tételből, amelyikbe ment); +1: még egy ugyanabból.
@@ -1268,6 +1268,9 @@ function hit(text) {
 async function startScan(bulk) {
   if (scan.on) return;
   say('');
+  // A bevásárlás csak író lapon indul (párosítva, írókulccsal, betöltve; vagy a demóban).
+  if (bulk && !canEdit()) return say(S.mode === 'live' ? 'A bevásárláshoz írókulcs kell ebben a böngészőben (kamra.html#nkey=…).'
+                                                       : 'A bevásárlás csak betöltött adattal indul (párosítás vagy Újratöltés).');
   scan.bulk = !!bulk; scan.held = new Map();
   S.bulk = {on: !!bulk, list: []};
   if (bulk) { unlockSound(); draw(); }

@@ -2896,6 +2896,17 @@ check('kamra bevásárlás: nem termék-kód (QR) kimarad, a kamera fut tovább;
   noRaw(html('bulkBox'), 'futó lista'); noRaw(html('pantryBody'), 'kamra');
 });
 
+check('kamra bevásárlás: csak író lapon indul — írókulcs nélkül vagy betöltetlen adattal kiírja, miért, és a kamera el sem indul', async () => {
+  const ro = await kamra(null, {storage: PAIRED});
+  const cam = camera(ro.p);
+  await ro.K.startScan(true);
+  must(cam.tracks === 0 && /írókulcs/.test(ro.txt('msg')), `írókulcs nélkül: kamera=${cam.tracks}, üzenet: ${ro.txt('msg')}`);
+  const err = await kamra(null, {getFail: 500});
+  const cam2 = camera(err.p);
+  await err.K.startScan(true);
+  must(cam2.tracks === 0 && /betöltött adattal/.test(err.txt('msg')), `betöltetlen: kamera=${cam2.tracks}, üzenet: ${err.txt('msg')}`);
+});
+
 check('kamra Rendezendő: a kitöltés (OFF-ból vagy kézzel) a függő terméket valódira cseréli, a tétel nevét is; a lista eltűnik', async () => {
   const CODE = '5990000000999';
   const doc = {...emptyDoc(), products: {[CODE]: pend()}, pantry: [pit('p_r1', CODE, {name: 'Ismeretlen termék', qty: 2})]};
