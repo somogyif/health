@@ -818,6 +818,60 @@ check('tasks (c): a fejléc bal oldala zsugorodhat, a címke nem törik (375 px)
   }
 });
 
+// ── (g) Tasks kártya: Things + Google Feladatok egy listában, forrásjelöléssel (2026-11-17) ──
+// A sync a két forrást összefésüli (tasks.google: status ok/carried/unknown/off, as_of,
+// truncated); a kártya minden tétel mellé kiírja a forrását, és kimondja, ha a Google-lista
+// régi (carried) vagy hiányzik (unknown). A régi alak (nincs tasks.google) változatlan.
+const googleTasks = (status, extra = {}) => d => {
+  d.tasks.today = {tasks: [{name: 'Call the bank', source: 'things'},
+                           {name: 'Dentist call', source: 'google', project: 'My Tasks'}],
+                   count: 2, score: 20, label: 'Moderate'};
+  d.tasks.tomorrow = {tasks: [{name: 'Send review', source: 'google'}], count: 1, score: 10, label: 'Light'};
+  d.tasks.overdue = {tasks: [], count: 0};
+  d.tasks.google = Object.assign({status, as_of: status === 'ok' ? d.synced_at : null,
+                                  truncated: false, tasks: []}, extra);
+};
+check('tasks (g): két forrásnál minden tétel mellett ott a forrása (Things / Google)', () => {
+  const t = tasksView(at(2026, 3, 17, 8), googleTasks('ok'));
+  must(/Call the bank\s*Things/.test(t), `a Things-tétel forrása hiányzik: ${t.slice(0, 200)}`);
+  must(/Dentist call\s*Google\s*My Tasks/.test(t), `a Google-tétel forrása hiányzik: ${t.slice(0, 200)}`);
+  must(/Send review\s*Google/.test(t), `a holnapi Google-tétel forrása hiányzik: ${t.slice(0, 200)}`);
+  must(!/last known|unavailable|only part/.test(t), `friss listánál állapot-jelzés áll: ${t.slice(0, 300)}`);
+});
+check('tasks (g): kikapcsolt Google-forrás, vagy a régi alak (nincs tasks.google) → nincs forrás-címke', () => {
+  for (const [nev, mut] of [['off', googleTasks('off')],
+                            ['régi alak', d => { googleTasks('ok')(d); delete d.tasks.google; }]]) {
+    const t = tasksView(at(2026, 3, 17, 8), mut);
+    must(t.includes('Dentist call'), `${nev}: a tétel nem jelent meg (nem bizonyít)`);
+    must(!/\b(Things|Google)\b/.test(t), `${nev}: forrás-címke áll: ${t.slice(0, 200)}`);
+  }
+});
+check('tasks (g): pótolt lista → "last known list from …"; ismeretlen → "unavailable"; csonka → jelzés', () => {
+  const regi = tasksView(at(2026, 3, 17, 8), googleTasks('carried', {as_of: '2026-03-16 21:00'}));
+  must(/Google Tasks: last known list from 16 Mar.{0,5}21:00 — the feed did not answer this sync/.test(regi),
+       `pótolt lista: ${regi.slice(-220)}`);
+  must(/Dentist call\s*Google/.test(regi), 'pótolt listánál is kell a forrás-címke');
+  const rossz = tasksView(at(2026, 3, 17, 8), googleTasks('carried', {as_of: 'nem dátum'}));
+  must(rossz.includes('Google Tasks: last known list — the feed') && !/Invalid|NaN/.test(rossz),
+       `rossz bélyeg: ${rossz.slice(-220)}`);
+  const nincs = tasksView(at(2026, 3, 17, 8), googleTasks('unknown'));
+  must(nincs.includes('Google Tasks unavailable this sync — only Things is shown'), `ismeretlen: ${nincs.slice(-200)}`);
+  const csonka = tasksView(at(2026, 3, 17, 8), googleTasks('ok', {truncated: true}));
+  must(csonka.includes('Google Tasks: only part of the list arrived'), `csonka: ${csonka.slice(-200)}`);
+});
+check('tasks (g): ellenséges forrás, név és bélyeg nem kerül nyersen a kártyára', () => {
+  const d = demo();
+  googleTasks('carried', {as_of: '<img src=x onerror=alert(1)>'})(d);
+  d.tasks.today.tasks[1].source = '<img src=x onerror=alert(2)>';
+  d.tasks.today.tasks[0].name = '<img src=x onerror=alert(3)>';
+  const p = page('index.html', {now: at(2026, 3, 17, 8)});
+  p.ctx.render(d);
+  const html = p.el('tasksBody').innerHTML;
+  must(html.includes('&lt;img src=x onerror=alert(3)&gt;'), 'a név nem jelent meg semlegesítve (nem bizonyít)');
+  must(!/<img/i.test(html), `nyers tag a kártyán: ${html.slice(0, 300)}`);
+  must(!/alert\(1\)|alert\(2\)/.test(html), 'a bélyeg vagy a forrás szövege kiíródott');
+});
+
 // ── (b) brief.html: a napszavak a NÉZŐ mai napjához igazodnak (mint az index, bb254a0) ──
 // A brief az ADAT napját nevezte "mának": 15-én reggel, a 07:00-s sync előtt a 14-i terv
 // fölött "Good morning" és "Today's focus" állt. A terv napja a synced_at-ből jön.

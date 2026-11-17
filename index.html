@@ -767,13 +767,21 @@ function render(d){
     // a feladatlistát) semleges szürke — korábban minden más zöld volt.
     const scoreColor = s => s === 'Packed' ? 'var(--red)' : (s === 'Heavy' || s === 'Moderate') ? 'var(--amber)' : (s === 'Clear' || s === 'Light') ? 'var(--teal)' : 'var(--text3)';
 
+    // Things + Google Feladatok egy listában (a sync 2026-11-17 óta fésüli össze): ha a
+    // Google-forrás be van kötve (tasks.google, status ≠ off), minden tétel mellé kiírjuk a
+    // forrását. Csak az ismert név kerül ki — a `source` mező szövegéből semmi.
+    const g = tasks.google && typeof tasks.google === 'object' ? tasks.google : null;
+    const showSrc = !!g && ['ok', 'carried', 'unknown'].includes(g.status);
+    const SRC = {things: 'Things', google: 'Google'};
+
     const taskRow = t => {
       const name = t.name || '';
+      const src = showSrc && SRC[t.source] ? `<span style="font-size:9px;font-family:var(--m);color:var(--text3);border:.5px solid var(--border2);border-radius:4px;padding:0 4px;margin-left:4px;flex-shrink:0">${SRC[t.source]}</span>` : '';
       const proj = t.project ? `<span style="font-size:10px;color:var(--text3);margin-left:4px">${t.project}</span>` : '';
       const over = t.overdue ? `<span style="font-size:10px;color:var(--red);margin-left:4px">overdue</span>` : '';
       return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:.5px solid var(--border)">
         <span style="font-size:14px;opacity:.5">□</span>
-        <span style="font-size:12px;font-family:var(--m);color:var(--text);min-width:0">${name}</span>${proj}${over}
+        <span style="font-size:12px;font-family:var(--m);color:var(--text);min-width:0">${name}</span>${src}${proj}${over}
       </div>`;
     };
 
@@ -822,6 +830,20 @@ function render(d){
         + ${tasks.no_date.count} open task${tasks.no_date.count>1?'s':''} without a due date
       </div>`;
     }
+
+    // A Google-lista állapota: ha a feed most nem adott listát, a sync az előzőt viszi
+    // tovább (carried, a RÉGI bélyeggel), vagy nem volt miből (unknown) — ezt kimondjuk,
+    // ne látsszon frissnek. Az as_of a synced_at alakja; ha nem az, idő nélkül írjuk ki.
+    const gNote = txt => `<div style="font-family:var(--m);font-size:11px;color:var(--amber);margin-top:.5rem">${txt}</div>`;
+    if (g && g.status === 'carried') {
+      const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/.exec(String(g.as_of || ''));
+      const at = m ? new Date(+m[1], +m[2]-1, +m[3], +m[4], +m[5]) : null;
+      const from = at && !isNaN(at) ? ' from ' + at.toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+      html += gNote(`Google Tasks: last known list${from} — the feed did not answer this sync`);
+    } else if (g && g.status === 'unknown') {
+      html += gNote('Google Tasks unavailable this sync — only Things is shown');
+    }
+    if (g && g.truncated === true) html += gNote('Google Tasks: only part of the list arrived');
 
     return html;
   }
