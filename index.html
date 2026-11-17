@@ -1795,7 +1795,7 @@ function render(d){
       type:'line',
       data:{labels:sw.labels,datasets:[
         {label:'Avg stress',data:sw.stress,borderColor:alpha(TC.red,0.8),backgroundColor:alpha(TC.red,0.06),borderWidth:1.5,pointRadius:3,pointBackgroundColor:alpha(TC.red,0.8),tension:0.4,fill:true},
-        {label:'Wake-up battery',data:sw.bb_charged,borderColor:alpha(TC.teal,0.8),backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'rgba(52,201,154,0.8)',tension:0.4,borderDash:[4,3]}
+        {label:'Wake-up battery',data:sw.bb_charged,borderColor:alpha(TC.teal,0.8),backgroundColor:'transparent',borderWidth:1.5,pointRadius:3,pointBackgroundColor:alpha(TC.teal,0.8),tension:0.4,borderDash:[4,3]}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.parsed.y??'—')}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:30},grid:{color:gc}},y:{min:0,max:100,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}
     });
