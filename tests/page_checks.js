@@ -781,6 +781,80 @@ check('tasks (c): a fejléc bal oldala zsugorodhat, a címke nem törik (375 px)
   }
 });
 
+// ── (b) brief.html: a napszavak a NÉZŐ mai napjához igazodnak (mint az index, bb254a0) ──
+// A brief az ADAT napját nevezte "mának": 15-én reggel, a 07:00-s sync előtt a 14-i terv
+// fölött "Good morning" és "Today's focus" állt. A terv napja a synced_at-ből jön.
+const briefAt = async (now, mut = () => {}) => {
+  const d = demo(); mut(d);
+  const p = page('brief.html', {storage: PAIRED, fetch: () => json(d), now});
+  await settle();
+  const html = p.el('root').innerHTML;
+  // az ál-DOM nem oldja fel az entitásokat: a böngészőben a &#39; aposztróf
+  return {html, text: p.el('root').textContent.replace(/&#39;/g, "'").replace(/\s+/g, ' '),
+          kicker: ((/<div class="kicker">([\s\S]*?)<\/div>/.exec(html) || [])[1] || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()};
+};
+const briefSync = (stampStr, more = () => {}) => d => {
+  d.synced_at = stampStr; d.garmin.date = stampStr.slice(0, 10);
+  d.day_plan.today.lines = ['Deep work block'];
+  d.calendar = [{title: 'Standup', start_date: stampStr.slice(0, 10), time: '09:00', category: 'work'}];
+  more(d);
+};
+check('brief (b) F1: 14-i esti sync 15-én 06:30-kor → "Yesterday\'s focus", a fejlécben "Yesterday"; nincs "Today\'s focus"', async () => {
+  const v = await briefAt(at(2026, 11, 15, 6, 30), briefSync('2026-11-14 21:30'));
+  must(v.text.includes('Deep work block') && v.text.includes('Standup'), `a brief nem rajzolódott ki (nem bizonyít): ${v.text.slice(0, 120)}`);
+  must(v.text.includes("Yesterday's focus") && !/Today's focus/.test(v.text), `a fókusz címe: ${v.text.slice(0, 300)}`);
+  must(v.kicker.includes('Yesterday · Saturday 14 November'), `a fejléc: ${v.kicker}`);
+});
+check('brief (b) F1 őrző: ugyanazon a napon "Today\'s focus" és a dátum napszó nélkül', async () => {
+  const v = await briefAt(at(2026, 11, 15, 9), briefSync('2026-11-15 07:00'));
+  must(v.text.includes("Today's focus") && v.text.includes('Standup'), `a brief: ${v.text.slice(0, 300)}`);
+  must(v.kicker.startsWith('Morning Brief · Sunday 15 November') && !/Yesterday|Tomorrow|Plan from/.test(v.kicker), `a fejléc: ${v.kicker}`);
+});
+check('brief (b) F1: 12-i sync 15-én → "Plan from 12 Nov"; előrébb járó sync → "Tomorrow\'s focus"', async () => {
+  const regi = await briefAt(at(2026, 11, 15, 9), briefSync('2026-11-12 07:00'));
+  must(regi.text.includes('Plan from 12 Nov') && !/(Today|Yesterday|Tomorrow)'s focus/.test(regi.text), `régi: ${regi.text.slice(0, 300)}`);
+  must(regi.kicker.includes('Plan from Thursday 12 November'), `régi fejléc: ${regi.kicker}`);
+  const elol = await briefAt(at(2026, 11, 14, 23), briefSync('2026-11-15 07:00'));
+  must(elol.text.includes("Tomorrow's focus") && elol.kicker.includes('Tomorrow · Sunday 15 November'), `előrébb járó: ${elol.kicker} / ${elol.text.slice(0, 200)}`);
+});
+check('brief (b): a terv napja a synced_at, nem a garmin.date; a naptár a terv napjának eseményeit mutatja', async () => {
+  const v = await briefAt(at(2026, 11, 15, 6, 30), briefSync('2026-11-14 21:30', d => {
+    d.garmin.date = '2026-11-13';
+    d.calendar.push({title: 'Mai dolog', start_date: '2026-11-15', time: '10:00'}, {title: 'Garmin-napi', start_date: '2026-11-13', time: '10:00'});
+  }));
+  must(v.kicker.includes('Yesterday · Saturday 14 November'), `a fejléc: ${v.kicker}`);
+  must(v.text.includes('Standup') && !v.text.includes('Mai dolog') && !v.text.includes('Garmin-napi'), `a naptár: ${v.text.slice(0, 400)}`);
+});
+check('brief (b): hibás synced_at mellett nincs kitalált dátum (a cím "Focus", a fejlécben nincs nap)', async () => {
+  for (const rossz of ['nem dátum', '2026-13-45 07:00']) {
+    const v = await briefAt(at(2026, 11, 15, 6, 30), briefSync('2026-11-14 21:30', d => { d.synced_at = rossz; delete d.garmin.date; }));
+    must(v.text.includes('Deep work block'), `a brief nem rajzolódott ki (nem bizonyít): ${v.text.slice(0, 120)}`);
+    must(v.kicker.replace(/\s*DEMO$/, '') === 'Morning Brief', `${rossz}: a fejléc: ${v.kicker}`);
+    must(!/\d{1,2} (November|Nov)\b/.test(v.text.replace(/synced .*/, '')) && !/Invalid Date/.test(v.text), `${rossz}: dátum áll a lapon: ${v.text.slice(0, 200)}`);
+    must(/bpm Focus ›\s*Deep work block/.test(v.text) && !/(Today|Yesterday|Tomorrow)'s focus|Plan from/.test(v.text), `${rossz}: a fókusz címe: ${v.text.slice(0, 300)}`);
+    must(!/scheduled today|for today/i.test(v.text) && !v.text.includes('Standup'), `${rossz}: a naptár "mát" állít: ${v.text.slice(0, 400)}`);
+  }
+});
+check('brief (b): üres terv / üres naptár szövege nem mond "today"-t, ha az adat nem mai', async () => {
+  const ures = d => { d.day_plan.today.lines = []; d.calendar = []; };
+  const tegnap = await briefAt(at(2026, 11, 15, 6, 30), briefSync('2026-11-14 21:30', ures));
+  must(tegnap.text.includes('No plan from yesterday.') && tegnap.text.includes('Nothing was scheduled yesterday.'), `tegnap: ${tegnap.text.slice(0, 400)}`);
+  const mat = t => /for today|scheduled today|Today's focus/i.test(t);
+  must(!mat(tegnap.text), `tegnapi adatnál "today": ${tegnap.text.slice(0, 400)}`);
+  const regi = await briefAt(at(2026, 11, 15, 9), briefSync('2026-11-12 07:00', ures));
+  must(regi.text.includes('No plan from 12 Nov.') && regi.text.includes('Nothing scheduled on 12 Nov.') && !mat(regi.text), `régi: ${regi.text.slice(0, 400)}`);
+  const holnap = await briefAt(at(2026, 11, 14, 23), briefSync('2026-11-15 07:00', ures));
+  must(holnap.text.includes('No plan generated for tomorrow.') && holnap.text.includes('Nothing scheduled tomorrow.'), `holnap: ${holnap.text.slice(0, 400)}`);
+  const ma = await briefAt(at(2026, 11, 15, 9), briefSync('2026-11-15 07:00', ures));
+  must(ma.text.includes('No plan generated for today.') && ma.text.includes('Nothing scheduled today.'), `ma (őrző): ${ma.text.slice(0, 400)}`);
+});
+check('brief (b): a hosszabb fejléc 375 px-en törhet (.kicker flex-wrap), a betöltő szöveg nem ígér "today"-t', () => {
+  const src = read('brief.html');
+  const k = (/\.kicker\{([^}]*)\}/.exec(src) || [])[1] || '';
+  must(/flex-wrap:wrap/.test(k), `.kicker: ${k}`);
+  must(!/Loading today/.test(src), 'a betöltő szöveg: "Loading today\'s brief…"');
+});
+
 // ── Tasks kártya: hiányzó címke → "—", nem "undefined" ─────────────────────────
 check('tasks: hiányzó label (count > 0) mellett "—" áll, nem "undefined"/"null"', () => {
   for (const hiany of [undefined, null, '']) {
