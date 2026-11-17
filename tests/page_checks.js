@@ -2777,9 +2777,12 @@ check('kamra Hamarosan lejár: a 3 napon belül lejáró és a már lejárt tét
     pit('p_old', '111111', {name: 'Régi', expires: '2026-11-16'}),
     pit('p_opn', '222222', {name: 'Bontott tej', opened: '2026-11-16'}),
     pit('p_today', '111111', {name: HOSTILE, expires: KDAY}),
-    pit('p_non', '111111', {name: 'Dátum nélkül'})]};
+    pit('p_non', '111111', {name: 'Dátum nélkül'}),
+    pit('p_d3', '111111', {name: 'Harmadnapi', expires: '2026-11-20'}),
+    pit('p_d4', '111111', {name: 'Negyednapi', expires: '2026-11-21'})]};
   const {txt, html} = await kamra(doc);
   const t = txt('soonBody');
+  must(t.includes('Harmadnapi') && !t.includes('Negyednapi'), `a 3 napos határ: ${t}`);
   const at = w => t.indexOf(w);
   must(at('Régi') >= 0 && at('Régi') < at('onerror') && at('onerror') < at('Holnapi') && at('Holnapi') < at('Bontott tej'), `sorrend: ${t}`);
   must(!t.includes('Távoli') && !t.includes('Dátum nélkül'), `távoli vagy dátum nélküli is bekerült: ${t}`);
