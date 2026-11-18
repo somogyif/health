@@ -486,6 +486,94 @@ check('a valódi adatalak (demo-data.json): minden méret hiba nélkül kirajzol
   }
 });
 
+// ── Nincs mai adat: a helyőrző és a tanács (2026-11-18) ──────────────────────
+// 2026-11-18 reggel az óra két napja nem szinkronizált. A widget a nagy szám helyén egy hosszú
+// fehér csíkot mutatott (a 46-os, kövér „—”), a tanács pedig 7:00 után is azt, hogy „7:00 után
+// frissül”. 7:30-tól — ha a telefon elérte a szervert, és ott sincs mai adat — az órát nevezi meg.
+const TEGNAPI = () => adat({synced_at: '2026-11-16 23:58'});            // MA-hoz (11-17) képest tegnapi
+const ORA_SZOVEG = 'Az óra ma még nem küldött adatot — szinkronizáld a Garmin Connectben.';
+const KORAI_SZOVEG = 'A mai adat még nem jött meg — 7:00 után frissül.';
+const DELELOTT = at(2026, 11, 17, 9, 5);
+
+check('nincs mai adat: 7:30-tól a tanács az órát nevezi meg; előtte a régi szöveg marad', async () => {
+  const {api} = await load();
+  const t = (h, mi) => api.model(TEGNAPI(), at(2026, 11, 17, h, mi)).tanacs;
+  for (const [h, mi] of [[0, 30], [6, 30], [7, 0], [7, 29]]) must(t(h, mi) === KORAI_SZOVEG, `${h}:${mi}: ${t(h, mi)}`);
+  for (const [h, mi] of [[7, 30], [9, 5], [21, 0], [23, 59]]) must(t(h, mi) === ORA_SZOVEG, `${h}:${mi}: ${t(h, mi)}`);
+  const m = api.model(TEGNAPI(), DELELOTT);
+  must(m.tanacsWidget === ORA_SZOVEG && m.szintFelirat === 'Nincs mai\nadat', `widget: ${m.tanacsWidget} / ${m.szintFelirat}`);
+  // a hosszabb mondat a közepes widgeten egy sorral többet kap (a kisebb helyőrző mellett elfér)
+  for (const fam of ['medium', 'large']) {
+    const sor = keres(api.widget(m, fam), n => n.kind === 'text' && n.text === ORA_SZOVEG)[0];
+    must(sor && sor.lineLimit >= 3, `${fam}: a tanács ${sor ? `${sor.lineLimit} sorban` : 'nincs a widgeten'}`);
+  }
+  // ha van mai adat, minden a régi (a tanácssor két sor marad)
+  const sor = keres(api.widget(api.model(adat(), DELELOTT), 'medium'), n => n.kind === 'text' && n.text.startsWith('Könnyű edzés'))[0];
+  must(sor && sor.lineLimit === 2, `mai adat: ${sor && sor.lineLimit}`);
+});
+
+check('nincs mai adat: a nagy szám helyén kisebb, halvány „—” (a 46-os kövér jel hosszú fehér csík volt)', async () => {
+  const {api} = await load();
+  const nagyBetus = w => keres(w, n => n.kind === 'text' && n.font && n.font.size >= 40).map(n => n.text);
+  const helyorzo = w => keres(w, n => n.kind === 'text' && n.text === '—' && n.font && /Rounded/.test(n.font.name));
+  const van = api.model(adat(), MA);
+  for (const fam of ['medium', 'small', 'large']) {
+    must(nagyBetus(api.widget(van, fam)).join() === '74', `van adat, ${fam}: ${nagyBetus(api.widget(van, fam))}`);
+    must(!helyorzo(api.widget(van, fam)).length, `van adat, ${fam}: helyőrző is van`);
+  }
+  const esetek = [['nincs mai adat', api.model(TEGNAPI(), DELELOTT)],
+                  ['este, akku nélkül', api.model(adat({synced_at: '2026-11-17 20:02', garmin: {steps: 5}}), at(2026, 11, 17, 21))],
+                  ['mai adat, readiness nélkül', api.model(adat({garmin: {sleep_hours: 7.1}}), MA)]];
+  for (const [nev, m] of esetek) {
+    for (const fam of ['medium', 'small', 'large']) {
+      const w = api.widget(m, fam), h = helyorzo(w);
+      must(!nagyBetus(w).length, `${nev}, ${fam}: nagy betűvel: ${nagyBetus(w)}`);
+      must(h.length === 1 && h[0].font.size <= 26 && h[0].textColor.alpha < 1,
+           `${nev}, ${fam}: helyőrző: ${JSON.stringify(h.map(x => [x.font, x.textColor && x.textColor.alpha]))}`);
+    }
+  }
+});
+
+check('nincs mai adat, de a telefon nem érte el a szervert (mentett adat): nem az órát hibáztatja', async () => {
+  const mentett = {'/docs/healthcentre-utolso.json': JSON.stringify(TEGNAPI())};
+  const widgetkent = {runsInWidget: true, widgetFamily: 'medium'};
+  let x = await load({now: +DELELOTT, keychain: PAROSITVA, fetch: new Error('offline'), files: mentett, config: widgetkent});
+  await x.api.main();
+  let t = szovegek(x.rec.set);
+  must(!t.some(s => /szinkronizáld|óra ma/.test(s)), `hálózati hibánál az órát hibáztatta: ${t.join(' | ')}`);
+  must(t.includes('A mai adat még nem jött meg.') && t.includes('frissült tegnap 23:58'), `szöveg: ${t.join(' | ')}`);
+  // ha a letöltés sikerült, és a szerveren is a tegnapi adat van: az óra a gyanús
+  x = await load({now: +DELELOTT, keychain: PAROSITVA, fetch: jo(TEGNAPI()), config: widgetkent});
+  await x.api.main();
+  t = szovegek(x.rec.set);
+  must(t.includes(ORA_SZOVEG), `sikeres letöltés: ${t.join(' | ')}`);
+  // az app előnézete ugyanezt mutatja
+  x = await load({now: +DELELOTT, keychain: PAROSITVA, fetch: new Error('offline'), files: mentett, config: {runsInApp: true},
+                  sheet: a => a.actions.indexOf('Közepes')});
+  await x.api.main();
+  must(x.rec.presented.length === 1 && !szovegek(x.rec.presented[0][1]).some(s => /szinkronizáld/.test(s)), 'az app előnézete az órát hibáztatta');
+});
+
+check('értesítés, nincs mai adat: 7:30 előtt a régi szöveg; utána az óra; hálózati hibánál nem az óra', async () => {
+  const {api} = await load();
+  const u = (h, mi, hiba) => api.reggeliUzenet(TEGNAPI(), at(2026, 11, 17, h, mi), hiba);
+  const REGI = 'A reggeli adat még nem frissült (frissült tegnap 23:58). Nézd meg később a widgeten.';
+  must(u(7, 15).szoveg === REGI && u(7, 29).szoveg === REGI && u(7, 15).cim === 'Reggeli állapot — még nincs mai adat', u(7, 15).szoveg);
+  const ora = u(7, 30);
+  must(ora.cim === 'Reggeli állapot — még nincs mai adat', ora.cim);
+  must(ora.szoveg === `${ORA_SZOVEG} A legutóbbi adat: frissült tegnap 23:58.`, `szöveg: ${ora.szoveg}`);
+  must(ora.beszed === 'Az óra ma még nem küldött adatot. Szinkronizáld a Garmin Connectben.', `felolvasás: ${ora.beszed}`);
+  must(u(9, 5, 'offline').szoveg === REGI && u(9, 5, 'offline').beszed === REGI, `hálózati hiba: ${u(9, 5, 'offline').szoveg}`);
+  // a főprogramon át: a Parancsok 9:05-kor — sikeres letöltés vs. hálózati hiba mentett adattal
+  let x = await load({now: +DELELOTT, keychain: PAROSITVA, fetch: utvonal(jo(TEGNAPI()), {status: 200, body: kamraDoc([])})});
+  await x.api.main();
+  must(x.rec.notes.length === 1 && x.rec.notes[0].body === ora.szoveg && x.rec.output === ora.beszed, `értesítés: ${JSON.stringify(x.rec.notes)}`);
+  x = await load({now: +DELELOTT, keychain: PAROSITVA, fetch: utvonal(new Error('offline'), {status: 200, body: kamraDoc([])}),
+                  files: {'/docs/healthcentre-utolso.json': JSON.stringify(TEGNAPI())}});
+  await x.api.main();
+  must(x.rec.notes.length === 1 && x.rec.notes[0].body === REGI, `hálózati hiba: ${JSON.stringify(x.rec.notes)}`);
+});
+
 // ── Futtatás ─────────────────────────────────────────────────────────────────
 (async () => {
   // Ha egy ellenőrzés Promise-a sosem dől el, a Node az összesítő NÉLKÜL, 0-val lépne ki —

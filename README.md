@@ -82,7 +82,11 @@ advice, in the morning and (after an evening sync) at night. The same script, ru
 Shortcuts automation at 07:15, posts a notification and returns text for the phone to read
 aloud. Whether it shows the morning or the evening view is decided by the data's own
 timestamp, not the phone's clock, so last night's numbers are never presented as today's.
-The notification ends with one more line from the pantry (`GET /nutrition`, same key):
+With no data for today, the big number gives way to a small, faint dash; before 07:30 the
+advice says the morning sync is still to come, and from 07:30 — if the phone did reach the
+endpoint and it has nothing newer either — it says the watch has not sent today's data and
+asks you to sync it in Garmin Connect. If the phone could not reach the endpoint, it does not
+guess the cause. The notification ends with one more line from the pantry (`GET /nutrition`, same key):
 what is due within 3 days or already past, by the same rule as the pantry page, at most four
 items. If the pantry cannot be read, the line says so; if nothing is due, there is no line. The
 widget itself shows nothing from the pantry and does not even request it.
