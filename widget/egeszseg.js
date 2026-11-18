@@ -16,7 +16,8 @@
 //
 // Reggeli vagy esti nézet: az ADAT ideje dönti el (a 20:00-s sync után esti), nem a telefon
 // órája — így régi adat sosem látszik frissnek. Ha az adat nem mai, a widget és az értesítés
-// ezt mondja, és nem ad régi számokból tanácsot.
+// ezt mondja, és nem ad régi számokból tanácsot; 7:30-tól — ha a telefon elérte a szervert, és
+// ott sincs mai adat — azt is, hogy az óra nem küldött adatot (szinkronizáld a Garmin Connectben).
 //
 // A tiszta függvényeket a tests/widget_checks.js Node-ban, hamis Scriptable-környezettel futtatja.
 
@@ -24,6 +25,10 @@ const KC_API = 'healthcentre.api';
 const KC_KEY = 'healthcentre.key';
 const CACHE_FILE = 'healthcentre-utolso.json';
 const ESTI_ORA = 17;                     // ennél későbbi (mai) adat → esti nézet
+// Ettől (helyi idő) a hiányzó mai adat oka jellemzően az, hogy az óra nem szinkronizált: a
+// reggeli sync addigra lefutott. Előtte a sync még várható (2026-11-18).
+const ORA_GYANU = '07:30';
+const ORA_SZOVEG = 'Az óra ma még nem küldött adatot — szinkronizáld a Garmin Connectben.';
 
 const NAPOK = ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'];
 const HONAPOK = ['jan.', 'febr.', 'márc.', 'ápr.', 'máj.', 'jún.', 'júl.', 'aug.', 'szept.', 'okt.', 'nov.', 'dec.'];
@@ -120,14 +125,24 @@ function frissesseg(d, most) {
   return {t, maiAdat, cimke};
 }
 
-// A widgetek és az értesítés közös nézet-modellje.
+// Nincs mai adat — mi lehet az oka? 7:30-tól, ha a telefon elérte a szervert (hiba nélkül), és ott
+// sincs mai adat: jellemzően az óra. Ha a letöltés nem sikerült, az okot nem tudjuk — nem az órát
+// hibáztatjuk.
+const oraGyanus = (most, hiba) => !hiba && hm(most) >= ORA_GYANU;
+function nincsMaiTanacs(most, hiba) {
+  if (oraGyanus(most, hiba)) return ORA_SZOVEG;
+  return hm(most) < ORA_GYANU ? 'A mai adat még nem jött meg — 7:00 után frissül.' : 'A mai adat még nem jött meg.';
+}
+
+// A widgetek és az értesítés közös nézet-modellje. hiba: a friss letöltés hibája (ilyenkor a
+// helyben mentett adat jön), vagy null.
 // Az elmúlt (legfeljebb) 7 éjszaka alvás-pontszáma (garmin.sleep_week) a mini oszlopokhoz.
 function alvasHet(g) {
   const het = Array.isArray(g.sleep_week) ? g.sleep_week : [];
   return het.filter(x => x && szam(x.score) != null).slice(-7).map(x => Math.max(0, Math.min(100, x.score)));
 }
 
-function model(d, most) {
+function model(d, most, hiba) {
   d = d && typeof d === 'object' ? d : {};
   const g = d.garmin || {}, fr = frissesseg(d, most), tk = teendok(d.tasks), ev = esemenyek(d.calendar);
   const recovery = ((d.day_plan || {}).today || {}).recovery;
@@ -163,7 +178,7 @@ function model(d, most) {
   const ed = fr.maiAdat ? edzes(recovery) : null;
   const teendoResz = !tk.ismert ? null : tk.lejart > 0 ? 'kezdd a lejárt teendővel'
     : tk.ma > 0 ? `${tk.ma} mai teendő vár` : 'nincs határidős teendőd';
-  const tanacs = !fr.maiAdat ? 'A mai adat még nem jött meg — 7:00 után frissül.'
+  const tanacs = !fr.maiAdat ? nincsMaiTanacs(most, hiba)
     : ed == null ? `Az óra adata ma hiányzik${teendoResz ? `; ${teendoResz}` : ''}.`
     : `${sz.szo} nap: ${ed}${teendoResz ? `, és ${teendoResz}` : ''}.`;
   const kov = kovetkezo(ev, most);
@@ -194,11 +209,16 @@ function kimondIdo(ido) {
 }
 
 // A reggeli értesítés: cím, szöveg és felolvasható változat.
-function reggeliUzenet(d, most) {
-  const m = model(d, most);
+function reggeliUzenet(d, most, hiba) {
+  const m = model(d, most, hiba);
   if (!m.fr.maiAdat) {
+    const cim = 'Reggeli állapot — még nincs mai adat';
+    if (oraGyanus(most, hiba)) {
+      return {cim, szoveg: `${ORA_SZOVEG} A legutóbbi adat: ${m.fr.cimke}.`,
+              beszed: 'Az óra ma még nem küldött adatot. Szinkronizáld a Garmin Connectben.'};
+    }
     const uzenet = `A reggeli adat még nem frissült (${m.fr.cimke}). Nézd meg később a widgeten.`;
-    return {cim: 'Reggeli állapot — még nincs mai adat', szoveg: uzenet, beszed: uzenet};
+    return {cim, szoveg: uzenet, beszed: uzenet};
   }
   if (m.este) {
     // Este futtatva (kézzel): az esti állapot, nem a reggeli címkékkel az esti számok.
@@ -350,7 +370,7 @@ function kamraSor(k, most) {
 // Az értesítés (a 7:15-ös és az appbeli próba): a reggeli — este az esti — állapot, és új
 // sorban a kamra. Ha az egészség-adat nem jött meg, a kamra-sor akkor is ott van.
 function ertesites(d, hiba, most, k) {
-  const u = d ? reggeliUzenet(d, most)
+  const u = d ? reggeliUzenet(d, most, hiba)
     : {cim: 'Reggeli állapot', szoveg: `Az adat most nem érhető el (${hiba}).`, beszed: 'Az egészség-adat most nem érhető el.'};
   const s = kamraSor(k, most);
   return s ? {cim: u.cim, szoveg: `${u.szoveg}\n${s.szoveg}`, beszed: `${u.beszed} ${s.beszed}`} : u;
@@ -425,6 +445,13 @@ function oszlopok(hol, het) {
   });
 }
 
+// A nagy szám. Ha ismeretlen („—”), fele akkora, halványabb jel áll a helyén: a nagy, kövér
+// gondolatjel a telefonon hosszú fehér csíknak látszott (Feri képernyőképe, 2026-11-18).
+const ismeretlen = m => m.nagySzam.ertek === '—';
+function nagySzamba(hol, m, meret) {
+  return ismeretlen(m) ? szovegbe(hol, '—', kerek(Math.round(meret / 2)), 1, 0.7) : szovegbe(hol, m.nagySzam.ertek, kerek(meret), 1);
+}
+
 function felsoBlokk(w, m) {
   const sor = w.addStack();
   sor.layoutHorizontally();
@@ -438,10 +465,11 @@ function felsoBlokk(w, m) {
   nagySor.layoutHorizontally();
   nagySor.centerAlignContent();
   nagySor.spacing = 8;
-  szovegbe(nagySor, m.nagySzam.ertek, kerek(46), 1);
+  nagySzamba(nagySor, m, 46);
   szovegbe(nagySor, m.szintFelirat, Font.semiboldSystemFont(14), 2);
   bal.addSpacer();
-  szovegbe(bal, m.tanacsWidget, Font.semiboldSystemFont(14), 2);
+  // A kisebb helyőrző mellett egy sorral több fér el — a hosszabb „szinkronizáld” mondatnak kell.
+  szovegbe(bal, m.tanacsWidget, Font.semiboldSystemFont(14), ismeretlen(m) ? 3 : 2);
   sor.addSpacer(12);
   const vonal = sor.addStack();          // függőleges elválasztó (a 0-s méret „tartalomhoz igazodik” lenne)
   vonal.size = new Size(1, 132);
@@ -465,7 +493,7 @@ function felsoBlokk(w, m) {
 function kicsiAllapot(w, m) {
   szovegbe(w, m.nagySzam.cimke.toUpperCase(), Font.semiboldSystemFont(11), 1);
   w.addSpacer();
-  szovegbe(w, m.nagySzam.ertek, kerek(50), 1);
+  nagySzamba(w, m, 50);
   w.addSpacer();
   szovegbe(w, m.szintFelirat.replace('\n', ' '), Font.boldSystemFont(15), 1);
   szovegbe(w, m.rovid, Font.mediumSystemFont(13), 2);
@@ -651,7 +679,7 @@ async function main() {
     return;
   }
   if (config.runsInWidget) {
-    Script.setWidget(d ? widget(model(d, most), config.widgetFamily, args.widgetParameter)
+    Script.setWidget(d ? widget(model(d, most, hiba), config.widgetFamily, args.widgetParameter)
                        : uzenetWidget('Nincs adat', `A végpont most nem válaszolt (${hiba}).`));
     Script.complete();
     return;
@@ -681,7 +709,7 @@ async function appMenu(cfg, d, hiba, most) {
     await n.schedule();
     return;
   }
-  const m = model(d, most);
+  const m = model(d, most, hiba);
   if (pontok[i] === 'Közepes') await widget(m, 'medium').presentMedium();
   else if (pontok[i] === 'Nagy') await widget(m, 'large').presentLarge();
   else await widget(m, 'small', pontok[i].endsWith('következő') ? 'kovetkezo' : 'allapot').presentSmall();
